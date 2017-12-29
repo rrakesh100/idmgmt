@@ -1,0 +1,129 @@
+p.selectedZone {
+  position: absolute;
+  z-index: 500;
+  right: 50%;
+  font-weight: bolder !important;
+  font-size: 24px !important;
+  text-transform: uppercase;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
+.zonePicker {
+  width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
+p.hoveredZone {
+  position: absolute;
+  z-index: 500;
+  bottom: 0;
+  right: 20;
+  font-weight: bolder !important;
+  text-transform: lowercase;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
+textarea.itemTextArea {
+  height: 200px;
+  color: blue;
+}
+
+.giveItem {
+  input {
+    color: blue;
+    text-transform: uppercase;
+    font-weight: bolder;
+  }
+}
+
+.itemsList {
+  span.id {
+    font-weight: bolder;
+    color: rgba(41, 128, 185,1.0);
+  }
+}
+
+.visitorClock {
+  font-size: 24px;
+  color: blue;
+}
+
+.card {
+    position: relative;
+    width: 3.75in;
+    height: 2.25in;
+    border: 1px solid  red;
+}
+.card-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3.75in;
+    height: 2.25in;
+}
+.card-body {
+    position: absolute;
+    width: 3.5in;
+    height: 2in;
+    padding: .125in;
+    display: grid;
+		grid-template-columns: 1.5in 2in;
+		grid-template-areas:
+    "header  header"
+		"sidebar content"
+		"footer  footer";
+    text-align: centre;
+    line-height: 0;
+
+    h3, h4, h5 {
+      margin: 0 0;
+    }
+
+    h3 {
+      text-decoration: underline;
+    }
+
+    .sidebar {
+      grid-area: sidebar;
+      height: 0.9in;
+    }
+
+    .content {
+      grid-area: content;
+      position: relative;
+      line-height: 0in;
+      margin-left: 0.1in;
+
+      .bold {
+        font-weight: bolder;
+        text-transform: uppercase;
+      }
+    }
+
+    .header {
+      grid-area: header;
+      height: 0.3in;
+      line-height: 0;
+      text-align: center;
+    }
+    .footer {
+      grid-area: footer;
+      height: 0.8in;
+      font-size: 0.1in;
+      text-align: center;
+    }
+}
+
+.newVisitor {
+  input.grommetux-text-input {
+    text-transform: uppercase;
+  }
+  section.fields {
+    height: 400px;
+  }
+
+  .grommetux-split__column {
+    height: 350px;
+  }
+}
