@@ -1,6 +1,8 @@
 import path from 'path';
 import webpack from 'webpack';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
+import Dotenv from 'dotenv-webpack';
+
 
 const env = process.env.NODE_ENV || 'production';
 
@@ -10,6 +12,9 @@ let plugins = [
     'process.env': {
       NODE_ENV: JSON.stringify(env)
     }
+  }),
+  new Dotenv({
+    path: './.env'
   })
 ];
 
