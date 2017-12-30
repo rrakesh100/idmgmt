@@ -75,7 +75,16 @@ class NewVisitor extends Component {
       name,
       info,
       screenshot,
-      timestamp
+      timestamp,
+      status: 'ENTERED',
+      history: [
+        {
+          timestamp,
+          status: 'ENTERED',
+          enteredBy: 'ram',
+          description: 'nothing'
+        }
+      ]
     })
       .then(
         this.setState({
@@ -177,7 +186,7 @@ class NewVisitor extends Component {
               <Image src={this.state.screenshot} />
             </div>
             <div className='box content'>
-              <h4 className='bold'>{printName}</h4>
+              <h5 className='bold'>{printName}</h5>
               <h5>{printInfo}</h5>
               <h5>{timestampStr}</h5>
             </div>
@@ -192,22 +201,33 @@ class NewVisitor extends Component {
     );
   }
 
+  renderToastMsg() {
+    const { toastMsg } = this.state;
+    if (toastMsg) {
+      return (
+        <Toast status='ok'
+          onClose={ this.toastClose.bind(this) }>
+          { toastMsg }
+        </Toast>
+      );
+    }
+    return null;
+  }
+
+  renderValidationMsg() {
+    const { validationMsg } = this.state;
+    if (validationMsg) {
+      return (
+        <Notification message={validationMsg} size='small' status='critical' />
+      );
+    }
+    return null;
+  }
+
   render() {
-    const { validationMsg, toastMsg } = this.state;
     return (
       <div className='newVisitor'>
-        {
-          validationMsg ?
-            <Notification message={validationMsg} size='small' status='critical' /> :
-            null
-        }
-        { toastMsg ?
-          <Toast status='ok'
-            onClose={ this.toastClose.bind(this) }>
-            { toastMsg }
-          </Toast> :
-          null
-        }
+        { this.renderValidationMsg() }
         <Article scrollStep={false}
           direction='column'
           primary={true} full={true}>

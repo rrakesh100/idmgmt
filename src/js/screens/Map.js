@@ -63,16 +63,6 @@ class Map extends Component {
 
     return (
       <div>
-        <Article scrollStep={false}
-          direction='column'>
-          <Section pad='small'
-            justify='center'
-            align='center'>
-            <Heading align='center'>
-              Assign Worker
-            </Heading>
-          </Section>
-        </Article>
         <div className='zonePicker'>
           <p className='selectedZone'>{selectedZone}</p>
           <ImageMapper

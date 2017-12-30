@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import Moment from 'moment';
 
 import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
@@ -13,7 +14,14 @@ import Meter from 'grommet/components/Meter';
 import Paragraph from 'grommet/components/Paragraph';
 import Value from 'grommet/components/Value';
 import Spinning from 'grommet/components/icons/Spinning';
+import Visitor from 'grommet/components/icons/base/DocumentUser';
+import Button from 'grommet/components/Button';
+import Search from 'grommet/components/Search';
+import AddIcon from 'grommet/components/icons/base/Add';
+
+
 import { getMessage } from 'grommet/utils/Intl';
+import { getVisitors, getVisitor } from '../api/visitors';
 
 import NavControl from '../components/NavControl';
 
@@ -24,14 +32,121 @@ import {
 import { pageLoaded } from './utils';
 
 class Tasks extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
   componentDidMount() {
-    pageLoaded('Tasks');
-    this.props.dispatch(loadTasks());
+    getVisitors()
+      .then((snap) => {
+        const data = snap.val();
+        console.log('VISITORS=', JSON.stringify(data, null, 2));
+        if (!data) {
+          return;
+        }
+        this.setState({
+          visitorSuggestions: [...Object.keys(data)]
+        });
+      })
+      .catch((err) => {
+        console.error('VISITOR FETCH FAILED', err);
+      });
   }
 
   componentWillUnmount() {
-    this.props.dispatch(unloadTasks());
   }
+
+  onVisitorSelect(data, isSuggestionSelected) {
+    if(isSuggestionSelected) {
+      this.setState({
+        selectedVisitorId: data.suggestion,
+        visitorSearchString: data.suggestion
+      }, this.fetchSearchedVisitor.bind(this));
+    } else {
+      this.setState({
+        selectedVisitorId: data.target.value,
+        visitorSearchString: data.suggestion
+      }, this.fetchSearchedVisitor.bind(this));
+    }
+  }
+
+  onSearchEntry(e) {
+    this.setState({
+      visitorSearchString: e.target.value
+    });
+  }
+
+  renderVisitorSearch() {
+    return (
+      <Search placeHolder='Search visitor'
+        inline={true}
+        iconAlign='start'
+        size='small'
+        suggestions={this.state.visitorSuggestions}
+        value={this.state.visitorSearchString}
+        onSelect={this.onVisitorSelect.bind(this)}
+        onDOMChange={this.onSearchEntry.bind(this)} />
+    )
+  }
+
+  fetchSearchedVisitor() {
+    const { selectedVisitorId } = this.state;
+    if (selectedVisitorId) {
+      getVisitor(selectedVisitorId)
+        .then((snap) => {
+          const selectedVisitorData = snap.val();
+          this.setState({
+            selectedVisitorData
+          });
+        })
+        .catch((err) => {
+          console.log('UNABLE TO FETCH SEARCHED USER');
+        });
+    }
+  }
+
+  renderSearchedVisitor() {
+    const { selectedVisitorData, selectedVisitorId } = this.state;
+
+    if (selectedVisitorData) {
+      const { timestamp } = selectedVisitorData;
+      const m = Moment(timestamp);
+      const timestampStr = m.format('DD/MM/YYYY hh:mm:ss A');
+      const timeRelativeStr = m.fromNow();
+
+      return (
+        <List>
+          <ListItem justify='between'
+            separator='horizontal'>
+            <span>
+              <Button icon={<Visitor />}
+                label={selectedVisitorId}
+                href={`/visitor/${selectedVisitorId}`}
+                primary={true} />
+            </span>
+            <span>
+              {selectedVisitorData.name}
+            </span>
+            <span>
+              entered <span className='emphasis'>{timeRelativeStr}</span> at <strong>{timestampStr}</strong>
+            </span>
+          </ListItem>
+        </List>
+      );
+    }
+    return (
+      <List>
+        <ListItem justify='between'
+          separator='horizontal'>
+          <span>
+            { selectedVisitorId ? 'No such visitor in the records!' : null }
+          </span>
+        </ListItem>
+      </List>
+    );
+  }
+
 
   render() {
     const { error, tasks } = this.props;
@@ -88,8 +203,13 @@ class Tasks extends Component {
       );
     }
 
+    // <a href='/new/visitor'>New Visitor</a>
+    // <a href='/visitor'>New Visitor</a>
+    // <a href='/map'>Map</a>
+    // <a href='/item/give'>Give an Item</a>
+
     return (
-      <Article primary={true}>
+      <Article primary={true} className='visitors'>
         <Header
           direction='row'
           justify='between'
@@ -101,12 +221,13 @@ class Tasks extends Component {
         {errorNode}
         <Box pad={{ horizontal: 'medium' }}>
           <Paragraph size='large'>
-            <a href='/new/visitor'>New Visitor</a>
-            <a href='/map'>Map</a>
-            <a href='/item/give'>Give an Item</a>
+            <Button icon={<AddIcon />}
+              label='Add new Visitor'
+              href='/new/visitor' />
           </Paragraph>
         </Box>
-        {listNode}
+        { this.renderVisitorSearch() }
+        { this.renderSearchedVisitor() }
       </Article>
     );
   }

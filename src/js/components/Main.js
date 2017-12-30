@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import App from 'grommet/components/App';
 import Split from 'grommet/components/Split';
-import PrintProvider, { Print, NoPrint } from 'react-easy-print';
+import PrintProvider, { NoPrint } from 'react-easy-print';
 
 
 import NavSidebar from './NavSidebar';
@@ -13,7 +13,7 @@ import { navResponsive } from '../actions/nav';
 import Login from '../screens/Login';
 import Dashboard from '../screens/Dashboard';
 import Tasks from '../screens/Tasks';
-import Task from '../screens/Task';
+import Visitor from '../screens/Visitor';
 import NewVisitor from '../screens/NewVisitor';
 import Map from '../screens/Map';
 import GiveItem from '../screens/GiveItem';
@@ -59,7 +59,7 @@ class Main extends Component {
                   <Route exact={true} path='/' component={Dashboard} />
                   <Route path='/dashboard' component={Dashboard} />
                   <Route path='/login' component={Login} />
-                  <Route path='/visitor/:id' component={Task} />
+                  <Route path='/visitor/:id' component={Visitor} />
                   <Route path='/visitors' component={Tasks} />
                   <Route path='/new/visitor' component={NewVisitor} />
                   <Route path='/map' component={Map} />

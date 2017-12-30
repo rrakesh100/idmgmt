@@ -50,69 +50,64 @@ textarea.itemTextArea {
 }
 
 .card {
-    position: relative;
-    width: 3.75in;
-    height: 2.25in;
-    border: 1px solid  red;
+  position: absolute;
+  top: 0;
+  width: 3.75in;
+  height: 2.25in;
+  border: 1px solid  red;
 }
-.card-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3.75in;
-    height: 2.25in;
-}
+
 .card-body {
-    position: absolute;
-    width: 3.5in;
-    height: 2in;
-    padding: .125in;
-    display: grid;
-		grid-template-columns: 1.5in 2in;
-		grid-template-areas:
-    "header  header"
-		"sidebar content"
-		"footer  footer";
-    text-align: centre;
+  position: absolute;
+  width: 3.5in;
+  height: 2in;
+  padding: .125in;
+  display: grid;
+	grid-template-columns: 1.5in 2in;
+	grid-template-areas:
+  "header  header"
+	"sidebar content"
+	"footer  footer";
+  text-align: centre;
+  line-height: 0;
+
+  h3, h4, h5 {
+    margin: 0 0;
+  }
+
+  h3 {
+    text-decoration: underline;
+  }
+
+  .sidebar {
+    grid-area: sidebar;
+    height: 0.9in;
+  }
+
+  .content {
+    grid-area: content;
+    position: relative;
+    line-height: 0in;
+    margin-left: 0.1in;
+
+    .bold {
+      font-weight: bolder;
+      text-transform: uppercase;
+    }
+  }
+
+  .header {
+    grid-area: header;
+    height: 0.3in;
     line-height: 0;
-
-    h3, h4, h5 {
-      margin: 0 0;
-    }
-
-    h3 {
-      text-decoration: underline;
-    }
-
-    .sidebar {
-      grid-area: sidebar;
-      height: 0.9in;
-    }
-
-    .content {
-      grid-area: content;
-      position: relative;
-      line-height: 0in;
-      margin-left: 0.1in;
-
-      .bold {
-        font-weight: bolder;
-        text-transform: uppercase;
-      }
-    }
-
-    .header {
-      grid-area: header;
-      height: 0.3in;
-      line-height: 0;
-      text-align: center;
-    }
-    .footer {
-      grid-area: footer;
-      height: 0.8in;
-      font-size: 0.1in;
-      text-align: center;
-    }
+    text-align: center;
+  }
+  .footer {
+    grid-area: footer;
+    height: 0.8in;
+    font-size: 0.1in;
+    text-align: center;
+  }
 }
 
 .newVisitor {
@@ -125,5 +120,54 @@ textarea.itemTextArea {
 
   .grommetux-split__column {
     height: 350px;
+  }
+}
+
+.visitors {
+  span.emphasis {
+    color: orange;
+    font-weight: bold;
+  }
+
+  strong {
+    color: blue;
+  }
+}
+
+.visitorDetails {
+  .details {
+    text-align: center;
+
+    p {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    p.name {
+      font-weight: bolder;
+      font-size: 24px;
+      color: blue;
+    }
+
+    span.emphasis {
+    color: orange;
+    font-weight: bold;
+    }
+  }
+
+  form.grommetux-form.grommetux-form--pad-none {
+    margin: auto;
+    text-align: center;
+  }
+}
+
+.historyTable {
+  text-align: center;
+
+  h4 {
+    margin-bottom: 0;
+    margin-top: 20px;
+    font-weight: bolder;
+    color: #e74c3c;
   }
 }
