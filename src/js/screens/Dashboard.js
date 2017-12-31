@@ -101,13 +101,10 @@ class Dashboard extends Component {
         {errorNode}
         <Box pad='medium'>
           <Heading tag='h3' strong={true}>
-            Running Tasks
+            Overview
           </Heading>
           <Paragraph size='large'>
-            The backend here is using request polling (5 second interval).
-            See <Anchor path='/tasks'
-              label={getMessage(intl, 'Tasks')} /> page for an example
-            of websocket communication.
+            Check <Anchor path='/visitors' label={'Visitors'} /> and <Anchor path='/items' label={'Items'} /> here.
           </Paragraph>
         </Box>
         {listNode}

@@ -1,71 +1,84 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import Webcam from 'react-webcam';
+import Barcode from 'react-barcode';
+import Rand from 'random-key';
 import Moment from 'moment';
 
-import Anchor from 'grommet/components/Anchor';
+import { Popup } from 'semantic-ui-react';
+
+
+
+import Heading from 'grommet/components/Heading';
+import Button from 'grommet/components/Button';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
-import Header from 'grommet/components/Header';
-import Heading from 'grommet/components/Heading';
-import Label from 'grommet/components/Label';
-import Meter from 'grommet/components/Meter';
-import Notification from 'grommet/components/Notification';
-import Value from 'grommet/components/Value';
-import Spinning from 'grommet/components/icons/Spinning';
-import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
-import Columns from 'grommet/components/Columns';
+import Form from 'grommet/components/Form';
+import FormField from 'grommet/components/FormField';
+import TextInput from 'grommet/components/TextInput';
+import Toast from 'grommet/components/Toast';
+
+import Section from 'grommet/components/Section';
+import Anchor from 'grommet/components/Anchor';
+import Headline from 'grommet/components/Headline';
 import Image from 'grommet/components/Image';
+import FormFields from 'grommet/components/FormFields';
+import Footer from 'grommet/components/Footer';
+import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
+import Header from 'grommet/components/Header';
+import Columns from 'grommet/components/Columns';
 import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
-import Toast from 'grommet/components/Toast';
-import Button from 'grommet/components/Button';
+
+import ItemActions from './ItemActions';
+import { getItem, updateItemStatus } from '../api/items';
+import { getTimeInterval } from '../api/utils';
 
 
-import Map from './Map';
-import VisitorActions from './VisitorActions';
-
-import { getVisitor, updateVisitorStatus } from '../api/visitors';
-import { getTimeInterval } from '../api/utils'
-
-import {
-  loadVisitor, unloadVisitor
-} from '../actions/tasks';
+// TO GET THE coords - use this awesome tool
+// http://imagemap-generator.dariodomi.de/
 
 
-class Visitor extends Component {
+class Item extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
-      visitorId: this.props.match.params.id
+      itemId: this.props.match.params.id
     };
   }
 
   componentDidMount() {
-    this.getVisitorData();
+    this.getItemData();
   }
 
-  getVisitorData() {
-    const { visitorId } = this.state;
-    getVisitor(this.state.visitorId)
+  getItemData() {
+    const { itemId } = this.state;
+    getItem(this.state.itemId)
       .then((snap) => {
-        const visitorData = snap.val();
+        const itemData = snap.val();
         this.setState({
-          visitorData
+          itemData
         });
       })
       .catch((err) => {
-        console.error(`Unable to fetch data for ${visitorId}`, err);
+        console.error(`Unable to fetch data for item ${itemId}`, err);
         this.setState({
-          error: `Unable to fetch data for ${visitorId}`
+          error: `Unable to fetch data for item ${itemId}`
         });
       });
   }
 
-  renderVisitor() {
-    if (this.state.visitorData) {
-      const { name, info, timestamp, screenshot, status, statusTimestamp } = this.state.visitorData;
+  toastClose() {
+    this.setState({ toastMsg: '' });
+  }
+
+
+  renderItem() {
+    if (this.state.itemData) {
+      const { name, source, destination, timestamp, screenshot, status, statusTimestamp } = this.state.itemData;
       const m = Moment(timestamp);
       const timestampStr = m.format('DD/MM/YYYY hh:mm:ss A');
       const timeRelativeStr = m.fromNow();
@@ -93,15 +106,14 @@ class Visitor extends Component {
             colorIndex='light-2'>
             <div className='details'>
               <p className='name'>{name}</p>
-              <p>{info}</p>
+              <p>from {source} to {destination}</p>
               <p>entered <span className='emphasis'>{timeRelativeStr}</span> at <strong>{timestampStr}</strong></p>
               <p>current status: <strong>{status}</strong></p>
               {
-                status === 'RELEASE FOR DAY' ?
-                <p>total working time: <span className='emphasis'>{ timeDifference }</span>(hr:mns)</p> :
+                status === 'RECEIVED' ?
+                <p>total time taken: <span className='emphasis'>{ timeDifference }</span>(hr:mns)</p> :
                 null
               }
-
             </div>
           </Box>
         </Columns>
@@ -112,38 +124,38 @@ class Visitor extends Component {
     );
   }
 
-  handleVisitorUpdate(updateData) {
-    const { visitorData, visitorId } = this.state;
+
+  handleItemUpdate(updateData) {
+    const { itemData, itemId } = this.state;
     const timestamp = new Date();
-    updateVisitorStatus({ ...updateData, timestamp,
-      entryTimestamp: visitorData.timestamp,
-      visitorId })
+    const name = itemData.name;
+    updateItemStatus({ ...updateData, timestamp,
+      entryTimestamp: itemData.timestamp,
+      itemId })
       .then(() => {
         this.setState({
-          toastMsg: `Successfully updated the status of ${this.state.visitorId}`
-        }, this.getVisitorData.bind(this));
+          toastMsg: `Successfully updated the status of item ${name}`
+        }, this.getItemData.bind(this));
       })
       .catch((err) => {
-        console.error('Unable to update visitor status', err);
+        console.error(`Unable to update ${name} status`, err);
         this.setState({
-          error: 'Unable to update VISITOR status'
+          error: `Unable to update ${name} status`
         });
       });
   }
 
+
   renderActions() {
-    if (!this.state.visitorData) {
+    if (!this.state.itemData) {
       return null;
     }
-    const { status } = this.state.visitorData;
-    if (status !== 'RELEASE FOR DAY') {
+    const { status } = this.state.itemData;
+    if (status !== 'RECEIVED') {
       return (
         <Tabs>
-          <Tab title='Assign Work Zone'>
-            <Map />
-          </Tab>
-          <Tab title='Release/Let Go'>
-            <VisitorActions onSubmit={ this.handleVisitorUpdate.bind(this) }/>
+          <Tab title='Receive/Reject Item'>
+            <ItemActions onSubmit={ this.handleItemUpdate.bind(this) }/>
           </Tab>
         </Tabs>
       );
@@ -152,13 +164,13 @@ class Visitor extends Component {
   }
 
   renderHistory() {
-    if (!this.state.visitorData) {
+    if (!this.state.itemData) {
       return null;
     }
-    const { history } = this.state.visitorData;
+    const { history } = this.state.itemData;
     const rows = [];
     Object.keys(history).forEach((id) => {
-      const { timestamp, status, enteredBy, description} = history[id];
+      const { timestamp, status, enteredBy, description, screenshotNow} = history[id];
       const m = Moment(timestamp);
       const timestampStr = m.format('DD/MM/YYYY hh:mm:ss A');
       const timeRelativeStr = m.fromNow();
@@ -169,7 +181,12 @@ class Visitor extends Component {
             {timestampStr} <br/> <span className='relativeTime'> {timeRelativeStr} </span>
           </td>
           <td>
-            <Button label={status} href='#' />
+            <Popup
+              trigger={<Button label={status} href='#' />}
+              on='click'
+              hideOnScroll>
+              <img src={screenshotNow} alt='probably photo was not taken' />
+            </Popup>
           </td>
           <td className='secondary'>
             {description}
@@ -183,7 +200,7 @@ class Visitor extends Component {
     return (
       <div className='historyTable'>
         <Tabs>
-          <Tab title='History of Visitor'>
+          <Tab title='History of Item'>
             <Table selectable={true}>
               <thead>
                 <tr>
@@ -205,17 +222,12 @@ class Visitor extends Component {
                 { rows }
               </tbody>
             </Table>
+            <p className='supportText'><span>*</span>click on the action to see picture taken at the time of update</p>
           </Tab>
         </Tabs>
-
       </div>
     );
   }
-
-  toastClose() {
-    this.setState({ toastMsg: '' });
-  }
-
 
   render() {
     const { error } = this.props;
@@ -244,28 +256,31 @@ class Visitor extends Component {
       )
     }
 
-    const { visitorData, visitorId } = this.state;
-
-    return (
+    const {itemData, itemId} = this.state;
+    let itemTitle = `Item ${itemId}`;
+    if (itemData) {
+      itemTitle = `"${itemData.name}" (${itemId})`
+    }
+    return(
       <Article primary={true} full={true} className='visitorDetails'>
         <Header
           direction='row'
           size='large'
           colorIndex='light-2'
           align='center'
-          responsive={false}
+          responsive={true}
           pad={{ horizontal: 'small' }}
         >
-          <Anchor path='/visitors'>
-            <LinkPrevious a11yTitle='Back to Visitors' />
+          <Anchor path='/items'>
+            <LinkPrevious a11yTitle='Back' />
           </Anchor>
           <Heading margin='none' strong={true}>
-            {`Visitor "${visitorData.name}" (${visitorId})`}
+            {itemTitle}
           </Heading>
         </Header>
         {errorNode}
         {toastNode}
-        { this.renderVisitor() }
+        { this.renderItem() }
         { this.renderActions() }
         { this.renderHistory() }
       </Article>
@@ -273,18 +288,5 @@ class Visitor extends Component {
   }
 }
 
-Visitor.defaultProps = {
-  error: undefined,
-  task: undefined
-};
-
-Visitor.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  error: PropTypes.object,
-  match: PropTypes.object.isRequired,
-  task: PropTypes.object
-};
-
-const select = state => ({ ...state.tasks });
-
-export default connect(select)(Visitor);
+const item = state => ({ ...state.item });
+export default connect(item)(Item);

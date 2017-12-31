@@ -54,8 +54,6 @@ class Tasks extends Component {
       });
   }
 
-  componentWillUnmount() {
-  }
 
   onVisitorSelect(data, isSuggestionSelected) {
     if(isSuggestionSelected) {
@@ -153,7 +151,6 @@ class Tasks extends Component {
     const { intl } = this.context;
 
     let errorNode;
-    let listNode;
     if (error) {
       errorNode = (
         <Notification
@@ -163,50 +160,7 @@ class Tasks extends Component {
           message='An unexpected error happened, please try again later'
         />
       );
-    } else if (tasks.length === 0) {
-      listNode = (
-        <Box
-          direction='row'
-          responsive={false}
-          pad={{ between: 'small', horizontal: 'medium', vertical: 'medium' }}
-        >
-          <Spinning /><span>Loading...</span>
-        </Box>
-      );
-    } else {
-      const tasksNode = (tasks || []).map(task => (
-        <ListItem
-          key={`task_${task.id}`}
-          justify='between'
-        >
-          <Label><Anchor path={`/visitor/${task.id}`} label={task.name} /></Label>
-          <Box
-            direction='row'
-            responsive={false}
-            pad={{ between: 'small' }}
-          >
-            <Value
-              value={task.percentComplete}
-              units='%'
-              align='start'
-              size='small'
-            />
-            <Meter value={task.percentComplete} />
-          </Box>
-        </ListItem>
-      ));
-
-      listNode = (
-        <List>
-          {tasksNode}
-        </List>
-      );
     }
-
-    // <a href='/new/visitor'>New Visitor</a>
-    // <a href='/visitor'>New Visitor</a>
-    // <a href='/map'>Map</a>
-    // <a href='/item/give'>Give an Item</a>
 
     return (
       <Article primary={true} className='visitors'>

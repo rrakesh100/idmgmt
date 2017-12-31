@@ -134,7 +134,7 @@ textarea.itemTextArea {
   }
 }
 
-.visitorDetails {
+.visitorDetails, {
   .details {
     text-align: center;
 
@@ -169,5 +169,23 @@ textarea.itemTextArea {
     margin-top: 20px;
     font-weight: bolder;
     color: #e74c3c;
+  }
+
+  p.supportText {
+    color: #bdc3c7;
+
+    span {
+      color: #e67e22;
+    }
+  }
+
+  th {
+    color: #8e44ad;
+    font-weight: bolder;
+  }
+
+  span.relativeTime {
+    color: #f39c12;
+    font-size: 12px;
   }
 }

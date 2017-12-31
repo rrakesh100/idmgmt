@@ -1,4 +1,6 @@
 import RequestWatcher from './request-watcher';
+import Moment from 'moment';
+
 
 let _headers = {
   Accept: 'application/json',
@@ -23,6 +25,14 @@ export function updateHeaders(newHeaders) {
       delete _headers[key];
     }
   });
+}
+
+export function getTimeInterval(startTime, endTime) {
+  const start = Moment(startTime, 'HH:mm');
+  const end = Moment(endTime, 'HH:mm');
+  const minutes = end.diff(start, 'minutes');
+  const interval = Moment().hour(0).minute(minutes);
+  return interval.format('HH:mm');
 }
 
 export const requestWatcher = new RequestWatcher();

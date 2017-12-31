@@ -16,8 +16,8 @@ import Tasks from '../screens/Tasks';
 import Visitor from '../screens/Visitor';
 import NewVisitor from '../screens/NewVisitor';
 import Map from '../screens/Map';
-import GiveItem from '../screens/GiveItem';
-import TakeItem from '../screens/TakeItem';
+import Item from '../screens/Item';
+import NewItem from '../screens/NewItem';
 import Items from '../screens/Items';
 import LabourDashboard from '../screens/LDashboard';
 
@@ -63,8 +63,8 @@ class Main extends Component {
                   <Route path='/visitors' component={Tasks} />
                   <Route path='/new/visitor' component={NewVisitor} />
                   <Route path='/map' component={Map} />
-                  <Route path='/item/give' component={GiveItem} />
-                  <Route path='/item/take' component={TakeItem} />
+                  <Route path='/item/:id' component={Item} />
+                  <Route path='/new/item' component={NewItem} />
                   <Route path='/items' component={Items} />
                   <Route path='/dash/visitor' component={LabourDashboard} />
                   <Route path='/*' component={NotFound} />
