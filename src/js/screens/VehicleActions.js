@@ -30,7 +30,7 @@ import Button from 'grommet/components/Button';
 import Toast from 'grommet/components/Toast';
 
 
-class ItemActions extends Component {
+class VehicleActions extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -111,7 +111,7 @@ class ItemActions extends Component {
         <Form className='visitorActions'>
           <Clock className='visitorClock' format={'DD/MM/YYYY hh:mm:ss A'} ticking={true} />
           <Select placeHolder='Item Wants'
-            options={['TRANSIT', 'RECEIVED', 'REJECTED', 'LOST', 'ACCEPTED', 'RETURNED']}
+            options={['ALLOW OUT', 'STOP', 'LET GO', 'LOAD', 'LOAD RESUME', 'UNLOAD', 'UNLOAD RESUME', 'BROKEN DOWN']}
             value={this.state.selectedAction}
             onChange={this.onActionSelect.bind(this)} />
             <FormFields>
@@ -138,11 +138,11 @@ class ItemActions extends Component {
   }
 }
 
-ItemActions.defaultProps = {
+VehicleActions.defaultProps = {
   error: undefined
 };
 
-ItemActions.propTypes = {
+VehicleActions.propTypes = {
   dispatch: PropTypes.func.isRequired,
   error: PropTypes.object,
   onSubmit: PropTypes.func.isRequired
@@ -150,4 +150,4 @@ ItemActions.propTypes = {
 
 const select = state => ({ ...state.itemId });
 
-export default connect(select)(ItemActions);
+export default connect(select)(VehicleActions);

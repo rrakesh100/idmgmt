@@ -54,6 +54,10 @@ class VisitorActions extends Component {
   handleSubmit() {
     const { selectedAction, description } = this.state;
     this.props.onSubmit({ status: selectedAction, description });
+    this.setState({
+      selectedAction: 'RELEASE FOR DAY',
+      description: ''
+    });
   }
 
   render() {
@@ -66,7 +70,11 @@ class VisitorActions extends Component {
           onChange={this.onActionSelect.bind(this)} />
         <FormFields>
           <FormField label='Description'>
-            <textarea className='itemTextArea' onChange={this.onDescriptionChange.bind(this)}/>
+            <textarea
+              className='itemTextArea'
+              onChange={this.onDescriptionChange.bind(this)}
+              value={this.state.description}
+            />
           </FormField>
         </FormFields>
         <Footer pad={{"vertical": "medium"}}>

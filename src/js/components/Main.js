@@ -19,6 +19,9 @@ import Map from '../screens/Map';
 import Item from '../screens/Item';
 import NewItem from '../screens/NewItem';
 import Items from '../screens/Items';
+import Vehicle from '../screens/Vehicle';
+import NewVehicle from '../screens/NewVehicle';
+import Vehicles from '../screens/Vehicles';
 import LabourDashboard from '../screens/LDashboard';
 
 import NotFound from '../screens/NotFound';
@@ -66,6 +69,9 @@ class Main extends Component {
                   <Route path='/item/:id' component={Item} />
                   <Route path='/new/item' component={NewItem} />
                   <Route path='/items' component={Items} />
+                  <Route path='/vehicle/:id' component={Vehicle} />
+                  <Route path='/new/vehicle' component={NewVehicle} />
+                  <Route path='/vehicles' component={Vehicles} />
                   <Route path='/dash/visitor' component={LabourDashboard} />
                   <Route path='/*' component={NotFound} />
                 </Switch>

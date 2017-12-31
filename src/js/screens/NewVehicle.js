@@ -22,22 +22,23 @@ import Image from 'grommet/components/Image';
 import FormFields from 'grommet/components/FormFields';
 import Edit from 'grommet/components/icons/base/Print';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
+import Notification from 'grommet/components/Notification';
 
 import Header from 'grommet/components/Header';
-import { saveItem } from '../api/items';
+import { saveVehicle } from '../api/vehicles';
 
 
 // TO GET THE coords - use this awesome tool
 // http://imagemap-generator.dariodomi.de/
 
 
-class NewItem extends Component {
+class NewVehicle extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       showLiveCameraFeed: true,
-      itemId: Rand.generateBase30(8)
+      vehicleId: Rand.generateBase30(8)
     };
   }
 
@@ -45,6 +46,20 @@ class NewItem extends Component {
     this.setState({
       [fieldName]: e.target.value
     });
+  }
+
+  onVehicleNumberChange(e) {
+    const val = e.target.value;
+    if (val) {
+      const transformedVal = val.replace(' ','').toUpperCase().substring(0,10);
+      this.setState({
+        vehicleNumber: transformedVal
+      });
+    } else {
+      this.setState({
+        vehicleNumber: val
+      });
+    }
   }
 
   setRef(webcam) {
@@ -91,32 +106,33 @@ class NewItem extends Component {
   }
 
   saveAndPrint() {
-    const { itemId, name, source, destination, screenshot, timestamp } = this.state;
+    const { vehicleId, vehicleNumber, driverName, mobile, screenshot, timestamp, description } = this.state;
 
-    saveItem({
-      itemId,
-      name,
-      source,
-      destination,
+    saveVehicle({
+      vehicleId,
+      vehicleNumber,
+      driverName,
+      mobile,
       timestamp,
       screenshot,
+      description,
       status: 'ENTERED',
       history: [
         {
           timestamp,
           status: 'ENTERED',
           enteredBy: 'ram..',
-          description: 'initiated transfer'
+          description: 'Allowed vehicle in'
         }
       ]
     })
       .then(
         this.setState({
-          toastMsg: `Item ${name} is saved `
-        }, () => { window.print(); })
+          toastMsg: `Vehicle ${name} is saved `
+        })
       )
       .catch((err) => {
-        console.error('ITEM SAVE ERR', err);
+        console.error('VEHICLE SAVE ERR', err);
         this.setState({
           validationMsg: `Unable to save ${name}. Contact admin for assistance`
         });
@@ -124,13 +140,21 @@ class NewItem extends Component {
   }
 
   onSubmitClick() {
-    const { name, source, destination, screenshot } = this.state;
-    if (!name) {
+    const { vehicleNumber, driverName, mobile, screenshot, description } = this.state;
+    if (!vehicleNumber) {
       this.setState({
-        validationMsg: 'NAME is missing'
+        validationMsg: 'Vehicle Number is missing'
       });
       return;
     }
+
+    if (vehicleNumber.length !== 10) {
+      this.setState({
+        validationMsg: 'Vehicle Number has to be 10 chars length! ex. AP32MN0034'
+      });
+      return;
+    }
+
 
     if (!screenshot) {
       this.setState({
@@ -139,19 +163,19 @@ class NewItem extends Component {
       return;
     }
 
-    if (!source) {
+    if (!driverName) {
       this.setState({
-        validationMsg: 'SOURCE OFFICE is missing'
+        validationMsg: 'Driver name is missing'
       });
       return;
     }
 
-    if (!destination) {
-      this.setState({
-        validationMsg: 'DESTINATION OFFICE is missing'
-      });
-      return;
-    }
+    // if (!destination) {
+    //   this.setState({
+    //     validationMsg: 'DESTINATION OFFICE is missing'
+    //   });
+    //   return;
+    // }
     const timestamp = new Date();
     const timestampStr = Moment(timestamp).format('DD/MM/YYYY hh:mm:ss A');
     this.setState({
@@ -159,40 +183,6 @@ class NewItem extends Component {
       timestampStr,
       validationMsg: ''
     }, this.saveAndPrint.bind(this));
-  }
-
-  renderBusinessCardForPrint() {
-    const { name = '', source = '', destination = '', screenshot, timestampStr } = this.state;
-    const printName = name.substring(0, 16);
-    const printSource = source.substring(0, 20);
-    const printDestination = destination.substring(0, 20);
-
-
-    return (
-      <Print name='bizCard' exclusive>
-        <div className='card'>
-          <div className='card-body'>
-            <div className='box header'>
-              <h3>Lalitha Industries</h3>
-            </div>
-            <div className='box sidebar'>
-              <Image src={screenshot} />
-            </div>
-            <div className='box content'>
-              <h5 className='bold'>{printName}</h5>
-              <h5>from: {printSource}</h5>
-              <h5>to: {printDestination}</h5>
-              <h5>{timestampStr}</h5>
-            </div>
-            <div className='box footer'>
-              <Barcode value={this.state.itemId}
-                height={40}
-              />
-            </div>
-          </div>
-        </div>
-      </Print>
-    );
   }
 
   renderToastMsg() {
@@ -220,9 +210,9 @@ class NewItem extends Component {
 
   render() {
     return (
-      <div className='newItem'>
+      <div className='newVehicle'>
         { this.renderValidationMsg() }
-        <Article primary={true} full={true} className='giveItem'>
+        <Article primary={true} full={true} className='giveVehicle'>
           <Header
             direction='row'
             size='large'
@@ -231,11 +221,11 @@ class NewItem extends Component {
             responsive={true}
             pad={{ horizontal: 'small' }}
           >
-            <Anchor path='/items'>
+            <Anchor path='/vehicles'>
               <LinkPrevious a11yTitle='Back' />
             </Anchor>
             <Heading margin='none' strong={true}>
-              GIVE AN ITEM
+              ALLOW VEHICLE
             </Heading>
           </Header>
           <Section pad='large'
@@ -250,30 +240,31 @@ class NewItem extends Component {
           <Section pad='large'
             justify='center'
             align='center'>
-            <Barcode value={this.state.itemId} />
+            <Barcode value={this.state.vehicleId} />
             <Form>
               <FormFields>
-                <FormField label='Item Name'>
+                <FormField label='Vehicle Number'>
                   <TextInput
-                    placeHolder='name'
-                    onDOMChange={this.onFieldChange.bind(this, 'name')}
+                    placeHolder='AP32MN1234'
+                    onDOMChange={this.onVehicleNumberChange.bind(this)}
+                    value={this.state.vehicleNumber}
                   />
                 </FormField>
-                <FormField label='Source Office'>
+                <FormField label='Driver Name'>
                   <TextInput
-                    placeHolder='name'
-                    onDOMChange={this.onFieldChange.bind(this, 'source')}
+                    placeHolder='driver name'
+                    onDOMChange={this.onFieldChange.bind(this, 'driverName')}
                   />
                 </FormField>
-                <FormField label='Destination Office'>
+                <FormField label='Driver Mobile'>
                   <TextInput
-                    placeHolder='name'
-                    onDOMChange={this.onFieldChange.bind(this, 'destination')}
+                    placeHolder='+91 '
+                    onDOMChange={this.onFieldChange.bind(this, 'mobile')}
                   />
                 </FormField>
                 <FormField label='Description'>
                   <textarea className='itemTextArea'
-                    placeHolder='name'
+                    placeHolder='description'
                     onChange={this.onFieldChange.bind(this, 'description')}
                   />
                 </FormField>
@@ -283,19 +274,17 @@ class NewItem extends Component {
           <Section pad='small'
             align='center'>
             <Button icon={<Edit />}
-              label='SAVE & PRINT'
+              label='SAVE'
               onClick={this.onSubmitClick.bind(this)}
               disabled={true}
               href='#'
               primary={true} />
           </Section>
         </Article>
-        { this.renderBusinessCardForPrint() }
       </div>
     )
   }
-
 }
 
 const item = state => ({ ...state.item });
-export default connect(item)(NewItem);
+export default connect(item)(NewVehicle);

@@ -160,7 +160,7 @@ class NewVisitor extends Component {
         responsive={true}
         pad={{ horizontal: 'small' }}
       >
-        <Anchor path='/tasks'>
+        <Anchor path='/visitors'>
           <LinkPrevious a11yTitle='Back' />
         </Anchor>
         <Heading margin='none' strong={true}>

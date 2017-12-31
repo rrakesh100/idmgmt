@@ -28,13 +28,13 @@ import List from 'grommet/components/List';
 import ListItem from 'grommet/components/ListItem';
 import Search from 'grommet/components/Search';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
-import Item from 'grommet/components/icons/base/DocumentConfig';
+import Vehicle from 'grommet/components/icons/base/DocumentConfig';
 import Header from 'grommet/components/Header';
 
-import { getItems, getItem } from '../api/items';
+import { getVehicles, getVehicle } from '../api/vehicles';
 
 
-class Items extends Component {
+class Vehicles extends Component {
 
   constructor(props) {
     super(props);
@@ -42,7 +42,7 @@ class Items extends Component {
   }
 
   componentDidMount() {
-    getItems()
+    getVehicles()
       .then((snap) => {
         const data = snap.val();
         console.log('ITEMS=', JSON.stringify(data, null, 2));
@@ -50,69 +50,69 @@ class Items extends Component {
           return;
         }
         this.setState({
-          itemSuggestions: [...Object.keys(data)]
+          vehicleSuggestions: [...Object.keys(data)]
         });
       })
       .catch((err) => {
-        console.error('ITEM FETCH FAILED', err);
+        console.error('VEHICLE FETCH FAILED', err);
       });
   }
 
 
-  onItemSelect(data, isSuggestionSelected) {
+  onVehicleSelect(data, isSuggestionSelected) {
     if (isSuggestionSelected) {
       this.setState({
-        selectedItemId: data.suggestion,
-        itemSearchString: data.suggestion
-      }, this.fetchSearchedItem.bind(this));
+        selectedVehicleId: data.suggestion,
+        vehicleSearchString: data.suggestion
+      }, this.fetchSearchedVehicle.bind(this));
     } else {
       this.setState({
-        selectedItemId: data.target.value,
-        itemSearchString: data.suggestion
-      }, this.fetchSearchedItem.bind(this));
+        selectedVehicleId: data.target.value,
+        vehicleSearchString: data.suggestion
+      }, this.fetchSearchedVehicle.bind(this));
     }
   }
 
   onSearchEntry(e) {
     this.setState({
-      itemSearchString: e.target.value
+      vehicleSearchString: e.target.value
     });
   }
 
-  fetchSearchedItem() {
-    const { selectedItemId } = this.state;
-    if (selectedItemId) {
-      getItem(selectedItemId)
+  fetchSearchedVehicle() {
+    const { selectedVehicleId } = this.state;
+    if (selectedVehicleId) {
+      getVehicle(selectedVehicleId)
         .then((snap) => {
-          const selectedItemData = snap.val();
+          const selectedVehicleData = snap.val();
           this.setState({
-            selectedItemData
+            selectedVehicleData
           });
         })
         .catch((err) => {
-          console.log('UNABLE TO FETCH SEARCHED USER');
+          console.log('UNABLE TO FETCH SEARCHED VEHICLE');
         });
     }
   }
 
-  renderItemSearch() {
+  renderVehicleSearch() {
     return (
-      <Search placeHolder='Search Item'
+      <Search placeHolder='Search Vehicle'
         inline={true}
         iconAlign='start'
         size='small'
-        suggestions={this.state.itemSuggestions}
-        value={this.state.itemSearchString}
-        onSelect={this.onItemSelect.bind(this)}
+        suggestions={this.state.vehicleSuggestions}
+        value={this.state.vehicleSearchString}
+        onSelect={this.onVehicleSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)} />
     )
   }
 
-  renderSearchedItem() {
-    const { selectedItemData, selectedItemId } = this.state;
+  renderSearchedVehicle() {
+    const { selectedVehicleData, selectedVehicleId } = this.state;
 
-    if (selectedItemData) {
-      const { timestamp } = selectedItemData;
+    if (selectedVehicleData) {
+      const { timestamp } = selectedVehicleData;
       const m = Moment(timestamp);
       const timestampStr = m.format('DD/MM/YYYY hh:mm:ss A');
       const timeRelativeStr = m.fromNow();
@@ -122,13 +122,13 @@ class Items extends Component {
           <ListItem justify='between'
             separator='horizontal'>
             <span>
-              <Button icon={<Item />}
-                label={selectedItemId}
-                href={`/item/${selectedItemId}`}
+              <Button icon={<Vehicle />}
+                label={selectedVehicleId}
+                href={`/vehicle/${selectedVehicleId}`}
                 primary={true} />
             </span>
             <span>
-              {selectedItemData.name}
+              {selectedVehicleData.name}
             </span>
             <span>
               entered <span className='emphasis'>{timeRelativeStr}</span> at <strong>{timestampStr}</strong>
@@ -142,7 +142,7 @@ class Items extends Component {
         <ListItem justify='between'
           separator='horizontal'>
           <span>
-            { selectedItemId ? 'No such item in the records!' : null }
+            { selectedVehicleId ? 'No such vehicle in the records!' : null }
           </span>
         </ListItem>
       </List>
@@ -167,7 +167,7 @@ class Items extends Component {
     }
 
     return (
-      <Article primary={true} full={true} className='giveItem'>
+      <Article primary={true} full={true} className='giveVehicle'>
         <Header
           direction='row'
           size='large'
@@ -176,11 +176,11 @@ class Items extends Component {
           responsive={true}
           pad={{ horizontal: 'small' }}
         >
-          <Anchor path='/items'>
+          <Anchor path='/dashboard'>
             <LinkPrevious a11yTitle='Back' />
           </Anchor>
           <Heading margin='none' strong={true}>
-            ITEMS
+            VEHICLES
           </Heading>
         </Header>
         <Section>
@@ -188,17 +188,17 @@ class Items extends Component {
         <Box pad={{ horizontal: 'medium' }}>
           <Paragraph size='large'>
             <Button icon={<AddIcon />}
-              label='Add new Item'
-              href='/new/item' />
+              label='Allow Vehicle Inside'
+              href='/new/vehicle' />
           </Paragraph>
         </Box>
-        { this.renderItemSearch() }
-        { this.renderSearchedItem() }
+        { this.renderVehicleSearch() }
+        { this.renderSearchedVehicle() }
         </Section>
       </Article>
     );
   }
 }
 
-const items = state => ({ ...state.items });
-export default connect(items)(Items);
+const vehicles = state => ({ ...state.vehicles });
+export default connect(vehicles)(Vehicles);
