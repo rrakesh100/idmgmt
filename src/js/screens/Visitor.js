@@ -38,7 +38,8 @@ class Visitor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visitorId: this.props.match.params.id
+      visitorId: this.props.match.params.id,
+      isLoading: true
     };
   }
 
@@ -52,13 +53,15 @@ class Visitor extends Component {
       .then((snap) => {
         const visitorData = snap.val();
         this.setState({
-          visitorData
+          visitorData,
+          isLoading: false
         });
       })
       .catch((err) => {
         console.error(`Unable to fetch data for ${visitorId}`, err);
         this.setState({
-          error: `Unable to fetch data for ${visitorId}`
+          error: `Unable to fetch data for ${visitorId}`,
+          isLoading: false
         });
       });
   }
@@ -218,6 +221,13 @@ class Visitor extends Component {
 
 
   render() {
+
+    if (this.state.isLoading) {
+      return (
+        <Spinning className='spinner' size='xlarge' />
+      );
+    }
+
     const { error } = this.props;
     const { toastMsg } = this.state;
 
@@ -245,7 +255,10 @@ class Visitor extends Component {
     }
 
     const { visitorData, visitorId } = this.state;
-
+    let visitorTitle = `Visitor ${visitorId}`;
+    if (visitorData) {
+      visitorTitle = `"${visitorData.name}" (${visitorId})`
+    }
     return (
       <Article primary={true} full={true} className='visitorDetails'>
         <Header
@@ -260,7 +273,7 @@ class Visitor extends Component {
             <LinkPrevious a11yTitle='Back to Visitors' />
           </Anchor>
           <Heading margin='none' strong={true}>
-            {`Visitor "${visitorData.name}" (${visitorId})`}
+            {visitorTitle}
           </Heading>
         </Header>
         {errorNode}

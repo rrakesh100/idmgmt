@@ -17,6 +17,8 @@ import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
 import Toast from 'grommet/components/Toast';
+import Spinning from 'grommet/components/icons/Spinning';
+
 
 import Section from 'grommet/components/Section';
 import Anchor from 'grommet/components/Anchor';
@@ -46,7 +48,8 @@ class Item extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      itemId: this.props.match.params.id
+      itemId: this.props.match.params.id,
+      isLoading: true
     };
   }
 
@@ -60,13 +63,15 @@ class Item extends Component {
       .then((snap) => {
         const itemData = snap.val();
         this.setState({
-          itemData
+          itemData,
+          isLoading: false
         });
       })
       .catch((err) => {
         console.error(`Unable to fetch data for item ${itemId}`, err);
         this.setState({
-          error: `Unable to fetch data for item ${itemId}`
+          error: `Unable to fetch data for item ${itemId}`,
+          isLoading: false
         });
       });
   }
@@ -230,6 +235,13 @@ class Item extends Component {
   }
 
   render() {
+
+    if (this.state.isLoading) {
+      return (
+        <Spinning className='spinner' size='xlarge' />
+      );
+    }
+
     const { error } = this.props;
     const { toastMsg } = this.state;
 
