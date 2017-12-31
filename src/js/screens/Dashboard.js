@@ -100,14 +100,12 @@ class Dashboard extends Component {
         </Header>
         {errorNode}
         <Box pad='medium'>
-          <Heading tag='h3' strong={true}>
-            Overview
-          </Heading>
           <Paragraph size='large'>
             Check <Anchor path='/visitors' label={'Visitors'} /> and <Anchor path='/items' label={'Items'} /> here.
           </Paragraph>
         </Box>
-        {listNode}
+        <p>Check with Adish on what he wants here</p>
+        <p>One is workers on the map</p>
       </Article>
     );
   }

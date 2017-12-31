@@ -45,7 +45,6 @@ class Vehicles extends Component {
     getVehicles()
       .then((snap) => {
         const data = snap.val();
-        console.log('ITEMS=', JSON.stringify(data, null, 2));
         if (!data) {
           return;
         }
@@ -90,7 +89,7 @@ class Vehicles extends Component {
           });
         })
         .catch((err) => {
-          console.log('UNABLE TO FETCH SEARCHED VEHICLE');
+          console.error('UNABLE TO FETCH SEARCHED VEHICLE', err);
         });
     }
   }

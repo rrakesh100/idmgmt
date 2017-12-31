@@ -98,8 +98,6 @@ class Map extends Component {
   }
 
   onZoneSelect(area, index, e) {
-    console.log('AREA', JSON.stringify(area, null, 2));
-    console.log('index', JSON.stringify(index, null, 2));
     this.setState({
       selectedZone: area.name
     });

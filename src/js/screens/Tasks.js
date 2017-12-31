@@ -41,7 +41,6 @@ class Tasks extends Component {
     getVisitors()
       .then((snap) => {
         const data = snap.val();
-        console.log('VISITORS=', JSON.stringify(data, null, 2));
         if (!data) {
           return;
         }
@@ -99,7 +98,7 @@ class Tasks extends Component {
           });
         })
         .catch((err) => {
-          console.log('UNABLE TO FETCH SEARCHED USER');
+          console.error('UNABLE TO FETCH SEARCHED USER', err);
         });
     }
   }
