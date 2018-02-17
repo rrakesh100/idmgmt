@@ -6,19 +6,28 @@ p.selectedZone {
   font-size: 24px !important;
   text-transform: uppercase;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+
+  span {
+    font-size: 14px;
+    color: orange;
+  }
 }
 
 .zonePicker {
   width: 800px;
   margin: 0 auto;
   position: relative;
+
+  button {
+    margin-top: 40px;
+  }
 }
 
 p.hoveredZone {
   position: absolute;
   z-index: 500;
-  bottom: 0;
-  right: 20;
+  top: 400px;
+  left: 20px;
   font-weight: bolder !important;
   text-transform: lowercase;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
@@ -192,4 +201,16 @@ textarea.itemTextArea {
 
 span.grommetux-form-field__contents {
   color: #8e44ad;
+}
+
+.popTable {
+  background: #bdc3c7;
+  color: white;
+  th {
+    color: #f39c12;
+  }
+  span.relativeTime {
+    font-size: 14px;
+    color: blue;
+  }
 }

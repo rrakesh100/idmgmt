@@ -201,3 +201,7 @@ class Vehicles extends Component {
 
 const vehicles = state => ({ ...state.vehicles });
 export default connect(vehicles)(Vehicles);
+
+// Veriety
+// area
+// agent

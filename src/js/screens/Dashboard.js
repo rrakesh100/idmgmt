@@ -22,6 +22,7 @@ import {
 } from '../actions/dashboard';
 
 import { pageLoaded } from './utils';
+import LiveVisitorZones from './LiveVisitorZones';
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -104,8 +105,10 @@ class Dashboard extends Component {
             Check <Anchor path='/visitors' label={'Visitors'} /> and <Anchor path='/items' label={'Items'} /> here.
           </Paragraph>
         </Box>
+        <LiveVisitorZones />
         <p>Check with Adish on what he wants here</p>
         <p>One is workers on the map</p>
+
       </Article>
     );
   }
@@ -129,3 +132,9 @@ Dashboard.contextTypes = {
 const select = state => ({ ...state.dashboard });
 
 export default connect(select)(Dashboard);
+
+
+
+
+// SHOW ALL non received items in the items pageLoaded
+// In this month,

@@ -15,6 +15,8 @@ const initialState = {
     { path: '/visitors', label: 'VISITORS' },
     { path: '/items', label: 'ITEMS' },
     { path: '/vehicles', label: 'VEHICLES' },
+    { path: '/employees', label: 'EMPLOYEES' },
+
   ]
 };
 

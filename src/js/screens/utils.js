@@ -1,6 +1,6 @@
 import { announcePageLoaded } from 'grommet/utils/Announcer';
 
-const DEFAULT_TITLE = 'MRP Tracking System';
+const DEFAULT_TITLE = 'Lalitha TrackSys';
 
 export function pageLoaded(title) {
   if (document) {

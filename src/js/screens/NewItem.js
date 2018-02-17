@@ -259,6 +259,18 @@ class NewItem extends Component {
                     onDOMChange={this.onFieldChange.bind(this, 'name')}
                   />
                 </FormField>
+                <FormField label='Returnable?'>
+                  <TextInput
+                    placeHolder='True or False'
+                    onDOMChange={this.onFieldChange.bind(this, 'returnable')}
+                  />
+                </FormField>
+                <FormField label='Expected Time'>
+                  <TextInput
+                    placeHolder='expected time'
+                    onDOMChange={this.onFieldChange.bind(this, 'expectedTime')}
+                  />
+                </FormField>
                 <FormField label='Source Office'>
                   <TextInput
                     placeHolder='name'
@@ -299,3 +311,6 @@ class NewItem extends Component {
 
 const item = state => ({ ...state.item });
 export default connect(item)(NewItem);
+
+// send SMS to destination number if returnable item
+// send reminder SMS if time expires

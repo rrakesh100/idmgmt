@@ -12,7 +12,7 @@ import { navResponsive } from '../actions/nav';
 
 import Login from '../screens/Login';
 import Dashboard from '../screens/Dashboard';
-import Tasks from '../screens/Tasks';
+import Visitors from '../screens/Tasks';
 import Visitor from '../screens/Visitor';
 import NewVisitor from '../screens/NewVisitor';
 import Map from '../screens/Map';
@@ -23,6 +23,9 @@ import Vehicle from '../screens/Vehicle';
 import NewVehicle from '../screens/NewVehicle';
 import Vehicles from '../screens/Vehicles';
 import LabourDashboard from '../screens/LDashboard';
+import Employees from '../screens/Employees';
+import Employee from '../screens/Employee';
+import NewEmployee from '../screens/NewEmployee';
 
 import NotFound from '../screens/NotFound';
 
@@ -63,8 +66,11 @@ class Main extends Component {
                   <Route path='/dashboard' component={Dashboard} />
                   <Route path='/login' component={Login} />
                   <Route path='/visitor/:id' component={Visitor} />
-                  <Route path='/visitors' component={Tasks} />
+                  <Route path='/visitors' component={Visitors} />
                   <Route path='/new/visitor' component={NewVisitor} />
+                  <Route path='/employee/:id' component={Employee} />
+                  <Route path='/employees' component={Employees} />
+                  <Route path='/new/employee' component={NewEmployee} />
                   <Route path='/map' component={Map} />
                   <Route path='/item/:id' component={Item} />
                   <Route path='/new/item' component={NewItem} />

@@ -37,7 +37,7 @@ export default class RequestWatcher {
           'WebSocket not available in this browser, will fall back to polling'
         );
       } else {
-        this._initialize();
+        //this._initialize();
       }
     }
   }

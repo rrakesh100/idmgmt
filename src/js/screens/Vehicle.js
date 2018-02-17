@@ -205,7 +205,7 @@ class Vehicle extends Component {
       <div className='historyTable'>
         <Tabs>
           <Tab title='History of Vehicle'>
-            <Table selectable={true}>
+            <Table selectable={true} responsive={true} scrollable={true} >
               <thead>
                 <tr>
                   <th>

@@ -262,6 +262,24 @@ class NewVehicle extends Component {
                     onDOMChange={this.onFieldChange.bind(this, 'mobile')}
                   />
                 </FormField>
+                <FormField label='Veriety'>
+                  <TextInput
+                    placeHolder='rice||paddy '
+                    onDOMChange={this.onFieldChange.bind(this, 'veriety')}
+                  />
+                </FormField>
+                <FormField label='Area'>
+                  <TextInput
+                    placeHolder='VSP '
+                    onDOMChange={this.onFieldChange.bind(this, 'area')}
+                  />
+                </FormField>
+                <FormField label='Agent'>
+                  <TextInput
+                    placeHolder='Anil '
+                    onDOMChange={this.onFieldChange.bind(this, 'agent')}
+                  />
+                </FormField>
                 <FormField label='Description'>
                   <textarea className='itemTextArea'
                     placeHolder='description'

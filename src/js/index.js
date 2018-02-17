@@ -9,15 +9,15 @@ import '../scss/index.scss';
 import App from './App';
 import * as firebase from 'firebase';
 
-const config = {
-  apiKey: process.env.FIREBASE.apiKey,
-  authDomain: process.env.FIREBASE.authDomain,
-  databaseURL: process.env.FIREBASE.databaseURL,
-  projectId: process.env.FIREBASE.projectId,
-  storageBucket: process.env.FIREBASE.storageBucket,
-  messagingSenderId: process.env.FIREBASE.messagingSenderId
-};
-firebase.initializeApp(config);
+// const config = {
+//   apiKey: process.env.FIREBASE.apiKey,
+//   authDomain: process.env.FIREBASE.authDomain,
+//   databaseURL: process.env.FIREBASE.databaseURL,
+//   projectId: process.env.FIREBASE.projectId,
+//   storageBucket: process.env.FIREBASE.storageBucket,
+//   messagingSenderId: process.env.FIREBASE.messagingSenderId
+// };
+// firebase.initializeApp(config);
 
 promisePolyfill();
 

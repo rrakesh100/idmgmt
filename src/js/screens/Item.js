@@ -206,7 +206,7 @@ class Item extends Component {
       <div className='historyTable'>
         <Tabs>
           <Tab title='History of Item'>
-            <Table selectable={true}>
+            <Table selectable={true} responsive={true} scrollable={true}>
               <thead>
                 <tr>
                   <th>
