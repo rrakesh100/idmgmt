@@ -9,6 +9,7 @@ export function saveVehicle(data) {
   const updates = {};
   updates[`vehicles/${data.vehicleId}`] = data;
   updates[`monthwiseVehicles/${dateStr}/${data.vehicleId}`] = data;
+  updates[`insideVehicles/1/${data.vehicleId}`] = data;
   return dbRef.update(updates);
 }
 
@@ -38,5 +39,9 @@ export function updateVehicleStatus(data) {
   updates[`monthwiseVehicles/${dateStr}/${data.vehicleId}/status`] = data.status;
   updates[`monthwiseVehicles/${dateStr}/${data.vehicleId}/statusTimestamp`] = timestamp;
   const dbRef = firebase.database().ref();
+
+
+  const insideVehiclesRef = dbRef.child('insideVehicles/1/' + vehicleId );
+  insideVehiclesRef.remove()
   return dbRef.update(updates);
 }
