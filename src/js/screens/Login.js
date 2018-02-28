@@ -14,6 +14,8 @@ import Logo from 'grommet/components/icons/Grommet';
 import { loginUser } from '../actions/session';
 import { navEnable } from '../actions/nav';
 import { pageLoaded } from './utils';
+import Headline from 'grommet/components/Headline';
+
 
 class Login extends Component {
   constructor() {
@@ -71,21 +73,22 @@ class Login extends Component {
             texture='url(img/splash.png)'
             pad='large'
             justify='center'
-            align='center'
+            align='center' size="full"
           >
-            <Heading tag='h1' strong={true}>MRP Tracking System</Heading>
-            <Paragraph align='center' size='large'>
-              Best way to track visitors, items and vehicles using images.
-            </Paragraph>
+          <Headline strong={true} className="loginHeadline"
+              size='medium'>
+              SpotMe
+          </Headline>
+          <Heading uppercase={false} className="loginHeading">
+              Best way to track the movement of visitors, items and vehicles using images.
+          </Heading>
           </Section>
         </Article>
-
-        <Sidebar justify='between' align='center' pad='none' size='large'>
+        <Sidebar justify='between' align='center' pad='none' size='large' full={true}>
           <span />
           <LoginForm
             align='start'
-            logo={<Logo className='logo' colorIndex='brand' />}
-            title='MRP Tracking System'
+            title='Sign in'
             onSubmit={this._onSubmit}
             errors={[error]}
             usernameType='email'
@@ -98,7 +101,6 @@ class Login extends Component {
             <span className='secondary'>&copy; 2017 MRP Solutions</span>
           </Footer>
         </Sidebar>
-
       </Split>
     );
   }
