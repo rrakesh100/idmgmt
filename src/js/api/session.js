@@ -1,14 +1,14 @@
 import { headers, parseJSON } from './utils';
+import * as firebase from 'firebase';
+import FireBaseTools from './firebase-tools';
 
 export function postSession(email, password) {
-  const options = {
-    headers: headers(),
-    method: 'POST',
-    body: JSON.stringify({ email, password })
-  };
-
-  return fetch('/api/sessions', options)
-    .then(parseJSON);
+let user = {
+  email,
+  password
+}
+ let promise = FireBaseTools.loginUser(user)
+  return promise;
 }
 
 export function deleteSession(session) {

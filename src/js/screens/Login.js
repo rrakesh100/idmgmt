@@ -11,7 +11,7 @@ import Paragraph from 'grommet/components/Paragraph';
 import Footer from 'grommet/components/Footer';
 import Logo from 'grommet/components/icons/Grommet';
 
-import { login } from '../actions/session';
+import { loginUser } from '../actions/session';
 import { navEnable } from '../actions/nav';
 import { pageLoaded } from './utils';
 
@@ -33,9 +33,29 @@ class Login extends Component {
   _onSubmit(fields) {
     const { dispatch } = this.props;
     const { router } = this.context;
-    dispatch(login(fields.username, fields.password, () => (
-      router.history.push('/dashboard')
-    )));
+    loginUser(fields.username, fields.password).then((payload) => {
+              console.log(payload);
+          if(!payload.errorCode) {
+            try {
+              const localStorage = window.localStorage;
+              localStorage.email = payload.email;
+              localStorage.name = payload.displayName;
+              localStorage.token = payload.uid;
+            } catch (e) {
+              alert(
+                'Unable to preserve session, probably due to being in private ' +
+                'browsing mode.'
+              );
+            }
+              router.history.push('/visitors')
+          }else {
+            alert("Invalid username / password");
+          }
+
+    }
+    ).catch((e) => {
+      console.log("error occured while logging in")
+    });
   }
 
   render() {
@@ -68,7 +88,7 @@ class Login extends Component {
             title='MRP Tracking System'
             onSubmit={this._onSubmit}
             errors={[error]}
-            usernameType='text'
+            usernameType='email'
           />
           <Footer
             direction='row'
