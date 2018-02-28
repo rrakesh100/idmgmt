@@ -26,6 +26,8 @@ import Notification from 'grommet/components/Notification';
 
 import Header from 'grommet/components/Header';
 import { saveVehicle } from '../api/vehicles';
+import Toast from 'grommet/components/Toast';
+
 
 
 // TO GET THE coords - use this awesome tool
@@ -107,6 +109,7 @@ class NewVehicle extends Component {
 
   saveAndPrint() {
     const { vehicleId, vehicleNumber, driverName, mobile, screenshot, timestamp, description } = this.state;
+    const localStorage = window.localStorage;
 
     saveVehicle({
       vehicleId,
@@ -121,15 +124,16 @@ class NewVehicle extends Component {
         {
           timestamp,
           status: 'ENTERED',
-          enteredBy: 'ram..',
+          enteredBy: localStorage.email,
           description: 'Allowed vehicle in'
         }
       ]
     })
-      .then(
-        this.setState({
-          toastMsg: `Vehicle ${name} is saved `
-        })
+      .then(()=> {
+        this.setState(Object.assign({} , {
+          toastMsg: `Vehicle ${vehicleNumber} is saved `
+        }));
+      }
       )
       .catch((err) => {
         console.error('VEHICLE SAVE ERR', err);
@@ -189,10 +193,7 @@ class NewVehicle extends Component {
     const { toastMsg } = this.state;
     if (toastMsg) {
       return (
-        <Toast status='ok'
-          onClose={ this.toastClose.bind(this) }>
-          { toastMsg }
-        </Toast>
+        <Toast status='ok'>{toastMsg}</Toast>
       );
     }
     return null;
@@ -211,6 +212,7 @@ class NewVehicle extends Component {
   render() {
     return (
       <div className='newVehicle'>
+        { this.renderToastMsg() }
         { this.renderValidationMsg() }
         <Article primary={true} full={true} className='giveVehicle'>
           <Header
@@ -262,7 +264,7 @@ class NewVehicle extends Component {
                     onDOMChange={this.onFieldChange.bind(this, 'mobile')}
                   />
                 </FormField>
-                <FormField label='Veriety'>
+                <FormField label='Variety'>
                   <TextInput
                     placeHolder='rice||paddy '
                     onDOMChange={this.onFieldChange.bind(this, 'veriety')}
@@ -282,7 +284,6 @@ class NewVehicle extends Component {
                 </FormField>
                 <FormField label='Description'>
                   <textarea className='itemTextArea'
-                    placeHolder='description'
                     onChange={this.onFieldChange.bind(this, 'description')}
                   />
                 </FormField>

@@ -93,6 +93,8 @@ class NewItem extends Component {
   saveAndPrint() {
     const { itemId, name, source, destination, screenshot, timestamp } = this.state;
 
+    const localStorage = window.localStorage;
+
     saveItem({
       itemId,
       name,
@@ -105,7 +107,7 @@ class NewItem extends Component {
         {
           timestamp,
           status: 'ENTERED',
-          enteredBy: 'ram..',
+          enteredBy: localStorage.email,
           description: 'initiated transfer'
         }
       ]
