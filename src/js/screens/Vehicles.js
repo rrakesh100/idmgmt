@@ -179,7 +179,7 @@ class Vehicles extends Component {
             <LinkPrevious a11yTitle='Back' />
           </Anchor>
           <Heading margin='none' strong={true}>
-            VEHICLES
+            Vehicles Tracking system
           </Heading>
         </Header>
         <Section>

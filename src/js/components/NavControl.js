@@ -15,7 +15,7 @@ class NavControl extends Component {
     const { name, nav: { active } } = this.props;
 
     let result;
-    const title = <Title>Lalitha TrackSys</Title>;
+    const title = <Title>Tracking system</Title>;
     if (!active) {
       result = (
         <Button onClick={() => this.props.dispatch(navActivate(true))}>

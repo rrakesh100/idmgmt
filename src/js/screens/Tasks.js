@@ -18,6 +18,10 @@ import Visitor from 'grommet/components/icons/base/DocumentUser';
 import Button from 'grommet/components/Button';
 import Search from 'grommet/components/Search';
 import AddIcon from 'grommet/components/icons/base/Add';
+import Heading from 'grommet/components/Heading';
+import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
+
+
 
 
 import { getMessage } from 'grommet/utils/Intl';
@@ -159,14 +163,21 @@ class Tasks extends Component {
 
     return (
       <Article primary={true} className='visitors'>
-        <Header
-          direction='row'
-          justify='between'
-          size='large'
-          pad={{ horizontal: 'medium', between: 'small' }}
-        >
-          <NavControl name={getMessage(intl, 'Visitors')} />
-        </Header>
+      <Header
+        direction='row'
+        size='large'
+        colorIndex='light-2'
+        align='center'
+        responsive={true}
+        pad={{ horizontal: 'small' }}
+      >
+        <Anchor path='/visitors'>
+          <LinkPrevious a11yTitle='Back' />
+        </Anchor>
+        <Heading margin='none' strong={true}>
+          Visitors Tracking system
+        </Heading>
+      </Header>
         {errorNode}
         <Box pad={{ horizontal: 'medium' }}>
           <Paragraph size='large'>

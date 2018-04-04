@@ -179,7 +179,7 @@ class Items extends Component {
             <LinkPrevious a11yTitle='Back' />
           </Anchor>
           <Heading margin='none' strong={true}>
-            ITEMS
+            Items Tracking system
           </Heading>
         </Header>
         <Section>
