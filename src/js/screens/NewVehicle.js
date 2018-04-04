@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+// import '../scss/vehicles.scss';
 import { connect } from 'react-redux';
 import Webcam from 'react-webcam';
 import Barcode from 'react-barcode';
@@ -14,7 +15,6 @@ import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
 import { Print } from 'react-easy-print';
 
-
 import Section from 'grommet/components/Section';
 import Anchor from 'grommet/components/Anchor';
 import Headline from 'grommet/components/Headline';
@@ -23,12 +23,12 @@ import FormFields from 'grommet/components/FormFields';
 import Edit from 'grommet/components/icons/base/Print';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 import Notification from 'grommet/components/Notification';
-
 import Header from 'grommet/components/Header';
 import { saveVehicle } from '../api/vehicles';
 import Toast from 'grommet/components/Toast';
 
-
+// import { VoiceRecognition } from 'react-voice-components';
+import MicroPhone from 'grommet/components/icons/base/MicroPhone';
 
 // TO GET THE coords - use this awesome tool
 // http://imagemap-generator.dariodomi.de/
@@ -45,8 +45,9 @@ class NewVehicle extends Component {
   }
 
   onFieldChange(fieldName, e) {
+    const givenInput = e.target.value;
     this.setState({
-      [fieldName]: e.target.value
+      [fieldName] : givenInput
     });
   }
 
@@ -131,7 +132,7 @@ class NewVehicle extends Component {
     })
       .then(()=> {
         this.setState(Object.assign({} , {
-          toastMsg: `Vehicle ${vehicleNumber} is saved `
+          toastMsg: `Vehicle ${vehicleNumber} is saved`
         }));
       }
       )
@@ -141,38 +142,43 @@ class NewVehicle extends Component {
           validationMsg: `Unable to save ${name}. Contact admin for assistance`
         });
       });
+      window.location.href = '/vehicles';
+      // var a = document.getElementByClassName('itemTextInput');
+      // for(var i=0;i<a.length;i++) {
+      //   a[i].value='';
+      // }
   }
 
   onSubmitClick() {
     const { vehicleNumber, driverName, mobile, screenshot, description } = this.state;
-    if (!vehicleNumber) {
-      this.setState({
-        validationMsg: 'Vehicle Number is missing'
-      });
-      return;
-    }
-
-    if (vehicleNumber.length !== 10) {
-      this.setState({
-        validationMsg: 'Vehicle Number has to be 10 chars length! ex. AP32MN0034'
-      });
-      return;
-    }
-
-
-    if (!screenshot) {
-      this.setState({
-        validationMsg: 'IMAGE is not taken. Click on video to take photo!'
-      });
-      return;
-    }
-
-    if (!driverName) {
-      this.setState({
-        validationMsg: 'Driver name is missing'
-      });
-      return;
-    }
+    // if (!vehicleNumber) {
+    //   this.setState({
+    //     validationMsg: 'Vehicle Number is missing'
+    //   });
+    //   return;
+    // }
+    //
+    // if (vehicleNumber.length !== 10) {
+    //   this.setState({
+    //     validationMsg: 'Vehicle Number has to be 10 chars length! ex. AP32MN0034'
+    //   });
+    //   return;
+    // }
+    //
+    //
+    // if (!screenshot) {
+    //   this.setState({
+    //     validationMsg: 'IMAGE is not taken. Click on video to take photo!'
+    //   });
+    //   return;
+    // }
+    //
+    // if (!driverName) {
+    //   this.setState({
+    //     validationMsg: 'Driver name is missing'
+    //   });
+    //   return;
+    // }
 
     // if (!destination) {
     //   this.setState({
@@ -187,6 +193,7 @@ class NewVehicle extends Component {
       timestampStr,
       validationMsg: ''
     }, this.saveAndPrint.bind(this));
+
   }
 
   renderToastMsg() {
@@ -243,46 +250,56 @@ class NewVehicle extends Component {
             justify='center'
             align='center'>
             <Barcode value={this.state.vehicleId} />
+            <Button icon={<MicroPhone />}
+            label='speak'
+            />
+            <Button
+            label='stop' />
             <Form>
-              <FormFields>
-                <FormField label='Vehicle Number'>
+              <FormFields  style={{width:'150%',marginLeft:'-100px'}}>
+                <FormField label='Vehicle Number' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='AP32MN1234'
                     onDOMChange={this.onVehicleNumberChange.bind(this)}
                     value={this.state.vehicleNumber}
                   />
                 </FormField>
-                <FormField label='Driver Name'>
+                <FormField label='Driver Name' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='driver name'
+                    className='itemTextInput'
                     onDOMChange={this.onFieldChange.bind(this, 'driverName')}
                   />
                 </FormField>
-                <FormField label='Driver Mobile'>
+                <FormField label='Driver Mobile' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='+91 '
+                    className='itemTextInput'
                     onDOMChange={this.onFieldChange.bind(this, 'mobile')}
                   />
                 </FormField>
-                <FormField label='Variety'>
+                <FormField label='Variety' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='rice||paddy '
+                    className='itemTextInput'
                     onDOMChange={this.onFieldChange.bind(this, 'veriety')}
                   />
                 </FormField>
-                <FormField label='Area'>
+                <FormField label='Area' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='VSP '
+                    className='itemTextInput'
                     onDOMChange={this.onFieldChange.bind(this, 'area')}
                   />
                 </FormField>
-                <FormField label='Agent'>
+                <FormField label='Agent' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='Anil '
+                    className='itemTextInput'
                     onDOMChange={this.onFieldChange.bind(this, 'agent')}
                   />
                 </FormField>
-                <FormField label='Description'>
+                <FormField label='Description' style={{marginBottom:'10px'}}>
                   <textarea className='itemTextArea'
                     onChange={this.onFieldChange.bind(this, 'description')}
                   />
@@ -294,6 +311,7 @@ class NewVehicle extends Component {
             align='center'>
             <Button icon={<Edit />}
               label='SAVE'
+
               onClick={this.onSubmitClick.bind(this)}
               disabled={true}
               href='#'

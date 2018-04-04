@@ -123,6 +123,7 @@ class NewItem extends Component {
           validationMsg: `Unable to save ${name}. Contact admin for assistance`
         });
       });
+      window.location.href='/items';
   }
 
   onSubmitClick() {
@@ -254,38 +255,38 @@ class NewItem extends Component {
             align='center'>
             <Barcode value={this.state.itemId} />
             <Form>
-              <FormFields>
-                <FormField label='Item Name'>
+              <FormFields  style={{width:'150%',marginLeft:'-100px'}}>
+                <FormField label='Item Name' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='name'
                     onDOMChange={this.onFieldChange.bind(this, 'name')}
                   />
                 </FormField>
-                <FormField label='Returnable?'>
+                <FormField label='Returnable?' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='True or False'
                     onDOMChange={this.onFieldChange.bind(this, 'returnable')}
                   />
                 </FormField>
-                <FormField label='Expected Time'>
+                <FormField label='Expected Time' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='expected time'
                     onDOMChange={this.onFieldChange.bind(this, 'expectedTime')}
                   />
                 </FormField>
-                <FormField label='Source Office'>
+                <FormField label='Source Office' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='name'
                     onDOMChange={this.onFieldChange.bind(this, 'source')}
                   />
                 </FormField>
-                <FormField label='Destination Office'>
+                <FormField label='Destination Office' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='name'
                     onDOMChange={this.onFieldChange.bind(this, 'destination')}
                   />
                 </FormField>
-                <FormField label='Description'>
+                <FormField label='Description' style={{marginBottom:'10px'}}>
                   <textarea className='itemTextArea'
                     placeHolder='name'
                     onChange={this.onFieldChange.bind(this, 'description')}
