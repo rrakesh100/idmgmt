@@ -34,7 +34,7 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 
 import VehicleActions from './VehicleActions';
-import { getVehicle, updateVehicleStatus } from '../api/vehicles';
+import { getVehicle, updateVehicleStatus, getUserInfo } from '../api/vehicles';
 import { getTimeInterval } from '../api/utils';
 
 
@@ -53,9 +53,16 @@ class Vehicle extends Component {
   }
 
   componentDidMount() {
+    this.getUserInfo(window.localStorage.token);
     this.getVehicleData();
   }
 
+  getUserInfo(token) {
+      getUserInfo(token).then((snap) => {
+          const userInfo = snap.val();
+          window.localStorage.unit=userInfo['unit']
+      })
+  }
   getVehicleData() {
     const { vehicleId } = this.state;
     getVehicle(this.state.vehicleId)

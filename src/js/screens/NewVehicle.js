@@ -24,7 +24,7 @@ import Edit from 'grommet/components/icons/base/Print';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 import Notification from 'grommet/components/Notification';
 import Header from 'grommet/components/Header';
-import { saveVehicle } from '../api/vehicles';
+import { saveVehicle, getUserInfo } from '../api/vehicles';
 import Toast from 'grommet/components/Toast';
 
 // import { VoiceRecognition } from 'react-voice-components';
@@ -40,6 +40,17 @@ class NewVehicle extends Component {
       showLiveCameraFeed: true,
       vehicleId: Rand.generateBase30(8)
     };
+  }
+
+  componentDidMount(){
+    this.getUserInfo(window.localStorage.token);
+  }
+
+  getUserInfo(token) {
+      getUserInfo(token).then((snap) => {
+          const userInfo = snap.val();
+          window.localStorage.unit=userInfo['unit'];
+      })
   }
 
   onFieldChange(fieldName, e) {

@@ -5,12 +5,19 @@ export function saveVehicle(data) {
   const date = new Date();
   const dateStr = moment(date).format('MM-YYYY');
   const dbRef = firebase.database().ref();
+  const unitId = window.localStorage.unit || 'all';
 
   const updates = {};
   updates[`vehicles/${data.vehicleId}`] = data;
   updates[`monthwiseVehicles/${dateStr}/${data.vehicleId}`] = data;
-  updates[`insideVehicles/1/${data.vehicleId}`] = data;
+  updates[`insideVehicles/${unitId}/${data.vehicleId}`] = data;
   return dbRef.update(updates);
+}
+
+export function getUserInfo(token) {
+  const userInfoPath=`userInfo/${token}`;
+  const dbRef = firebase.database().ref(userInfoPath);
+  return dbRef.once('value');
 }
 
 export function getVehicle(vehicleId) {
@@ -39,9 +46,9 @@ export function updateVehicleStatus(data) {
   updates[`monthwiseVehicles/${dateStr}/${data.vehicleId}/status`] = data.status;
   updates[`monthwiseVehicles/${dateStr}/${data.vehicleId}/statusTimestamp`] = timestamp;
   const dbRef = firebase.database().ref();
+  const unitId = window.localStorage.unit || 'all';
 
-
-  const insideVehiclesRef = dbRef.child('insideVehicles/1/' + vehicleId );
+  const insideVehiclesRef = dbRef.child('insideVehicles/${unitId}/' + vehicleId );
   insideVehiclesRef.remove()
   return dbRef.update(updates);
 }
