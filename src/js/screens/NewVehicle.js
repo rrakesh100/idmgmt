@@ -28,8 +28,6 @@ import { saveVehicle } from '../api/vehicles';
 import Toast from 'grommet/components/Toast';
 
 // import { VoiceRecognition } from 'react-voice-components';
-import MicroPhone from 'grommet/components/icons/base/MicroPhone';
-
 // TO GET THE coords - use this awesome tool
 // http://imagemap-generator.dariodomi.de/
 
@@ -125,7 +123,7 @@ class NewVehicle extends Component {
         {
           timestamp,
           status: 'ENTERED',
-          enteredBy: localStorage.email,
+          enteredBy: window.localStorage.email,
           description: 'Allowed vehicle in'
         }
       ]
@@ -133,7 +131,7 @@ class NewVehicle extends Component {
       .then(()=> {
         this.setState(Object.assign({} , {
           toastMsg: `Vehicle ${vehicleNumber} is saved`
-        }));
+      }));
       }
       )
       .catch((err) => {
@@ -142,7 +140,6 @@ class NewVehicle extends Component {
           validationMsg: `Unable to save ${name}. Contact admin for assistance`
         });
       });
-      window.location.href = '/vehicles';
       // var a = document.getElementByClassName('itemTextInput');
       // for(var i=0;i<a.length;i++) {
       //   a[i].value='';
@@ -151,34 +148,34 @@ class NewVehicle extends Component {
 
   onSubmitClick() {
     const { vehicleNumber, driverName, mobile, screenshot, description } = this.state;
-    // if (!vehicleNumber) {
-    //   this.setState({
-    //     validationMsg: 'Vehicle Number is missing'
-    //   });
-    //   return;
-    // }
-    //
-    // if (vehicleNumber.length !== 10) {
-    //   this.setState({
-    //     validationMsg: 'Vehicle Number has to be 10 chars length! ex. AP32MN0034'
-    //   });
-    //   return;
-    // }
-    //
-    //
-    // if (!screenshot) {
-    //   this.setState({
-    //     validationMsg: 'IMAGE is not taken. Click on video to take photo!'
-    //   });
-    //   return;
-    // }
-    //
-    // if (!driverName) {
-    //   this.setState({
-    //     validationMsg: 'Driver name is missing'
-    //   });
-    //   return;
-    // }
+    if (!vehicleNumber) {
+      this.setState({
+        validationMsg: 'Vehicle Number is missing'
+      });
+      return;
+    }
+
+    if (vehicleNumber.length !== 10) {
+      this.setState({
+        validationMsg: 'Vehicle Number has to be 10 chars length! ex. AP32MN0034'
+      });
+      return;
+    }
+
+
+    if (!screenshot) {
+      this.setState({
+        validationMsg: 'IMAGE is not taken. Click on video to take photo!'
+      });
+      return;
+    }
+
+    if (!driverName) {
+      this.setState({
+        validationMsg: 'Driver name is missing'
+      });
+      return;
+    }
 
     // if (!destination) {
     //   this.setState({
@@ -245,18 +242,13 @@ class NewVehicle extends Component {
                 {this.renderCamera() }
               </Box>
             </Headline>
-          </Section>
-          <Section pad='large'
-            justify='center'
-            align='center'>
-            <Barcode value={this.state.vehicleId} />
-            <Button icon={<MicroPhone />}
-            label='speak'
-            />
-            <Button
-            label='stop' />
+            <div className='box footer'>
+              <Barcode value={this.state.vehicleId}
+                height={40}
+              />
+            </div>
             <Form>
-              <FormFields  style={{width:'150%',marginLeft:'-100px'}}>
+              <FormFields  style={{width:'150%',marginLeft:'-100px',marginTop:'20px'}}>
                 <FormField label='Vehicle Number' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='AP32MN1234'

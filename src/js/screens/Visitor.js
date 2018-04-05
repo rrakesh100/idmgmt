@@ -120,6 +120,7 @@ class Visitor extends Component {
     updateVisitorStatus({ ...updateData, timestamp,
       entryTimestamp: visitorData.timestamp,
       selectedZone: visitorData.selectedZone,
+      enteredBy: window.localStorage.email,
       visitorId })
       .then(() => {
         this.setState({

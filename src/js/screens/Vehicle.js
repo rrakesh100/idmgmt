@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+  import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Webcam from 'react-webcam';
 import Barcode from 'react-barcode';
@@ -135,6 +135,7 @@ class Vehicle extends Component {
     const vehicleNumber = vehicleData.vehicleNumber;
     updateVehicleStatus({ ...updateData, timestamp,
       entryTimestamp: vehicleData.timestamp,
+      enteredBy: window.localStorage.email,
       vehicleId })
       .then(() => {
         this.setState({

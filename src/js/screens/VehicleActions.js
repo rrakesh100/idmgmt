@@ -58,7 +58,7 @@ class VehicleActions extends Component {
       selectedAction: 'ACCEPTED',
       showLiveCameraFeed: true,
       description: '',
-      screenshotNow: ''
+      screenshotNow
     });
   }
 
