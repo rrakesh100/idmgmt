@@ -145,6 +145,7 @@ class Visitor extends Component {
       status: 'ASSIGNED',
       selectedZone,
       name: visitorData.name,
+      enteredBy: window.localStorage.email,
       description: `assigned to ${selectedZone.name}`
     };
     updateAssignedZone(zoneData)
@@ -233,7 +234,7 @@ class Visitor extends Component {
                     Notes
                   </th>
                   <th>
-                    entry by
+                    Entry by
                   </th>
                 </tr>
               </thead>

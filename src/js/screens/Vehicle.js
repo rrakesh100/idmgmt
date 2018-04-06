@@ -60,7 +60,7 @@ class Vehicle extends Component {
   getUserInfo(token) {
       getUserInfo(token).then((snap) => {
           const userInfo = snap.val();
-          window.localStorage.unit=userInfo['unit']
+          window.localStorage.unit=userInfo['unit'];
       })
   }
   getVehicleData() {
@@ -226,7 +226,7 @@ class Vehicle extends Component {
                     Notes
                   </th>
                   <th>
-                    entry by
+                    Entry by
                   </th>
                 </tr>
               </thead>

@@ -232,7 +232,7 @@ class Employee extends Component {
                     Notes
                   </th>
                   <th>
-                    entry by
+                    Entry by
                   </th>
                 </tr>
               </thead>

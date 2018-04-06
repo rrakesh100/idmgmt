@@ -53,7 +53,7 @@ class ItemActions extends Component {
 
   handleSubmit() {
     const { selectedAction, description, screenshotNow } = this.state;
-    this.props.onSubmit({ status: selectedAction, description, screenshotNow });
+    this.props.onSubmit({ status: selectedAction, description, screenshotNow, enteredBy: window.localStorage.email });
     this.setState({
       selectedAction: 'ACCEPTED',
       showLiveCameraFeed: true,
