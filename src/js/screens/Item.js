@@ -134,6 +134,7 @@ class Item extends Component {
     const { itemData, itemId } = this.state;
     const timestamp = new Date();
     const name = itemData.name;
+    updateData.description = updateData.description || 'Not Available';
     updateItemStatus({ ...updateData, timestamp,
       entryTimestamp: itemData.timestamp,
       itemId })

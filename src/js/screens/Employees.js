@@ -166,7 +166,7 @@ class Employees extends Component {
         <Box pad={{ horizontal: 'medium' }}>
           <Paragraph size='large'>
             <Button icon={<AddIcon />}
-              label='Add new Employee'
+              label='ADD'
               href='/new/employee' />
           </Paragraph>
         </Box>

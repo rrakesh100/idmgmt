@@ -117,6 +117,7 @@ class Visitor extends Component {
   handleVisitorUpdate(updateData) {
     const { visitorData, visitorId, selectedZone } = this.state;
     const timestamp = new Date();
+    updateData.description = updateData.description || 'Not Available';
     updateVisitorStatus({ ...updateData, timestamp,
       entryTimestamp: visitorData.timestamp,
       selectedZone: visitorData.selectedZone,

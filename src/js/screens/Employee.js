@@ -117,6 +117,7 @@ class Employee extends Component {
   handleEmployeeUpdate(updateData) {
     const { employeeData, employeeId, selectedZone } = this.state;
     const timestamp = new Date();
+    updateData.description = updateData.description || 'Not Available';
     updateEmployeeStatus({ ...updateData, timestamp,
       entryTimestamp: employeeData.timestamp,
       selectedZone: employeeData.selectedZone,

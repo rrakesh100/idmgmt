@@ -140,6 +140,7 @@ class Vehicle extends Component {
     const { vehicleData, vehicleId } = this.state;
     const timestamp = new Date();
     const vehicleNumber = vehicleData.vehicleNumber;
+    updateData.description = updateData.description || 'Not Available';
     updateVehicleStatus({ ...updateData, timestamp,
       entryTimestamp: vehicleData.timestamp,
       enteredBy: window.localStorage.email,
