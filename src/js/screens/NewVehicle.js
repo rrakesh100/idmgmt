@@ -135,6 +135,7 @@ class NewVehicle extends Component {
           timestamp,
           status: 'ENTERED',
           enteredBy: window.localStorage.email,
+          screenshotNow:screenshot,
           description: 'Allowed vehicle in'
         }
       ]

@@ -107,6 +107,7 @@ class NewItem extends Component {
         {
           timestamp,
           status: 'ENTERED',
+          screenshotNow:screenshot,
           enteredBy: localStorage.email,
           description: 'initiated transfer'
         }

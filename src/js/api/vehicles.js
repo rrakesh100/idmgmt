@@ -49,6 +49,6 @@ export function updateVehicleStatus(data) {
   const unitId = window.localStorage.unit || 'all';
 
   const insideVehiclesRef = dbRef.child('insideVehicles/'+ unitId + '/' + vehicleId );
-  insideVehiclesRef.remove()
+  updates[`insideVehicles/${unitId}/${vehicleId}`] = data;
   return dbRef.update(updates);
 }

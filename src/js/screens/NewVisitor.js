@@ -34,7 +34,13 @@ class NewVisitor extends Component {
     super(props);
     this.state = {
       showLiveCameraFeed: true,
-      visitorId: Rand.generateBase30(8)
+      visitorId: Rand.generateBase30(8),
+      whomToMeet : 'Not Available',
+      department : 'Not Available',
+      purpose : 'Not Available',
+      company : 'Not Available',
+      mobile : 'Not Available' ,
+      info :'Not Available'
     };
   }
 
@@ -68,7 +74,8 @@ class NewVisitor extends Component {
   }
 
   saveAndPrint() {
-    const { visitorId, name, info, screenshot, timestamp } = this.state;
+    const { visitorId, name, info, screenshot, timestamp,
+      whomToMeet, department, purpose, company, mobile  } = this.state;
 
     saveVisitor({
       visitorId,
@@ -76,6 +83,11 @@ class NewVisitor extends Component {
       info,
       screenshot,
       timestamp,
+      whomToMeet,
+      department,
+      purpose,
+      company,
+      mobile,
       status: 'ENTERED',
       history: [
         {
@@ -171,9 +183,9 @@ class NewVisitor extends Component {
   }
 
   renderBusinessCardForPrint() {
-    const { name = '', info = '', timestampStr } = this.state;
-    const printName = name.substring(0, 16);
-    const printInfo = info.substring(0, 20);
+    const { name = '', whomToMeet = '', timestampStr } = this.state;
+    const printName = 'Visitor Name: ' + name.substring(0, 16);
+    const printInfo = 'To meet: '+ whomToMeet.substring(0, 20);
 
     return (
       <Print name='bizCard' exclusive>
@@ -225,6 +237,8 @@ class NewVisitor extends Component {
   }
 
   render() {
+
+
     return (
       <div className='newVisitor'>
         { this.renderValidationMsg() }
@@ -233,7 +247,7 @@ class NewVisitor extends Component {
           primary={true} full={true}>
           { this.renderHeader('REGISTER VISITOR')}
 
-          <Section pad='small'
+          <Section pad='large'
             justify='center'
             className='fields'
             align='center'>
@@ -245,11 +259,42 @@ class NewVisitor extends Component {
                 <Box align='center'>
                   <Clock className='visitorClock' format={'DD/MM/YYYY hh:mm:ss A'} ticking={true} />
 
-                  <Form>
+                  <Form className='newVisitorFields'>
                     <FormField label='Name' strong={true} size='large'>
                       <TextInput
                         placeHolder='name'
                         onDOMChange={this.onFieldChange.bind(this, 'name')}
+                      />
+                    </FormField>
+                    <FormField label='Whom to meet' strong={true}>
+                      <TextInput
+                        placeHolder='Whome to meet'
+                        onDOMChange={this.onFieldChange.bind(this, 'whomToMeet')}
+                      />
+                    </FormField>
+                    <FormField label='Department' strong={true}>
+                      <TextInput
+                        placeHolder='Power plant/ Accounts/ Store'
+                        onDOMChange={this.onFieldChange.bind(this, 'department')}
+                      />
+                    </FormField>
+                    <FormField label='Purpose of Visit' strong={true}>
+                      <TextInput
+                        placeHolder='Purpose..'
+                        onDOMChange={this.onFieldChange.bind(this, 'purpose')}
+                      />
+                    </FormField>
+                    <FormField label='Mobile #' strong={true}>
+                      <TextInput
+                        placeHolder='Mobile number'
+                        onDOMChange={this.onFieldChange.bind(this, 'mobile')}
+                      />
+                    </FormField>
+
+                    <FormField label='Company' strong={true}>
+                      <TextInput
+                        placeHolder='Coming from..'
+                        onDOMChange={this.onFieldChange.bind(this, 'company')}
                       />
                     </FormField>
                     <FormField label='Info' strong={true}>

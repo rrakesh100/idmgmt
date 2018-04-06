@@ -53,7 +53,7 @@ class EmployeeActions extends Component {
 
   handleSubmit() {
     const { selectedAction, description } = this.state;
-    this.props.onSubmit({ status: selectedAction, description });
+    this.props.onSubmit({ status: selectedAction, description, enteredBy : window.localStorage.email });
     this.setState({
       selectedAction: 'RELEASE FOR DAY',
       description: ''

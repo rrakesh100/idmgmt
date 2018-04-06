@@ -81,7 +81,7 @@ class NewEmployee extends Component {
         {
           timestamp,
           status: 'ENTERED',
-          enteredBy: 'ram',
+          enteredBy: window.localStorage.email,
           description: 'nothing'
         }
       ]

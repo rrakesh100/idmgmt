@@ -144,6 +144,7 @@ class Employee extends Component {
       status: 'ASSIGNED',
       selectedZone,
       name: employeeData.name,
+      enteredBy : window.localStorage.email,
       description: `assigned to ${selectedZone.name}`
     };
     updateAssignedZone(zoneData)
