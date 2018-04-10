@@ -4,6 +4,10 @@ import Webcam from 'react-webcam';
 import Search from 'grommet/components/Search';
 import Box from 'grommet/components/Box';
 import Image from 'grommet/components/Image';
+import Button from 'grommet/components/Button';
+import axios from 'axios';
+import $ from 'jquery';
+
 
 class Attendance extends Component {
   constructor(props) {
@@ -11,6 +15,7 @@ class Attendance extends Component {
     this.state = {
       showLiveCameraFeed : true
     };
+    this.onCompareClick.bind(this);
   }
 
   componentDidMount() {
@@ -115,6 +120,39 @@ class Attendance extends Component {
     );
   }
 
+  onCompareClick(){
+    let payload = {
+      api_key : "Jmq3ihDPUxpPgn2H9ahNHCY1X6wyP0vz",
+      api_secret : "6oNHVC7SGToTPIVapWFg2HVIaf1bSi_F",
+      image_base64_2  : this.state.screenshot,
+      image_base64_1  : this.state.selectedEmployeeData.screenshot
+    };
+
+    // curl -X POST "https://api-us.faceplusplus.com/facepp/v3/compare"
+    // -F "api_key=Jmq3ihDPUxpPgn2H9ahNHCY1X6wyP0vz" -F
+    // "api_secret=6ooTPIVapWFg2HVIaf1bSi_F"
+    // -F "image_file1=@rak1.jpeg"
+    // -F "image_file2=@rak2.jpeg"
+     // axios.post('https://api-us.faceplusplus.com/facepp/v3/compare',  {...payload}).then(data =>
+     //  console.log(data)).catch(e => console.log(e))
+
+      $.ajax({
+        type: "POST",
+       url:'https://api-us.faceplusplus.com/facepp/v3/compare',
+       crossDomain: true,
+       dataType: 'json',
+       data : payload,
+       success: (data) => {
+        console.log(data);
+        return data;
+      },
+      error: function (responseData, textStatus, errorThrown) {
+        alert('POST failed.');
+    }
+  })
+
+  }
+
 renderSearchedEmployee() {
   const { selectedEmployeeData } = this.state;
 
@@ -135,8 +173,14 @@ renderSearchedEmployee() {
       <div>
       { this.renderEmployeeSearch() }
       { this.renderSearchedEmployee() }
-      </div>
-    );
+
+        <Button
+          label='COMPARE'
+          onClick={this.onCompareClick.bind(this)}
+          href='#'
+          primary={true} />
+              </div>
+            );
   }
 }
 
