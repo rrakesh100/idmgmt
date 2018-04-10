@@ -26,7 +26,7 @@ import LabourDashboard from '../screens/LDashboard';
 import Employees from '../screens/Employees';
 import Employee from '../screens/Employee';
 import NewEmployee from '../screens/NewEmployee';
-
+import Attendance from '../screens/Attendance';
 import NotFound from '../screens/NotFound';
 
 class Main extends Component {
@@ -63,6 +63,7 @@ class Main extends Component {
                 {nav}
                 <Switch>
                   <Route exact={true} path='/' component={Login} />
+                  <Route path='/attendance' component={Attendance} />
                   <Route path='/dashboard' component={Dashboard} />
                   <Route path='/login' component={Login} />
                   <Route path='/visitor/:id' component={Visitor} />
