@@ -147,7 +147,7 @@ class Attendance extends Component {
         return data;
       },
       error: function (responseData, textStatus, errorThrown) {
-        alert('POST failed.');
+      console.log(responseData);
     }
   })
 
