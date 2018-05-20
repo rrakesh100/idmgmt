@@ -6,8 +6,6 @@ import Rand from 'random-key';
 import Clock from 'react-live-clock';
 import Moment from 'moment';
 import { Print } from 'react-easy-print';
-
-
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Form from 'grommet/components/Form';
@@ -24,8 +22,7 @@ import Heading from 'grommet/components/Heading';
 import Button from 'grommet/components/Button';
 import Edit from 'grommet/components/icons/base/Print';
 import Toast from 'grommet/components/Toast';
-
-
+import { uploadEmployeeImage } from '../api/employees';
 import { saveEmployee } from '../api/employees';
 
 
@@ -70,33 +67,40 @@ class NewEmployee extends Component {
   saveAndPrint() {
     const { employeeId, name, info, screenshot, timestamp } = this.state;
 
-    saveEmployee({
-      employeeId,
-      name,
-      info,
-      screenshot,
-      timestamp,
-      status: 'ENTERED',
-      history: [
-        {
-          timestamp,
-          status: 'ENTERED',
-          enteredBy: window.localStorage.email,
-          description: 'nothing'
-        }
-      ]
-    })
-      .then(
-        this.setState({
-          toastMsg: `User ${name} is saved `
-        }, () => { window.print(); })
-      )
-      .catch((err) => {
-        console.error('EMPLOYEE SAVE ERR', err);
-        this.setState({
-          validationMsg: `Unable to save ${name}. Contact admin for assistance`
-        });
-      });
+    let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    uploadEmployeeImage(imgFile, employeeId).then((snapshot) => {
+         console.log(snapshot.downloadURL);
+         let screenshot = snapshot.downloadURL;
+         saveEmployee({
+           employeeId,
+           name,
+           info,
+           screenshot,
+           timestamp,
+           status: 'ENTERED',
+           history: [
+             {
+               timestamp,
+               status: 'ENTERED',
+               enteredBy: window.localStorage.email,
+               description: 'nothing'
+             }
+           ]
+         })
+           .then(
+             this.setState({
+               toastMsg: `User ${name} is saved `
+             }, () => { window.print(); })
+           )
+           .catch((err) => {
+             console.error('EMPLOYEE SAVE ERR', err);
+             this.setState({
+               validationMsg: `Unable to save ${name}. Contact admin for assistance`
+             });
+           })
+       }).catch((e) => console.log(e))
+
+
   }
 
   onSubmitClick() {

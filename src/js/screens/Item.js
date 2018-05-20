@@ -35,7 +35,7 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 
 import ItemActions from './ItemActions';
-import { getItem, updateItemStatus } from '../api/items';
+import { getItem, updateItemStatus, uploadItemImage } from '../api/items';
 import { getTimeInterval } from '../api/utils';
 
 
@@ -135,6 +135,11 @@ class Item extends Component {
     const timestamp = new Date();
     const name = itemData.name;
     updateData.description = updateData.description || 'Not Available';
+
+    let imgFile = updateData.screenshotNow.replace(/^data:image\/\w+;base64,/, "");
+    uploadItemImage(imgFile, itemId).then((snapshot) => {
+      let screenshot = snapshot.downloadURL;
+      updateData.screenshotNow = screenshot;
     updateItemStatus({ ...updateData, timestamp,
       entryTimestamp: itemData.timestamp,
       itemId })
@@ -148,7 +153,8 @@ class Item extends Component {
         this.setState({
           error: `Unable to update ${name} status`
         });
-      });
+      })
+    }).catch((e) => console.log(e));
   }
 
 

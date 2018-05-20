@@ -52,3 +52,11 @@ export function updateVehicleStatus(data) {
   updates[`insideVehicles/${unitId}/${vehicleId}`] = data;
   return dbRef.update(updates);
 }
+
+export function uploadVehicleImage(file, vehicleId) {
+  const storageRef = firebase.storage().ref();
+  let epochTime = new Date().getTime();
+  const path = 'Vehicles/'+vehicleId+'/'+epochTime+'.jpeg';
+  const imgRef = storageRef.child(path);
+  return  imgRef.putString(file, 'base64')
+}

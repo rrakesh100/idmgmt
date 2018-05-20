@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Moment from 'moment';
-
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Header from 'grommet/components/Header';
@@ -13,13 +12,9 @@ import Employee from 'grommet/components/icons/base/DocumentUser';
 import Button from 'grommet/components/Button';
 import Search from 'grommet/components/Search';
 import AddIcon from 'grommet/components/icons/base/Add';
-
-
 import { getMessage } from 'grommet/utils/Intl';
 import { getEmployees, getEmployee } from '../api/employees';
-
 import NavControl from '../components/NavControl';
-
 import { pageLoaded } from './utils';
 
 class Employees extends Component {

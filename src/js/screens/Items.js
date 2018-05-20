@@ -45,6 +45,7 @@ class Items extends Component {
     getItems()
       .then((snap) => {
         const data = snap.val();
+        console.log(data)
         if (!data) {
           return;
         }
@@ -149,7 +150,7 @@ class Items extends Component {
   }
 
   render() {
-
+    console.log(this.state)
     const { error, tasks } = this.props;
     const { intl } = this.context;
 

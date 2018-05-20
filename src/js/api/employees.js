@@ -73,3 +73,11 @@ export function updateAssignedZone(data) {
   const dbRef = firebase.database().ref();
   return dbRef.update(updates);
 }
+
+export function uploadEmployeeImage(file, employeeId) {
+  const storageRef = firebase.storage().ref();
+  let epochTime = new Date().getTime();
+  const path = 'Employees/'+employeeId+'/'+epochTime+'.jpeg';
+  const imgRef = storageRef.child(path);
+  return  imgRef.putString(file, 'base64')
+}

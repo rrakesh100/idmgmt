@@ -25,7 +25,7 @@ import Button from 'grommet/components/Button';
 import Map from './Map';
 import VisitorActions from './VisitorActions';
 
-import { getVisitor, updateVisitorStatus, updateAssignedZone, removeAssignedWorker } from '../api/visitors';
+import { getVisitor, updateVisitorStatus, removeAssignedWorker } from '../api/visitors';
 import { getTimeInterval } from '../api/utils'
 
 import {
@@ -136,38 +136,8 @@ class Visitor extends Component {
       });
   }
 
-  updateAssignedZone() {
-    const { selectedZone, visitorId, visitorData } = this.state;
-    const timestamp = new Date();
-    const zoneData = {
-      visitorId,
-      entryTimestamp: visitorData.timestamp,
-      timestamp,
-      status: 'ASSIGNED',
-      selectedZone,
-      name: visitorData.name,
-      enteredBy: window.localStorage.email,
-      description: `assigned to ${selectedZone.name}`
-    };
-    updateAssignedZone(zoneData)
-      .then(() => {
-        this.setState({
-          toastMsg: `Success! Assigned ${visitorData.name} to "${selectedZone.name}"`
-        }, this.getVisitorData.bind(this));
-      })
-      .catch((err) => {
-        console.error(`Unable to assign ${visitorData.name} to "${selectedZone.name}"!`, err);
-        this.setState({
-          error: `Unable to assign ${visitorData.name} to ${selectedZone.name}!`
-        });
-      });
-  }
 
-  onAssignZone(selectedZone) {
-    this.setState({
-      selectedZone
-    }, this.updateAssignedZone.bind(this));
-  }
+
 
   renderActions() {
     if (!this.state.visitorData) {
@@ -177,9 +147,6 @@ class Visitor extends Component {
     if (status !== 'RELEASE FOR DAY') {
       return (
         <Tabs>
-          <Tab title='Assign Work Zone'>
-            <Map onSubmit={this.onAssignZone.bind(this)} selectedZone={selectedZone} />
-          </Tab>
           <Tab title='Release/Let Go'>
             <VisitorActions onSubmit={ this.handleVisitorUpdate.bind(this) }/>
           </Tab>

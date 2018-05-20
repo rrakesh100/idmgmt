@@ -40,3 +40,11 @@ export function updateItemStatus(data) {
   const dbRef = firebase.database().ref();
   return dbRef.update(updates);
 }
+
+export function uploadItemImage(file, itemId) {
+  const storageRef = firebase.storage().ref();
+  let epochTime = new Date().getTime();
+  const path = 'Items/'+'/'+itemId+'/'+epochTime+'.jpeg';
+  const imgRef = storageRef.child(path);
+  return  imgRef.putString(file, 'base64')
+}

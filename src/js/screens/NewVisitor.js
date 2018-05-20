@@ -26,7 +26,7 @@ import Edit from 'grommet/components/icons/base/Print';
 import Toast from 'grommet/components/Toast';
 
 
-import { saveVisitor } from '../api/visitors';
+import { saveVisitor, uploadVisitorImage } from '../api/visitors';
 
 
 class NewVisitor extends Component {
@@ -77,6 +77,11 @@ class NewVisitor extends Component {
     const { visitorId, name, info, screenshot, timestamp,
       whomToMeet, department, purpose, company, mobile  } = this.state;
 
+      let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+      uploadVisitorImage(imgFile, visitorId).then((snapshot) => {
+           console.log(snapshot.downloadURL);
+           let screenshot = snapshot.downloadURL;
+
     saveVisitor({
       visitorId,
       name,
@@ -108,7 +113,8 @@ class NewVisitor extends Component {
         this.setState({
           validationMsg: `Unable to save ${name}. Contact admin for assistance`
         });
-      });
+      })
+    }).catch((e) => console.log(e))
   }
 
   onSubmitClick() {

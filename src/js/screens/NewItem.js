@@ -24,7 +24,7 @@ import Edit from 'grommet/components/icons/base/Print';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 
 import Header from 'grommet/components/Header';
-import { saveItem } from '../api/items';
+import { saveItem, uploadItemImage } from '../api/items';
 
 
 // TO GET THE coords - use this awesome tool
@@ -95,6 +95,11 @@ class NewItem extends Component {
 
     const localStorage = window.localStorage;
 
+    let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    uploadItemImage(imgFile, itemId).then((snapshot) => {
+         console.log(snapshot.downloadURL);
+         let screenshot = snapshot.downloadURL;
+
     saveItem({
       itemId,
       name,
@@ -123,8 +128,9 @@ class NewItem extends Component {
         this.setState({
           validationMsg: `Unable to save ${name}. Contact admin for assistance`
         });
-      });
-      window.location.href='/items';
+      })
+    }).catch((e) => console.log(e))
+
   }
 
   onSubmitClick() {

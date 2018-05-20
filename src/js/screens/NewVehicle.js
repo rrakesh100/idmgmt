@@ -24,7 +24,7 @@ import Edit from 'grommet/components/icons/base/Print';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 import Notification from 'grommet/components/Notification';
 import Header from 'grommet/components/Header';
-import { saveVehicle, getUserInfo } from '../api/vehicles';
+import { saveVehicle, getUserInfo, uploadVehicleImage } from '../api/vehicles';
 import Toast from 'grommet/components/Toast';
 
 // import { VoiceRecognition } from 'react-voice-components';
@@ -121,6 +121,11 @@ class NewVehicle extends Component {
     const { vehicleId, vehicleNumber, driverName, mobile, screenshot, timestamp, description } = this.state;
     const localStorage = window.localStorage;
 
+    let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    uploadVehicleImage(imgFile, vehicleId).then((snapshot) => {
+         console.log(snapshot.downloadURL);
+         let screenshot = snapshot.downloadURL;
+
     saveVehicle({
       vehicleId,
       vehicleNumber,
@@ -151,11 +156,8 @@ class NewVehicle extends Component {
         this.setState({
           validationMsg: `Unable to save ${name}. Contact admin for assistance`
         });
-      });
-      // var a = document.getElementByClassName('itemTextInput');
-      // for(var i=0;i<a.length;i++) {
-      //   a[i].value='';
-      // }
+      })
+    }).catch((e) => console.log(e))
   }
 
   onSubmitClick() {

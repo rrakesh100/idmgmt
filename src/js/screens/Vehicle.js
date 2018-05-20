@@ -34,7 +34,7 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 
 import VehicleActions from './VehicleActions';
-import { getVehicle, updateVehicleStatus, getUserInfo } from '../api/vehicles';
+import { getVehicle, updateVehicleStatus, getUserInfo, uploadVehicleImage } from '../api/vehicles';
 import { getTimeInterval } from '../api/utils';
 
 
@@ -141,6 +141,11 @@ class Vehicle extends Component {
     const timestamp = new Date();
     const vehicleNumber = vehicleData.vehicleNumber;
     updateData.description = updateData.description || 'Not Available';
+
+    let imgFile = updateData.screenshotNow.replace(/^data:image\/\w+;base64,/, "");
+    uploadVehicleImage(imgFile, vehicleId).then((snapshot) => {
+      let screenshot = snapshot.downloadURL;
+      updateData.screenshotNow = screenshot;
     updateVehicleStatus({ ...updateData, timestamp,
       entryTimestamp: vehicleData.timestamp,
       enteredBy: window.localStorage.email,
@@ -155,7 +160,8 @@ class Vehicle extends Component {
         this.setState({
           error: `Unable to update ${name} status`
         });
-      });
+      })
+    }).catch((e) => console.log(e));
   }
 
 

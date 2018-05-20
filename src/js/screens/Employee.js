@@ -54,7 +54,7 @@ class Employee extends Component {
         this.setState({
           employeeData,
           isLoading: false
-        });
+        }, console.log(this.state));
       })
       .catch((err) => {
         console.error(`Unable to fetch data for ${employeeId}`, err);
