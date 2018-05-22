@@ -78,48 +78,7 @@ class Attendance extends Component {
     )
   }
 
-  capture() {
-    if(this.state.showLiveCameraFeed) {
-      const screenshot = this.webcam.getScreenshot();
-      this.setState({
-        screenshot,
-        showLiveCameraFeed: false
-      });
-    } else {
-      this.setState({
-        showLiveCameraFeed: true
-      });
-    }
-  }
-
-  setRef(webcam) {
-    this.webcam = webcam;
-  }
-
-  renderCamera() {
-    return (
-      <Box>
-        { this.renderImage() }
-      </Box>
-    );
-  }
-
-  renderImage() {
-    if(this.state.showLiveCameraFeed) {
-      return (
-        <Webcam
-          audio={false}
-          ref={this.setRef.bind(this)}
-          screenshotFormat='image/jpeg'
-          width={400}
-          onClick={this.capture.bind(this)}
-        />
-      );
-    }
-    return (
-      <Image src={this.state.screenshot} width={800} />
-    );
-  }
+  
 
   onCompareClick(){
     let payload = {
@@ -171,9 +130,7 @@ renderSearchedEmployee() {
   return (
     <div>
     <Image src={screenshot} />
-    <Box onClick={this.capture.bind(this)}>
-      {this.renderCamera() }
-    </Box>
+
     </div>
   )
 }
