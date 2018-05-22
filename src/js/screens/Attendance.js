@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { getEmployees, getEmployee } from '../api/employees';
+import { saveAttendanceData } from '../api/attendance';
 import Webcam from 'react-webcam';
 import Search from 'grommet/components/Search';
 import Box from 'grommet/components/Box';
@@ -153,6 +154,15 @@ class Attendance extends Component {
 
   }
 
+  onCompareButtonClick() {
+    const { selectedEmployeeId } = this.state;
+    saveAttendanceData(selectedEmployeeId).then(() => {
+      alert('saved attendance data');
+    }).catch((err) => {
+      console.error('ATTENDANCE SAVE ERR', err);
+    })
+  }
+
 renderSearchedEmployee() {
   const { selectedEmployeeData } = this.state;
 
@@ -176,7 +186,7 @@ renderSearchedEmployee() {
 
         <Button
           label='COMPARE'
-          onClick={this.onCompareClick.bind(this)}
+          onClick={this.onCompareButtonClick.bind(this)}
           href='#'
           primary={true} />
               </div>
