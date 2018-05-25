@@ -48,8 +48,13 @@ export function updateVehicleStatus(data) {
   const dbRef = firebase.database().ref();
   const unitId = window.localStorage.unit || 'all';
 
-  const insideVehiclesRef = dbRef.child('insideVehicles/'+ unitId + '/' + vehicleId );
-  updates[`insideVehicles/${unitId}/${vehicleId}`] = data;
+  if(data.status === 'LET GO' || data.status === 'ALLOW OUT') {
+    const insideVehiclesRef = dbRef.child('insideVehicles/'+ unitId + '/' + vehicleId );
+    insideVehiclesRef.remove();
+
+  }else {
+    updates[`insideVehicles/${unitId}/${vehicleId}`] = data;
+  }
   return dbRef.update(updates);
 }
 
