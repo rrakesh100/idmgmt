@@ -78,7 +78,7 @@ class Attendance extends Component {
     )
   }
 
-  
+
 
   onCompareClick(){
     let payload = {
