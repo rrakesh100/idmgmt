@@ -38,7 +38,9 @@ class NewVehicle extends Component {
     super(props);
     this.state = {
       showLiveCameraFeed: true,
-      vehicleId: Rand.generateBase30(8)
+      vehicleId: Rand.generateBase30(8),
+      toastMsg:'',
+      buttonHide: false
     };
   }
 
@@ -147,7 +149,8 @@ class NewVehicle extends Component {
     })
       .then(()=> {
         this.setState(Object.assign({} , {
-          toastMsg: `Vehicle ${vehicleNumber} is saved`
+          toastMsg: `Vehicle ${vehicleNumber} is saved`,
+          buttonHide: true
       }));
       }
       )
@@ -213,6 +216,7 @@ class NewVehicle extends Component {
       return (
         <Toast status='ok'>{toastMsg}</Toast>
       );
+
     }
     return null;
   }
@@ -228,6 +232,8 @@ class NewVehicle extends Component {
   }
 
   render() {
+    const { buttonHide } = this.state;
+    console.log(buttonHide)
     return (
       <div className='newVehicle'>
         { this.renderToastMsg() }
@@ -315,13 +321,13 @@ class NewVehicle extends Component {
           </Section>
           <Section pad='small'
             align='center'>
-            <Button icon={<Edit />}
+            {!buttonHide ? <Button icon={<Edit />}
               label='SAVE'
 
               onClick={this.onSubmitClick.bind(this)}
               disabled={true}
               href='#'
-              primary={true} />
+              primary={true} /> : null }
           </Section>
         </Article>
       </div>

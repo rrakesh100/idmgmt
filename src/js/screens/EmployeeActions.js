@@ -62,6 +62,7 @@ class EmployeeActions extends Component {
 
   render() {
     return (
+      <div style={{marginLeft:'140px'}}>
       <Form className='employeeActions'>
         <Clock className='employeeClock' format={'DD/MM/YYYY hh:mm:ss A'} ticking={true} />
         <Select placeHolder='Employee Wants'
@@ -78,11 +79,15 @@ class EmployeeActions extends Component {
           </FormField>
         </FormFields>
         <Footer pad={{"vertical": "medium"}}>
+        <div style={{marginLeft:'180px'}}>
+
           <Button label='Update'
             primary={true}
             onClick={ this.handleSubmit.bind(this) } />
+        </div>
         </Footer>
       </Form>
+      </div>
     );
   }
 }

@@ -208,7 +208,7 @@ class NewVisitor extends Component {
               <h5>{printInfo}</h5>
               <h5>{timestampStr}</h5>
             </div>
-            <div className='box footer'>
+            <div className='box footer' style={{width:'30%', float:'right'}}>
               <Barcode value={this.state.visitorId}
                 height={40}
               />

@@ -6,6 +6,9 @@ import Search from 'grommet/components/Search';
 import Box from 'grommet/components/Box';
 import Image from 'grommet/components/Image';
 import Button from 'grommet/components/Button';
+import Layer from 'grommet/components/Layer';
+import Paragraph from 'grommet/components/Paragraph';
+import Heading from 'grommet/components/Heading';
 import axios from 'axios';
 import $ from 'jquery';
 
@@ -14,7 +17,10 @@ class Attendance extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showLiveCameraFeed : true
+      showLiveCameraFeed : true,
+      msg : '',
+      employeeSearchString : '',
+      selectedEmployeeData : null
     };
     this.onCompareClick.bind(this);
   }
@@ -116,7 +122,7 @@ class Attendance extends Component {
   onCompareButtonClick() {
     const { selectedEmployeeId } = this.state;
     saveAttendanceData(selectedEmployeeId).then(() => {
-      alert('saved attendance data');
+      this.setState({msg:'Attendance data saved'})
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);
     })
@@ -130,24 +136,67 @@ renderSearchedEmployee() {
   return (
     <div>
     <Image src={screenshot} />
-
     </div>
   )
 }
 }
+
+onCloseLayer()  {
+  this.setState({msg:''})
+}
+
+onOkButtonClick() {
+  this.setState({
+    msg:'',
+    employeeSearchString:'',
+    selectedEmployeeData:null
+  })
+}
+
   render() {
+    const { msg } = this.state;
+
+    if(msg) {
+      return (
+        <div>
+        <Layer
+        onClose={this.onCloseLayer.bind(this)}>
+        <div style={{color:'#7F7F7F'}}>
+          <Heading strong={true}
+            uppercase={false}
+            truncate={false}
+            margin='small'
+            align='center'>
+          Success!
+          </Heading>
+        </div>
+          <Paragraph>
+          {msg}
+          </Paragraph>
+          <div style={{marginLeft:'480px'}}>
+          <Button
+            label='OK'
+            onClick={this.onOkButtonClick.bind(this)}
+            href='#'
+            primary={true} />
+         </div>
+        </Layer>
+        </div>
+      )
+    }
     return (
-      <div>
+      <div style={{marginLeft: '200px', marginTop: '100px'}}>
       { this.renderEmployeeSearch() }
       { this.renderSearchedEmployee() }
-
+      <div style={{position: 'absolute'}}>
         <Button
-          label='COMPARE'
+          label='MARK PRESENT'
           onClick={this.onCompareButtonClick.bind(this)}
           href='#'
           primary={true} />
-              </div>
-            );
+        </div>
+        </div>
+      );
   }
 }
 
