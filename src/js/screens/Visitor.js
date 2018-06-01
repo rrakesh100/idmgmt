@@ -224,6 +224,7 @@ class Visitor extends Component {
 
   render() {
 
+    console.log(this.props)
     if (this.state.isLoading) {
       return (
         <Spinning className='spinner' size='xlarge' />

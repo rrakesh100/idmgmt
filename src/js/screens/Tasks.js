@@ -20,12 +20,13 @@ import Search from 'grommet/components/Search';
 import AddIcon from 'grommet/components/icons/base/Add';
 import Heading from 'grommet/components/Heading';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
-
+import Table from 'grommet/components/Table'
+import TableRow from 'grommet/components/TableRow'
 
 
 
 import { getMessage } from 'grommet/utils/Intl';
-import { getVisitors, getVisitor } from '../api/visitors';
+import { getVisitors, getVisitor, getAllVisitors } from '../api/visitors';
 
 import NavControl from '../components/NavControl';
 
@@ -51,8 +52,18 @@ class Tasks extends Component {
       .catch((err) => {
         console.error('VISITOR FETCH FAILED', err);
       });
+      { this.showVisitors() }
   }
 
+  showVisitors() {
+    getAllVisitors().then((snap) => {
+      this.setState({
+        visitors: snap.val()
+      })
+    }).catch((err) => {
+      console.error('ALL VISITORS FETCH FAILED', err)
+    })
+  }
 
   onVisitorSelect(data, isSuggestionSelected) {
     if(isSuggestionSelected) {
@@ -144,8 +155,44 @@ class Tasks extends Component {
     );
   }
 
+  showVisitorsTable() {
+    const { visitors } = this.state;
+    if(!visitors)
+    return null;
+
+    return (
+      <div className='table'>
+      <Table scrollable={true}>
+          <thead style={{position:'relative'}}>
+           <tr>
+             <th>S No.</th>
+             <th>Company</th>
+             <th>Mobile Number</th>
+             <th>Status</th>
+
+           </tr>
+          </thead>
+          <tbody>
+            {
+              Object.keys(visitors).map((visitor, index) => {
+                const visitorObj = visitors[visitor];
+                return <TableRow key={index}>
+                <td>{index+1}</td>
+                <td>{visitorObj.company}</td>
+                <td>{visitorObj.mobile}</td>
+                <td>{visitorObj.status}</td>
+                </TableRow>
+              })
+            }
+          </tbody>
+      </Table>
+      </div>
+    )
+  }
+
 
   render() {
+    console.log(this.state);
     const { error, tasks } = this.props;
     const { intl } = this.context;
 
@@ -181,13 +228,17 @@ class Tasks extends Component {
         {errorNode}
         <Box pad={{ horizontal: 'medium' }}>
           <Paragraph size='large'>
-            <Button icon={<AddIcon />}
-              label='Add new Visitor'
+            <Button
+              label='Visitor In'
               href='/new/visitor' />
+              <Button style={{marginLeft:'20px'}}
+                label='Visitor Out'
+                href='/out/visitor' />
           </Paragraph>
         </Box>
         { this.renderVisitorSearch() }
         { this.renderSearchedVisitor() }
+        { this.showVisitorsTable() }
       </Article>
     );
   }

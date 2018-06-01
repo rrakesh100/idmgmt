@@ -15,6 +15,7 @@ import Dashboard from '../screens/Dashboard';
 import Visitors from '../screens/Tasks';
 import Visitor from '../screens/Visitor';
 import NewVisitor from '../screens/NewVisitor';
+import VisitorOut from '../screens/VisitorOut';
 import Map from '../screens/Map';
 import Item from '../screens/Item';
 import NewItem from '../screens/NewItem';
@@ -69,6 +70,7 @@ class Main extends Component {
                   <Route path='/visitor/:id' component={Visitor} />
                   <Route path='/visitors' component={Visitors} />
                   <Route path='/new/visitor' component={NewVisitor} />
+                  <Route path='/out/visitor' component={VisitorOut} />
                   <Route path='/employee/:id' component={Employee} />
                   <Route path='/employees' component={Employees} />
                   <Route path='/new/employee' component={NewEmployee} />

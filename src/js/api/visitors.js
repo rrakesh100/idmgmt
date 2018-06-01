@@ -12,6 +12,10 @@ export function saveVisitor(data) {
   return dbRef.update(updates);
 }
 
+export function getAllVisitors() {
+  const dbRef = firebase.database().ref().child('visitors');
+  return dbRef.once('value');
+}
 export function getVisitor(visitorId) {
   const visitorPath = `visitors/${visitorId}`;
   const dbRef = firebase.database().ref(visitorPath);

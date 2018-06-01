@@ -177,7 +177,12 @@ class NewItem extends Component {
     const printSource = source.substring(0, 20);
     const printDestination = destination.substring(0, 20);
 
-
+    console.log(name);
+    console.log(source);
+    console.log(destination);
+    console.log(printName);
+    console.log(printSource);
+    console.log(printDestination);
     return (
       <Print name='bizCard' exclusive>
         <div className='card'>
