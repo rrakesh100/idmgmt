@@ -71,7 +71,7 @@ class VisitorOut extends Component {
 
   renderVisitorSearch() {
     return (
-      <Search placeHolder='Search visitor'
+      <Search placeHolder='Search visitor By Barcode'
         inline={true}
         iconAlign='start'
         size='small'
@@ -105,7 +105,6 @@ class VisitorOut extends Component {
             <span>
               <Button icon={<VIcon />}
                 label={selectedVisitorId}
-                href='#'
                 onClick={this.onVisitorButtonClick.bind(this, selectedVisitorId)}
                 primary={true} />
             </span>
@@ -120,31 +119,45 @@ class VisitorOut extends Component {
       );
     }
     return (
+      selectedVisitorId ? 
       <List>
         <ListItem justify='between'
           separator='horizontal'>
           <span>
-            { selectedVisitorId ? 'No such visitor in the records!' : null }
+             'No such visitor in the records!'
           </span>
         </ListItem>
-      </List>
+      </List> : null
     );
   }
 
   renderVisitorNameSearch() {
-
+    // return (
+    //   <Search placeHolder='Search visitor By Name'
+    //     inline={true}
+    //     iconAlign='start'
+    //     size='small'
+    //     suggestions={this.state.visitorSuggestions}
+    //     value={this.state.visitorSearchString}
+    //     onSelect={this.onVisitorSelect.bind(this)}
+    //     onDOMChange={this.onSearchEntry.bind(this)} />
+    // )
+  }
+  
+  
+  renderVisitorDetail() {
+    const { visitorBtnClick, selectedVisitorId, selectedVisitorData } = this.state;
+    return visitorBtnClick ?   <Visitor visitorData={selectedVisitorData} visitorId={selectedVisitorId} /> : null
   }
 
   render() {
-    const { visitorBtnClick, selectedVisitorId } = this.state;
-    if(visitorBtnClick) {
-      <Visitor visitorId={selectedVisitorId} />
-    }
+  
     return (
       <Article primary={true} className='visitors'>
       { this.renderVisitorSearch() }
-      { this.renderSearchedVisitor() }
       { this.renderVisitorNameSearch() }
+      { this.renderSearchedVisitor() }
+      { this.renderVisitorDetail() }
       </Article>
     )
   }

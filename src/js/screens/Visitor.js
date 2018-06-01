@@ -37,13 +37,17 @@ class Visitor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visitorId: this.props.match.params.id,
-      isLoading: true
+      isLoading: false
     };
   }
 
   componentDidMount() {
-    this.getVisitorData();
+    const { visitorData, visitorId } = this.props;
+    console.log(visitorData);
+    this.setState({
+      visitorData,
+      visitorId
+    })
   }
 
   getVisitorData() {
@@ -120,7 +124,6 @@ class Visitor extends Component {
     updateData.description = updateData.description || 'Not Available';
     updateVisitorStatus({ ...updateData, timestamp,
       entryTimestamp: visitorData.timestamp,
-      selectedZone: visitorData.selectedZone,
       enteredBy: window.localStorage.email,
       visitorId })
       .then(() => {
@@ -257,7 +260,8 @@ class Visitor extends Component {
       )
     }
 
-    const { visitorData, visitorId } = this.state;
+    const {  visitorId } = this.state;
+    const { visitorData } = this.state;
     let visitorTitle = `Visitor ${visitorId}`;
     if (visitorData) {
       visitorTitle = `"${visitorData.name}" (${visitorId})`
@@ -297,7 +301,6 @@ Visitor.defaultProps = {
 Visitor.propTypes = {
   dispatch: PropTypes.func.isRequired,
   error: PropTypes.object,
-  match: PropTypes.object.isRequired,
   task: PropTypes.object
 };
 

@@ -144,14 +144,15 @@ class Tasks extends Component {
       );
     }
     return (
+      selectedVisitorId ? 
       <List>
         <ListItem justify='between'
           separator='horizontal'>
           <span>
-            { selectedVisitorId ? 'No such visitor in the records!' : null }
+            'No such visitor in the records!'
           </span>
         </ListItem>
-      </List>
+      </List> : null
     );
   }
 
@@ -162,7 +163,7 @@ class Tasks extends Component {
 
     return (
       <div className='table'>
-      <Table scrollable={true}>
+      <Table scrollable={true} style={{marginTop : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
@@ -216,8 +217,7 @@ class Tasks extends Component {
         colorIndex='light-2'
         align='center'
         responsive={true}
-        pad={{ horizontal: 'small' }}
-      >
+        pad={{ horizontal: 'small' }}>
         <Anchor path='/visitors'>
           <LinkPrevious a11yTitle='Back' />
         </Anchor>
@@ -230,13 +230,12 @@ class Tasks extends Component {
           <Paragraph size='large'>
             <Button
               label='Visitor In'
-              href='/new/visitor' />
+              href='/in/visitor' />
               <Button style={{marginLeft:'20px'}}
                 label='Visitor Out'
                 href='/out/visitor' />
           </Paragraph>
         </Box>
-        { this.renderVisitorSearch() }
         { this.renderSearchedVisitor() }
         { this.showVisitorsTable() }
       </Article>

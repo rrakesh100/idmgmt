@@ -69,7 +69,7 @@ class Main extends Component {
                   <Route path='/login' component={Login} />
                   <Route path='/visitor/:id' component={Visitor} />
                   <Route path='/visitors' component={Visitors} />
-                  <Route path='/new/visitor' component={NewVisitor} />
+                  <Route path='/in/visitor' component={NewVisitor} />
                   <Route path='/out/visitor' component={VisitorOut} />
                   <Route path='/employee/:id' component={Employee} />
                   <Route path='/employees' component={Employees} />
