@@ -257,7 +257,6 @@ class NewVisitor extends Component {
             className='fields'
             align='center'>
             <Split>
-
               <Box className='right' direction='column' style={{marginLeft:'140px'}}>
                 <Box align='center'>
                   <Clock className='visitorClock' format={'DD/MM/YYYY hh:mm:ss A'} ticking={true} />
@@ -308,12 +307,11 @@ class NewVisitor extends Component {
                     </FormField>
                   </Form>
                 </Box>
-                <Box align='center'>
-                  <Barcode value={this.state.visitorId} />
-                </Box>
               </Box>
               <Box onClick={this.capture.bind(this)} className='left' style={{marginTop:'35px'}} align='center'>
                 {this.renderCamera() }
+                <Barcode value={this.state.visitorId} />
+
               </Box>
             </Split>
           </Section>

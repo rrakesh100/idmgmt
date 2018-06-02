@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Moment from 'moment';
-
+import FormField from 'grommet/components/FormField';
 import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
@@ -21,7 +21,7 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Toast from 'grommet/components/Toast';
 import Button from 'grommet/components/Button';
-
+import RadioButton from 'grommet/components/RadioButton';
 import Map from './Map';
 import VisitorActions from './VisitorActions';
 
@@ -37,7 +37,8 @@ class Visitor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false
+      isLoading: false,
+      radioSelectValue : 'yes'
     };
   }
 
@@ -104,7 +105,7 @@ class Visitor extends Component {
               <p>current status: <strong>{status}</strong></p>
               {
                 status === 'RELEASE FOR DAY' ?
-                <p>total working time: <span className='emphasis'>{ timeDifference }</span>(hr:mns)</p> :
+                <p>Total time spent inside : <span className='emphasis'>{ timeDifference }</span>(hr:mns)</p> :
                 null
               }
 
@@ -119,9 +120,10 @@ class Visitor extends Component {
   }
 
   handleVisitorUpdate(updateData) {
-    const { visitorData, visitorId, selectedZone } = this.state;
+    const { visitorData, visitorId, selectedZone , radioSelectValue} = this.state;
     const timestamp = new Date();
     updateData.description = updateData.description || 'Not Available';
+    updateData.metRequiredPerson = radioSelectValue;
     updateVisitorStatus({ ...updateData, timestamp,
       entryTimestamp: visitorData.timestamp,
       enteredBy: window.localStorage.email,
@@ -140,7 +142,19 @@ class Visitor extends Component {
   }
 
 
+onRadioChange(button, e) {
+  console.log(e);
+  if(button === 'yes'){
+    this.setState({
+      radioSelectValue : 'yes' 
+    })
+  }else {
+    this.setState({
+      radioSelectValue : 'no' 
+    })
+  }
 
+}
 
   renderActions() {
     if (!this.state.visitorData) {
@@ -149,11 +163,26 @@ class Visitor extends Component {
     const { status, selectedZone } = this.state.visitorData;
     if (status !== 'RELEASE FOR DAY') {
       return (
+        <div>
+        <Heading style={ {marginLeft :'40px', marginTop : '40px'} }>Has the Visitor met the required person ? </Heading>
+        <div  align='center' style={{marginLeft : '50px', marginTop : '20px'}}>
+          <RadioButton id='yes'
+            name='Yes'
+            label='Yes'
+            checked={this.state.radioSelectValue === 'yes' ? true : false}
+            onChange={this.onRadioChange.bind(this, 'yes')} />
+          <RadioButton id='no'
+            name='No'
+            label='No'
+            checked={this.state.radioSelectValue === 'no' ? true : false}
+            onChange={this.onRadioChange.bind(this, 'no')} />
+        </div>
         <Tabs>
-          <Tab title='Release/Let Go'>
+          <Tab title='EXIT'>
             <VisitorActions onSubmit={ this.handleVisitorUpdate.bind(this) }/>
           </Tab>
         </Tabs>
+        </div>
       );
     }
     return null;

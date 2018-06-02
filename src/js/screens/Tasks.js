@@ -216,6 +216,7 @@ class Tasks extends Component {
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
+             <th>Name</th>
              <th>Company</th>
              <th>Mobile Number</th>
              <th>Status</th>
@@ -228,6 +229,7 @@ class Tasks extends Component {
                 const visitorObj = visitors[visitor];
                 return <TableRow key={index}>
                 <td>{index+1}</td>
+                <td>{visitorObj.name}</td>
                 <td>{visitorObj.company}</td>
                 <td>{visitorObj.mobile}</td>
                 <td>{visitorObj.status}</td>
@@ -286,6 +288,9 @@ class Tasks extends Component {
               <Button style={{marginLeft:'20px'}}
                 label='Visitor Out'
                 href='/out/visitor' />
+                <Button style={{marginLeft:'20px'}}
+                  label='Reports'
+                  href='/reports' />
           </Paragraph>
         </Box>
         { this.renderSearchedVisitor() }
