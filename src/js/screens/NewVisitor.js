@@ -79,6 +79,7 @@ class NewVisitor extends Component {
 
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
       uploadVisitorImage(imgFile, visitorId).then((snapshot) => {
+           console.log(snapshot.downloadURL);
            let screenshot = snapshot.downloadURL;
 
     saveVisitor({
@@ -117,10 +118,38 @@ class NewVisitor extends Component {
   }
 
   onSubmitClick() {
-    const { name, screenshot } = this.state;
+    const { name, screenshot, mobile, whomToMeet, purpose, comingFrom} = this.state;
     if (!name) {
       this.setState({
         validationMsg: 'NAME is missing'
+      });
+      return;
+    }
+
+    if (!mobile) {
+      this.setState({
+        validationMsg: 'MOBILE NUMBER is missing'
+      });
+      return;
+    }
+
+    if (!whomToMeet) {
+      this.setState({
+        validationMsg: 'WHOM TO MEET is missing'
+      });
+      return;
+    }
+
+    if (!purpose) {
+      this.setState({
+        validationMsg: 'PURPOSE OF VISIT is missing'
+      });
+      return;
+    }
+
+    if (!comingFrom) {
+      this.setState({
+        validationMsg: 'COMING FROM is missing'
       });
       return;
     }
@@ -262,44 +291,50 @@ class NewVisitor extends Component {
                   <Clock className='visitorClock' format={'DD/MM/YYYY hh:mm:ss A'} ticking={true} />
 
                   <Form className='newVisitorFields'>
-                    <FormField label='Name' strong={true} size='large' style={{marginTop : '15px'}}>
+                    <FormField label={`Name${' *'}`} strong={true} size='large'>
                       <TextInput
                         placeHolder='name'
                         onDOMChange={this.onFieldChange.bind(this, 'name')}
                       />
                     </FormField>
-                    <FormField label='Whom to meet' strong={true} style={{marginTop : '15px'}}>
+                    <FormField label={`Whom To Meet${' *'}`} strong={true}>
                       <TextInput
                         placeHolder='Whome to meet'
                         onDOMChange={this.onFieldChange.bind(this, 'whomToMeet')}
                       />
                     </FormField>
-                    <FormField label='Department' strong={true} style={{marginTop : '15px'}}>
+                    <FormField label='Department' strong={true}>
                       <TextInput
                         placeHolder='Power plant/ Accounts/ Store'
                         onDOMChange={this.onFieldChange.bind(this, 'department')}
                       />
                     </FormField>
-                    <FormField label='Purpose of Visit' strong={true} style={{marginTop : '15px'}}>
+                    <FormField label={`Purpose Of Visit${' *'}`} strong={true}>
                       <TextInput
                         placeHolder='Purpose..'
                         onDOMChange={this.onFieldChange.bind(this, 'purpose')}
                       />
                     </FormField>
-                    <FormField label='Mobile #' strong={true} style={{marginTop : '15px'}}>
+                    <FormField label={`Mobile${' *'}`} strong={true}>
                       <TextInput
                         placeHolder='Mobile number'
                         onDOMChange={this.onFieldChange.bind(this, 'mobile')}
                       />
                     </FormField>
 
-                    <FormField label='Company' strong={true} style={{marginTop : '15px'}}>
+                    <FormField label='Company' strong={true}>
                       <TextInput
-                        placeHolder='Coming from..'
+                        placeHolder='Company Name'
                         onDOMChange={this.onFieldChange.bind(this, 'company')}
                       />
+                      </FormField>
+                      <FormField label={`Coming From${' *'}`} strong={true}>
+                        <TextInput
+                          placeHolder='Coming From'
+                          onDOMChange={this.onFieldChange.bind(this, 'comingFrom')}
+                        />
                     </FormField>
-                    <FormField label='Info' strong={true} style={{marginTop : '15px'}}>
+                    <FormField label='Info' strong={true}>
                       <TextInput
                         placeHolder='extra info'
                         onDOMChange={this.onFieldChange.bind(this, 'info')}
@@ -318,7 +353,7 @@ class NewVisitor extends Component {
           <Section pad='small'
             align='center'>
             <Button icon={<Edit />}
-                label='SAVE & PRINT'
+              label='SAVE & PRINT'
               onClick={this.onSubmitClick.bind(this)}
               disabled={true}
               href='#'
