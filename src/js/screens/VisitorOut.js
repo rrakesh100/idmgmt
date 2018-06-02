@@ -94,7 +94,8 @@ class VisitorOut extends Component {
 
   renderVisitorSearch() {
     return (
-      <Search placeHolder='Search visitor By Name or Barcode'
+      <div style={{marginTop : '40px', marginLeft :'30px', width: '800px'}}>
+      <Search placeHolder='Search visitor By Name or Barcode' style={{width:'800px'}}
         inline={true}
         iconAlign='start'
         size='small'
@@ -102,6 +103,7 @@ class VisitorOut extends Component {
         value={this.state.visitorSearchString}
         onSelect={this.onVisitorSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)} />
+      </div>
     )
   }
 

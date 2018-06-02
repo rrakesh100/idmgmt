@@ -40,6 +40,7 @@ class NewVisitor extends Component {
       purpose : 'Not Available',
       company : 'Not Available',
       mobile : 'Not Available' ,
+      comingFrom : 'Not Available',
       info :'Not Available'
     };
   }
@@ -75,11 +76,10 @@ class NewVisitor extends Component {
 
   saveAndPrint() {
     const { visitorId, name, info, screenshot, timestamp,
-      whomToMeet, department, purpose, company, mobile  } = this.state;
+      whomToMeet, department, purpose, company, mobile, comingFrom  } = this.state;
 
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
       uploadVisitorImage(imgFile, visitorId).then((snapshot) => {
-           console.log(snapshot.downloadURL);
            let screenshot = snapshot.downloadURL;
 
     saveVisitor({
@@ -93,6 +93,7 @@ class NewVisitor extends Component {
       purpose,
       company,
       mobile,
+      comingFrom,
       status: 'ENTERED',
       history: [
         {
@@ -117,7 +118,8 @@ class NewVisitor extends Component {
     }).catch((e) => console.log(e))
   }
 
-  onSubmitClick() {
+  onSubmitClick(e) {
+    e.stopPropagation();
     const { name, screenshot, mobile, whomToMeet, purpose, comingFrom} = this.state;
     if (!name) {
       this.setState({
@@ -291,50 +293,50 @@ class NewVisitor extends Component {
                   <Clock className='visitorClock' format={'DD/MM/YYYY hh:mm:ss A'} ticking={true} />
 
                   <Form className='newVisitorFields'>
-                    <FormField label={`Name${' *'}`} strong={true} size='large'>
+                    <FormField label={`Name${' *'}`} strong={true} size='large' style={{marginTop : '15px'}}  >
                       <TextInput
                         placeHolder='name'
                         onDOMChange={this.onFieldChange.bind(this, 'name')}
                       />
                     </FormField>
-                    <FormField label={`Whom To Meet${' *'}`} strong={true}>
+                    <FormField label={`Whom To Meet${' *'}`} strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Whome to meet'
                         onDOMChange={this.onFieldChange.bind(this, 'whomToMeet')}
                       />
                     </FormField>
-                    <FormField label='Department' strong={true}>
+                    <FormField label='Department' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Power plant/ Accounts/ Store'
                         onDOMChange={this.onFieldChange.bind(this, 'department')}
                       />
                     </FormField>
-                    <FormField label={`Purpose Of Visit${' *'}`} strong={true}>
+                    <FormField label={`Purpose Of Visit${' *'}`} strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Purpose..'
                         onDOMChange={this.onFieldChange.bind(this, 'purpose')}
                       />
                     </FormField>
-                    <FormField label={`Mobile${' *'}`} strong={true}>
+                    <FormField label={`Mobile${' *'}`} strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Mobile number'
                         onDOMChange={this.onFieldChange.bind(this, 'mobile')}
                       />
                     </FormField>
 
-                    <FormField label='Company' strong={true}>
+                    <FormField label='Company' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Company Name'
                         onDOMChange={this.onFieldChange.bind(this, 'company')}
                       />
                       </FormField>
-                      <FormField label={`Coming From${' *'}`} strong={true}>
+                      <FormField label={`Coming From${' *'}`} strong={true} style={{marginTop : '15px'}}>
                         <TextInput
                           placeHolder='Coming From'
                           onDOMChange={this.onFieldChange.bind(this, 'comingFrom')}
                         />
                     </FormField>
-                    <FormField label='Info' strong={true}>
+                    <FormField label='Info' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='extra info'
                         onDOMChange={this.onFieldChange.bind(this, 'info')}
@@ -346,19 +348,20 @@ class NewVisitor extends Component {
               <Box onClick={this.capture.bind(this)} className='left' style={{marginTop:'35px'}} align='center'>
                 {this.renderCamera() }
                 <Barcode value={this.state.visitorId} />
+                <Section pad='small'
+                  align='center'>
+                  <Button icon={<Edit />}
+                    label='SAVE & PRINT'
+                    onClick={this.onSubmitClick.bind(this)}
+                    disabled={true}
+                    href='#'
+                    primary={true} />
+                </Section>
 
               </Box>
             </Split>
           </Section>
-          <Section pad='small'
-            align='center'>
-            <Button icon={<Edit />}
-              label='SAVE & PRINT'
-              onClick={this.onSubmitClick.bind(this)}
-              disabled={true}
-              href='#'
-              primary={true} />
-          </Section>
+          
         </Article>
         { this.renderBusinessCardForPrint() }
       </div>
