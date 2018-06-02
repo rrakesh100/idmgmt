@@ -79,7 +79,6 @@ class NewVisitor extends Component {
 
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
       uploadVisitorImage(imgFile, visitorId).then((snapshot) => {
-           console.log(snapshot.downloadURL);
            let screenshot = snapshot.downloadURL;
 
     saveVisitor({
@@ -264,44 +263,44 @@ class NewVisitor extends Component {
                   <Clock className='visitorClock' format={'DD/MM/YYYY hh:mm:ss A'} ticking={true} />
 
                   <Form className='newVisitorFields'>
-                    <FormField label='Name' strong={true} size='large'>
+                    <FormField label='Name' strong={true} size='large' style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='name'
                         onDOMChange={this.onFieldChange.bind(this, 'name')}
                       />
                     </FormField>
-                    <FormField label='Whom to meet' strong={true}>
+                    <FormField label='Whom to meet' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Whome to meet'
                         onDOMChange={this.onFieldChange.bind(this, 'whomToMeet')}
                       />
                     </FormField>
-                    <FormField label='Department' strong={true}>
+                    <FormField label='Department' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Power plant/ Accounts/ Store'
                         onDOMChange={this.onFieldChange.bind(this, 'department')}
                       />
                     </FormField>
-                    <FormField label='Purpose of Visit' strong={true}>
+                    <FormField label='Purpose of Visit' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Purpose..'
                         onDOMChange={this.onFieldChange.bind(this, 'purpose')}
                       />
                     </FormField>
-                    <FormField label='Mobile #' strong={true}>
+                    <FormField label='Mobile #' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Mobile number'
                         onDOMChange={this.onFieldChange.bind(this, 'mobile')}
                       />
                     </FormField>
 
-                    <FormField label='Company' strong={true}>
+                    <FormField label='Company' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Coming from..'
                         onDOMChange={this.onFieldChange.bind(this, 'company')}
                       />
                     </FormField>
-                    <FormField label='Info' strong={true}>
+                    <FormField label='Info' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='extra info'
                         onDOMChange={this.onFieldChange.bind(this, 'info')}
@@ -321,7 +320,7 @@ class NewVisitor extends Component {
           <Section pad='small'
             align='center'>
             <Button icon={<Edit />}
-              label='SAVE & PRINT'
+                label='SAVE & PRINT'
               onClick={this.onSubmitClick.bind(this)}
               disabled={true}
               href='#'

@@ -276,9 +276,6 @@ class Visitor extends Component {
           responsive={false}
           pad={{ horizontal: 'small' }}
         >
-          <Anchor path='/visitors'>
-            <LinkPrevious a11yTitle='Back to Visitors' />
-          </Anchor>
           <Heading margin='none' strong={true}>
             {visitorTitle}
           </Heading>

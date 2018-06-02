@@ -24,8 +24,16 @@ class VisitorOut extends Component {
         if (!data) {
           return;
         }
+        let suggests = [];
+        Object.keys(data).forEach((visitor) => {
+          suggests.push({
+             label : data[visitor].name,
+             visitorId : visitor
+          })
+        })
         this.setState({
-          visitorSuggestions: [...Object.keys(data)]
+          visitorSuggestions: suggests,
+          filteredSuggestions : suggests
         });
       })
       .catch((err) => {
@@ -52,8 +60,8 @@ class VisitorOut extends Component {
   onVisitorSelect(data, isSuggestionSelected) {
     if(isSuggestionSelected) {
       this.setState({
-        selectedVisitorId: data.suggestion,
-        visitorSearchString: data.suggestion
+        selectedVisitorId: data.suggestion.visitorId,
+        visitorSearchString: data.suggestion.label
       }, this.fetchSearchedVisitor.bind(this));
     } else {
       this.setState({
@@ -64,18 +72,33 @@ class VisitorOut extends Component {
   }
 
   onSearchEntry(e) {
+    let filtered = [];
+    let  options  = this.state.visitorSuggestions;
+
+    if(e.target.value == '')
+      filtered = options
+    else {
+      options.forEach((opt) => {
+        if(opt.label.startsWith(e.target.value))
+          filtered.push(opt)
+        if(opt.visitorId.startsWith(e.target.value))
+          filtered.push(opt)
+      })
+    }  
+    
     this.setState({
-      visitorSearchString: e.target.value
+      visitorSearchString: e.target.value,
+      filteredSuggestions : filtered
     });
   }
 
   renderVisitorSearch() {
     return (
-      <Search placeHolder='Search visitor By Barcode'
+      <Search placeHolder='Search visitor By Name or Barcode'
         inline={true}
         iconAlign='start'
         size='small'
-        suggestions={this.state.visitorSuggestions}
+        suggestions={this.state.filteredSuggestions}
         value={this.state.visitorSearchString}
         onSelect={this.onVisitorSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)} />
@@ -90,8 +113,6 @@ class VisitorOut extends Component {
 
   renderSearchedVisitor() {
     const { selectedVisitorData, selectedVisitorId } = this.state;
-
-    console.log(selectedVisitorData)
     if (selectedVisitorData) {
       const { timestamp } = selectedVisitorData;
       const m = Moment(timestamp);
@@ -131,19 +152,6 @@ class VisitorOut extends Component {
     );
   }
 
-  renderVisitorNameSearch() {
-    // return (
-    //   <Search placeHolder='Search visitor By Name'
-    //     inline={true}
-    //     iconAlign='start'
-    //     size='small'
-    //     suggestions={this.state.visitorSuggestions}
-    //     value={this.state.visitorSearchString}
-    //     onSelect={this.onVisitorSelect.bind(this)}
-    //     onDOMChange={this.onSearchEntry.bind(this)} />
-    // )
-  }
-  
   
   renderVisitorDetail() {
     const { visitorBtnClick, selectedVisitorId, selectedVisitorData } = this.state;
@@ -155,7 +163,6 @@ class VisitorOut extends Component {
     return (
       <Article primary={true} className='visitors'>
       { this.renderVisitorSearch() }
-      { this.renderVisitorNameSearch() }
       { this.renderSearchedVisitor() }
       { this.renderVisitorDetail() }
       </Article>

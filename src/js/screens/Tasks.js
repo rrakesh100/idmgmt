@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Moment from 'moment';
-
+import { Print } from 'react-easy-print';
+import Barcode from 'react-barcode';
 import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
@@ -22,7 +23,9 @@ import Heading from 'grommet/components/Heading';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 import Table from 'grommet/components/Table'
 import TableRow from 'grommet/components/TableRow'
-
+import HomeIcon from 'grommet/components/icons/base/Home';
+import Image from 'grommet/components/Image';
+import PrintIcon from 'grommet/components/icons/base/Print';
 
 
 import { getMessage } from 'grommet/utils/Intl';
@@ -113,6 +116,52 @@ class Tasks extends Component {
         });
     }
   }
+  
+  
+  saveAndPrint(visitorId, visitorObj) {
+    this.setState({
+      printVisitorId : visitorId,
+      printVisitorObj : visitorObj
+    })
+  }
+  
+  printBusinessCard() {
+    if(!this.state.printVisitorObj)
+      return;
+      
+    const { name = '', whomToMeet = '', timestampStr } = this.state.printVisitorObj;
+    const printName = 'Visitor Name: ' + name.substring(0, 16);
+    const printInfo = 'To meet: '+ whomToMeet.substring(0, 20);
+    return (
+      <Print name='bizCard' exclusive>
+        <div className='card'>
+          <div className='card-body'>
+            <div className='box header'>
+              <h3>Lalitha Industries</h3>
+            </div>
+            <div className='box sidebar'>
+              <Image src={this.state.printVisitorObj.screenshot} />
+            </div>
+            <div className='box content'>
+              <h5 className='bold'>{printName}</h5>
+              <h5>{printInfo}</h5>
+              <h5>{timestampStr}</h5>
+            </div>
+            <div className='box footer' style={{width:'30%', float:'right'}}>
+              <Barcode value={this.state.printVisitorObj.visitorId}
+                height={40}
+              />
+            </div>
+          </div>
+        </div>
+      </Print>
+    );
+  }
+  
+  print() {
+    if(this.state.printVisitorId)
+     this.setState({printVisitorId : null},  setTimeout(() => window.print(), 2000) );
+  }
 
   renderSearchedVisitor() {
     const { selectedVisitorData, selectedVisitorId } = this.state;
@@ -170,7 +219,7 @@ class Tasks extends Component {
              <th>Company</th>
              <th>Mobile Number</th>
              <th>Status</th>
-
+             <th></th>
            </tr>
           </thead>
           <tbody>
@@ -182,6 +231,11 @@ class Tasks extends Component {
                 <td>{visitorObj.company}</td>
                 <td>{visitorObj.mobile}</td>
                 <td>{visitorObj.status}</td>
+                <td>
+                    <Button icon={<PrintIcon />}
+                          onClick={this.saveAndPrint.bind(this, visitor, visitorObj)}
+                          plain={true} />
+                </td>
                 </TableRow>
               })
             }
@@ -218,12 +272,10 @@ class Tasks extends Component {
         align='center'
         responsive={true}
         pad={{ horizontal: 'small' }}>
-        <Anchor path='/visitors'>
-          <LinkPrevious a11yTitle='Back' />
-        </Anchor>
         <Heading margin='none' strong={true}>
           Visitors Tracking system
         </Heading>
+        
       </Header>
         {errorNode}
         <Box pad={{ horizontal: 'medium' }}>
@@ -238,6 +290,9 @@ class Tasks extends Component {
         </Box>
         { this.renderSearchedVisitor() }
         { this.showVisitorsTable() }
+        { this.printBusinessCard() }
+        { this.print() }
+
       </Article>
     );
   }
