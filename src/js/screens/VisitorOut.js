@@ -79,13 +79,13 @@ class VisitorOut extends Component {
       filtered = options
     else {
       options.forEach((opt) => {
-        if(opt.label.startsWith(e.target.value))
+        if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
         if(opt.visitorId.startsWith(e.target.value))
           filtered.push(opt)
       })
-    }  
-    
+    }
+
     this.setState({
       visitorSearchString: e.target.value,
       filteredSuggestions : filtered
@@ -142,7 +142,7 @@ class VisitorOut extends Component {
       );
     }
     return (
-      selectedVisitorId ? 
+      selectedVisitorId ?
       <List>
         <ListItem justify='between'
           separator='horizontal'>
@@ -154,14 +154,14 @@ class VisitorOut extends Component {
     );
   }
 
-  
+
   renderVisitorDetail() {
     const { visitorBtnClick, selectedVisitorId, selectedVisitorData } = this.state;
     return visitorBtnClick ?   <Visitor visitorData={selectedVisitorData} visitorId={selectedVisitorId} /> : null
   }
 
   render() {
-  
+
     return (
       <Article primary={true} className='visitors'>
       { this.renderVisitorSearch() }

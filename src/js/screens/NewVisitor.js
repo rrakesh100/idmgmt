@@ -6,8 +6,7 @@ import Rand from 'random-key';
 import Clock from 'react-live-clock';
 import Moment from 'moment';
 import { Print } from 'react-easy-print';
-
-
+import NavControl from '../components/NavControl';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Form from 'grommet/components/Form';
@@ -24,6 +23,7 @@ import Heading from 'grommet/components/Heading';
 import Button from 'grommet/components/Button';
 import Edit from 'grommet/components/icons/base/Print';
 import Toast from 'grommet/components/Toast';
+import Headline from 'grommet/components/Headline';
 
 
 import { saveVisitor, uploadVisitorImage } from '../api/visitors';
@@ -35,12 +35,8 @@ class NewVisitor extends Component {
     this.state = {
       showLiveCameraFeed: true,
       visitorId: Rand.generateBase30(8),
-      whomToMeet : 'Not Available',
       department : 'Not Available',
-      purpose : 'Not Available',
       company : 'Not Available',
-      mobile : 'Not Available' ,
-      comingFrom : 'Not Available',
       info :'Not Available'
     };
   }
@@ -208,9 +204,7 @@ class NewVisitor extends Component {
         responsive={true}
         pad={{ horizontal: 'small' }}
       >
-        <Anchor path='/visitors'>
-          <LinkPrevious a11yTitle='Back' />
-        </Anchor>
+      <NavControl />
         <Heading margin='none' strong={true}>
           {headerText}
         </Heading>
@@ -224,7 +218,7 @@ class NewVisitor extends Component {
     const printInfo = 'To meet: '+ whomToMeet.substring(0, 20);
 
     return (
-      <Print name='bizCard' exclusive>
+      <Print name='bizCard' exclusive style={{height:'400px'}}>
         <div className='card'>
           <div className='card-body'>
             <div className='box header'>
@@ -240,7 +234,7 @@ class NewVisitor extends Component {
             </div>
             <div className='box footer' style={{width:'30%', float:'right'}}>
               <Barcode value={this.state.visitorId}
-                height={40}
+                height={20}
               />
             </div>
           </div>
@@ -278,49 +272,69 @@ class NewVisitor extends Component {
     return (
       <div className='newVisitor'>
         { this.renderValidationMsg() }
-        <Article scrollStep={false}
+        <Article
           direction='column'
-          primary={true} full={true}>
-          { this.renderHeader('REGISTER VISITOR')}
+          >
+          { this.renderHeader('VISITOR REGISTER')}
 
-          <Section pad='large'
+          <Section
             justify='center'
             className='fields'
             align='center'>
             <Split>
-              <Box className='right' direction='column' style={{marginLeft:'140px'}}>
-                <Box align='center'>
-                  <Clock className='visitorClock' format={'DD/MM/YYYY hh:mm:ss A'} ticking={true} />
+              <Box direction='column' style={{marginLeft:'120px'}} >
 
                   <Form className='newVisitorFields'>
-                    <FormField label={`Name${' *'}`} strong={true} size='large' style={{marginTop : '15px'}}  >
+                  <FormField  style={{border:'none'}}  >
+                  <Headline size="small">
+                          Date :   <Clock className='visitorClock' format={'DD/MM/YYYY'}/>
+                  </Headline>
+                  </FormField>
+                    <FormField  style={{marginTop : '',border:'none'}}  >
+                    <Headline size="small">
+                          Time :   <Clock className='visitorClock' format={'hh:mm:ss A'} ticking={true} />
+                    </Headline>
+                    </FormField>
+                    <FormField  label='Name *'  strong={true} size='small' style={{marginTop : '15px'}}  >
                       <TextInput
                         placeHolder='name'
                         onDOMChange={this.onFieldChange.bind(this, 'name')}
                       />
                     </FormField>
-                    <FormField label={`Whom To Meet${' *'}`} strong={true} style={{marginTop : '15px'}}>
+                    <FormField label='Whom To Meet *'  strong={true} style={{marginTop : '15px'}}>
                       <TextInput
-                        placeHolder='Whome to meet'
+                        placeHolder='ED / MD'
                         onDOMChange={this.onFieldChange.bind(this, 'whomToMeet')}
                       />
                     </FormField>
-                    <FormField label='Department' strong={true} style={{marginTop : '15px'}}>
-                      <TextInput
-                        placeHolder='Power plant/ Accounts/ Store'
-                        onDOMChange={this.onFieldChange.bind(this, 'department')}
-                      />
-                    </FormField>
-                    <FormField label={`Purpose Of Visit${' *'}`} strong={true} style={{marginTop : '15px'}}>
+                    <FormField label={'Purpose Of Visit *'} strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Purpose..'
                         onDOMChange={this.onFieldChange.bind(this, 'purpose')}
                       />
                     </FormField>
-                    <FormField label={`Mobile${' *'}`} strong={true} style={{marginTop : '15px'}}>
+                    <FormField label={'Mobile *'} strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='Mobile number'
                         onDOMChange={this.onFieldChange.bind(this, 'mobile')}
+                      />
+                    </FormField>
+
+                    <FormField label={`Coming From${' *'}`} strong={true} style={{marginTop : '15px'}}>
+                        <TextInput
+                          placeHolder='Coming From'
+                          onDOMChange={this.onFieldChange.bind(this, 'comingFrom')}
+                          />
+                    </FormField>
+                  </Form>
+              </Box>
+              <Box  direction='column' style={{marginLeft:'40px'}} size="medium">
+                  <Form className='newVisitorFields'>
+
+                    <FormField label='Department' strong={true} style={{marginTop : '150px'}}>
+                      <TextInput
+                        placeHolder='Power plant/ Accounts/ Store'
+                        onDOMChange={this.onFieldChange.bind(this, 'department')}
                       />
                     </FormField>
 
@@ -329,12 +343,6 @@ class NewVisitor extends Component {
                         placeHolder='Company Name'
                         onDOMChange={this.onFieldChange.bind(this, 'company')}
                       />
-                      </FormField>
-                      <FormField label={`Coming From${' *'}`} strong={true} style={{marginTop : '15px'}}>
-                        <TextInput
-                          placeHolder='Coming From'
-                          onDOMChange={this.onFieldChange.bind(this, 'comingFrom')}
-                        />
                     </FormField>
                     <FormField label='Info' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
@@ -344,24 +352,23 @@ class NewVisitor extends Component {
                     </FormField>
                   </Form>
                 </Box>
-              </Box>
-              <Box onClick={this.capture.bind(this)} className='left' style={{marginTop:'35px'}} align='center'>
-                {this.renderCamera() }
-                <Barcode value={this.state.visitorId} />
-                <Section pad='small'
-                  align='center'>
-                  <Button icon={<Edit />}
-                    label='SAVE & PRINT'
-                    onClick={this.onSubmitClick.bind(this)}
-                    disabled={true}
-                    href='#'
-                    primary={true} />
-                </Section>
-
+              <Box onClick={this.capture.bind(this)} direction='column'
+                style={{marginTop:'35px', marginLeft : '-80px'}} align='center'>
+                  {this.renderCamera() }
+                  <Barcode value={this.state.visitorId} style="" height="20"/>
+                  <Section pad='small'
+                    align='center'>
+                    <Button icon={<Edit />}
+                      label='SAVE & PRINT'
+                      onClick={this.onSubmitClick.bind(this)}
+                      disabled={true}
+                      href='#'
+                      primary={true} />
+                  </Section>
               </Box>
             </Split>
           </Section>
-          
+
         </Article>
         { this.renderBusinessCardForPrint() }
       </div>

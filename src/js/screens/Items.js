@@ -15,7 +15,7 @@ import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
 import Paragraph from 'grommet/components/Paragraph';
 import AddIcon from 'grommet/components/icons/base/Add';
-
+import NavControl from '../components/NavControl';
 
 
 import Section from 'grommet/components/Section';
@@ -176,9 +176,10 @@ class Items extends Component {
           responsive={true}
           pad={{ horizontal: 'small' }}
         >
-          <Anchor path='/items'>
-            <LinkPrevious a11yTitle='Back' />
-          </Anchor>
+
+
+          <NavControl />
+
           <Heading margin='none' strong={true}>
             Items Tracking system
           </Heading>

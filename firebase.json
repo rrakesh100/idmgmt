@@ -1,5 +1,22 @@
 {
+<<<<<<< HEAD
   "functions": {
   }
 
 }
+=======
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "hosting": {
+    "public": "dist",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+
+>>>>>>> 923538a... visitor page changes
