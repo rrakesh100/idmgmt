@@ -116,20 +116,21 @@ class Tasks extends Component {
         });
     }
   }
-  
-  
+
+
   saveAndPrint(visitorId, visitorObj) {
     this.setState({
       printVisitorId : visitorId,
       printVisitorObj : visitorObj
     })
   }
-  
+
   printBusinessCard() {
     if(!this.state.printVisitorObj)
       return;
-      
+
     const { name = '', whomToMeet = '', timestampStr } = this.state.printVisitorObj;
+    console.log(this.state.printVisitorObj);
     const printName = 'Visitor Name: ' + name.substring(0, 16);
     const printInfo = 'To meet: '+ whomToMeet.substring(0, 20);
     return (
@@ -157,7 +158,7 @@ class Tasks extends Component {
       </Print>
     );
   }
-  
+
   print() {
     if(this.state.printVisitorId)
      this.setState({printVisitorId : null},  setTimeout(() => window.print(), 2000) );
@@ -193,7 +194,7 @@ class Tasks extends Component {
       );
     }
     return (
-      selectedVisitorId ? 
+      selectedVisitorId ?
       <List>
         <ListItem justify='between'
           separator='horizontal'>
@@ -277,7 +278,7 @@ class Tasks extends Component {
         <Heading margin='none' strong={true}>
           Visitors Tracking system
         </Heading>
-        
+
       </Header>
         {errorNode}
         <Box pad={{ horizontal: 'medium' }}>

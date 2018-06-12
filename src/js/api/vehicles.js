@@ -33,6 +33,11 @@ export function getVehicles() {
   return dbRef.once('value');
 }
 
+export function getAllVehicles() {
+  const dbRef = firebase.database().ref().child('vehicles');
+  return dbRef.once('value');
+}
+
 export function updateVehicleStatus(data) {
   const { vehicleId, entryTimestamp, timestamp } = data;
   const dateStr = moment(entryTimestamp).format('MM-YYYY');

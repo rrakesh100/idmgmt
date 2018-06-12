@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { getEmployees, getEmployee } from '../api/employees';
-import { saveAttendanceData } from '../api/attendance';
+import { saveAttendanceOutData } from '../api/attendance';
 import Webcam from 'react-webcam';
 import Search from 'grommet/components/Search';
 import Box from 'grommet/components/Box';
@@ -121,10 +121,10 @@ class Attendance extends Component {
 
   onCompareButtonClick() {
     const { selectedEmployeeId } = this.state;
-    saveAttendanceData(selectedEmployeeId).then(() => {
-      this.setState({msg:'Attendance data saved'})
+    saveAttendanceOutData(selectedEmployeeId).then(() => {
+      this.setState({msg:'Attendance marked as left'})
     }).catch((err) => {
-      console.error('ATTENDANCE SAVE ERR', err);
+      console.error('ATTENDANCE OUT ERR', err);
     })
   }
 
@@ -190,7 +190,7 @@ onOkButtonClick() {
       { this.renderSearchedEmployee() }
       <div style={{position: 'absolute'}}>
         <Button
-          label='MARK PRESENT'
+          label='MARK AS LEFT'
           onClick={this.onCompareButtonClick.bind(this)}
           href='#'
           primary={true} />

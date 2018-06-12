@@ -30,8 +30,10 @@ import Search from 'grommet/components/Search';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 import Vehicle from 'grommet/components/icons/base/DocumentConfig';
 import Header from 'grommet/components/Header';
+import Table from 'grommet/components/Table'
+import TableRow from 'grommet/components/TableRow'
 
-import { getVehicles, getVehicle } from '../api/vehicles';
+import { getVehicles, getVehicle, getAllVehicles } from '../api/vehicles';
 
 
 class Vehicles extends Component {
@@ -55,6 +57,17 @@ class Vehicles extends Component {
       .catch((err) => {
         console.error('VEHICLE FETCH FAILED', err);
       });
+      { this.showVehicles() }
+  }
+
+  showVehicles() {
+    getAllVehicles().then((snap) => {
+      this.setState({
+        vehicles: snap.val()
+      })
+    }).catch((err) => {
+      console.error('ALL VEHICLES FETCH FAILED', err)
+    })
   }
 
 
@@ -148,6 +161,45 @@ class Vehicles extends Component {
     );
   }
 
+  showVehiclesTable() {
+
+    const { vehicles } = this.state;
+
+    if(!vehicles)
+    return null;
+
+    return (
+      <div className='table'>
+      <Table scrollable={true} style={{marginTop : '30px'}}>
+          <thead style={{position:'relative'}}>
+           <tr>
+             <th>S No.</th>
+             <th>ID</th>
+             <th>Vehicle Number</th>
+             <th>Driver Name</th>
+             <th>Status</th>
+           </tr>
+          </thead>
+          <tbody>
+            {
+              Object.keys(vehicles).map((vehicle, index) => {
+                const vehicleObj = vehicles[vehicle];
+                return <TableRow key={index}>
+                <td>{index+1}</td>
+                <td>{vehicleObj.vehicleId}</td>
+                <td>{vehicleObj.vehicleNumber}</td>
+                <td>{vehicleObj.driverName}</td>
+                <td>{vehicleObj.status}</td>
+
+                </TableRow>
+              })
+            }
+          </tbody>
+      </Table>
+      </div>
+    )
+  }
+
   render() {
 
     const { error, tasks } = this.props;
@@ -187,13 +239,18 @@ class Vehicles extends Component {
         <Box pad={{ horizontal: 'medium' }}>
           <Paragraph size='large'>
             <Button icon={<AddIcon />}
-              label='Allow Vehicle Inside'
+              label='Allow Vehicle'
               href='/new/vehicle' />
+              <Button style={{marginLeft:'20px'}}
+                label='Vehicle In'
+                href='/in/vehicle' />
+                <Button style={{marginLeft:'20px'}}
+                  label='Vehicle Out'
+                  href='/out/vehicle' />
           </Paragraph>
         </Box>
-        { this.renderVehicleSearch() }
-        { this.renderSearchedVehicle() }
         </Section>
+        { this.showVehiclesTable() }
       </Article>
     );
   }

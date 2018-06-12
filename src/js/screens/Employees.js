@@ -163,6 +163,12 @@ class Employees extends Component {
             <Button icon={<AddIcon />}
               label='ADD'
               href='/new/employee' />
+              <Button style={{marginLeft:'20px'}}
+                label='ATTENDANCE IN'
+                href='/in/attendance/employee' />
+                <Button style={{marginLeft:'20px'}}
+                  label='ATTENDANCE OUT'
+                  href='/out/attendance/employee' />
           </Paragraph>
         </Box>
         { this.renderEmployeeSearch() }

@@ -25,11 +25,15 @@ import Items from '../screens/Items';
 import Vehicle from '../screens/Vehicle';
 import NewVehicle from '../screens/NewVehicle';
 import Vehicles from '../screens/Vehicles';
+import VehicleIn from '../screens/VehicleIn';
+import VehicleOut from '../screens/VehicleOut';
 import LabourDashboard from '../screens/LDashboard';
 import Employees from '../screens/Employees';
 import Employee from '../screens/Employee';
+import AttendanceIn from '../screens/AttendanceIn';
+import AttendanceOut from '../screens/AttendanceOut';
+import WeeklyEmployees from '../screens/WeeklyEmployees';
 import NewEmployee from '../screens/NewEmployee';
-import Attendance from '../screens/Attendance';
 import NotFound from '../screens/NotFound';
 
 class Main extends Component {
@@ -66,7 +70,6 @@ class Main extends Component {
                 {nav}
                 <Switch>
                   <Route exact={true} path='/' component={Login} />
-                  <Route path='/attendance' component={Attendance} />
                   <Route path='/dashboard' component={Dashboard} />
                   <Route path='/login' component={Login} />
                   <Route path='/visitor/:id' component={Visitor} />
@@ -75,6 +78,9 @@ class Main extends Component {
                   <Route path='/out/visitor' component={VisitorOut} />
                   <Route path='/employee/:id' component={Employee} />
                   <Route path='/employees' component={Employees} />
+                  <Route path='/weekly' component={WeeklyEmployees} />
+                  <Route path='/in/attendance/employee' component={AttendanceIn} />
+                  <Route path='/out/attendance/employee' component={AttendanceOut} />
                   <Route path='/reports' component={Reports} />
                   <Route path='/new/employee' component={NewEmployee} />
                   <Route path='/map' component={Map} />
@@ -84,7 +90,8 @@ class Main extends Component {
                   <Route path='/vehicle/:id' component={Vehicle} />
                   <Route path='/new/vehicle' component={NewVehicle} />
                   <Route path='/vehicles' component={Vehicles} />
-                  <Route path='/dash/visitor' component={LabourDashboard} />
+                  <Route path='/in/vehicle' component={VehicleIn} />
+                  <Route path='/out/vehicle' component={VehicleOut} />
                   <Route path='/*' component={NotFound} />
                 </Switch>
               </Split>

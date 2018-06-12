@@ -16,8 +16,8 @@ const initialState = {
     { path: '/items', label: 'ITEMS' },
     { path: '/vehicles', label: 'VEHICLES' },
     { path: '/employees', label: 'DAILY LABOUR' },
-    { path: '/attendance', label: 'ATTENDANCE'}
-  ]
+    { path: '/weekly', label: 'WEEKLY LABOUR' }
+    ]
 };
 
 const handlers = {
