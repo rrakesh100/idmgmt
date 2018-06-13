@@ -1,10 +1,4 @@
 {
-<<<<<<< HEAD
-  "functions": {
-  }
-
-}
-=======
   "database": {
     "rules": "database.rules.json"
   },
@@ -18,5 +12,3 @@
     ]
   }
 }
-
->>>>>>> 923538a... visitor page changes

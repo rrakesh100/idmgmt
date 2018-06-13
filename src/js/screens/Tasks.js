@@ -279,10 +279,6 @@ class Tasks extends Component {
         <Heading margin='none' strong={true}>
           Visitors Tracking system
         </Heading>
-<<<<<<< HEAD
-
-=======
->>>>>>> 923538a... visitor page changes
       </Header>
         {errorNode}
         <Box pad={{ horizontal: 'medium' }}>
