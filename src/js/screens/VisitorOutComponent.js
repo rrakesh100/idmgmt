@@ -15,6 +15,7 @@ import Spinning from 'grommet/components/icons/Spinning';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 import Columns from 'grommet/components/Columns';
 import Image from 'grommet/components/Image';
+import Edit from 'grommet/components/icons/base/Checkmark';
 import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
 import Table from 'grommet/components/Table';
@@ -81,7 +82,7 @@ class VisitorOutComponent extends Component {
 
       return (
         <div>
-        <Section>
+        <Section style={{height: '500px' }}>
           <Split>
             <Box direction='column' style={{marginLeft:'40px'}} >
                 <Headline size='small'>
@@ -148,8 +149,8 @@ onRadioChange(button, e) {
     if (status !== 'DEPARTED') {
       return (
         <div>
-        <Heading style={ {marginLeft :'40px', marginTop : '40px'} }>Has the Visitor met the required person ? </Heading>
-        <div  align='center' style={{marginLeft : '50px', marginTop : '20px'}}>
+        <Heading style={ {marginLeft :'40px', marginTop : '10px'} }>Has the Visitor met the required person ? </Heading>
+        <div  align='center' style={{marginLeft : '50px'}}>
           <RadioButton id='yes'
             name='Yes'
             label='Yes'
@@ -162,29 +163,45 @@ onRadioChange(button, e) {
             onChange={this.onRadioChange.bind(this, 'no')} />
         </div>
         <div style={{marginLeft : '50px', marginTop : '100px'}}>
-        <Button primary="true"
-          label='DEPARTED'
+        <Section pad='small'
+          align='center'>
+        <Button primary="true" type="button"
+          label='DEPARTED' icon={<Edit />}
+          disabled={true}
           onClick={this.onDepartedClick.bind(this)}
           href='#' />
+          </Section>
           </div>
         </div>
       );
+    }else{
+      let ot = this.state.visitorData.outTime;
+      let splitOT = ot.split("T");
+      return (<div style={{marginLeft :'40px'}}>
+      <Headline size='small'>
+        Departed at : <span style={{color :'red'}}> {splitOT[0]}</span> Time : <span
+        style={{color :'red'}}> {splitOT[1].split(".")[0]} UTC Time</span>
+      </Headline>
+      </div>)
     }
-    return null;
   }
 
 
   onDepartedClick() {
+    console.log('clicked ! ! ! ! !')
     let updateData = {}
     const { visitorData, visitorId, radioSelectValue} = this.state;
     const timestamp = new Date();
     updateData.metRequiredPerson = radioSelectValue;
+    console.log(updateData);
     updateVisitor({ ...updateData, timestamp,
       entryTimestamp: visitorData.timestamp,
+      outTime : timestamp,
       status : 'DEPARTED',
       enteredBy: window.localStorage.email,
       visitorId })
       .then(() => {
+        console.log('success')
         this.setState({
           toastMsg: `Successfully updated the status of ${this.state.visitorId}`
         }, this.getVisitorData.bind(this));
@@ -248,7 +265,6 @@ onRadioChange(button, e) {
       <Article primary={true} full={true} className='visitorDetails'>
         <Header
           direction='row'
-          size='large'
           colorIndex='light-2'
           align='center'
           responsive={false}
