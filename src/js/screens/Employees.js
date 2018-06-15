@@ -30,8 +30,16 @@ class Employees extends Component {
         if (!data) {
           return;
         }
+        let suggests = [];
+        Object.keys(data).forEach((employee) => {
+          suggests.push({
+             label : data[employee].name,
+             employeeId : employee
+          })
+        })
         this.setState({
-          employeeSuggestions: [...Object.keys(data)]
+          employeeSuggestions: suggests,
+          filteredSuggestions: suggests
         });
       })
       .catch((err) => {
@@ -43,8 +51,8 @@ class Employees extends Component {
   onEmployeeSelect(data, isSuggestionSelected) {
     if(isSuggestionSelected) {
       this.setState({
-        selectedEmployeeId: data.suggestion,
-        employeeSearchString: data.suggestion
+        selectedEmployeeId: data.suggestion.employeeId,
+        employeeSearchString: data.suggestion.label
       }, this.fetchSearchedEmployee.bind(this));
     } else {
       this.setState({
@@ -55,18 +63,32 @@ class Employees extends Component {
   }
 
   onSearchEntry(e) {
+    let filtered = [];
+    let  options  = this.state.employeeSuggestions;
+
+    if(e.target.value == '')
+      filtered = options
+    else {
+      options.forEach((opt) => {
+        if(opt.label.startsWith(e.target.value))
+          filtered.push(opt)
+        if(opt.employeeId.startsWith(e.target.value))
+          filtered.push(opt)
+      })
+    }
     this.setState({
-      employeeSearchString: e.target.value
+      employeeSearchString: e.target.value,
+      filteredSuggestions: filtered
     });
   }
 
   renderEmployeeSearch() {
     return (
-      <Search placeHolder='Search employee'
+      <Search placeHolder='Search employee By Name or Barcode'
         inline={true}
         iconAlign='start'
         size='small'
-        suggestions={this.state.employeeSuggestions}
+        suggestions={this.state.filteredSuggestions}
         value={this.state.employeeSearchString}
         onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)} />
@@ -119,14 +141,15 @@ class Employees extends Component {
       );
     }
     return (
+      selectedEmployeeId ?
       <List>
         <ListItem justify='between'
           separator='horizontal'>
           <span>
-            { selectedEmployeeId ? 'No such employee in the records!' : null }
+            'No such employee in the records!'
           </span>
         </ListItem>
-      </List>
+      </List> : null
     );
   }
 
@@ -163,12 +186,15 @@ class Employees extends Component {
             <Button icon={<AddIcon />}
               label='ADD'
               href='/new/employee' />
-              <Button style={{marginLeft:'20px'}}
+              <Button style={{marginLeft:'10px'}}
                 label='ATTENDANCE IN'
                 href='/in/attendance/employee' />
-                <Button style={{marginLeft:'20px'}}
+                <Button style={{marginLeft:'10px'}}
                   label='ATTENDANCE OUT'
                   href='/out/attendance/employee' />
+                  <Button style={{marginLeft:'10px'}}
+                    label='REPORTS'
+                    href='/dailylabour/reports' />
           </Paragraph>
         </Box>
         { this.renderEmployeeSearch() }

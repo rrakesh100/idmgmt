@@ -184,9 +184,15 @@ class Vehicles extends Component {
             {
               Object.keys(vehicles).map((vehicle, index) => {
                 const vehicleObj = vehicles[vehicle];
+                const path=`vehicle/${vehicleObj.vehicleId}`;
+                console.log(path)
                 return <TableRow key={index}>
                 <td>{index+1}</td>
-                <td>{vehicleObj.vehicleId}</td>
+                <td>
+                <Button primary={true}
+                  label={vehicleObj.vehicleId}
+                  href={path} />
+                </td>
                 <td>{vehicleObj.vehicleNumber}</td>
                 <td>{vehicleObj.driverName}</td>
                 <td>{vehicleObj.status}</td>

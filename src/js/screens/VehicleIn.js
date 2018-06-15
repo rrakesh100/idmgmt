@@ -23,8 +23,16 @@ export default class AttendanceOut extends Component {
         if (!data) {
           return;
         }
+        let suggests = [];
+        Object.keys(data).forEach((vehicle) => {
+          suggests.push({
+             label : data[vehicle].name,
+             vehicleId : vehicle
+          })
+        })
         this.setState({
-          vehicleSuggestions: [...Object.keys(data)]
+          vehicleSuggestions: suggests,
+          filteredSuggestions: suggests
         });
       })
       .catch((err) => {
@@ -47,8 +55,23 @@ export default class AttendanceOut extends Component {
     }
 
     onSearchEntry(e) {
+      let filtered = [];
+      let  options  = this.state.vehicleSuggestions;
+
+      if(e.target.value == '')
+        filtered = options
+      else {
+        options.forEach((opt) => {
+          if(opt.label.startsWith(e.target.value))
+            filtered.push(opt)
+          if(opt.vehicleId.startsWith(e.target.value))
+            filtered.push(opt)
+        })
+      }
+
       this.setState({
-        vehicleSearchString: e.target.value
+        vehicleSearchString: e.target.value,
+        filteredSuggestions: filtered
       });
     }
 
@@ -74,11 +97,11 @@ export default class AttendanceOut extends Component {
       if(!vehicleSuggestions)
       return null;
       return (
-        <Search placeHolder='Search Vehicle'
+        <Search placeHolder='Search Vehicle By Name or Barcode'
           inline={true}
           iconAlign='start'
           size='small'
-          suggestions={this.state.vehicleSuggestions}
+          suggestions={this.state.filteredSuggestions}
           value={this.state.vehicleSearchString}
           onSelect={this.onVehicleSelect.bind(this)}
           onDOMChange={this.onSearchEntry.bind(this)} />
@@ -115,14 +138,15 @@ export default class AttendanceOut extends Component {
         );
       }
       return (
+        selectedVehicleId ?
         <List>
           <ListItem justify='between'
             separator='horizontal'>
             <span>
-              { selectedVehicleId ? 'No such vehicle in the records!' : null }
+              'No such vehicle in the records!'
             </span>
           </ListItem>
-        </List>
+        </List> : null
       );
     }
 

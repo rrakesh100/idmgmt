@@ -120,8 +120,9 @@ class Attendance extends Component {
   }
 
   onCompareButtonClick() {
-    const { selectedEmployeeId } = this.state;
-    saveAttendanceInData(selectedEmployeeId).then(() => {
+    const { selectedEmployeeId, selectedEmployeeData } = this.state;
+    let selectedEmployeeName = selectedEmployeeData.name;
+    saveAttendanceInData(selectedEmployeeId, selectedEmployeeName).then(() => {
       this.setState({msg:'Attendance data saved'})
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);

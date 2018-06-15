@@ -12,39 +12,87 @@ import Button from 'grommet/components/Button';
 import Layer from 'grommet/components/Layer';
 import Paragraph from 'grommet/components/Paragraph';
 import Heading from 'grommet/components/Heading';
+import Article from 'grommet/components/Article';
 import axios from 'axios';
 import Moment from 'moment';
 import $ from 'jquery';
+import Header from 'grommet/components/Header';
 
 
 class Reports extends Component {
   constructor(props) {
     super(props);
+    this.state={
+      startDate:'',
+      endDate:''
+    }
   }
 
   componentDidMount() {
 
   }
 
-onDateChange(e) {
+  onStartDateChange(e) {
+    let startDate = e.replace(/\//g, '-');
+    this.setState({startDate})
 
-  console.log(e);
-  let dateFormat = e.replace('/', '-');
-  console.log(dateFormat)
-}
+  }
+
+  onEndDateChange(e) {
+    let endDate = e.replace(/\//g, '-');
+
+    this.setState({endDate})
+  }
+
+
+  renderDateFields() {
+    return (
+      <div style={{marginLeft:'20px'}}>
+      <div style={{marginTop:'20px'}}>
+      <Form>
+        <FormField>
+          <DateTime id='id'
+          format='D/M/YYYY'
+          name='name'
+          onChange={this.onStartDateChange.bind(this)}
+          value={this.state.startDate}
+          />
+        </FormField>
+      </Form>
+      </div>
+      <div style={{marginTop:'20px'}}>
+      <Form>
+        <FormField>
+          <DateTime id='id'
+          format='D/M/YYYY'
+          name='name'
+          onChange={this.onEndDateChange.bind(this)}
+          value={this.state.endDate}
+          />
+        </FormField>
+      </Form>
+      </div>
+      </div>
+    )
+  }
 
   render() {
 
       return (
-        <Form>
-          <FormField>
-            <DateTime id='id'
-            format='D/M/YYYY'
-            name='name'
-            onChange={this.onDateChange.bind(this)}
-            />
-          </FormField>
-        </Form>
+        <Article>
+        <Header
+          direction='row'
+          justify='between'
+          size='large'
+          pad={{ horizontal: 'medium', between: 'small' }}
+        >
+        <Heading margin='none' strong={true}>
+        Visitor Reports
+        </Heading>
+        </Header>
+        { this.renderDateFields() }
+        </Article>
+
       )
     }
 }

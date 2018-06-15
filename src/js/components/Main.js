@@ -35,6 +35,8 @@ import AttendanceOut from '../screens/AttendanceOut';
 import WeeklyEmployees from '../screens/WeeklyEmployees';
 import NewEmployee from '../screens/NewEmployee';
 import NotFound from '../screens/NotFound';
+import EmployeeReports from '../screens/EmployeeReports';
+
 
 class Main extends Component {
   constructor() {
@@ -78,6 +80,7 @@ class Main extends Component {
                   <Route path='/out/visitor' component={VisitorOut} />
                   <Route path='/employee/:id' component={Employee} />
                   <Route path='/employees' component={Employees} />
+                  <Route path='/dailylabour/reports' component={EmployeeReports} />
                   <Route path='/weekly' component={WeeklyEmployees} />
                   <Route path='/in/attendance/employee' component={AttendanceIn} />
                   <Route path='/out/attendance/employee' component={AttendanceOut} />

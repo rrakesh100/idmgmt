@@ -120,8 +120,10 @@ class Attendance extends Component {
   }
 
   onCompareButtonClick() {
-    const { selectedEmployeeId } = this.state;
-    saveAttendanceOutData(selectedEmployeeId).then(() => {
+    const { selectedEmployeeId, selectedEmployeeData } = this.state;
+    let selectedEmployeeName = selectedEmployeeData.name;
+    console.log(selectedEmployeeName)
+    saveAttendanceOutData(selectedEmployeeId, selectedEmployeeName).then(() => {
       this.setState({msg:'Attendance marked as left'})
     }).catch((err) => {
       console.error('ATTENDANCE OUT ERR', err);
