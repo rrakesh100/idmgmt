@@ -12,10 +12,10 @@ export function saveVisitor(data) {
   return dbRef.update(updates);
 }
 
-export function getAllVisitors() {
-  const dbRef = firebase.database().ref().child('visitors');
-  return dbRef.once('value');
-}
+// export function getAllVisitors() {
+//   const dbRef = firebase.database().ref().child('visitors');
+//   return dbRef.once('value');
+// }
 export function getVisitor(visitorId) {
   const visitorPath = `visitors/${visitorId}`;
   const dbRef = firebase.database().ref(visitorPath);
@@ -49,6 +49,32 @@ export function updateVisitorStatus(data) {
       updates[`daywiseZones/${dateStr}/${_id}/${visitorId}/releasedAt`] = timestamp;
     }
   }
+
+  const dbRef = firebase.database().ref();
+  return dbRef.update(updates);
+}
+
+
+export function updateVisitor(data) {
+  const { visitorId, entryTimestamp, timestamp } = data;
+  const dateStr = moment(entryTimestamp).format('DD-MM-YYYY');
+  const historyRef = firebase.database().ref(`visitors/${visitorId}/history/`);
+  const arrKey = historyRef.push().key;
+
+  const updates = {};
+  updates[`visitors/${visitorId}/history/${arrKey}`] = data;
+  updates[`visitors/${visitorId}/status`] = data.status;
+  updates[`visitors/${visitorId}/metRequiredPerson`] = data.metRequiredPerson;
+  updates[`visitors/${visitorId}/statusTimestamp`] = timestamp;
+
+  if(data.status === 'DEPARTED') {
+    updates[`visitors/${visitorId}/outTime`] = timestamp;
+    updates[`daywiseVisitors/${dateStr}/${data.visitorId}/outTime`] = timestamp;
+  }
+
+  updates[`daywiseVisitors/${dateStr}/${data.visitorId}/status`] = data.status;
+  updates[`daywiseVisitors/${dateStr}/${data.visitorId}/metRequiredPerson`] = data.metRequiredPerson;
+  updates[`daywiseVisitors/${dateStr}/${data.visitorId}/statusTimestamp`] = timestamp;
 
   const dbRef = firebase.database().ref();
   return dbRef.update(updates);

@@ -7,7 +7,11 @@ import ListItem from 'grommet/components/ListItem';
 import VIcon from 'grommet/components/icons/base/DocumentUser';
 import Moment from 'moment';
 import Button from 'grommet/components/Button';
-import Visitor from './Visitor';
+import Visitor from './VisitorOutComponent';
+import Header from 'grommet/components/Header';
+import Heading from 'grommet/components/Heading';
+
+import NavControl from '../components/NavControl';
 
 class VisitorOut extends Component {
   constructor(props) {
@@ -113,6 +117,24 @@ class VisitorOut extends Component {
     })
   }
 
+  renderHeader(headerText) {
+    return (
+      <Header
+        direction='row'
+        size='large'
+        colorIndex='light-2'
+        align='center'
+        responsive={true}
+        pad={{ horizontal: 'small' }}
+      >
+      <NavControl />
+        <Heading margin='none' strong={true}>
+          {headerText}
+        </Heading>
+      </Header>
+    );
+  }
+
   renderSearchedVisitor() {
     const { selectedVisitorData, selectedVisitorId } = this.state;
     if (selectedVisitorData) {
@@ -164,6 +186,7 @@ class VisitorOut extends Component {
 
     return (
       <Article primary={true} className='visitors'>
+      { this.renderHeader('VISITOR REGISTER (OUTWARD)')}
       { this.renderVisitorSearch() }
       { this.renderSearchedVisitor() }
       { this.renderVisitorDetail() }

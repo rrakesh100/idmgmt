@@ -6,7 +6,7 @@ import Rand from 'random-key';
 import Clock from 'react-live-clock';
 import Moment from 'moment';
 import { Print } from 'react-easy-print';
-import NavControl from '../components/NavControl';
+  import NavControl from '../components/NavControl';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Form from 'grommet/components/Form';
@@ -91,6 +91,7 @@ class NewVisitor extends Component {
       mobile,
       comingFrom,
       status: 'ENTERED',
+      inTime : timestamp,
       history: [
         {
           timestamp,
@@ -118,41 +119,42 @@ class NewVisitor extends Component {
     e.stopPropagation();
     const { name, screenshot, mobile, whomToMeet, purpose, comingFrom} = this.state;
     if (!name) {
+      alert('NAME is missing');
       this.setState({
         validationMsg: 'NAME is missing'
       });
       return;
     }
-
-    if (!mobile) {
-      this.setState({
-        validationMsg: 'MOBILE NUMBER is missing'
-      });
-      return;
-    }
-
     if (!whomToMeet) {
+      alert('WHOM TO MEET is missing');
       this.setState({
         validationMsg: 'WHOM TO MEET is missing'
       });
       return;
     }
-
     if (!purpose) {
+      alert('PURPOSE OF VISIT is missing');
       this.setState({
         validationMsg: 'PURPOSE OF VISIT is missing'
       });
       return;
     }
-
+    if (!mobile) {
+      alert('MOBILE NUMBER is missing');
+      this.setState({
+        validationMsg: 'MOBILE NUMBER is missing'
+      });
+      return;
+    }
     if (!comingFrom) {
+      alert('COMING FROM is missing');
       this.setState({
         validationMsg: 'COMING FROM is missing'
       });
       return;
     }
-
     if (!screenshot) {
+      alert('IMAGE is not taken. Click on the camera to take photo!');
       this.setState({
         validationMsg: 'IMAGE is not taken. Click on video to take photo!'
       });
@@ -270,31 +272,24 @@ class NewVisitor extends Component {
 
 
     return (
-      <div className='newVisitor'>
+      <div className='newVisitor' >
         { this.renderValidationMsg() }
         <Article
           direction='column'
           >
-          { this.renderHeader('VISITOR REGISTER')}
+          { this.renderHeader('VISITOR REGISTER (INWARD)')}
 
           <Section
             justify='center'
-            className='fields'
-            align='center'>
+            >
+            <Headline size="small" style={{marginLeft :'40px'}}>
+                    <span>Date :   <Clock className='visitorClock' format={'DD/MM/YYYY'}/></span>
+                    <span style={{marginLeft : '20px'}}>Time :   <Clock className='visitorClock' format={'hh:mm:ss A'} ticking={true} /></span>
+            </Headline>
             <Split>
-              <Box direction='column' style={{marginLeft:'120px'}} >
+              <Box direction='column' style={{marginLeft:'40px'}} >
 
                   <Form className='newVisitorFields'>
-                  <FormField  style={{border:'none'}}  >
-                  <Headline size="small">
-                          Date :   <Clock className='visitorClock' format={'DD/MM/YYYY'}/>
-                  </Headline>
-                  </FormField>
-                    <FormField  style={{marginTop : '',border:'none'}}  >
-                    <Headline size="small">
-                          Time :   <Clock className='visitorClock' format={'hh:mm:ss A'} ticking={true} />
-                    </Headline>
-                    </FormField>
                     <FormField  label='Name *'  strong={true} size='small' style={{marginTop : '15px'}}  >
                       <TextInput
                         placeHolder='name'
