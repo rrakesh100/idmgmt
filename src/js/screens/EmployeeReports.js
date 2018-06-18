@@ -115,9 +115,11 @@ renderDateFields() {
     let tablesArray = [];
     Object.keys(response).map((attendance, index) => {
       const attendanceObj = response[attendance];
+      if(attendanceObj ==null)
+        return;
       tablesArray.push(<div className='tablesArray' key={index}>
-      <h2>{attendance}</h2>
-      <Table scrollable={true} style={{marginTop : '30px'}}>
+      <h2 style={{marginLeft : '20px'}}>{attendance}</h2>
+      <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
@@ -136,12 +138,17 @@ renderDateFields() {
                   {
                   let inTime = employeeAttendaceObj.in;
                   let outTime = employeeAttendaceObj.out;
+                  let totalTime = 'N/A';
+                  if(outTime && inTime) {
+                    let startTime=moment(inTime, "HH:mm a");
+                    let endTime=moment(outTime, "HH:mm a");
+                    let duration = moment.duration(endTime.diff(startTime));
+                    let hours = parseInt(duration.asHours());
+                    let minutes = parseInt(duration.asMinutes())%60;
+                    totalTime = hours + ' hr ' + minutes + ' min '
+                  }
 
-                  let startTime=moment(inTime, "HH:mm a");
-                  let endTime=moment(outTime, "HH:mm a");
-                  let duration = moment.duration(endTime.diff(startTime));
-                  let hours = parseInt(duration.asHours());
-                  let minutes = parseInt(duration.asMinutes())%60;
+
 
                 return <TableRow key={index}>
                 <td>{index+1}</td>
@@ -149,7 +156,7 @@ renderDateFields() {
                 <td>{employeeAttendaceObj.name}</td>
                 <td>{employeeAttendaceObj.in}</td>
                 <td>{employeeAttendaceObj.out}</td>
-                <td>{hours + ' hr ' + minutes + ' min '}</td>
+                <td>{totalTime}</td>
 
 
                 </TableRow>

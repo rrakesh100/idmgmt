@@ -13,6 +13,7 @@ import * as firebase from 'firebase';
 import { getVisitors } from '../api/visitors';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
+import Box from 'grommet/components/Box';
 
 
 
@@ -80,9 +81,11 @@ class Reports extends Component {
     let tablesArray = [];
     Object.keys(response).map((date, index) => {
       const attendanceObj = response[date];
+      if(attendanceObj == null)
+        return;
       tablesArray.push(<div className='tablesArray' key={index}>
-      <h2>{date}</h2>
-      <Table scrollable={true} style={{marginTop : '30px'}}>
+      <h2 style={{marginLeft : '20px'}}>{date}</h2>
+      <Table scrollable={true} style={{marginTop : '30px', marginLeft : '40px'}}>
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
@@ -99,17 +102,21 @@ class Reports extends Component {
                   const visitorAttendaceObj = attendanceObj[key];
                   let inTime = visitorAttendaceObj.inTime;
                   let outTime = visitorAttendaceObj.outTime;
+                  let totalTime = 'N/A';
 
-                  let startTime=moment(inTime, "HH:mm a");
-                  console.log(startTime)
-                  let endTime=moment(outTime, "HH:mm a");
-                  console.log(endTime)
-                  let duration = moment.duration(endTime.diff(startTime));
-                  console.log(duration)
-                  let hours = parseInt(duration.asHours());
-                  console.log(hours)
-                  let minutes = parseInt(duration.asMinutes())%60;
-                  console.log(minutes)
+                  if(inTime && outTime) {
+                    console.log('^^^^', inTime);
+                    console.log('@@@@', outTime);
+
+                    let startTime=moment(inTime, "YYYY-MM-DD HH:mm:ss");
+                    let endTime=moment(outTime, "YYYY-MM-DD HH:mm:ss");
+                    let duration = moment.duration(endTime.diff(startTime));
+                    console.log('####', duration);
+                    let hours = parseInt(duration.asHours());
+                    let minutes = parseInt(duration.asMinutes())%60;
+                    totalTime = hours + ' hr ' + minutes + ' min '
+
+                  }
 
                 return <TableRow key={index}>
                 <td>{index+1}</td>
@@ -117,7 +124,7 @@ class Reports extends Component {
                 <td>{visitorAttendaceObj.name}</td>
                 <td>{visitorAttendaceObj.inTime}</td>
                 <td>{visitorAttendaceObj.outTime}</td>
-                <td>{hours + ' hr ' + minutes + ' min '}</td>
+                <td>{totalTime}</td>
 
 
                 </TableRow>
@@ -140,30 +147,29 @@ class Reports extends Component {
   renderDateFields() {
     return (
       <div style={{marginLeft:'20px'}}>
-      <div style={{marginTop:'20px'}}>
-      <Form>
-        <FormField>
-          <DateTime id='id'
-          format='D/M/YYYY'
-          name='name'
-          onChange={this.onStartDateChange.bind(this)}
-          value={this.state.startDate}
-          />
-        </FormField>
-      </Form>
-      </div>
-      <div style={{marginTop:'20px'}}>
-      <Form>
-        <FormField>
-          <DateTime id='id'
-          format='D/M/YYYY'
-          name='name'
-          onChange={this.onEndDateChange.bind(this)}
-          value={this.state.endDate}
-          />
-        </FormField>
-      </Form>
-      </div>
+      <Box direction='row'
+        justify='start'
+        align='center'
+        wrap={true}
+        pad='medium'
+        margin='small'
+        colorIndex='light-2'
+      >
+      <p style={{marginLeft : '40px'}}>Select Start time</p>
+      <DateTime id='id' style={{marginLeft : '20px'}}
+      format='D/M/YYYY'
+      name='name'
+      onChange={this.onStartDateChange.bind(this)}
+      value={this.state.startDate}
+      />
+      <p style={{marginLeft : '40px'}}>Select End time</p>
+      <DateTime id='id' style={{marginLeft : '20px'}}
+      format='D/M/YYYY'
+      name='name'
+      onChange={this.onEndDateChange.bind(this)}
+      value={this.state.endDate}
+      />
+      </Box>
       </div>
     )
   }
