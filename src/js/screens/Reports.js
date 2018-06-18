@@ -1,10 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import { getEmployees, getEmployee } from '../api/employees';
-import { saveAttendanceData } from '../api/attendance';
-import Webcam from 'react-webcam';
-import Search from 'grommet/components/Search';
-import Box from 'grommet/components/Box';
-import Image from 'grommet/components/Image';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import DateTime from 'grommet/components/DateTime';
@@ -13,10 +7,13 @@ import Layer from 'grommet/components/Layer';
 import Paragraph from 'grommet/components/Paragraph';
 import Heading from 'grommet/components/Heading';
 import Article from 'grommet/components/Article';
-import axios from 'axios';
-import Moment from 'moment';
-import $ from 'jquery';
+import moment from 'moment';
 import Header from 'grommet/components/Header';
+import * as firebase from 'firebase';
+import { getVisitors } from '../api/visitors';
+import Table from 'grommet/components/Table';
+import TableRow from 'grommet/components/TableRow';
+
 
 
 class Reports extends Component {
@@ -32,6 +29,38 @@ class Reports extends Component {
 
   }
 
+  getVisitorAttendanceData(endDate) {
+    const {startDate} = this.state;
+
+    let datesArr=[];
+    let startDateParts = startDate.split("-");
+    let endDateParts = endDate.split("-");
+    let startDateObj = new Date(startDateParts[2], startDateParts[1]-1, startDateParts[0]);
+    let endDateObj = new Date(endDateParts[2], endDateParts[1]-1, endDateParts[0]);
+
+    while (startDateObj <= endDateObj) {
+    datesArr.push(moment(startDateObj).format('DD-MM-YYYY'));
+    startDateObj.setDate(startDateObj.getDate() + 1);
+    }
+    console.log(datesArr)
+
+    let returnObj = {};
+    const dbRef = firebase.database().ref('daywiseVisitors/');
+    Promise.all(
+      datesArr.map((date) => {
+        return dbRef.child(date).once('value').then((snapshot) => {
+          let response = snapshot.val();
+          console.log(response);
+          returnObj[date] = response;
+
+        })
+      })
+    ).then(() => {
+      console.log(returnObj);
+      this.setState({response: returnObj})
+    })
+  }
+
   onStartDateChange(e) {
     let startDate = e.replace(/\//g, '-');
     this.setState({startDate})
@@ -41,7 +70,70 @@ class Reports extends Component {
   onEndDateChange(e) {
     let endDate = e.replace(/\//g, '-');
 
-    this.setState({endDate})
+    this.setState({endDate}, this.getVisitorAttendanceData(endDate))
+  }
+
+  showVisitorReportsTable() {
+    const {response} = this.state;
+    if(!response)
+    return null;
+    let tablesArray = [];
+    Object.keys(response).map((date, index) => {
+      const attendanceObj = response[date];
+      tablesArray.push(<div className='tablesArray' key={index}>
+      <h2>{date}</h2>
+      <Table scrollable={true} style={{marginTop : '30px'}}>
+          <thead style={{position:'relative'}}>
+           <tr>
+             <th>S No.</th>
+             <th>Barcode</th>
+             <th>Name</th>
+             <th>In Time</th>
+             <th>Out Time</th>
+             <th>Total Time Spent</th>
+           </tr>
+          </thead>
+          <tbody>
+            {
+                Object.keys(attendanceObj).map((key,index)=> {
+                  const visitorAttendaceObj = attendanceObj[key];
+                  let inTime = visitorAttendaceObj.inTime;
+                  let outTime = visitorAttendaceObj.outTime;
+
+                  let startTime=moment(inTime, "HH:mm a");
+                  console.log(startTime)
+                  let endTime=moment(outTime, "HH:mm a");
+                  console.log(endTime)
+                  let duration = moment.duration(endTime.diff(startTime));
+                  console.log(duration)
+                  let hours = parseInt(duration.asHours());
+                  console.log(hours)
+                  let minutes = parseInt(duration.asMinutes())%60;
+                  console.log(minutes)
+
+                return <TableRow key={index}>
+                <td>{index+1}</td>
+                <td>{key}</td>
+                <td>{visitorAttendaceObj.name}</td>
+                <td>{visitorAttendaceObj.inTime}</td>
+                <td>{visitorAttendaceObj.outTime}</td>
+                <td>{hours + ' hr ' + minutes + ' min '}</td>
+
+
+                </TableRow>
+              })
+            }
+          </tbody>
+      </Table>
+
+      </div>)
+
+    })
+    return (
+      <div className='table'>
+      {tablesArray}
+      </div>
+    )
   }
 
 
@@ -91,6 +183,9 @@ class Reports extends Component {
         </Heading>
         </Header>
         { this.renderDateFields() }
+        <div style={{marginTop:'30px'}}>
+        { this.showVisitorReportsTable() }
+        </div>
         </Article>
 
       )

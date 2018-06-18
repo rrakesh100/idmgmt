@@ -132,6 +132,8 @@ renderDateFields() {
             {
                 Object.keys(attendanceObj).map((key,index)=> {
                   const employeeAttendaceObj = attendanceObj[key];
+                  if(employeeAttendaceObj !== null)
+                  {
                   let inTime = employeeAttendaceObj.in;
                   let outTime = employeeAttendaceObj.out;
 
@@ -151,6 +153,7 @@ renderDateFields() {
 
 
                 </TableRow>
+              }
               })
             }
           </tbody>

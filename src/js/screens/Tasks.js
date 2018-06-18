@@ -129,24 +129,34 @@ class Tasks extends Component {
     if(!this.state.printVisitorObj)
       return;
 
-    const { name = '', whomToMeet = '', timestampStr } = this.state.printVisitorObj;
+    const { name = '', whomToMeet = '', timestampStr, purpose, comingFrom, mobile, info } = this.state.printVisitorObj;
     console.log(this.state.printVisitorObj);
     const printName = 'Visitor Name: ' + name.substring(0, 16);
     const printInfo = 'To meet: '+ whomToMeet.substring(0, 20);
+    const purposeOfVisit = 'Purpose of visit: ' + purpose.substring(0, 16);
+    const cellNumber = 'Cell No: ' + mobile.substring(0, 10);
+    const comingFromInfo = 'Coming From: ' + comingFrom.substring(0, 16);
+    const otherInfo = 'Other Info: ' + info.substring(0, 20);
+
     return (
       <Print name='bizCard' exclusive>
         <div className='card'>
           <div className='card-body'>
             <div className='box header'>
-              <h3>Lalitha Industries</h3>
+              <h4>LALITHA ENTERPRISES INDUSTRIES PVT LTD</h4>
+              <h5>Unit-2, Valuthimmapuram Road, Peddapuram</h5>
             </div>
-            <div className='box sidebar'>
-              <Image src={this.state.printVisitorObj.screenshot} />
-            </div>
-            <div className='box content'>
+
+            <div className='box content' style={{float:'right'}}>
               <h5 className='bold'>{printName}</h5>
               <h5>{printInfo}</h5>
               <h5>{timestampStr}</h5>
+              <h5>{purposeOfVisit}</h5>
+            </div>
+            <div style={{float:'left'}}>
+              <h5>{comingFromInfo}</h5>
+              <h5>{cellNumber}</h5>
+              <h5>{otherInfo}</h5>
             </div>
             <div className='box footer' style={{width:'30%', float:'right'}}>
               <Barcode value={this.state.printVisitorObj.visitorId}
