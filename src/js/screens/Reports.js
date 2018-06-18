@@ -118,12 +118,16 @@ class Reports extends Component {
 
                   }
 
+                let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
+                let istOutTime =  moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
+
+
                 return <TableRow key={index}>
                 <td>{index+1}</td>
                 <td>{key}</td>
                 <td>{visitorAttendaceObj.name}</td>
-                <td>{visitorAttendaceObj.inTime}</td>
-                <td>{visitorAttendaceObj.outTime}</td>
+                <td>{istInTime}</td>
+                <td>{istOutTime}</td>
                 <td>{totalTime}</td>
 
 
@@ -155,14 +159,14 @@ class Reports extends Component {
         margin='small'
         colorIndex='light-2'
       >
-      <p style={{marginLeft : '40px'}}>Select Start time</p>
+      <p style={{marginLeft : '40px'}}>Select Start Date</p>
       <DateTime id='id' style={{marginLeft : '20px'}}
       format='D/M/YYYY'
       name='name'
       onChange={this.onStartDateChange.bind(this)}
       value={this.state.startDate}
       />
-      <p style={{marginLeft : '40px'}}>Select End time</p>
+      <p style={{marginLeft : '40px'}}>Select End Date</p>
       <DateTime id='id' style={{marginLeft : '20px'}}
       format='D/M/YYYY'
       name='name'
