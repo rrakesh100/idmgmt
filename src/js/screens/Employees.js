@@ -181,8 +181,7 @@ class Employees extends Component {
           <NavControl name={getMessage(intl, 'Employees')} />
         </Header>
         {errorNode}
-        <Box pad={{ horizontal: 'medium' }}>
-          <Paragraph size='large'>
+        <Box direction="row" justify="start" align="center" pad={{ horizontal: 'medium' }}>
             <Button icon={<AddIcon />}
               label='ADD'
               href='/new/employee' />
@@ -195,7 +194,6 @@ class Employees extends Component {
                   <Button style={{marginLeft:'10px'}}
                     label='REPORTS'
                     href='/dailylabour/reports' />
-          </Paragraph>
         </Box>
         { this.renderEmployeeSearch() }
         { this.renderSearchedEmployee() }
