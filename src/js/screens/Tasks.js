@@ -26,11 +26,9 @@ import TableRow from 'grommet/components/TableRow'
 import HomeIcon from 'grommet/components/icons/base/Home';
 import Image from 'grommet/components/Image';
 import PrintIcon from 'grommet/components/icons/base/Print';
-
-
+import Tabs from 'grommet/components/Tabs';
 import { getMessage } from 'grommet/utils/Intl';
 import { getVisitors, getVisitor, getAllVisitors } from '../api/visitors';
-
 import NavControl from '../components/NavControl';
 
 import { pageLoaded } from './utils';
@@ -128,6 +126,7 @@ class Tasks extends Component {
   printBusinessCard() {
     if(!this.state.printVisitorObj)
       return;
+<<<<<<< Updated upstream
 
     const { name = '', whomToMeet = '', timestampStr, purpose, comingFrom, mobile, info } = this.state.printVisitorObj;
     console.log(this.state.printVisitorObj);
@@ -167,6 +166,74 @@ class Tasks extends Component {
         </div>
       </Print>
     );
+=======
+      const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
+      , timestampStr,screenshot } = this.state.printVisitorObj;
+    return(
+      <Print name='bizCard' exclusive style={{height:'400px'}}>
+       <div className='card'>
+         <div className='card-body'>
+           <div className='box header'>
+             <h5>LALITHA ENTERPRIES INDUSTRIES PVT LTD</h5>
+             <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
+           </div>
+           <div className='box sidebar'>
+             <Image src={screenshot} />
+           </div>
+           <div className='content'>
+           <Table>
+             <tbody>
+               <TableRow>
+                 <td>
+                   Name: <b>{name.toUpperCase()}</b>
+                 </td>
+                 <td>
+                   From: <b>{comingFrom.toUpperCase()}</b>
+                 </td>
+                 </TableRow>
+                 <TableRow>
+                   <td>
+                     To Meet: <b>{whomToMeet.toUpperCase()}</b>
+                   </td>
+                   <td>
+                     Mobile: <b>{mobile.toUpperCase()}</b>
+                   </td>
+                   </TableRow>
+                   <TableRow>
+                     <td>
+                       Purpose: <b>{purpose.toUpperCase()}</b>
+                     </td>
+                     <td>
+                       Other Info: <b>{info}</b>
+                     </td>
+                 </TableRow>
+               </tbody>
+             </Table>
+               <Table>
+                 <tbody>
+                   <TableRow>
+                     <td>
+                       Operator Signature
+                     </td>
+                     <td>
+                       Visitor Signature
+                     </td>
+                     <td>
+                       Officer Signature
+                     </td>
+                     </TableRow>
+                   </tbody>
+               </Table>
+           </div>
+           <div className='footer' style={{width:'30%', float:'right'}}>
+             <Barcode value={this.state.visitorId}
+               height={20}
+             />
+           </div>
+         </div>
+       </div>
+        </Print>);
+>>>>>>> Stashed changes
   }
 
   print() {
@@ -229,7 +296,6 @@ class Tasks extends Component {
            <tr>
              <th>S No.</th>
              <th>Name</th>
-             <th>Company</th>
              <th>Mobile Number</th>
              <th>Status</th>
              <th></th>
@@ -242,7 +308,6 @@ class Tasks extends Component {
                 return <TableRow key={index}>
                 <td>{index+1}</td>
                 <td>{visitorObj.name}</td>
-                <td>{visitorObj.company}</td>
                 <td>{visitorObj.mobile}</td>
                 <td>{visitorObj.status}</td>
                 <td>

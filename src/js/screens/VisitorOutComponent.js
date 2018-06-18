@@ -15,7 +15,7 @@ import Spinning from 'grommet/components/icons/Spinning';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 import Columns from 'grommet/components/Columns';
 import Image from 'grommet/components/Image';
-import Edit from 'grommet/components/icons/base/Checkmark';
+import CheckMark from 'grommet/components/icons/base/Checkmark';
 import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
 import Table from 'grommet/components/Table';
@@ -81,24 +81,24 @@ class VisitorOutComponent extends Component {
       const timeDifference = getTimeInterval(timestamp, statusTimestamp);
 
       return (
-        <div>
-        <Section style={{height: '500px' }}>
+        <div style={{height: '400px' }}>
+        <Section >
           <Split>
             <Box direction='column' style={{marginLeft:'40px'}} >
                 <Headline size='small'>
-                  Name : <span style={{color :'red'}}> {this.state.visitorData.name} </span>
+                  Name<span style={{color :'red',marginLeft : '160px'}}>: {this.state.visitorData.name} </span>
                 </Headline>
                 <Headline size='small'>
-                  Whom To Meet : <span style={{color :'red'}}> {this.state.visitorData.whomToMeet} </span>
+                  Whom To Meet<span style={{color :'red',marginLeft : '30px'}}>: {this.state.visitorData.whomToMeet} </span>
                 </Headline>
                 <Headline size='small'>
-                  Purpose of Visit : <span style={{color :'red'}}> {this.state.visitorData.purpose} </span>
+                  Purpose of Visit<span style={{color :'red',marginLeft : '25px'}}>: {this.state.visitorData.purpose} </span>
                 </Headline>
                 <Headline size='small'>
-                  Mobile : <span style={{color :'red'}}> {this.state.visitorData.mobile} </span>
+                  Mobile<span style={{color :'red',marginLeft : '155px'}}>: {this.state.visitorData.mobile} </span>
                 </Headline>
                 <Headline size='small'>
-                  Coming From : <span style={{color :'red'}}> {this.state.visitorData.comingFrom} </span>
+                  Coming From<span style={{color :'red',marginLeft : '60px'}}>: {this.state.visitorData.comingFrom} </span>
                 </Headline>
            </Box>
            <Box>
@@ -149,7 +149,7 @@ onRadioChange(button, e) {
     if (status !== 'DEPARTED') {
       return (
         <div>
-        <Heading style={ {marginLeft :'40px', marginTop : '10px'} }>Has the Visitor met the required person ? </Heading>
+        <Heading style={ {marginLeft :'40px'} }>Has the Visitor met the required person ? </Heading>
         <div  align='center' style={{marginLeft : '50px'}}>
           <RadioButton id='yes'
             name='Yes'
@@ -162,25 +162,36 @@ onRadioChange(button, e) {
             checked={this.state.radioSelectValue === 'no' ? true : false}
             onChange={this.onRadioChange.bind(this, 'no')} />
         </div>
-        <div style={{marginLeft : '50px', marginTop : '100px'}}>
-        <Section pad='small'
-          align='center'>
-        <Button primary="true" type="button"
-          label='DEPARTED' icon={<Edit />}
-          disabled={true}
-          onClick={this.onDepartedClick.bind(this)}
-          href='#' />
-          </Section>
-          </div>
         </div>
       );
     }else{
       let ot = this.state.visitorData.outTime;
       let splitOT = ot.split("T");
+      let time = splitOT[1].split(".")[0];
+      let hour = Number(time.split(":")[0]) + 5;
+      let minute = Number(time.split(":")[1]) + 30;
+      let pmTime = false;
+      if(minute >= 60) {
+        hour = hour + 1;
+        minute = minute -60;
+      }
+      let second = time.split(":")[2];
+      if(hour > 12) {
+        hour = hour - 12;
+        pmTime = true;
+      }
+      let formattedTime= hour.toString() + ':' + minute.toString() + ':' + second.toString()
+      if(pmTime){
+        formattedTime = formattedTime + ' PM'
+      }else{
+        formattedTime = formattedTime + ' AM'
+      }
+
+
       return (<div style={{marginLeft :'40px'}}>
       <Headline size='small'>
         Departed at : <span style={{color :'red'}}> {splitOT[0]}</span> Time : <span
-        style={{color :'red'}}> {splitOT[1].split(".")[0]} UTC Time</span>
+        style={{color :'red'}}>{formattedTime}</span>
       </Headline>
       </div>)
     }
@@ -222,6 +233,7 @@ onRadioChange(button, e) {
 
   render() {
 
+    const { status } = this.state.visitorData;
     console.log(this.props)
     if (this.state.isLoading) {
       return (
@@ -262,7 +274,8 @@ onRadioChange(button, e) {
       visitorTitle = `"${visitorData.name}" (${visitorId})`
     }
     return (
-      <Article primary={true} full={true} className='visitorDetails'>
+      <div style={{height:'700px'}}>
+      <Article primary={true} full={true} className='visitorDetails' style={{height:'680px'}}>
         <Header
           direction='row'
           colorIndex='light-2'
@@ -279,6 +292,20 @@ onRadioChange(button, e) {
         { this.renderVisitor() }
         { this.renderActions() }
       </Article>
+      <div style={{marginLeft : '50px'}}>
+      {status !== 'DEPARTED' &&
+
+      <Section pad='small'
+        align='center'>
+      <Button primary="true" type="button"
+        label='DEPARTED' icon={<CheckMark/>}
+        onClick={this.onDepartedClick.bind(this)}
+        href='#' />
+        </Section>
+      }
+        </div>
+
+      </div>
     );
   }
 }

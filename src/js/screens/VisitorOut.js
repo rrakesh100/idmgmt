@@ -183,7 +183,6 @@ class VisitorOut extends Component {
   }
 
   render() {
-
     return (
       <Article primary={true} className='visitors'>
       { this.renderHeader('VISITOR REGISTER (OUTWARD)')}
