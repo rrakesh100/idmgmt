@@ -24,7 +24,9 @@ import Button from 'grommet/components/Button';
 import Edit from 'grommet/components/icons/base/Print';
 import Toast from 'grommet/components/Toast';
 import Headline from 'grommet/components/Headline';
-
+import Table from 'grommet/components/Table';
+import TableRow from 'grommet/components/TableRow';
+import Layer from 'grommet/components/Layer';
 
 import { saveVisitor, uploadVisitorImage } from '../api/visitors';
 
@@ -215,33 +217,72 @@ class NewVisitor extends Component {
   }
 
   renderBusinessCardForPrint() {
-    const { name = '', whomToMeet = '', timestampStr } = this.state;
-    const printName = 'Visitor Name: ' + name.substring(0, 16);
-    const printInfo = 'To meet: '+ whomToMeet.substring(0, 20);
-
+    const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
+    , timestampStr } = this.state;
     return (
-      <Print name='bizCard' exclusive style={{height:'400px'}}>
+       <Print name='bizCard' exclusive style={{height:'400px'}}>
         <div className='card'>
           <div className='card-body'>
             <div className='box header'>
-              <h3>Lalitha Industries</h3>
+              <h5>LALITHA ENTERPRIES INDUSTRIES PVT LTD</h5>
+              <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
             </div>
             <div className='box sidebar'>
               <Image src={this.state.screenshot} />
             </div>
-            <div className='box content'>
-              <h5 className='bold'>{printName}</h5>
-              <h5>{printInfo}</h5>
-              <h5>{timestampStr}</h5>
+            <div className='content'>
+            <Table>
+              <tbody>
+                <TableRow>
+                  <td>
+                    Name: <b>{name.toUpperCase()}</b>
+                  </td>
+                  <td>
+                    From: <b>{comingFrom.toUpperCase()}</b>
+                  </td>
+                  </TableRow>
+                  <TableRow>
+                    <td>
+                      To Meet: <b>{whomToMeet.toUpperCase()}</b>
+                    </td>
+                    <td>
+                      Mobile: <b>{mobile.toUpperCase()}</b>
+                    </td>
+                    </TableRow>
+                    <TableRow>
+                      <td>
+                        Purpose: <b>{purpose.toUpperCase()}</b>
+                      </td>
+                      <td>
+                        Other Info: <b>{info}</b>
+                      </td>
+                  </TableRow>
+                </tbody>
+              </Table>
+                <Table>
+                  <tbody>
+                    <TableRow>
+                      <td>
+                        Operator Signature
+                      </td>
+                      <td>
+                        Visitor Signature
+                      </td>
+                      <td>
+                        Officer Signature
+                      </td>
+                      </TableRow>
+                    </tbody>
+                </Table>
             </div>
-            <div className='box footer' style={{width:'30%', float:'right'}}>
+            <div className='footer' style={{width:'30%', float:'right'}}>
               <Barcode value={this.state.visitorId}
                 height={20}
               />
             </div>
           </div>
         </div>
-      </Print>
+         </Print>
     );
   }
 
