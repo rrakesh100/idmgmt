@@ -218,7 +218,7 @@ class NewVisitor extends Component {
 
   renderBusinessCardForPrint() {
     const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
-    , timestampStr } = this.state;
+    , timestampStr, inTime } = this.state;
     return (
        <Print name='bizCard' exclusive style={{height:'400px'}}>
         <div className='card'>
@@ -257,6 +257,11 @@ class NewVisitor extends Component {
                         Other Info: <b>{info}</b>
                       </td>
                   </TableRow>
+                  <TableRow>
+                    <td>
+                      In Time: <b>{timestampStr}</b>
+                    </td>
+                </TableRow>
                 </tbody>
               </Table>
                 <Table>
