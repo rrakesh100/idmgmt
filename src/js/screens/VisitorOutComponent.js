@@ -233,7 +233,6 @@ onRadioChange(button, e) {
 
   render() {
 
-    const { status } = this.state.visitorData;
     console.log(this.props)
     if (this.state.isLoading) {
       return (
@@ -269,9 +268,12 @@ onRadioChange(button, e) {
 
     const {  visitorId } = this.state;
     const { visitorData } = this.state;
+    let status = ''; let hideButton = false;
     let visitorTitle = `Visitor ${visitorId}`;
     if (visitorData) {
-      visitorTitle = `"${visitorData.name}" (${visitorId})`
+      visitorTitle = `"${visitorData.name}" (${visitorId})`;
+      if(visitorData.status === 'DEPARTED')
+       hideButton = true;
     }
     return (
       <div style={{height:'700px'}}>
@@ -293,7 +295,7 @@ onRadioChange(button, e) {
         { this.renderActions() }
       </Article>
       <div style={{marginLeft : '50px'}}>
-      {status !== 'DEPARTED' &&
+      { !hideButton &&
 
       <Section pad='small'
         align='center'>

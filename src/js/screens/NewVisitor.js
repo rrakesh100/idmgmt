@@ -218,13 +218,13 @@ class NewVisitor extends Component {
 
   renderBusinessCardForPrint() {
     const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
-    , timestampStr, inTime } = this.state;
+    , timestampStr, department } = this.state;
     return (
-       <Print name='bizCard' exclusive style={{height:'400px'}}>
+       <Print name='bizCard' exclusive style={{height:'450px'}}>
         <div className='card'>
           <div className='card-body'>
             <div className='box header'>
-              <h5>LALITHA ENTERPRIES INDUSTRIES PVT LTD</h5>
+              <h5>SRI LALITHA ENTERPRIES INDUSTRIES PVT LTD</h5>
               <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
             </div>
             <div className='box sidebar'>
@@ -254,12 +254,15 @@ class NewVisitor extends Component {
                         Purpose: <b>{purpose.toUpperCase()}</b>
                       </td>
                       <td>
-                        Other Info: <b>{info}</b>
+                        Department: <b>{department}</b>
                       </td>
                   </TableRow>
                   <TableRow>
                     <td>
                       In Time: <b>{timestampStr}</b>
+                    </td>
+                    <td>
+                      Other Info: <b>{info}</b>
                     </td>
                 </TableRow>
                 </tbody>
