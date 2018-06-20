@@ -128,15 +128,17 @@ class Tasks extends Component {
       return;
 
       const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
-      , timestampStr,screenshot, visitorId } = this.state.printVisitorObj;
-      console.log(visitorId)
+      , timestampStr,screenshot, visitorId, department, inTime } = this.state.printVisitorObj;
+      console.log(this.state.printVisitorObj);
+      const timestamp = new Date();
+      const timestampString = Moment(timestamp).format('DD/MM/YYYY hh:mm:ss A');
 
     return(
       <Print name='bizCard' exclusive>
-       <div className='card' style={{width:'90%', height:'23%', marginLeft:'40px'}}>
+       <div className='card' style={{width:'90%', height:'28%', marginLeft:'40px'}}>
          <div className='card-body' style={{marginLeft:'40px'}}>
            <div className='box header'>
-             <h5>LALITHA ENTERPRIES INDUSTRIES PVT LTD</h5>
+             <h5>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
              <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
            </div>
            <div className='box sidebar'>
@@ -161,9 +163,17 @@ class Tasks extends Component {
                      Mobile: <b>{mobile.toUpperCase()}</b>
                    </td>
                    </TableRow>
+                 <TableRow>
+                   <td>
+                   Purpose: <b>{purpose.toUpperCase()}</b>
+                   </td>
+                   <td>
+                   Department: <b>{department}</b>
+                   </td>
+                   </TableRow>
                    <TableRow>
                      <td>
-                       Purpose: <b>{purpose.toUpperCase()}</b>
+                     In Time: <b>{timestampString}</b>
                      </td>
                      <td>
                        Other Info: <b>{info}</b>

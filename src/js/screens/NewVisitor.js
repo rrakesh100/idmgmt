@@ -221,10 +221,10 @@ class NewVisitor extends Component {
     , timestampStr, department } = this.state;
     return (
        <Print name='bizCard' exclusive>
-        <div className='card' style={{width:'92%', height:'7%', marginLeft:'40px'}}>
+        <div className='card' style={{width:'92%', height:'9%', marginLeft:'40px'}}>
           <div className='card-body' style={{marginLeft:'30px'}}>
             <div className='box header'>
-              <h5>SRI LALITHA ENTERPRIES INDUSTRIES PVT LTD</h5>
+              <h5>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
               <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
             </div>
             <div className='box sidebar'>
