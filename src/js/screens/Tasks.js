@@ -128,11 +128,13 @@ class Tasks extends Component {
       return;
 
       const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
-      , timestampStr,screenshot } = this.state.printVisitorObj;
+      , timestampStr,screenshot, visitorId } = this.state.printVisitorObj;
+      console.log(visitorId)
+
     return(
-      <Print name='bizCard' exclusive style={{height:'400px'}}>
-       <div className='card'>
-         <div className='card-body'>
+      <Print name='bizCard' exclusive>
+       <div className='card' style={{width:'90%', height:'23%', marginLeft:'40px'}}>
+         <div className='card-body' style={{marginLeft:'40px'}}>
            <div className='box header'>
              <h5>LALITHA ENTERPRIES INDUSTRIES PVT LTD</h5>
              <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
@@ -186,13 +188,14 @@ class Tasks extends Component {
                </Table>
            </div>
            <div className='footer' style={{width:'30%', float:'right'}}>
-             <Barcode value={this.state.visitorId}
+             <Barcode value={this.state.printVisitorObj.visitorId}
                height={20}
              />
            </div>
          </div>
        </div>
-        </Print>);
+        </Print>
+      );
   }
 
   print() {

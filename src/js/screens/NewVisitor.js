@@ -220,9 +220,9 @@ class NewVisitor extends Component {
     const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
     , timestampStr, department } = this.state;
     return (
-       <Print name='bizCard' exclusive style={{height:'450px'}}>
-        <div className='card'>
-          <div className='card-body'>
+       <Print name='bizCard' exclusive>
+        <div className='card' style={{width:'92%', height:'7%', marginLeft:'40px'}}>
+          <div className='card-body' style={{marginLeft:'30px'}}>
             <div className='box header'>
               <h5>SRI LALITHA ENTERPRIES INDUSTRIES PVT LTD</h5>
               <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
