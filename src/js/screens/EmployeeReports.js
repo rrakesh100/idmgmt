@@ -15,7 +15,8 @@ import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
 import Box from 'grommet/components/Box';
 import Search from 'grommet/components/Search';
-
+import Tabs from 'grommet/components/Tabs';
+import Tab from 'grommet/components/Tab';
 
 
 class Reports extends Component {
@@ -249,7 +250,8 @@ renderDateFields() {
         margin='small'
         colorIndex='light-2'
       >
-      <Search placeHolder='Search employee By Name or Barcode' style={{width:'800px'}}
+      <p style={{margin : '20px'}}>Select Employee</p>
+      <Search placeHolder='Search employee By Name or Barcode' style={{width:'600px'}}
         inline={true}
         iconAlign='start'
         size='small'
@@ -327,12 +329,19 @@ renderDateFields() {
         Employee Reports
         </Heading>
         </Header>
+        <Tabs>
+        <Tab title='Datewise'>
         { this.renderDateFields() }
         <div style={{marginTop:'30px'}}>
         { this.showEmployeeReportsTable() }
+
         </div>
+        </Tab>
+        <Tab title='Employeewise'>
         { this.renderSearchField() }
         { this.renderEmployeeAttendanceTable() }
+        </Tab>
+        </Tabs>
         </Article>
       )
     }
