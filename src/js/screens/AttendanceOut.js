@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { getEmployees, getEmployee } from '../api/employees';
-import { saveAttendanceInData } from '../api/attendance';
+import { saveAttendanceOutData } from '../api/attendance';
 import Webcam from 'react-webcam';
 import Search from 'grommet/components/Search';
 import Box from 'grommet/components/Box';
@@ -155,7 +155,7 @@ class AttendanceOut extends Component {
   onCompareButtonClick() {
     const { selectedEmployeeId, selectedEmployeeData } = this.state;
     let selectedEmployeeName = selectedEmployeeData.name;
-    saveAttendanceInData(selectedEmployeeId, selectedEmployeeName).then(() => {
+    saveAttendanceOuData(selectedEmployeeId, selectedEmployeeName).then(() => {
       this.setState({msg:'Attendance marked as left'})
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);
