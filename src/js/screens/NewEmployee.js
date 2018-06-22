@@ -24,6 +24,7 @@ import Edit from 'grommet/components/icons/base/Print';
 import Toast from 'grommet/components/Toast';
 import { uploadEmployeeImage } from '../api/employees';
 import { saveEmployee } from '../api/employees';
+import Headline from 'grommet/components/Headline';
 
 
 class NewEmployee extends Component {
@@ -241,22 +242,22 @@ class NewEmployee extends Component {
             justify='center'
             className='fields'
             align='center'>
+            <Headline size="small" style={{marginLeft :'30px'}}>
+                    <span>Date :   <Clock className='visitorClock' format={'DD/MM/YYYY'}/></span>
+                    <span style={{marginLeft : '20px'}}>Time :   <Clock className='visitorClock' format={'hh:mm:ss A'} ticking={true} /></span>
+            </Headline>
             <Split>
-              <Box onClick={this.capture.bind(this)} className='left' align='center'>
-                {this.renderCamera() }
-              </Box>
-              <Box className='right' direction='column'>
+              <Box className='left' direction='column' style={{marginLeft:'40px'}}>
                 <Box align='center'>
-                  <Clock className='employeeClock' format={'DD/MM/YYYY hh:mm:ss A'} ticking={true} />
 
                   <Form>
-                    <FormField label='Name' strong={true} size='large'>
+                    <FormField label='Name' strong={true} size='small' style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='name'
                         onDOMChange={this.onFieldChange.bind(this, 'name')}
                       />
                     </FormField>
-                    <FormField label='Info' strong={true}>
+                    <FormField label='Info' strong={true} size='small' style={{marginTop : '15px'}}>
                       <TextInput
                         placeHolder='extra info'
                         onDOMChange={this.onFieldChange.bind(this, 'info')}
@@ -264,21 +265,27 @@ class NewEmployee extends Component {
                     </FormField>
                   </Form>
                 </Box>
-                <Box align='center'>
-                  <Barcode value={this.state.employeeId} />
-                </Box>
+
               </Box>
+              <Box onClick={this.capture.bind(this)} direction='column'
+              className='right'
+              align='center'
+              style={{marginTop:'25px'}}>
+                {this.renderCamera() }
+                <Barcode value={this.state.employeeId} height="20"/>
+                <Section pad='small'
+                  align='center'>
+                  <Button icon={<Edit />}
+                    label='SAVE & PRINT'
+                    onClick={this.onSubmitClick.bind(this)}
+                    disabled={true}
+                    href='#'
+                    primary={true} />
+                </Section>
+                </Box>
             </Split>
           </Section>
-          <Section pad='small'
-            align='center'>
-            <Button icon={<Edit />}
-              label='SAVE & PRINT'
-              onClick={this.onSubmitClick.bind(this)}
-              disabled={true}
-              href='#'
-              primary={true} />
-          </Section>
+
         </Article>
         { this.renderBusinessCardForPrint() }
       </div>

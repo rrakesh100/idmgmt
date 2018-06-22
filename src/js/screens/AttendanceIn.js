@@ -11,9 +11,15 @@ import Paragraph from 'grommet/components/Paragraph';
 import Heading from 'grommet/components/Heading';
 import axios from 'axios';
 import $ from 'jquery';
+import Article from 'grommet/components/Article';
+import Header from 'grommet/components/Header';
+import Anchor from 'grommet/components/Anchor';
+import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
+import Split from 'grommet/components/Split';
+import Headline from 'grommet/components/Headline';
 
 
-class Attendance extends Component {
+class AttendanceIn extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -29,8 +35,19 @@ class Attendance extends Component {
     getEmployees().then((snap) => {
       const data = snap.val();
       console.log(data);
+      if (!data) {
+        return;
+      }
+      let suggests = [];
+      Object.keys(data).forEach((employee) => {
+        suggests.push({
+           label : data[employee].name,
+           employeeId : employee
+        })
+      })
       this.setState({
-        employeeSuggestions: [...Object.keys(data)]
+        employeeSuggestions: suggests,
+        filteredSuggestions: suggests
       });
     })
     .catch((err) => {
@@ -53,8 +70,8 @@ class Attendance extends Component {
   onEmployeeSelect(data, isSuggestionSelected) {
     if(isSuggestionSelected) {
       this.setState({
-        selectedEmployeeId: data.suggestion,
-        employeeSearchString: data.suggestion
+        selectedEmployeeId: data.suggestion.employeeId,
+        employeeSearchString: data.suggestion.label
       }, this.fetchSearchedEmployee.bind(this));
     } else {
       this.setState({
@@ -65,22 +82,38 @@ class Attendance extends Component {
   }
 
   onSearchEntry(e) {
+    let filtered = [];
+    let  options  = this.state.employeeSuggestions;
+
+    if(e.target.value == '')
+      filtered = options
+    else {
+      options.forEach((opt) => {
+        if(opt.label.startsWith(e.target.value))
+          filtered.push(opt)
+        if(opt.employeeId.startsWith(e.target.value))
+          filtered.push(opt)
+      })
+    }
     this.setState({
-      employeeSearchString: e.target.value
+      employeeSearchString: e.target.value,
+      filteredSuggestions: filtered
     });
   }
 
   renderEmployeeSearch() {
     return (
-      <Search placeHolder='Search employee'
+      <div style={{marginTop : '40px', marginLeft :'30px'}}>
+      <Search placeHolder='Search employee By Name or Barcode' style={{width:'800px'}}
         inline={true}
         iconAlign='start'
         size='small'
-        suggestions={this.state.employeeSuggestions}
+        suggestions={this.state.filteredSuggestions}
         value={this.state.employeeSearchString}
         onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)}
-         />
+        />
+    </div>
     )
   }
 
@@ -131,13 +164,39 @@ class Attendance extends Component {
 
 renderSearchedEmployee() {
   const { selectedEmployeeData } = this.state;
-
   if(selectedEmployeeData) {
-    const { screenshot } = selectedEmployeeData;
+    const { screenshot, name, employeeId } = selectedEmployeeData;
+
+    let employeeName = `"${name}" (${employeeId})`
+
   return (
-    <div>
-    <Image src={screenshot} />
-    </div>
+
+    <Article>
+    <Header
+      direction='row'
+      colorIndex='light-2'
+      align='center'
+      responsive={false}
+      pad={{ horizontal: 'small' }}
+    >
+      <Heading margin='none' strong={true}>
+        {employeeName}
+      </Heading>
+    </Header>
+    <Box direction='column' align='center'>
+    <Image src={screenshot} style={{marginTop:'5px'}}/>
+
+    </Box>
+    <Box direction='column' align='center'>
+
+    <Button style={{marginTop:'2px'}}
+      label='MARK PRESENT'
+      onClick={this.onCompareButtonClick.bind(this)}
+      href='#'
+      primary={true} />
+    </Box>
+    </Article>
+
   )
 }
 }
@@ -186,19 +245,29 @@ onOkButtonClick() {
       )
     }
     return (
-      <div style={{marginLeft: '200px', marginTop: '100px'}}>
+      <Article primary={true} className='employees'>
+      <Header
+        direction='row'
+        size='large'
+        colorIndex='light-2'
+        align='center'
+        responsive={true}
+        pad={{ horizontal: 'small' }}
+      >
+        <Anchor path='/employees'>
+          <LinkPrevious a11yTitle='Back' />
+        </Anchor>
+        <Heading margin='none' strong={true}>
+          Attendance In
+        </Heading>
+      </Header>
+
       { this.renderEmployeeSearch() }
       { this.renderSearchedEmployee() }
-      <div style={{position: 'absolute'}}>
-        <Button
-          label='MARK PRESENT'
-          onClick={this.onCompareButtonClick.bind(this)}
-          href='#'
-          primary={true} />
-        </div>
-        </div>
+
+        </Article>
       );
   }
 }
 
-export default Attendance;
+export default AttendanceIn;

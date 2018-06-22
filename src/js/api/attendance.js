@@ -38,3 +38,8 @@ export function getAttendanceDetails(date) {
   const dbRef = firebase.database().ref(`attendance/dates/${date}/`);
   return dbRef.once('value');
 }
+
+export function getEmployeeAttendanceDates(employeeId) {
+  const dbRef = firebase.database().ref(`attendance/employees/${employeeId}`);
+  return dbRef.once('value');
+}

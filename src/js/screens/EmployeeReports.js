@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { getEmployees, getEmployee } from '../api/employees';
-import { attendanceDatesLoop } from '../api/attendance';
+import { attendanceDatesLoop, getEmployeeAttendanceDates } from '../api/attendance';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import DateTime from 'grommet/components/DateTime';
@@ -13,6 +13,8 @@ import { getMessage } from 'grommet/utils/Intl';
 import Article from 'grommet/components/Article';
 import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
+import Box from 'grommet/components/Box';
+import Search from 'grommet/components/Search';
 
 
 
@@ -26,7 +28,27 @@ class Reports extends Component {
   }
 
   componentDidMount() {
-
+    getEmployees()
+      .then((snap) => {
+        const data = snap.val();
+        if (!data) {
+          return;
+        }
+        let suggests = [];
+        Object.keys(data).forEach((employee) => {
+          suggests.push({
+             label : data[employee].name,
+             employeeId : employee
+          })
+        })
+        this.setState({
+          employeeSuggestions: suggests,
+          filteredSuggestions: suggests
+        });
+      })
+      .catch((err) => {
+        console.error('VISITOR FETCH FAILED', err);
+      });
   }
 
 
@@ -44,7 +66,6 @@ class Reports extends Component {
     datesArr.push(moment(startDateObj).format('DD-MM-YYYY'));
     startDateObj.setDate(startDateObj.getDate() + 1);
     }
-    console.log(datesArr)
 
     let returnObj = {};
     const dbRef = firebase.database().ref('attendance/');
@@ -52,13 +73,11 @@ class Reports extends Component {
       datesArr.map((date) => {
         return dbRef.child('dates').child(date).once('value').then((snapshot) => {
           let response = snapshot.val();
-          console.log(response);
           returnObj[date] = response;
 
         })
       })
     ).then(() => {
-      console.log(returnObj);
       this.setState({response: returnObj})
     })
 
@@ -80,30 +99,29 @@ renderDateFields() {
 
   return (
     <div style={{marginLeft:'20px'}}>
-    <div style={{marginTop:'20px'}}>
-    <Form>
-      <FormField>
-        <DateTime id='id'
-        format='D/M/YYYY'
-        name='name'
-        onChange={this.onStartDateChange.bind(this)}
-        value={this.state.startDate}
-        />
-      </FormField>
-    </Form>
-    </div>
-    <div style={{marginTop:'20px'}}>
-    <Form>
-      <FormField>
-        <DateTime id='id'
-        format='D/M/YYYY'
-        name='name'
-        onChange={this.onEndDateChange.bind(this)}
-        value={this.state.endDate}
-        />
-      </FormField>
-    </Form>
-    </div>
+    <Box direction='row'
+      justify='start'
+      align='center'
+      wrap={true}
+      pad='medium'
+      margin='small'
+      colorIndex='light-2'
+    >
+    <p style={{marginLeft : '40px'}}>Select Start Date</p>
+    <DateTime id='id' style={{marginLeft : '20px'}}
+    format='D/M/YYYY'
+    name='name'
+    onChange={this.onStartDateChange.bind(this)}
+    value={this.state.startDate}
+    />
+    <p style={{marginLeft : '40px'}}>Select End Date</p>
+    <DateTime id='id' style={{marginLeft : '20px'}}
+    format='D/M/YYYY'
+    name='name'
+    onChange={this.onEndDateChange.bind(this)}
+    value={this.state.endDate}
+    />
+    </Box>
     </div>
   )
 }
@@ -176,6 +194,123 @@ renderDateFields() {
     )
   }
 
+  onSearchEntry(e) {
+    let filtered = [];
+    let  options  = this.state.employeeSuggestions;
+
+    if(e.target.value == '')
+      filtered = options
+    else {
+      options.forEach((opt) => {
+        if(opt.label.startsWith(e.target.value))
+          filtered.push(opt)
+        if(opt.employeeId.startsWith(e.target.value))
+          filtered.push(opt)
+      })
+    }
+    this.setState({
+      employeeSearchString: e.target.value,
+      filteredSuggestions: filtered
+    });
+  }
+
+  fetchSearchedEmployee() {
+    const { selectedEmployeeId } = this.state;
+    getEmployeeAttendanceDates(selectedEmployeeId).then((snap) => {
+      const selectedEmployeeData = snap.val();
+      this.setState({
+        selectedEmployeeData
+      });
+    }).catch((e) => console.log(e))
+  }
+
+  onEmployeeSelect(data, isSuggestionSelected) {
+    if(isSuggestionSelected) {
+      this.setState({
+        selectedEmployeeId: data.suggestion.employeeId,
+        employeeSearchString: data.suggestion.label
+      }, this.fetchSearchedEmployee.bind(this));
+    } else {
+      this.setState({
+        selectedEmployeeId: data.target.value,
+        employeeSearchString: data.suggestion
+      }, this.fetchSearchedEmployee.bind(this));
+    }
+  }
+
+  renderSearchField() {
+    return (
+      <div style={{marginLeft:'20px'}}>
+      <Box direction='row'
+        justify='center'
+        align='center'
+        wrap={true}
+        pad='small'
+        margin='small'
+        colorIndex='light-2'
+      >
+      <Search placeHolder='Search employee By Name or Barcode'
+        inline={true}
+        iconAlign='start'
+        size='small'
+        suggestions={this.state.filteredSuggestions}
+        value={this.state.employeeSearchString}
+        onSelect={this.onEmployeeSelect.bind(this)}
+        onDOMChange={this.onSearchEntry.bind(this)} />
+      </Box>
+      </div>
+    );
+  }
+
+  renderEmployeeAttendanceTable() {
+    const { selectedEmployeeData, selectedEmployeeId } = this.state;
+    if(selectedEmployeeData) {
+      return (
+        <div className='employeeTable'>
+        <Table scrollable={true} style={{marginTop : '30px', marginLeft : '40px'}}>
+            <thead style={{position:'relative'}}>
+             <tr>
+               <th>S No.</th>
+               <th>Date</th>
+               <th>In Time</th>
+               <th>Out Time</th>
+               <th>Total Time Spent</th>
+             </tr>
+            </thead>
+            <tbody>
+              {
+                Object.keys(selectedEmployeeData).map((key, index) => {
+                  const employeeAttendaceObj = selectedEmployeeData[key];
+                  if(employeeAttendaceObj !== null)
+                  {
+                  let inTime = employeeAttendaceObj.in;
+                  let outTime = employeeAttendaceObj.out;
+                  let totalTime = 'N/A';
+                  if(outTime && inTime) {
+                    let startTime=moment(inTime, "HH:mm a");
+                    let endTime=moment(outTime, "HH:mm a");
+                    let duration = moment.duration(endTime.diff(startTime));
+                    let hours = parseInt(duration.asHours());
+                    let minutes = parseInt(duration.asMinutes())%60;
+                    totalTime = hours + ' hr ' + minutes + ' min ';
+                  }
+                  return <TableRow key={index}>
+                  <td>{index+1}</td>
+                  <td>{key}</td>
+                  <td>{inTime}</td>
+                  <td>{outTime}</td>
+                  <td>{totalTime}</td>
+                  </TableRow>
+                }
+                })
+              }
+            </tbody>
+        </Table>
+        </div>
+      );
+    }
+  }
+
 
   render() {
     const {response} = this.state;
@@ -196,6 +331,8 @@ renderDateFields() {
         <div style={{marginTop:'30px'}}>
         { this.showEmployeeReportsTable() }
         </div>
+        { this.renderSearchField() }
+        { this.renderEmployeeAttendanceTable() }
         </Article>
       )
     }

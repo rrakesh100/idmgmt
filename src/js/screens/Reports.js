@@ -19,11 +19,6 @@ import ReactExport from "react-data-export";
 
 
 
-
-
-
-
-
 class Reports extends Component {
   constructor(props) {
     super(props);
