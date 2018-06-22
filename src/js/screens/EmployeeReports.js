@@ -249,7 +249,7 @@ renderDateFields() {
         margin='small'
         colorIndex='light-2'
       >
-      <Search placeHolder='Search employee By Name or Barcode'
+      <Search placeHolder='Search employee By Name or Barcode' style={{width:'800px'}}
         inline={true}
         iconAlign='start'
         size='small'
