@@ -303,6 +303,7 @@ onRadioChange(button, e) {
         label='DEPARTED' icon={<CheckMark/>}
         onClick={this.onDepartedClick.bind(this)}
         href='#' />
+
         </Section>
       }
         </div>
