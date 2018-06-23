@@ -155,25 +155,6 @@ class NewEmployee extends Component {
     );
   }
 
-  renderHeader(headerText) {
-    return (
-      <Header
-        direction='row'
-        size='large'
-        colorIndex='light-2'
-        align='center'
-        responsive={true}
-        pad={{ horizontal: 'small' }}
-      >
-        <Anchor path='/employees'>
-          <LinkPrevious a11yTitle='Back' />
-        </Anchor>
-        <Heading margin='none' strong={true}>
-          {headerText}
-        </Heading>
-      </Header>
-    );
-  }
 
   renderBusinessCardForPrint() {
     const { name = '', info = '', timestampStr } = this.state;
@@ -236,18 +217,17 @@ class NewEmployee extends Component {
         <Article scrollStep={false}
           direction='column'
           primary={true} full={true}>
-          { this.renderHeader('REGISTER EMPLOYEE')}
 
           <Section pad='small'
             justify='center'
             className='fields'
             align='center'>
-            <Headline size="small" style={{marginLeft :'30px'}}>
+            <Headline size="small">
                     <span>Date :   <Clock className='visitorClock' format={'DD/MM/YYYY'}/></span>
                     <span style={{marginLeft : '20px'}}>Time :   <Clock className='visitorClock' format={'hh:mm:ss A'} ticking={true} /></span>
             </Headline>
             <Split>
-              <Box className='left' direction='column' style={{marginLeft:'40px'}}>
+              <Box className='left' direction='column'>
                 <Box align='center'>
 
                   <Form>

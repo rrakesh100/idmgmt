@@ -255,16 +255,7 @@ class Reports extends Component {
 
       return (
         <Article>
-        <Header
-          direction='row'
-          justify='between'
-          size='large'
-          pad={{ horizontal: 'medium', between: 'small' }}
-        >
-        <Heading margin='none' strong={true}>
-        Visitor Reports
-        </Heading>
-        </Header>
+        
         { this.renderDateFields() }
         <div style={{marginTop:'30px'}}>
         { this.showVisitorReportsTable() }

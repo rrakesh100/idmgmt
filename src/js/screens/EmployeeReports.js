@@ -319,16 +319,7 @@ renderDateFields() {
 
       return (
         <Article>
-        <Header
-          direction='row'
-          justify='between'
-          size='large'
-          pad={{ horizontal: 'medium', between: 'small' }}
-        >
-        <Heading margin='none' strong={true}>
-        Employee Reports
-        </Heading>
-        </Header>
+        
         <Tabs>
         <Tab title='Datewise'>
         { this.renderDateFields() }

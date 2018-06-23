@@ -117,23 +117,6 @@ class VisitorOut extends Component {
     })
   }
 
-  renderHeader(headerText) {
-    return (
-      <Header
-        direction='row'
-        size='large'
-        colorIndex='light-2'
-        align='center'
-        responsive={true}
-        pad={{ horizontal: 'small' }}
-      >
-      <NavControl />
-        <Heading margin='none' strong={true}>
-          {headerText}
-        </Heading>
-      </Header>
-    );
-  }
 
   renderSearchedVisitor() {
     const { selectedVisitorData, selectedVisitorId } = this.state;
@@ -185,7 +168,6 @@ class VisitorOut extends Component {
   render() {
     return (
       <Article primary={true} className='visitors'>
-      { this.renderHeader('VISITOR REGISTER (OUTWARD)')}
       { this.renderVisitorSearch() }
       { this.renderSearchedVisitor() }
       { this.renderVisitorDetail() }

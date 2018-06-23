@@ -246,21 +246,7 @@ onOkButtonClick() {
     }
     return (
       <Article primary={true} className='employees'>
-      <Header
-        direction='row'
-        size='large'
-        colorIndex='light-2'
-        align='center'
-        responsive={true}
-        pad={{ horizontal: 'small' }}
-      >
-        <Anchor path='/employees'>
-          <LinkPrevious a11yTitle='Back' />
-        </Anchor>
-        <Heading margin='none' strong={true}>
-          Attendance Out
-        </Heading>
-      </Header>
+      
 
       { this.renderEmployeeSearch() }
       { this.renderSearchedEmployee() }

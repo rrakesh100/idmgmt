@@ -27,11 +27,17 @@ import HomeIcon from 'grommet/components/icons/base/Home';
 import Image from 'grommet/components/Image';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import Tabs from 'grommet/components/Tabs';
+import Tab from 'grommet/components/Tab';
 import { getMessage } from 'grommet/utils/Intl';
 import { getVisitors, getVisitor, getAllVisitors } from '../api/visitors';
 import NavControl from '../components/NavControl';
-
+import Split from 'grommet/components/Split';
 import { pageLoaded } from './utils';
+import NewVisitor from './NewVisitor';
+import VisitorOut from './VisitorOut';
+import Reports from './Reports';
+
+
 
 class Tasks extends Component {
   constructor(props) {
@@ -329,21 +335,23 @@ class Tasks extends Component {
         </Heading>
       </Header>
         {errorNode}
-        <Box pad={{ horizontal: 'medium' }}>
-          <Paragraph size='large'>
-            <Button
-              label='Visitor In'
-              href='/in/visitor' />
-              <Button style={{marginLeft:'20px'}}
-                label='Visitor Out'
-                href='/out/visitor' />
-                <Button style={{marginLeft:'20px'}}
-                  label='Reports'
-                  href='/reports' />
-          </Paragraph>
-        </Box>
+        <Split>
+            <Tabs justify='start' style={{marginLeft:'40px'}}>
+            <Tab title='HOME'>
+            { this.showVisitorsTable() }
+            </Tab>
+            <Tab title='VISITOR IN'>
+            <NewVisitor />
+            </Tab>
+            <Tab title='VISITOR OUT'>
+            <VisitorOut />
+            </Tab>
+            <Tab title='REPORTS'>
+            <Reports />
+            </Tab>
+            </Tabs>
+        </Split>
         { this.renderSearchedVisitor() }
-        { this.showVisitorsTable() }
         { this.printBusinessCard() }
         { this.print() }
 

@@ -11,11 +11,20 @@ import Paragraph from 'grommet/components/Paragraph';
 import Employee from 'grommet/components/icons/base/DocumentUser';
 import Button from 'grommet/components/Button';
 import Search from 'grommet/components/Search';
+import Split from 'grommet/components/Split';
 import AddIcon from 'grommet/components/icons/base/Add';
 import { getMessage } from 'grommet/utils/Intl';
 import { getEmployees, getEmployee } from '../api/employees';
 import NavControl from '../components/NavControl';
 import { pageLoaded } from './utils';
+import Tabs from 'grommet/components/Tabs';
+import Tab from 'grommet/components/Tab';
+import NewEmployee from './NewEmployee';
+import AttendanceIn from './AttendanceIn';
+import AttendanceOut from './AttendanceOut';
+import EmployeeReports from './EmployeeReports';
+import Heading from 'grommet/components/Heading';
+
 
 class Employees extends Component {
   constructor(props) {
@@ -84,7 +93,8 @@ class Employees extends Component {
 
   renderEmployeeSearch() {
     return (
-      <Search placeHolder='Search employee By Name or Barcode'
+      <div style={{marginTop : '40px', marginLeft :'30px'}}>
+      <Search placeHolder='Search employee By Name or Barcode' style={{width:'800px'}}
         inline={true}
         iconAlign='start'
         size='small'
@@ -92,6 +102,7 @@ class Employees extends Component {
         value={this.state.employeeSearchString}
         onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)} />
+      </div>
     )
   }
 
@@ -172,31 +183,39 @@ class Employees extends Component {
 
     return (
       <Article primary={true} className='employees'>
-        <Header
-          direction='row'
-          justify='between'
-          size='large'
-          pad={{ horizontal: 'medium', between: 'small' }}
-        >
-          <NavControl name={getMessage(intl, 'Employees')} />
-        </Header>
+      <Header
+        direction='row'
+        size='large'
+        colorIndex='light-2'
+        align='center'
+        responsive={true}
+        pad={{ horizontal: 'small' }}>
+        <NavControl />
+        <Heading margin='none' strong={true}>
+          DAILY LABOUR REGISTER
+        </Heading>
+      </Header>
         {errorNode}
-        <Box direction="row" justify="start" align="center" pad={{ horizontal: 'medium' }}>
-            <Button icon={<AddIcon />}
-              label='ADD'
-              href='/new/employee' />
-              <Button style={{marginLeft:'10px'}}
-                label='ATTENDANCE IN'
-                href='/in/attendance/employee' />
-                <Button style={{marginLeft:'10px'}}
-                  label='ATTENDANCE OUT'
-                  href='/out/attendance/employee' />
-                  <Button style={{marginLeft:'10px'}}
-                    label='REPORTS'
-                    href='/dailylabour/reports' />
-        </Box>
-        { this.renderEmployeeSearch() }
-        { this.renderSearchedEmployee() }
+        <Split>
+            <Tabs justify='start' style={{marginLeft:'40px'}}>
+            <Tab title='ADD'>
+            <NewEmployee />
+            </Tab>
+            <Tab title='ATTENDANCE IN'>
+            <AttendanceIn />
+            </Tab>
+            <Tab title='ATTENDANCE OUT'>
+            <AttendanceOut />
+            </Tab>
+            <Tab title='REPORTS'>
+            <EmployeeReports />
+            </Tab>
+            <Tab title='WORK MANAGER'>
+            { this.renderEmployeeSearch() }
+            { this.renderSearchedEmployee() }
+            </Tab>
+            </Tabs>
+        </Split>
       </Article>
     );
   }

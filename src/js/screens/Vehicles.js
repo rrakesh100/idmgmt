@@ -15,9 +15,8 @@ import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
 import Paragraph from 'grommet/components/Paragraph';
 import AddIcon from 'grommet/components/icons/base/Add';
-
-
-
+import Tabs from 'grommet/components/Tabs';
+import Tab from 'grommet/components/Tab';
 import Section from 'grommet/components/Section';
 import Anchor from 'grommet/components/Anchor';
 import Headline from 'grommet/components/Headline';

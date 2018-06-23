@@ -198,23 +198,6 @@ class NewVisitor extends Component {
     );
   }
 
-  renderHeader(headerText) {
-    return (
-      <Header
-        direction='row'
-        size='large'
-        colorIndex='light-2'
-        align='center'
-        responsive={true}
-        pad={{ horizontal: 'small' }}
-      >
-      <NavControl />
-        <Heading margin='none' strong={true}>
-          {headerText}
-        </Heading>
-      </Header>
-    );
-  }
 
   renderBusinessCardForPrint() {
     const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
@@ -326,7 +309,6 @@ class NewVisitor extends Component {
         <Article
           direction='column'
           >
-          { this.renderHeader('VISITOR REGISTER (INWARD)')}
 
           <Section
             justify='center'
