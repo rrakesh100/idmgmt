@@ -15,6 +15,8 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Box from 'grommet/components/Box';
 import ReactExport from "react-data-export";
+import Workbook from 'react-excel-workbook';
+import DownloadIcon from 'grommet/components/icons/base/Download';
 
 
 
@@ -144,6 +146,9 @@ class Reports extends Component {
     if(!response)
     return null;
     let tablesArray = [];
+
+    let reportData = [];
+
     Object.keys(response).map((date, index) => {
       const attendanceObj = response[date];
       if(attendanceObj == null)
@@ -187,6 +192,16 @@ class Reports extends Component {
                 let istOutTime =  moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
 
 
+                reportData.push({
+                  date : date,
+                  serialNo : index + 1,
+                  barCode : key,
+                  name :  visitorAttendaceObj.name,
+                  inTime : istInTime,
+                  outTime : istOutTime,
+                  totalTime : totalTime
+                });
+
                 return <TableRow key={index}>
                 <td>{index+1}</td>
                 <td>{key}</td>
@@ -194,8 +209,6 @@ class Reports extends Component {
                 <td>{istInTime}</td>
                 <td>{istOutTime}</td>
                 <td>{totalTime}</td>
-
-
                 </TableRow>
               })
             }
@@ -207,18 +220,24 @@ class Reports extends Component {
     })
     return (
       <div className='table'>
-      {tablesArray}
-      <div style={{position:'relative', left:'340px'}}>
-      <Button
-      label='save as pdf'
-      primary={true}
-      href='#'
-      onClick={this.onSavingPDF.bind(this)}
-      />
+      <div style={{float : 'right'}}>
+        <Workbook  filename="example.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '40px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
+          <Workbook.Sheet data={reportData} name="Sheet 1">
+              <Workbook.Column label="Date" value="date"/>
+              <Workbook.Column label="Serial No" value="serialNo"/>
+              <Workbook.Column label="Barcode" value="barCode"/>
+              <Workbook.Column label="Name" value="name"/>
+              <Workbook.Column label="In Time" value="inTime"/>
+              <Workbook.Column label="Out Time" value="outTime"/>
+              <Workbook.Column label="Total Time" value="totalTime"/>
+          </Workbook.Sheet>
+        </Workbook>
       </div>
+      {tablesArray}
       </div>
     )
   }
+
 
 
   renderDateFields() {
@@ -255,7 +274,7 @@ class Reports extends Component {
 
       return (
         <Article>
-        
+
         { this.renderDateFields() }
         <div style={{marginTop:'30px'}}>
         { this.showVisitorReportsTable() }
