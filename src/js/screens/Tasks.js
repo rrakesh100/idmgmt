@@ -141,8 +141,8 @@ class Tasks extends Component {
 
     return(
       <Print name='bizCard' exclusive>
-       <div className='card' style={{width:'80%', height:'22%', marginLeft:'40px'}}>
-         <div className='card-body' style={{marginLeft:'40px'}}>
+       <div className='card' style={{width:'100%', height:'30%'}}>
+         <div className='card-body' style={{}}>
            <div className='box header'>
              <h5>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
              <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>

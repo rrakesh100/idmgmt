@@ -221,7 +221,7 @@ class Reports extends Component {
     return (
       <div className='table'>
       <div style={{float : 'right'}}>
-        <Workbook  filename="example.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '40px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
+        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '40px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
           <Workbook.Sheet data={reportData} name="Sheet 1">
               <Workbook.Column label="Date" value="date"/>
               <Workbook.Column label="Serial No" value="serialNo"/>
