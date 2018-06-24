@@ -273,12 +273,11 @@ class Reports extends Component {
   render() {
 
       return (
-        <Article>
+        <Article full={true}>
 
         { this.renderDateFields() }
-        <div style={{marginTop:'30px'}}>
         { this.showVisitorReportsTable() }
-        </div>
+
 
         </Article>
 

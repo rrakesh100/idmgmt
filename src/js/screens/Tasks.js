@@ -335,7 +335,7 @@ class Tasks extends Component {
         </Heading>
       </Header>
         {errorNode}
-        <Split>
+        <Article full={true} primary={true}>
             <Tabs justify='start' style={{marginLeft:'40px'}}>
             <Tab title='HOME'>
             { this.showVisitorsTable() }
@@ -350,7 +350,7 @@ class Tasks extends Component {
             <Reports />
             </Tab>
             </Tabs>
-        </Split>
+        </Article>
         { this.renderSearchedVisitor() }
         { this.printBusinessCard() }
         { this.print() }
