@@ -39,7 +39,7 @@ class NewVisitor extends Component {
       visitorId: Rand.generateBase30(8),
       department : 'Not Available',
       company : 'Not Available',
-      info :'Not Available'
+      remarks :'Not Available'
     };
   }
 
@@ -73,7 +73,7 @@ class NewVisitor extends Component {
   }
 
   saveAndPrint() {
-    const { visitorId, name, info, screenshot, timestamp,
+    const { visitorId, name, remarks, screenshot, timestamp,
       whomToMeet, department, purpose, company, mobile, comingFrom  } = this.state;
 
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
@@ -83,7 +83,7 @@ class NewVisitor extends Component {
     saveVisitor({
       visitorId,
       name,
-      info,
+      remarks,
       screenshot,
       timestamp,
       whomToMeet,
@@ -200,7 +200,7 @@ class NewVisitor extends Component {
 
 
   renderBusinessCardForPrint() {
-    const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
+    const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', remarks=''
     , timestampStr, department } = this.state;
     return (
        <Print name='bizCard' exclusive>
@@ -245,7 +245,7 @@ class NewVisitor extends Component {
                       In Time: <b>{timestampStr}</b>
                     </td>
                     <td>
-                      Other Info: <b>{info}</b>
+                      Remarks: <b>{remarks}</b>
                     </td>
                 </TableRow>
                 </tbody>
@@ -318,7 +318,7 @@ class NewVisitor extends Component {
                     <span style={{marginLeft : '20px'}}>Time :   <Clock className='visitorClock' format={'hh:mm:ss A'} ticking={true} /></span>
             </Headline>
             <Split>
-              <Box direction='column' style={{marginLeft:'40px'}} >
+              <Box direction='column' size='small' style={{marginLeft:'50px'}} >
 
                   <Form className='newVisitorFields'>
                     <FormField  label='Name *'  strong={true} size='small' style={{marginTop : '15px'}}  >
@@ -354,10 +354,10 @@ class NewVisitor extends Component {
                     </FormField>
                   </Form>
               </Box>
-              <Box  direction='column' style={{marginLeft:'40px'}} size="medium">
+              <Box  direction='column' style={{marginLeft:'30px'}} size="small">
                   <Form className='newVisitorFields'>
 
-                    <FormField label='Department' strong={true} style={{marginTop : '150px'}}>
+                    <FormField label='Department' strong={true} style={{marginTop : '18px'}}>
                       <TextInput
                         placeHolder='Power plant/ Accounts/ Store'
                         onDOMChange={this.onFieldChange.bind(this, 'department')}
@@ -370,16 +370,16 @@ class NewVisitor extends Component {
                         onDOMChange={this.onFieldChange.bind(this, 'company')}
                       />
                     </FormField>
-                    <FormField label='Info' strong={true} style={{marginTop : '15px'}}>
+                    <FormField label='Remarks' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
-                        placeHolder='extra info'
-                        onDOMChange={this.onFieldChange.bind(this, 'info')}
+                        placeHolder='Remarks'
+                        onDOMChange={this.onFieldChange.bind(this, 'remarks')}
                       />
                     </FormField>
                   </Form>
                 </Box>
               <Box onClick={this.capture.bind(this)} direction='column'
-                style={{marginTop:'35px', marginLeft : '-80px'}} align='center'>
+                style={{marginTop:'25px', marginLeft : '10px'}} align='center'>
                   {this.renderCamera() }
                   <Barcode value={this.state.visitorId} style="" height="20"/>
                   <Section pad='small'
