@@ -5,6 +5,7 @@ import Webcam from 'react-webcam';
 import Barcode from 'react-barcode';
 import Rand from 'random-key';
 import Moment from 'moment';
+import Split from 'grommet/components/Split';
 
 import Heading from 'grommet/components/Heading';
 import Button from 'grommet/components/Button';
@@ -238,37 +239,14 @@ class NewVehicle extends Component {
       <div className='newVehicle'>
         { this.renderToastMsg() }
         { this.renderValidationMsg() }
-        <Article primary={true} full={true} className='giveVehicle'>
-          <Header
-            direction='row'
-            size='large'
-            colorIndex='light-2'
-            align='center'
-            responsive={true}
-            pad={{ horizontal: 'small' }}
-          >
-            <Anchor path='/vehicles'>
-              <LinkPrevious a11yTitle='Back' />
-            </Anchor>
-            <Heading margin='none' strong={true}>
-              ALLOW VEHICLE
-            </Heading>
-          </Header>
-          <Section pad='large'
+        <Article>
+          <Section
             justify='center'
-            align='center'>
-            <Headline margin='none'>
-              <Box onClick={this.capture.bind(this)} align='center'>
-                {this.renderCamera() }
-              </Box>
-            </Headline>
-            <div className='box footer'>
-              <Barcode value={this.state.vehicleId}
-                height={40}
-              />
-            </div>
+            >
+            <Box direction='row' margin='small' pad='small'>
+            <Box direction='column'>
             <Form>
-              <FormFields  style={{width:'150%',marginLeft:'-100px',marginTop:'20px'}}>
+              <FormFields  style={{width:'80%',marginLeft:'20px',marginTop:'20px'}}>
                 <FormField label='Vehicle Number' style={{marginBottom:'10px'}}>
                   <TextInput
                     placeHolder='AP32MN1234'
@@ -318,16 +296,23 @@ class NewVehicle extends Component {
                 </FormField>
               </FormFields>
             </Form>
-          </Section>
+            </Box>
+
+          <Box onClick={this.capture.bind(this)} style={{marginTop:'35px', marginLeft : '-80px'}} align='center'
+          direction='column' >
+          {this.renderCamera() }
+          <Barcode value={this.state.vehicleId} height='20' style={{marginTop:'20px'}}/>
           <Section pad='small'
             align='center'>
             {!buttonHide ? <Button icon={<Edit />}
               label='SAVE'
-
               onClick={this.onSubmitClick.bind(this)}
-              disabled={true}
+              disabled={true} style={{marginTop:'20px'}}
               href='#'
               primary={true} /> : null }
+          </Section>
+          </Box>
+          </Box>
           </Section>
         </Article>
       </div>

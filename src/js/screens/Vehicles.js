@@ -33,6 +33,10 @@ import Table from 'grommet/components/Table'
 import TableRow from 'grommet/components/TableRow'
 
 import { getVehicles, getVehicle, getAllVehicles } from '../api/vehicles';
+import NewVehicle from './NewVehicle';
+import VehicleIn from './VehicleIn';
+import VehicleOut from './VehicleOut';
+
 
 
 class Vehicles extends Component {
@@ -241,21 +245,23 @@ class Vehicles extends Component {
         </Header>
         <Section>
         {errorNode}
-        <Box pad={{ horizontal: 'medium' }}>
-          <Paragraph size='large'>
-            <Button icon={<AddIcon />}
-              label='Allow Vehicle'
-              href='/new/vehicle' />
-              <Button style={{marginLeft:'20px'}}
-                label='Vehicle In'
-                href='/in/vehicle' />
-                <Button style={{marginLeft:'20px'}}
-                  label='Vehicle Out'
-                  href='/out/vehicle' />
-          </Paragraph>
-        </Box>
+        <Article>
+            <Tabs justify='start' style={{marginLeft:'40px'}}>
+            <Tab title='HOME'>
+            { this.showVehiclesTable() }
+            </Tab>
+            <Tab title='ADD VEHICLE'>
+            <NewVehicle />
+            </Tab>
+            <Tab title='VEHICLE IN'>
+            <VehicleIn />
+            </Tab>
+            <Tab title='VEHICLE OUT'>
+            <VehicleOut />
+            </Tab>
+            </Tabs>
+        </Article>
         </Section>
-        { this.showVehiclesTable() }
       </Article>
     );
   }

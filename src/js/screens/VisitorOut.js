@@ -30,10 +30,13 @@ class VisitorOut extends Component {
         }
         let suggests = [];
         Object.keys(data).forEach((visitor) => {
+          let visitorObj = data[visitor];
+          if(visitorObj.status !== 'DEPARTED') {
           suggests.push({
              label : data[visitor].name,
              visitorId : visitor
           })
+        }
         })
         this.setState({
           visitorSuggestions: suggests,
@@ -119,8 +122,9 @@ class VisitorOut extends Component {
 
 
   renderSearchedVisitor() {
-    const { selectedVisitorData, selectedVisitorId } = this.state;
+    const { selectedVisitorData, selectedVisitorId, visitorBtnClick } = this.state;
     if (selectedVisitorData) {
+      
       const { timestamp } = selectedVisitorData;
       const m = Moment(timestamp);
       const timestampStr = m.format('DD/MM/YYYY hh:mm:ss A');
@@ -162,7 +166,7 @@ class VisitorOut extends Component {
 
   renderVisitorDetail() {
     const { visitorBtnClick, selectedVisitorId, selectedVisitorData } = this.state;
-    return visitorBtnClick ?   <Visitor visitorData={selectedVisitorData} visitorId={selectedVisitorId} /> : null
+    return visitorBtnClick ?   <Visitor visitorData={selectedVisitorData} visitorId={selectedVisitorId}/> : null
   }
 
   render() {

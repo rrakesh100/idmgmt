@@ -146,11 +146,11 @@ onRadioChange(button, e) {
   console.log(e);
   if(button === 'yes'){
     this.setState({
-      radioSelectValue : 'yes' 
+      radioSelectValue : 'yes'
     })
   }else {
     this.setState({
-      radioSelectValue : 'no' 
+      radioSelectValue : 'no'
     })
   }
 

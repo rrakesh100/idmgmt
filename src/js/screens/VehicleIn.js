@@ -20,13 +20,14 @@ export default class AttendanceOut extends Component {
     getVehicles()
       .then((snap) => {
         const data = snap.val();
+        console.log(data)
         if (!data) {
           return;
         }
         let suggests = [];
         Object.keys(data).forEach((vehicle) => {
           suggests.push({
-             label : data[vehicle].name,
+             label : data[vehicle].vehicleNumber,
              vehicleId : vehicle
           })
         })
@@ -43,8 +44,8 @@ export default class AttendanceOut extends Component {
     onVehicleSelect(data, isSuggestionSelected) {
       if (isSuggestionSelected) {
         this.setState({
-          selectedVehicleId: data.suggestion,
-          vehicleSearchString: data.suggestion
+          selectedVehicleId: data.suggestion.vehicleId,
+          vehicleSearchString: data.suggestion.label
         }, this.fetchSearchedVehicle.bind(this));
       } else {
         this.setState({
@@ -81,6 +82,7 @@ export default class AttendanceOut extends Component {
         getVehicle(selectedVehicleId)
           .then((snap) => {
             const selectedVehicleData = snap.val();
+            console.log(selectedVehicleData)
             this.setState({
               selectedVehicleData
             });
@@ -97,7 +99,8 @@ export default class AttendanceOut extends Component {
       if(!vehicleSuggestions)
       return null;
       return (
-        <Search placeHolder='Search Vehicle By Name or Barcode'
+        <div style={{marginTop : '40px', marginLeft :'30px'}}>
+        <Search placeHolder='Search Vehicle By Vehicle Number or Barcode' style={{width:'800px'}}
           inline={true}
           iconAlign='start'
           size='small'
@@ -105,12 +108,13 @@ export default class AttendanceOut extends Component {
           value={this.state.vehicleSearchString}
           onSelect={this.onVehicleSelect.bind(this)}
           onDOMChange={this.onSearchEntry.bind(this)} />
+       </div>
       )
     }
 
     renderSearchedVehicle() {
       const { selectedVehicleData, selectedVehicleId } = this.state;
-
+      console.log(selectedVehicleData)
       if (selectedVehicleData) {
         const { timestamp } = selectedVehicleData;
         const m = Moment(timestamp);
