@@ -27,7 +27,8 @@ class Reports extends Component {
     this.state={
       startDate:'',
       endDate:'',
-      enableCheckBox: true
+      enableCheckBox: true,
+      showallChecked : true
     }
   }
 
@@ -83,7 +84,8 @@ class Reports extends Component {
 
 
   showVisitorReportsTable() {
-    const { response, departedChecked, enteredChecked } = this.state;
+    const { response, departedChecked, enteredChecked,showallChecked , startDate,
+    endDate} = this.state;
     if(!response)
     return null;
     let tablesArray = [];
@@ -94,14 +96,18 @@ class Reports extends Component {
       const attendanceObj = response[date];
       if(attendanceObj == null)
         return;
+      let i = 0;
       tablesArray.push(<div className='tablesArray' key={index}>
       <h2 style={{marginLeft : '20px'}}>{date}</h2>
       <Table scrollable={true} style={{marginTop : '30px', marginLeft : '40px'}}>
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
-             <th>Barcode</th>
              <th>Name</th>
+             <th>Whom To Meet</th>
+             <th>Purpose</th>
+             <th>Mobile</th>
+             <th>Coming From</th>
              <th>In Time</th>
              <th>Out Time</th>
              <th>Total Time Spent</th>
@@ -112,10 +118,10 @@ class Reports extends Component {
                 Object.keys(attendanceObj).map((key,index)=> {
                   const visitorAttendaceObj = attendanceObj[key];
                   let inTime = visitorAttendaceObj.inTime;
-                  let outTime = visitorAttendaceObj.outTime;
+                  let outTime = visitorAttendaceObj.outTime || 'N/A';
                   let totalTime = 'N/A';
 
-                  if(inTime && outTime) {
+                  if(inTime && outTime !=='N/A') {
 
                     let startTime=moment(inTime, "YYYY-MM-DD HH:mm:ss");
                     let endTime=moment(outTime, "YYYY-MM-DD HH:mm:ss");
@@ -127,7 +133,11 @@ class Reports extends Component {
                   }
 
                 let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
-                let istOutTime =  moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
+
+                let istOutTime =  '--'
+                if(outTime !== 'N/A')
+                  istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
+
 
 
                 reportData.push({
@@ -135,43 +145,35 @@ class Reports extends Component {
                   serialNo : index + 1,
                   barCode : key,
                   name :  visitorAttendaceObj.name,
+                  whomToMeet : visitorAttendaceObj.whomToMeet,
+                  purpose : visitorAttendaceObj.purpose,
+                  mobile:  visitorAttendaceObj.mobile,
+                  comingFrom : visitorAttendaceObj.comingFrom,
+                  department : visitorAttendaceObj.department,
+                  company : visitorAttendaceObj.company,
+                  remarks : visitorAttendaceObj.remarks || visitorAttendaceObj.info,
+                  metRequiredPerson : visitorAttendaceObj.metRequiredPerson,
                   inTime : istInTime,
                   outTime : istOutTime,
                   totalTime : totalTime
                 });
 
-                if(departedChecked) {
-                  if(visitorAttendaceObj.status === 'DEPARTED') {
+                if(departedChecked && visitorAttendaceObj.status === 'DEPARTED'
+                   || enteredChecked && visitorAttendaceObj.status === 'ENTERED'
+                   || showallChecked) {
+                     i++;
                     return <TableRow key={index}>
-                    <td>{index+1}</td>
-                    <td>{key}</td>
+                    <td>{i}</td>
                     <td>{visitorAttendaceObj.name}</td>
+                    <td>{visitorAttendaceObj.whomToMeet}</td>
+                    <td>{visitorAttendaceObj.purpose}</td>
+                    <td>{visitorAttendaceObj.mobile}</td>
+                    <td>{visitorAttendaceObj.comingFrom}</td>
                     <td>{istInTime}</td>
                     <td>{istOutTime}</td>
                     <td>{totalTime}</td>
                     </TableRow>
                   }
-                } else if(enteredChecked) {
-                    if(visitorAttendaceObj.status === 'ENTERED') {
-                      return <TableRow key={index}>
-                      <td>{index+1}</td>
-                      <td>{key}</td>
-                      <td>{visitorAttendaceObj.name}</td>
-                      <td>{istInTime}</td>
-                      <td>{istOutTime}</td>
-                      <td>{totalTime}</td>
-                      </TableRow>
-                    }
-                } else {
-                return <TableRow key={index}>
-                <td>{index+1}</td>
-                <td>{key}</td>
-                <td>{visitorAttendaceObj.name}</td>
-                <td>{istInTime}</td>
-                <td>{istOutTime}</td>
-                <td>{totalTime}</td>
-                </TableRow>
-              }
               })
             }
           </tbody>
@@ -180,6 +182,10 @@ class Reports extends Component {
       </div>)
 
     })
+    let ob = [{
+      start : startDate,
+      end : endDate
+    }]
     return (
       <div className='table'>
       <div style={{float : 'right'}}>
@@ -187,13 +193,26 @@ class Reports extends Component {
           <Workbook.Sheet data={reportData} name="Sheet 1">
               <Workbook.Column label="Date" value="date"/>
               <Workbook.Column label="Serial No" value="serialNo"/>
-              <Workbook.Column label="Barcode" value="barCode"/>
-              <Workbook.Column label="Name" value="name"/>
+              <Workbook.Column label="Visitor Name" value="name"/>
+              <Workbook.Column label="Whom To Meet" value="whomToMeet"/>
+              <Workbook.Column label="Purpose Of Visit" value="purpose"/>
+              <Workbook.Column label="Mobile#" value="mobile"/>
+              <Workbook.Column label="Coming From" value="comingFrom"/>
+              <Workbook.Column label="Department" value="department"/>
+              <Workbook.Column label="Company" value="company"/>
+              <Workbook.Column label="Remarks" value="remarks"/>
+              <Workbook.Column label="Met Required Person" value="metRequiredPerson"/>
               <Workbook.Column label="In Time" value="inTime"/>
               <Workbook.Column label="Out Time" value="outTime"/>
               <Workbook.Column label="Total Time" value="totalTime"/>
           </Workbook.Sheet>
+          <Workbook.Sheet  data={ob} name="Information">
+              <Workbook.Column label="Start Date" value="start"/>
+              <Workbook.Column label="End Date" value="end"/>
+          </Workbook.Sheet>
+
         </Workbook>
+
       </div>
       {tablesArray}
       </div>
@@ -262,19 +281,16 @@ class Reports extends Component {
     return (
       <div style={{marginLeft:'320px'}}>
       <CheckBox label='DEPARTED'
-      reverse={true}
       checked={departedChecked && true}
       disabled= {enableCheckBox && true}
       onChange={this.onDepartedBoxChange.bind(this)}
       />
       <CheckBox label='ENTERED'
-      reverse={true}
       checked={enteredChecked && true}
       disabled={enableCheckBox && true}
       onChange={this.onEnteredBoxChange.bind(this)}
       />
       <CheckBox label='SHOW ALL'
-      reverse={true}
       checked={showallChecked && true}
       disabled={enableCheckBox && true}
       onChange={this.onShowAllBoxChange.bind(this)}
