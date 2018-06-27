@@ -37,9 +37,9 @@ class NewVisitor extends Component {
     this.state = {
       showLiveCameraFeed: true,
       visitorId: Rand.generateBase30(8),
-      department : 'Not Available',
-      company : 'Not Available',
-      remarks :'Not Available'
+      department : '--',
+      company : '--',
+      remarks :'--'
     };
   }
 
@@ -186,7 +186,7 @@ class NewVisitor extends Component {
       );
     }
     return (
-      <Image src={this.state.screenshot} height={300}/>
+      <Image src={this.state.screenshot} height={300} width={400}/>
     );
   }
 
@@ -201,7 +201,7 @@ class NewVisitor extends Component {
 
   renderBusinessCardForPrint() {
     const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', remarks=''
-    , timestampStr, department } = this.state;
+    , timestampStr, department,company='' } = this.state;
     return (
        <Print name='bizCard' exclusive>
         <div className='card' style={{width:'100%', height:'30%'}}>
@@ -242,12 +242,18 @@ class NewVisitor extends Component {
                   </TableRow>
                   <TableRow>
                     <td>
-                      In Time: <b>{timestampStr}</b>
+                      Company: <b>{company.toUpperCase()}</b>
                     </td>
                     <td>
                       Remarks: <b>{remarks}</b>
                     </td>
                 </TableRow>
+                <TableRow>
+
+                  <td>
+                    In Time: <b>{timestampStr}</b>
+                  </td>
+              </TableRow>
                 </tbody>
               </Table>
                 <Table>
@@ -314,14 +320,14 @@ class NewVisitor extends Component {
             justify='center'
             >
             <Headline size="small" style={{marginLeft :'40px'}}>
-                    <span>Date :   <Clock className='visitorClock' format={'DD/MM/YYYY'}/></span>
-                    <span style={{marginLeft : '20px'}}>Time :   <Clock className='visitorClock' format={'hh:mm:ss A'} ticking={true} /></span>
+                    <span>In Date :   <Clock className='visitorClock' format={'DD/MM/YYYY'}/></span>
+                    <span style={{marginLeft : '20px'}}>In Time :   <Clock className='visitorClock' format={'hh:mm:ss A'} ticking={true} /></span>
             </Headline>
             <Split>
-              <Box direction='column' size='small' style={{marginLeft:'50px'}} >
+              <Box direction='column' style={{marginLeft:'50px', width:'300px'}} >
 
                   <Form className='newVisitorFields'>
-                    <FormField  label='Name *'  strong={true} size='small' style={{marginTop : '15px'}}  >
+                    <FormField  label='Name *'  strong={true} style={{marginTop : '15px'}}  >
                       <TextInput
                         placeHolder='name'
                         onDOMChange={this.onFieldChange.bind(this, 'name')}
@@ -354,7 +360,7 @@ class NewVisitor extends Component {
                     </FormField>
                   </Form>
               </Box>
-              <Box  direction='column' style={{marginLeft:'30px'}} size="small">
+              <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
                   <Form className='newVisitorFields'>
 
                     <FormField label='Department' strong={true} style={{marginTop : '18px'}}>
@@ -379,13 +385,13 @@ class NewVisitor extends Component {
                   </Form>
                 </Box>
               <Box onClick={this.capture.bind(this)} direction='column'
-                style={{marginTop:'25px', marginLeft : '10px'}} align='center'>
+                style={{marginTop:'25px', marginLeft : '10px', width:'300px'}} align='center'>
                   {this.renderCamera() }
                   <Barcode value={this.state.visitorId} style="" height="20"/>
                   <Section pad='small'
                     align='center'>
                     <Button icon={<Edit />}
-                      label='SAVE & PRINT'
+                      label='SAVE'
                       onClick={this.onSubmitClick.bind(this)}
                       disabled={true}
                       href='#'

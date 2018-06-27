@@ -147,10 +147,20 @@ onRadioChange(button, e) {
     if (!this.props.visitorData && !this.state.visitorData) {
       return null;
     }
-    const { status, inTime } = this.state.visitorData;
+    let { status, inTime } = this.props.visitorData;
+    if(status == null) {
+      status  = this.state.visitorData.status;
+      inTime  = this.state.visitorData.inTime;
 
-    if(this.props.visitorData.visitorId !== this.state.visitorData.visitorId){
-      const { status, inTime } = this.props.visitorData;
+
+    }
+
+
+
+    if(this.props.visitorData && this.state.visitorData && 
+      this.props.visitorData.visitorId !== this.state.visitorData.visitorId){
+      status  = this.props.visitorData.status;
+      inTime  = this.props.visitorData.inTime;
 
     }
     if (status !== 'DEPARTED') {
