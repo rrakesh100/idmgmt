@@ -335,7 +335,7 @@ class Tasks extends Component {
         </Heading>
       </Header>
         {errorNode}
-        <Article full={true} primary={true}>
+        <Article primary={true}>
             <Tabs justify='start' style={{marginLeft:'40px'}}>
             <Tab title='HOME'>
             { this.showVisitorsTable() }

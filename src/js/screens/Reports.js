@@ -17,7 +17,7 @@ import Box from 'grommet/components/Box';
 import ReactExport from "react-data-export";
 import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
-
+import CheckBox from 'grommet/components/CheckBox';
 
 
 
@@ -26,7 +26,8 @@ class Reports extends Component {
     super(props);
     this.state={
       startDate:'',
-      endDate:''
+      endDate:'',
+      enableCheckBox: true
     }
   }
 
@@ -55,14 +56,15 @@ class Reports extends Component {
       datesArr.map((date) => {
         return dbRef.child(date).once('value').then((snapshot) => {
           let response = snapshot.val();
-          console.log(response);
           returnObj[date] = response;
 
         })
       })
     ).then(() => {
-      console.log(returnObj);
-      this.setState({response: returnObj})
+      this.setState({
+        response: returnObj,
+        enableCheckBox : false
+      })
     })
   }
 
@@ -78,71 +80,10 @@ class Reports extends Component {
     this.setState({endDate}, this.getVisitorAttendanceData(endDate))
   }
 
-  onSavingPDF() {
-    console.log("PDF LOG")
-    const ExcelFile = ReactExport.ExcelFile;
-    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
-    const dataSet1 = [
-        {
-            name: "Johson",
-            amount: 30000,
-            sex: 'M',
-            is_married: true
-        },
-        {
-            name: "Monika",
-            amount: 355000,
-            sex: 'F',
-            is_married: false
-        },
-        {
-            name: "John",
-            amount: 250000,
-            sex: 'M',
-            is_married: false
-        },
-        {
-            name: "Josef",
-            amount: 450500,
-            sex: 'M',
-            is_married: true
-        }
-    ];
-
-    const dataSet2 = [
-        {
-            name: "Johnson",
-            total: 25,
-            remainig: 16
-        },
-        {
-            name: "Josef",
-            total: 25,
-            remainig: 7
-        }
-    ];
-    return (
-        <ExcelFile element={<button>Download Data</button>}>
-            <ExcelSheet data={dataSet1} name="Employees">
-                <ExcelColumn label="Name" value="name"/>
-                <ExcelColumn label="Wallet Money" value="amount"/>
-                <ExcelColumn label="Gender" value="sex"/>
-                <ExcelColumn label="Marital Status"
-                             value={(col) => col.is_married ? "Married" : "Single"}/>
-            </ExcelSheet>
-            <ExcelSheet data={dataSet2} name="Leaves">
-                <ExcelColumn label="Name" value="name"/>
-                <ExcelColumn label="Total Leaves" value="total"/>
-                <ExcelColumn label="Remaining Leaves" value="remaining"/>
-            </ExcelSheet>
-        </ExcelFile>
-    );
-  }
 
   showVisitorReportsTable() {
-    const {response} = this.state;
+    const { response, departedChecked, enteredChecked } = this.state;
     if(!response)
     return null;
     let tablesArray = [];
@@ -175,13 +116,10 @@ class Reports extends Component {
                   let totalTime = 'N/A';
 
                   if(inTime && outTime) {
-                    console.log('^^^^', inTime);
-                    console.log('@@@@', outTime);
 
                     let startTime=moment(inTime, "YYYY-MM-DD HH:mm:ss");
                     let endTime=moment(outTime, "YYYY-MM-DD HH:mm:ss");
                     let duration = moment.duration(endTime.diff(startTime));
-                    console.log('####', duration);
                     let hours = parseInt(duration.asHours());
                     let minutes = parseInt(duration.asMinutes())%60;
                     totalTime = hours + ' hr ' + minutes + ' min '
@@ -202,6 +140,29 @@ class Reports extends Component {
                   totalTime : totalTime
                 });
 
+                if(departedChecked) {
+                  if(visitorAttendaceObj.status === 'DEPARTED') {
+                    return <TableRow key={index}>
+                    <td>{index+1}</td>
+                    <td>{key}</td>
+                    <td>{visitorAttendaceObj.name}</td>
+                    <td>{istInTime}</td>
+                    <td>{istOutTime}</td>
+                    <td>{totalTime}</td>
+                    </TableRow>
+                  }
+                } else if(enteredChecked) {
+                    if(visitorAttendaceObj.status === 'ENTERED') {
+                      return <TableRow key={index}>
+                      <td>{index+1}</td>
+                      <td>{key}</td>
+                      <td>{visitorAttendaceObj.name}</td>
+                      <td>{istInTime}</td>
+                      <td>{istOutTime}</td>
+                      <td>{totalTime}</td>
+                      </TableRow>
+                    }
+                } else {
                 return <TableRow key={index}>
                 <td>{index+1}</td>
                 <td>{key}</td>
@@ -210,6 +171,7 @@ class Reports extends Component {
                 <td>{istOutTime}</td>
                 <td>{totalTime}</td>
                 </TableRow>
+              }
               })
             }
           </tbody>
@@ -270,12 +232,64 @@ class Reports extends Component {
     )
   }
 
+  onDepartedBoxChange() {
+    this.setState({
+      departedChecked: true,
+      enteredChecked: false,
+      showallChecked: false
+    })
+  }
+
+  onEnteredBoxChange() {
+    this.setState({
+      enteredChecked: true,
+      departedChecked: false,
+      showallChecked: false
+    })
+  }
+
+  onShowAllBoxChange() {
+    this.setState({
+      showallChecked: true,
+      enteredChecked: false,
+      departedChecked: false
+    })
+  }
+
+  renderCheckBox() {
+    const { enableCheckBox, departedChecked, enteredChecked, showallChecked } = this.state;
+
+    return (
+      <div style={{marginLeft:'320px'}}>
+      <CheckBox label='DEPARTED'
+      reverse={true}
+      checked={departedChecked && true}
+      disabled= {enableCheckBox && true}
+      onChange={this.onDepartedBoxChange.bind(this)}
+      />
+      <CheckBox label='ENTERED'
+      reverse={true}
+      checked={enteredChecked && true}
+      disabled={enableCheckBox && true}
+      onChange={this.onEnteredBoxChange.bind(this)}
+      />
+      <CheckBox label='SHOW ALL'
+      reverse={true}
+      checked={showallChecked && true}
+      disabled={enableCheckBox && true}
+      onChange={this.onShowAllBoxChange.bind(this)}
+      />
+      </div>
+    )
+  }
+
   render() {
 
       return (
-        <Article full={true}>
+        <Article>
 
         { this.renderDateFields() }
+        { this.renderCheckBox() }
         { this.showVisitorReportsTable() }
 
 
