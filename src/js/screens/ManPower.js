@@ -12,6 +12,12 @@ import Section from 'grommet/components/Section';
 import Split from 'grommet/components/Split';
 import Select from 'grommet/components/Select';
 import Webcam from 'react-webcam';
+import DateTime from 'grommet/components/DateTime';
+import Barcode from 'react-barcode';
+import Rand from 'random-key';
+import Button from 'grommet/components/Button';
+import Image from 'grommet/components/Image';
+import Toast from 'grommet/components/Toast';
 
 
 
@@ -19,9 +25,16 @@ export default class ManPower extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      employeeId: Rand.generateBase30(8),
+      name:'',
       joinedDate: '',
       gender: '',
       paymentType: '',
+      screenshot: '',
+      village: '',
+      address: '',
+      remarks: '',
+      numberOfPersons: '',
       showLiveCameraFeed: true
     }
   }
@@ -35,87 +48,176 @@ export default class ManPower extends Component {
       this.setState({
         [fieldName]: e.target.value
       });
+    }
   }
-}
 
-setRef(webcam) {
-  this.webcam = webcam;
-}
-
-
-capture() {
-  if (this.state.showLiveCameraFeed) {
-    const screenshot = this.webcam.getScreenshot();
-    this.setState({
-      screenshot,
-      showLiveCameraFeed: false
-    });
-  } else {
-    this.setState({
-      showLiveCameraFeed: true,
-      screenshot: ''
-    });
+  onJoinedDateChange(e) {
+    this.setState({joinedDate:e})
   }
-}
+
+  setRef(webcam) {
+    this.webcam = webcam;
+  }
 
 
-renderImage() {
-  if(this.state.showLiveCameraFeed) {
+  capture() {
+    if (this.state.showLiveCameraFeed) {
+      const screenshot = this.webcam.getScreenshot();
+      this.setState({
+        screenshot,
+        showLiveCameraFeed: false
+      });
+    } else {
+      this.setState({
+        showLiveCameraFeed: true,
+        screenshot: ''
+      });
+    }
+  }
+
+
+  renderImage() {
+    if(this.state.showLiveCameraFeed) {
+      return (
+        <Webcam
+          audio={false}
+          height={300}
+          ref={this.setRef.bind(this)}
+          screenshotFormat='image/jpeg'
+          width={400}
+          onClick={this.capture.bind(this)}
+        />
+      );
+    }
     return (
-      <Webcam
-        audio={false}
-        height={300}
-        ref={this.setRef.bind(this)}
-        screenshotFormat='image/jpeg'
-        width={400}
-        onClick={this.capture.bind(this)}
-      />
+      <Image src={this.state.screenshot} height={300}/>
     );
   }
-  return (
-    <Image src={this.state.screenshot} height={300}/>
-  );
-}
 
-renderCamera() {
-  return (
-    <Box>
-      { this.renderImage() }
-    </Box>
-  );
-}
+  renderCamera() {
+    return (
+      <Box>
+        { this.renderImage() }
+      </Box>
+    );
+  }
+
+  onSavingData() {
+    const {name, joinedDate, screenshot, gender, village, address, paymentType, remarks, numberOfPersons} = this.state
+    this.setState({
+      name:'',
+      joinedDate:'',
+      screenshot: '',
+      gender: '',
+      village: '',
+      address: '',
+      paymentType: '',
+      remarks: '',
+      numberOfPersons: '',
+      showLiveCameraFeed: true,
+      toastMsg: `User ${name} is saved`
+    })
+  }
+
+  onSubmitClick(e) {
+    e.stopPropagation();
+    const {name, joinedDate, screenshot, gender, village, address, paymentType, remarks, numberOfPersons} = this.state;
+    if (!name) {
+      alert('NAME is missing');
+      this.setState({
+        validationMsg: 'NAME is missing'
+      });
+      return;
+    }
+    if (!screenshot) {
+      alert('IMAGE is not taken. Click on the camera to take photo!');
+      this.setState({
+        validationMsg: 'IMAGE is not taken. Click on the camera to take photo!'
+      });
+      return
+    }
+    if (!joinedDate) {
+      alert('JOINED DATA is missing');
+      this.setState({
+        validationMsg: 'JOINED DATA is missing'
+      });
+      return;
+    }
+    if (!gender) {
+      alert('GENDER is missing');
+      this.setState({
+        validationMsg: 'GENDER is missing'
+      });
+      return;
+    }
+    if (!village) {
+      alert('VILLAGE is missing');
+      this.setState({
+        validationMsg: 'VILLAGE is missing'
+      });
+      return;
+    }
+    if (!paymentType) {
+      alert('PAYMENT TYPE is missing');
+      this.setState({
+        validationMsg: 'PAYMENT TYPE is missing'
+      });
+      return
+    }
+    if (!numberOfPersons) {
+      alert('NUMBER OF PERSONS is missing');
+      this.setState({
+        validationMsg: 'NUMBER OF PERSONS is missing'
+      });
+      return
+    }
+    this.setState({validationMsg:''}, this.onSavingData.bind(this))
+  }
+
+  toastClose() {
+    this.setState({ toastMsg: '' });
+  }
+
+  renderToastMsg() {
+    const { toastMsg } = this.state;
+    if(toastMsg) {
+      return (
+        <Toast status='ok'
+          onClose={ this.toastClose.bind(this) }>
+          { toastMsg }
+        </Toast>
+      );
+    }
+    return null;
+  }
 
   renderInputFields() {
     return (
-      <div>
+      <Article>
       <Section>
        <Split>
         <Box direction='column' style={{marginLeft:'30px'}}>
         <Form className='manPowerFields'>
-        <FormField  label='Mcode *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
-          <TextInput
-            placeHolder='Mcode'
-            onDOMChange={this.onFieldChange.bind(this, 'mcode')}
-          />
-        </FormField>
+          <Barcode value={this.state.employeeId} height={20} />
         <FormField  label='Joined Date *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
-          <Select
-            placeHolder='Joined Date'
-            options={['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight']}
-            value={this.state.joinedDate}
-            onChange={this.onFieldChange.bind(this, 'joinedDate')}
-          />
+        <DateTime id='id'
+        format='D/M/YYYY'
+        name='name'
+        onChange={this.onJoinedDateChange.bind(this)}
+        value={this.state.joinedDate}
+        />
         </FormField>
         <FormField  label='Name *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
           <TextInput
               placeHolder='name'
+              value={this.state.name}
               onDOMChange={this.onFieldChange.bind(this, 'name')}
           />
         </FormField>
           <FormField  label='Gender *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <Select
               placeHolder='Gender'
-              options={['male', 'female']}
+              options={['Male', 'Female']}
               value={this.state.gender}
               onChange={this.onFieldChange.bind(this, 'gender')}
             />
@@ -123,12 +225,14 @@ renderCamera() {
           <FormField  label='Village *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <TextInput
               placeHolder='Village'
+              value={this.state.village}
               onDOMChange={this.onFieldChange.bind(this, 'village')}
             />
           </FormField>
           <FormField  label='Address'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <TextInput
               placeHolder='Address'
+              value={this.state.address}
               onDOMChange={this.onFieldChange.bind(this, 'address')}
             />
           </FormField>
@@ -139,7 +243,7 @@ renderCamera() {
           <FormField  label='Payment Type *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <Select
               placeHolder='Payment Type'
-              options={['debit card', 'credit card', 'cash']}
+              options={['Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
               value={this.state.paymentType}
               onChange={this.onFieldChange.bind(this, 'paymentType')}
             />
@@ -147,28 +251,42 @@ renderCamera() {
           <FormField  label='Remarks'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <TextInput
               placeHolder='Remarks'
+              value={this.state.remarks}
               onDOMChange={this.onFieldChange.bind(this, 'remarks')}
             />
           </FormField>
           <FormField  label='No of persons *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <TextInput
               placeHolder='No of persons'
+              value={this.state.numberOfPersons}
               onDOMChange={this.onFieldChange.bind(this, 'numberOfPersons')}
             />
           </FormField>
         </Form>
         </Box>
-        <Box onClick={this.capture.bind(this)} size='small' style={{marginLeft:'10px', marginTop:'10px'}}>
+        <Box onClick={this.capture.bind(this)}
+        size='small' direction='column'
+        style={{marginLeft:'10px', marginTop:'10px', width:'300px'}}
+        align='center'>
         { this.renderCamera() }
+        <Section pad='small'
+          align='center'>
+          <Button
+            label='SAVE'
+            onClick={this.onSubmitClick.bind(this)}
+            disabled={true}
+            href='#'
+            primary={true} />
+        </Section>
         </Box>
         </Split>
         </Section>
-      </div>
+      </Article>
     )
   }
 
   render() {
-    console.log(this.state)
+
 
     return (
       <div className='manPower'>
@@ -189,6 +307,7 @@ renderCamera() {
       { this.renderInputFields() }
       </Tab>
       </Tabs>
+      { this.renderToastMsg() }
       </div>
     )
   }
