@@ -39,7 +39,8 @@ class NewVisitor extends Component {
       visitorId: Rand.generateBase30(8),
       department : '--',
       company : '--',
-      remarks :'--'
+      remarks :'--',
+      serialNo : props.serialNo
     };
   }
 
@@ -74,7 +75,7 @@ class NewVisitor extends Component {
 
   saveAndPrint() {
     const { visitorId, name, remarks, screenshot, timestamp,
-      whomToMeet, department, purpose, company, mobile, comingFrom  } = this.state;
+      whomToMeet, department, purpose, company, mobile, comingFrom , serialNo } = this.state;
 
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
       uploadVisitorImage(imgFile, visitorId).then((snapshot) => {
@@ -94,6 +95,7 @@ class NewVisitor extends Component {
       comingFrom,
       status: 'ENTERED',
       inTime : timestamp,
+      serialNo,
       history: [
         {
           timestamp,
@@ -105,7 +107,8 @@ class NewVisitor extends Component {
     })
       .then(
         this.setState({
-          toastMsg: `User ${name} is saved `
+          toastMsg: `User ${name} is saved `,
+          serialNo : serialNo + 1
         }, () => { window.print(); })
       )
       .catch((err) => {
@@ -201,7 +204,11 @@ class NewVisitor extends Component {
 
   renderBusinessCardForPrint() {
     const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', remarks=''
-    , timestampStr, department,company='' } = this.state;
+    , timestampStr, department,company='', screenshot, serialNo='' } = this.state;
+
+    if(!screenshot)
+      return null
+
     return (
        <Print name='bizCard' exclusive>
         <div className='card' style={{width:'100%', height:'30%'}}>
@@ -209,11 +216,13 @@ class NewVisitor extends Component {
             <div className='box header'>
               <h5>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
               <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
+              <h5 style={{textDecoration : 'underline'}}>VISITOR PASS</h5>
+
             </div>
             <div className='box sidebar'>
-              <Image src={this.state.screenshot} />
+              <Image src={screenshot} />
             </div>
-            <div className='content'>
+            <div className='box content'>
             <Table>
               <tbody>
                 <TableRow>
@@ -248,15 +257,17 @@ class NewVisitor extends Component {
                       Remarks: <b>{remarks}</b>
                     </td>
                 </TableRow>
-                <TableRow>
-
+                <TableRow style={{marginTop : '40px', color:'red'}}>
                   <td>
                     In Time: <b>{timestampStr}</b>
+                  </td>
+                  <td>
+                    Serial No.#: <b>{serialNo}</b>
                   </td>
               </TableRow>
                 </tbody>
               </Table>
-                <Table>
+                <Table style={{marginTop : '40px'}}>
                   <tbody>
                     <TableRow>
                       <td>
@@ -272,7 +283,7 @@ class NewVisitor extends Component {
                     </tbody>
                 </Table>
             </div>
-            <div className='footer' style={{width:'30%', float:'right'}}>
+            <div className='footer'>
               <Barcode value={this.state.visitorId}
                 height={20}
               />
@@ -312,10 +323,9 @@ class NewVisitor extends Component {
     return (
       <div className='newVisitor' >
         { this.renderValidationMsg() }
+        { this.renderBusinessCardForPrint() }
         <Article
-          direction='column'
-          >
-
+          direction='column'>
           <Section
             justify='center'
             >
@@ -400,9 +410,7 @@ class NewVisitor extends Component {
               </Box>
             </Split>
           </Section>
-
         </Article>
-        { this.renderBusinessCardForPrint() }
       </div>
     );
   }

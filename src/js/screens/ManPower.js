@@ -58,32 +58,34 @@ export default class ManPower extends Component {
   }
 
   onFieldChange(fieldName, e) {
+    let fieldValue = '';
     if(fieldName === 'joinedDate' || fieldName === 'gender' || fieldName ==='paymentType') {
-
-      this.setState({
-        [fieldName]: e.option
-      })
+      fieldValue =  e.option
     } else {
-      this.setState({
-        [fieldName]: e.target.value
-      });
+      fieldValue = e.target.value
     }
 
-    const { employeeData, gender, paymentType } = this.state;
-    if(gender && paymentType) {
-      let genderStr = gender.substring(0,1);
-      let paymentTypeStr = paymentType.substring(0,1);
-      let countObj = employeeData.count;
-      let barCode = paymentTypeStr + genderStr;
-      if(gender=='Male') {
-        let employeeId = barCode + countObj.maxMaleCount;
-        this.setState({employeeId})
+    this.setState({
+      [fieldName]: fieldValue
+    },() => {
+      const { employeeData, gender, paymentType } = this.state;
+      if(gender && paymentType) {
+        let genderStr = gender.substring(0,1);
+        let paymentTypeStr = paymentType.substring(0,1);
+        let countObj = employeeData.count;
+        let barCode = paymentTypeStr + genderStr;let employeeId = '000'
+        if(gender ==='Male' && paymentType !== 'Jattu-Daily payment') {
+           employeeId = barCode + countObj.maxMaleCount;
+        }else if(gender==='Female' && paymentType !== 'Jattu-Daily payment') {
+           employeeId = barCode + countObj.maxFemaleCount;
+        }else{
+           employeeId = barCode + countObj.maxJattuCount;
+        }
+        this.setState({
+          employeeId
+        })
       }
-      if(gender=='Female') {
-        let employeeId = barCode + countObj.maxFemaleCount;
-        this.setState({employeeId})
-      }
-    }
+    })
   }
 
   onJoinedDateChange(e) {
@@ -199,20 +201,6 @@ export default class ManPower extends Component {
       });
       return;
     }
-    if (!screenshot) {
-      alert('IMAGE is not taken. Click on the camera to take photo!');
-      this.setState({
-        validationMsg: 'IMAGE is not taken. Click on the camera to take photo!'
-      });
-      return
-    }
-    if (!joinedDate) {
-      alert('JOINED DATA is missing');
-      this.setState({
-        validationMsg: 'JOINED DATA is missing'
-      });
-      return;
-    }
     if (!gender) {
       alert('GENDER is missing');
       this.setState({
@@ -227,6 +215,13 @@ export default class ManPower extends Component {
       });
       return;
     }
+    if (!screenshot) {
+      alert('IMAGE is not taken. Click on the camera to take photo!');
+      this.setState({
+        validationMsg: 'IMAGE is not taken. Click on the camera to take photo!'
+      });
+      return
+    }
     if (!paymentType) {
       alert('PAYMENT TYPE is missing');
       this.setState({
@@ -234,7 +229,15 @@ export default class ManPower extends Component {
       });
       return
     }
-    if (!numberOfPersons) {
+    if (!joinedDate) {
+      alert('JOINED DATA is missing');
+      this.setState({
+        validationMsg: 'JOINED DATA is missing'
+      });
+      return;
+    }
+
+    if (paymentType === 'Jattu-Daily payment' && !numberOfPersons) {
       alert('NUMBER OF PERSONS is missing');
       this.setState({
         validationMsg: 'NUMBER OF PERSONS is missing'
@@ -264,23 +267,12 @@ export default class ManPower extends Component {
 
 
   renderBarcode() {
-    const { employeeData, gender, paymentType } = this.state;
-    if(gender && paymentType) {
-      let genderStr = gender.substring(0,1);
-      let paymentTypeStr = paymentType.substring(0,1);
-      let countObj = employeeData.count;
-      let barCode = paymentTypeStr + genderStr;
-      if(gender=='Male' || gender=='Female') {
-        let mEmployeeId = barCode + countObj.maxMaleCount;
-        let fEmployeeId = barCode + countObj.maxFemaleCount;
-        return (
-          <div className='barCode'>
-          <Barcode value={gender == 'Male' ? mEmployeeId : fEmployeeId} height={20} />
-          </div>
-        )
-
-      }
-     }
+    const { employeeId } = this.state;
+     return (
+       <div className='barCode'>
+          <Barcode value={employeeId} height={20} />
+       </div>
+     )
   }
 
   renderInputFields() {
@@ -391,7 +383,7 @@ export default class ManPower extends Component {
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
-             <th>Barcode</th>
+             <th>Employee ID</th>
              <th>Name</th>
              <th>Payment Type</th>
            </tr>
@@ -400,6 +392,7 @@ export default class ManPower extends Component {
             {
               Object.keys(employeeData).map((employee, index) => {
                 const employeeObj = employeeData[employee];
+                if(employee !== 'count')
                 return <TableRow key={index}>
                 <td>{index+1}</td>
                 <td>{employeeObj.employeeId}</td>

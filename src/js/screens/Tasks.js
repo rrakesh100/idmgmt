@@ -5,6 +5,7 @@ import { Print } from 'react-easy-print';
 import Barcode from 'react-barcode';
 import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
+import moment from 'moment';
 import Box from 'grommet/components/Box';
 import Header from 'grommet/components/Header';
 import Label from 'grommet/components/Label';
@@ -42,7 +43,9 @@ import Reports from './Reports';
 class Tasks extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      visitors : []
+    };
   }
 
   componentDidMount() {
@@ -52,25 +55,24 @@ class Tasks extends Component {
         if (!data) {
           return;
         }
+        let visitors = [];
+        snap.forEach(function(child){
+          let a = {};
+            a[child.key] = child.val()
+          visitors.push(a);
+        })
+        console.log('#####', visitors);
+
         this.setState({
-          visitorSuggestions: [...Object.keys(data)]
+          visitorSuggestions: [...Object.keys(data)],
+          visitors
         });
       })
       .catch((err) => {
         console.error('VISITOR FETCH FAILED', err);
       });
-      { this.showVisitors() }
   }
 
-  showVisitors() {
-    getVisitors().then((snap) => {
-      this.setState({
-        visitors: snap.val()
-      })
-    }).catch((err) => {
-      console.error('ALL VISITORS FETCH FAILED', err)
-    })
-  }
 
   onVisitorSelect(data, isSuggestionSelected) {
     if(isSuggestionSelected) {
@@ -131,12 +133,13 @@ class Tasks extends Component {
 
   printBusinessCard() {
     if(!this.state.printVisitorObj)
-      return;
+      return null;
 
       const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
-      , timestampStr,screenshot, visitorId, department, inTime } = this.state.printVisitorObj;
+      , timestampStr,screenshot, visitorId, department, inTime, company='', serialNo='' } = this.state.printVisitorObj;
       console.log(this.state.printVisitorObj);
       const timestamp = new Date();
+      let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
       const timestampString = Moment(timestamp).format('DD/MM/YYYY hh:mm:ss A');
 
     return(
@@ -146,6 +149,7 @@ class Tasks extends Component {
            <div className='box header'>
              <h5>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
              <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
+             <h5 style={{textDecoration : 'underline',fontWeight : 'bold'}}>VISITOR PASS</h5>
            </div>
            <div className='box sidebar'>
              <Image src={screenshot} />
@@ -179,15 +183,23 @@ class Tasks extends Component {
                    </TableRow>
                    <TableRow>
                      <td>
-                     In Time: <b>{timestampString}</b>
+                     Company: <b>{company}</b>
                      </td>
                      <td>
-                       Other Info: <b>{info}</b>
+                       Remarks: <b>{info}</b>
                      </td>
                  </TableRow>
+                 <TableRow style={{marginTop : '40px', color:'red'}}>
+                   <td>
+                     In Time: <b>{istInTime}</b>
+                   </td>
+                   <td>
+                     Serial No.#: <b>{serialNo}</b>
+                   </td>
+               </TableRow>
                </tbody>
              </Table>
-               <Table>
+               <Table style={{marginTop : '40px'}}>
                  <tbody>
                    <TableRow>
                      <td>
@@ -203,10 +215,9 @@ class Tasks extends Component {
                    </tbody>
                </Table>
            </div>
-           <div className='footer' style={{width:'30%', float:'right'}}>
+           <div className='footer'>
              <Barcode value={this.state.printVisitorObj.visitorId}
-               height={20}
-             />
+               height={20} />
            </div>
          </div>
        </div>
@@ -263,7 +274,7 @@ class Tasks extends Component {
 
   showVisitorsTable() {
     const { visitors } = this.state;
-    if(!visitors)
+    if(!visitors || visitors.length == 0)
     return null;
 
     return (
@@ -272,7 +283,7 @@ class Tasks extends Component {
       <Table scrollable={true} style={{marginTop : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>
-             <th>S No.</th>
+            <th>Serial #</th>
              <th>Name</th>
              <th>Mobile Number</th>
              <th>Status</th>
@@ -281,20 +292,7 @@ class Tasks extends Component {
           </thead>
           <tbody>
             {
-              Object.keys(visitors).map((visitor, index) => {
-                const visitorObj = visitors[visitor];
-                return <TableRow key={index}>
-                <td>{index+1}</td>
-                <td>{visitorObj.name}</td>
-                <td>{visitorObj.mobile}</td>
-                <td>{visitorObj.status}</td>
-                <td>
-                    <Button icon={<PrintIcon />}
-                          onClick={this.saveAndPrint.bind(this, visitor, visitorObj)}
-                          plain={true} />
-                </td>
-                </TableRow>
-              })
+              this.getVis(visitors)
             }
           </tbody>
       </Table>
@@ -302,9 +300,34 @@ class Tasks extends Component {
     )
   }
 
+  getVis(visitors) {
+    let a = [];
+    visitors.map((visitor, index) => {
+      const visitorObj = visitors[index];
+      if(index !== 0)
+        Object.keys(visitorObj).forEach((ob, ind) => {
+        a.push( <TableRow key={index}>
+        <td>{visitorObj[ob].serialNo}</td>
+        <td>{visitorObj[ob].name}</td>
+        <td>{visitorObj[ob].mobile}</td>
+        <td>{visitorObj[ob].status}</td>
+        <td>
+            <Button icon={<PrintIcon />}
+                  onClick={this.saveAndPrint.bind(this, ob, visitorObj[ob])}
+                  plain={true} />
+        </td>
+        </TableRow>)
+      })
+
+    })
+
+
+    return a;
+  }
+
 
   render() {
-    console.log(this.state);
+    const {serialNo=1} = this.state.visitors;
     const { error, tasks } = this.props;
     const { intl } = this.context;
 
@@ -335,13 +358,15 @@ class Tasks extends Component {
         </Heading>
       </Header>
         {errorNode}
-        <Article primary={true}>
             <Tabs justify='start' style={{marginLeft:'40px'}}>
             <Tab title='HOME'>
             { this.showVisitorsTable() }
+            { this.renderSearchedVisitor() }
+            { this.printBusinessCard() }
+            { this.print() }
             </Tab>
             <Tab title='VISITOR IN'>
-            <NewVisitor />
+            <NewVisitor serialNo={serialNo}/>
             </Tab>
             <Tab title='VISITOR OUT'>
             <VisitorOut />
@@ -350,11 +375,6 @@ class Tasks extends Component {
             <Reports />
             </Tab>
             </Tabs>
-        </Article>
-        { this.renderSearchedVisitor() }
-        { this.printBusinessCard() }
-        { this.print() }
-
       </Article>
     );
   }

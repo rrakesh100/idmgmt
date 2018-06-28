@@ -9,6 +9,7 @@ export function saveVisitor(data) {
   const updates = {};
   updates[`visitors/${data.visitorId}`] = data;
   updates[`daywiseVisitors/${dateStr}/${data.visitorId}`] = data;
+  updates[`daywiseVisitors/${dateStr}/serialNo`] = data.serialNo + 1;
   return dbRef.update(updates);
 }
 
@@ -25,7 +26,7 @@ export function getVisitor(visitorId) {
 export function getVisitors() {
   const date = new Date();
   const dateStr = moment(date).format('DD-MM-YYYY');
-  const dbRef = firebase.database().ref(`daywiseVisitors/${dateStr}`);
+  const dbRef = firebase.database().ref(`daywiseVisitors/${dateStr}/`).orderByChild('serialNo');
   return dbRef.once('value');
 }
 

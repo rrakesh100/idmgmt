@@ -31,10 +31,11 @@ class VisitorOut extends Component {
         let suggests = [];
         Object.keys(data).forEach((visitor) => {
           let visitorObj = data[visitor];
-          if(visitorObj.status !== 'DEPARTED') {
+          if(visitorObj.status !== 'DEPARTED' && visitor != 'serialNo') {
           suggests.push({
              label : data[visitor].name,
-             visitorId : visitor
+             visitorId : visitor,
+             serialNo : data[visitor].serialNo
           })
         }
         })
@@ -86,10 +87,14 @@ class VisitorOut extends Component {
       filtered = options
     else {
       options.forEach((opt) => {
-        if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
+        console.log('$$$', opt)
+        if(opt.serialNo==(e.target.value))
+            filtered.push(opt)
+        else if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
-        if(opt.visitorId.startsWith(e.target.value))
+        else if(opt.visitorId.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
+
       })
     }
 
@@ -124,7 +129,7 @@ class VisitorOut extends Component {
   renderSearchedVisitor() {
     const { selectedVisitorData, selectedVisitorId, visitorBtnClick } = this.state;
     if (selectedVisitorData) {
-      
+
       const { timestamp } = selectedVisitorData;
       const m = Moment(timestamp);
       const timestampStr = m.format('DD/MM/YYYY hh:mm:ss A');
