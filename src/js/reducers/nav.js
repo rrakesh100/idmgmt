@@ -16,7 +16,8 @@ const initialState = {
     { path: '/items', label: 'ITEMS' },
     { path: '/vehicles', label: 'VEHICLES' },
     { path: '/employees', label: 'DAILY LABOUR' },
-    { path: '/weekly', label: 'WEEKLY LABOUR' }
+    { path: '/weekly', label: 'WEEKLY LABOUR' },
+    { path: '/manpower', label: 'MAN POWER' }
     ]
 };
 
