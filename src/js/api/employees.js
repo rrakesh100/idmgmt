@@ -2,15 +2,35 @@ import * as firebase from 'firebase';
 import moment from 'moment';
 
 export function saveEmployee(data) {
+  let count = 1;
+  const gender = data.gender;
+  const countObj = data.countObj;
   const date = new Date();
   const dateStr = moment(date).format('DD-MM-YYYY');
   const dbRef = firebase.database().ref();
-
   const updates = {};
-  updates[`employees/${data.employeeId}`] = data;
-  updates[`daywiseEmployees/${dateStr}/${data.employeeId}`] = data;
+  const newData = Object.assign({}, data)
+
+  updates[`employees/${data.employeeId}`] = newData;
+  updates[`daywiseEmployees/${dateStr}/${data.employeeId}`] = newData;
+  if(gender == 'Male') {
+  updates[`employees/count/maxMaleCount`] = countObj.maxMaleCount + 1;
+  }
+  if(gender == 'Female') {
+    updates[`employees/count/maxFemaleCount`] = countObj.maxFemaleCount + 1;
+  }
+
+  // if(gender == 'Male') {
+  //   const maleCountVal = firebase.database().ref(`employees/count/maxMaleCount`).once('value');
+  //   console.log(maleCountVal)
+  // updates[`employees/count/maxMaleCount`] = maleCountVal+1;
+  // }
+  // if(gender == 'Female') {
+  //   const femaleCountVal = firebase.database().ref(`employees/maxFemaleCount`).once('value');
+  // updates[`employees/maxFemaleCount`] = count++;
+  // }
   return dbRef.update(updates);
-}
+  }
 
 export function getEmployee(employeeId) {
   const employeePath = `employees/${employeeId}`;

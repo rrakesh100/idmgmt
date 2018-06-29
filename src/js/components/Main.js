@@ -32,7 +32,6 @@ import Employees from '../screens/Employees';
 import Employee from '../screens/Employee';
 import AttendanceIn from '../screens/AttendanceIn';
 import AttendanceOut from '../screens/AttendanceOut';
-import WeeklyEmployees from '../screens/WeeklyEmployees';
 import NewEmployee from '../screens/NewEmployee';
 import NotFound from '../screens/NotFound';
 import EmployeeReports from '../screens/EmployeeReports';
@@ -83,7 +82,6 @@ class Main extends Component {
                   <Route path='/employee/:id' component={Employee} />
                   <Route path='/employees' component={Employees} />
                   <Route path='/dailylabour/reports' component={EmployeeReports} />
-                  <Route path='/weekly' component={WeeklyEmployees} />
                   <Route path='/manpower' component={ManPower} />
                   <Route path='/in/attendance/employee' component={AttendanceIn} />
                   <Route path='/out/attendance/employee' component={AttendanceOut} />

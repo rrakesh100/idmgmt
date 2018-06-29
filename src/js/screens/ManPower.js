@@ -18,14 +18,17 @@ import Rand from 'random-key';
 import Button from 'grommet/components/Button';
 import Image from 'grommet/components/Image';
 import Toast from 'grommet/components/Toast';
-
+import Edit from 'grommet/components/icons/base/Print';
+import Table from 'grommet/components/Table'
+import TableRow from 'grommet/components/TableRow'
+import { saveEmployee, uploadEmployeeImage, getEmployees } from '../api/employees';
 
 
 export default class ManPower extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      employeeId: Rand.generateBase30(8),
+      employeeId:'',
       name:'',
       joinedDate: '',
       gender: '',
@@ -39,8 +42,24 @@ export default class ManPower extends Component {
     }
   }
 
+  componentDidMount() {
+    { this.getEmployees() }
+  }
+
+  getEmployees() {
+    getEmployees().then((snap) => {
+      this.setState({
+        employeeData: snap.val()
+      })
+
+    }).catch((err) => {
+      console.error('ALL EMPLOYEES FETCH FAILED', err)
+    })
+  }
+
   onFieldChange(fieldName, e) {
     if(fieldName === 'joinedDate' || fieldName === 'gender' || fieldName ==='paymentType') {
+
       this.setState({
         [fieldName]: e.option
       })
@@ -48,6 +67,22 @@ export default class ManPower extends Component {
       this.setState({
         [fieldName]: e.target.value
       });
+    }
+
+    const { employeeData, gender, paymentType } = this.state;
+    if(gender && paymentType) {
+      let genderStr = gender.substring(0,1);
+      let paymentTypeStr = paymentType.substring(0,1);
+      let countObj = employeeData.count;
+      let barCode = paymentTypeStr + genderStr;
+      if(gender=='Male') {
+        let employeeId = barCode + countObj.maxMaleCount;
+        this.setState({employeeId})
+      }
+      if(gender=='Female') {
+        let employeeId = barCode + countObj.maxFemaleCount;
+        this.setState({employeeId})
+      }
     }
   }
 
@@ -103,9 +138,37 @@ export default class ManPower extends Component {
   }
 
   onSavingData() {
-    const {name, joinedDate, screenshot, gender, village, address, paymentType, remarks, numberOfPersons} = this.state
-    this.setState({
+    const { name,
+            employeeId,
+            employeeData,
+            joinedDate,
+            screenshot,
+            gender,
+            village,
+            address,
+            paymentType,
+            remarks,
+            numberOfPersons,
+            count } = this.state;
+    let countObj = employeeData.count;
+    let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    uploadEmployeeImage(imgFile, employeeId).then((snapshot) => {
+    let screenshot = snapshot.downloadURL;
+    saveEmployee({
+      countObj,
+      name,
+      employeeId,
+      joinedDate,
+      screenshot,
+      gender,
+      village,
+      address,
+      paymentType,
+      remarks,
+      numberOfPersons
+    }).then(this.setState({
       name:'',
+      employeeId: '',
       joinedDate:'',
       screenshot: '',
       gender: '',
@@ -116,7 +179,14 @@ export default class ManPower extends Component {
       numberOfPersons: '',
       showLiveCameraFeed: true,
       toastMsg: `User ${name} is saved`
-    })
+    }, this.getEmployees())
+  ).catch((err) => {
+    console.error('VISITOR SAVE ERR', err);
+    this.setState({
+      validationMsg: `Unable to save ${name}. Contact admin for assistance`
+    });
+  })
+  }).catch((e) => console.log(e))
   }
 
   onSubmitClick(e) {
@@ -191,14 +261,37 @@ export default class ManPower extends Component {
     return null;
   }
 
+
+
+  renderBarcode() {
+    const { employeeData, gender, paymentType } = this.state;
+    if(gender && paymentType) {
+      let genderStr = gender.substring(0,1);
+      let paymentTypeStr = paymentType.substring(0,1);
+      let countObj = employeeData.count;
+      let barCode = paymentTypeStr + genderStr;
+      if(gender=='Male' || gender=='Female') {
+        let mEmployeeId = barCode + countObj.maxMaleCount;
+        let fEmployeeId = barCode + countObj.maxFemaleCount;
+        return (
+          <div className='barCode'>
+          <Barcode value={gender == 'Male' ? mEmployeeId : fEmployeeId} height={20} />
+          </div>
+        )
+
+      }
+     }
+  }
+
   renderInputFields() {
+    const {employeeId} = this.state;
     return (
       <Article>
       <Section>
        <Split>
         <Box direction='column' style={{marginLeft:'30px'}}>
         <Form className='manPowerFields'>
-          <Barcode value={this.state.employeeId} height={20} />
+
         <FormField  label='Joined Date *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
         <DateTime id='id'
         format='D/M/YYYY'
@@ -209,7 +302,7 @@ export default class ManPower extends Component {
         </FormField>
         <FormField  label='Name *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
           <TextInput
-              placeHolder='name'
+              placeHolder='Name'
               value={this.state.name}
               onDOMChange={this.onFieldChange.bind(this, 'name')}
           />
@@ -269,9 +362,12 @@ export default class ManPower extends Component {
         style={{marginLeft:'10px', marginTop:'10px', width:'300px'}}
         align='center'>
         { this.renderCamera() }
+        <div className='barCode'>
+        { this.renderBarcode() }
+        </div>
         <Section pad='small'
           align='center'>
-          <Button
+          <Button icon={<Edit />}
             label='SAVE'
             onClick={this.onSubmitClick.bind(this)}
             disabled={true}
@@ -285,9 +381,42 @@ export default class ManPower extends Component {
     )
   }
 
+  renderAllEmployees() {
+    const { employeeData } = this.state;
+    if(!employeeData)
+    return null;
+    return (
+      <div className='table'>
+      <Table scrollable={true} style={{marginTop : '30px'}}>
+          <thead style={{position:'relative'}}>
+           <tr>
+             <th>S No.</th>
+             <th>Barcode</th>
+             <th>Name</th>
+             <th>Payment Type</th>
+           </tr>
+          </thead>
+          <tbody>
+            {
+              Object.keys(employeeData).map((employee, index) => {
+                const employeeObj = employeeData[employee];
+                return <TableRow key={index}>
+                <td>{index+1}</td>
+                <td>{employeeObj.employeeId}</td>
+                <td>{employeeObj.name}</td>
+                <td>{employeeObj.paymentType}</td>
+                </TableRow>
+              })
+            }
+          </tbody>
+      </Table>
+      </div>
+    )
+  }
+
   render() {
 
-
+    console.log(this.state)
     return (
       <div className='manPower'>
       <Header
@@ -305,6 +434,9 @@ export default class ManPower extends Component {
       <Tabs justify='start' style={{marginLeft:'40px'}}>
       <Tab title='ADD'>
       { this.renderInputFields() }
+      </Tab>
+      <Tab title='EMPLOYEES'>
+      { this.renderAllEmployees() }
       </Tab>
       </Tabs>
       { this.renderToastMsg() }
