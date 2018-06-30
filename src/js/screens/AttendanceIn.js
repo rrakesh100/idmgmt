@@ -58,6 +58,7 @@ class AttendanceIn extends Component {
       }
       let suggests = [];
       Object.keys(data).forEach((employee) => {
+        if(employee != 'count')
         suggests.push({
            label : data[employee].name,
            employeeId : employee
@@ -100,6 +101,7 @@ class AttendanceIn extends Component {
   }
 
   onSearchEntry(e) {
+    console.log(e)
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
 
@@ -107,9 +109,9 @@ class AttendanceIn extends Component {
       filtered = options
     else {
       options.forEach((opt) => {
-        if(opt.label.startsWith(e.target.value))
+        if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
-        if(opt.employeeId.startsWith(e.target.value))
+        else if(opt.employeeId === e.target.value)
           filtered.push(opt)
       })
     }
@@ -331,6 +333,12 @@ renderSearchedEmployee() {
     margin='small'
     colorIndex='light-2' style={{width:'400px'}}>
     Name : {selectedEmployeeData.name}
+    </Box>
+    <Box align='start'
+    pad='small'
+    margin='small'
+    colorIndex='light-2' style={{width:'350px'}}>
+    MCode : {selectedEmployeeData.employeeId}
     </Box>
     <Box align='start'
     pad='small'
