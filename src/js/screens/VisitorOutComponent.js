@@ -148,20 +148,19 @@ onRadioChange(button, e) {
       return null;
     }
     let { status, inTime } = this.props.visitorData;
+    console.log('#####', this.props.visitorData);
+    console.log('@@@@@', this.state.visitorData);
+
     if(status == null) {
       status  = this.state.visitorData.status;
       inTime  = this.state.visitorData.inTime;
-
-
     }
 
 
-
-    if(this.props.visitorData && this.state.visitorData && 
+    if(this.props.visitorData && this.state.visitorData &&
       this.props.visitorData.visitorId !== this.state.visitorData.visitorId){
       status  = this.props.visitorData.status;
       inTime  = this.props.visitorData.inTime;
-
     }
     if (status !== 'DEPARTED') {
       return (
@@ -184,6 +183,8 @@ onRadioChange(button, e) {
     }else{
       let ot = this.state.visitorData.outTime;
       console.log(ot)
+      if(!ot)
+        return
       let splitOT = ot.split("T");
       let time = splitOT[1].split(".")[0];
       let hour = Number(time.split(":")[0]) + 5;
@@ -227,29 +228,36 @@ onRadioChange(button, e) {
 
   onDepartedClick() {
     console.log('clicked ! ! ! ! !')
-    let updateData = {}
+    let updateData = {};
+
     const { visitorData, visitorId, radioSelectValue} = this.state;
-    const timestamp = new Date();
-    updateData.metRequiredPerson = radioSelectValue;
-    console.log(updateData);
-    updateVisitor({ ...updateData, timestamp,
-      entryTimestamp: visitorData.timestamp,
-      outTime : timestamp,
-      status : 'DEPARTED',
-      enteredBy: window.localStorage.email,
-      visitorId })
-      .then(() => {
-        console.log('success')
-        this.setState({
-          toastMsg: `Successfully updated the status of ${this.state.visitorId}`
-        }, this.getVisitorData.bind(this));
-      })
-      .catch((err) => {
-        console.error(`Unable to update ${visitorData.name}\'s status`, err);
-        this.setState({
-          error: '`Unable to update ${visitorData.name}\'s status`'
+    visitorData.status='DEPARTED';
+    this.setState({
+      visitorData
+    }, () => {
+      const timestamp = new Date();
+      updateData.metRequiredPerson = radioSelectValue;
+      console.log(updateData);
+      updateVisitor({ ...updateData, timestamp,
+        entryTimestamp: visitorData.timestamp,
+        outTime : timestamp,
+        status : 'DEPARTED',
+        enteredBy: window.localStorage.email,
+        visitorId })
+        .then(() => {
+          console.log('success')
+          this.setState({
+            toastMsg: `Successfully updated the status of ${this.state.visitorId}`
+          }, this.getVisitorData.bind(this));
+        })
+        .catch((err) => {
+          console.error(`Unable to update ${visitorData.name}\'s status`, err);
+          this.setState({
+            error: '`Unable to update ${visitorData.name}\'s status`'
+          });
         });
-      });
+    })
+
   }
 
 
@@ -259,8 +267,6 @@ onRadioChange(button, e) {
 
 
   render() {
-
-
     console.log(this.props)
     if (this.state.isLoading) {
       return (
@@ -317,15 +323,13 @@ onRadioChange(button, e) {
 
       <Section pad='small'
         align='center'>
-      <Button primary="true" type="button"
-        label='DEPARTED' icon={<CheckMark/>}
-        onClick={this.onDepartedClick.bind(this)}
-        href='#' />
-
-        </Section>
+        <Button primary="true" type="button"
+          label='DEPARTED' icon={<CheckMark/>}
+          onClick={this.onDepartedClick.bind(this)}
+          href='#' />
+      </Section>
       }
         </div>
-
       </div>
     );
   }
