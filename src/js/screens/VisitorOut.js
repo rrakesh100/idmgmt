@@ -176,7 +176,7 @@ class VisitorOut extends Component {
 
   render() {
     return (
-      <Article primary={true} className='visitors'>
+      <Article primary={true} className=''>
       { this.renderVisitorSearch() }
       { this.renderSearchedVisitor() }
       { this.renderVisitorDetail() }

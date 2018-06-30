@@ -83,7 +83,7 @@ class VisitorOutComponent extends Component {
       const timeDifference = getTimeInterval(timestamp, statusTimestamp);
 
       return (
-        <div style={{height: '400px' }}>
+        <div style={{height: '400px' , marginTop : '50px'}}>
         <Section >
           <Split>
             <Box direction='column' style={{marginLeft:'20px'}} >
@@ -178,6 +178,12 @@ onRadioChange(button, e) {
             checked={this.state.radioSelectValue === 'no' ? true : false}
             onChange={this.onRadioChange.bind(this, 'no')} />
 
+              <Button primary="true" type="button" style={{marginLeft:'60px'}}
+                label='DEPARTED' icon={<CheckMark/>}
+                onClick={this.onDepartedClick.bind(this)}
+                href='#' />
+
+
         </Box>
       );
     }else{
@@ -213,10 +219,7 @@ onRadioChange(button, e) {
       }
 
 
-      return (<div style={{marginLeft :'40px'}}>
-      <div style={{marginLeft:'380px', marginTop:'50px'}}>
-      <p>Out Date & Time: <strong>{timestampStr}[Duration:{hours+' hr'} {minutes + ' min'}]</strong></p>
-      </div>
+      return (<div style={{marginLeft :'40px', marginTop:'50px'}}>
       <Headline size='small'>
         Departed at : <span style={{color :'red'}}> {splitOT[0]}</span> Time : <span
         style={{color :'red'}}>{formattedTime}</span>
@@ -311,24 +314,12 @@ onRadioChange(button, e) {
     }
     return (
       <div style={{height:'700px'}}>
-      <Article primary={true} full={true} className='visitorDetails' style={{height:'680px'}}>
-
         {errorNode}
         {toastNode}
-        { this.renderVisitor() }
         { this.renderActions() }
-      </Article>
+        { this.renderVisitor() }
       <div style={{marginLeft : '50px'}}>
-      { !hideButton &&
 
-      <Section pad='small'
-        align='center'>
-        <Button primary="true" type="button"
-          label='DEPARTED' icon={<CheckMark/>}
-          onClick={this.onDepartedClick.bind(this)}
-          href='#' />
-      </Section>
-      }
         </div>
       </div>
     );

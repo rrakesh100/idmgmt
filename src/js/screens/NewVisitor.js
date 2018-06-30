@@ -34,6 +34,7 @@ import { saveVisitor, uploadVisitorImage } from '../api/visitors';
 class NewVisitor extends Component {
   constructor(props) {
     super(props);
+    console.log('*****', props);
     this.state = {
       showLiveCameraFeed: true,
       visitorId: Rand.generateBase30(8),
@@ -79,7 +80,7 @@ class NewVisitor extends Component {
 
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
       uploadVisitorImage(imgFile, visitorId).then((snapshot) => {
-           let screenshot = snapshot.downloadURL;
+      let screenshot = snapshot.downloadURL;
 
     saveVisitor({
       visitorId,
@@ -105,11 +106,12 @@ class NewVisitor extends Component {
         }
       ]
     })
-      .then(
+      .then(()=> {
         this.setState({
           toastMsg: `User ${name} is saved `,
-          serialNo : serialNo + 1
-        }, () => { window.print(); })
+        }, () => { window.print(); window.reload()})
+      }
+
       )
       .catch((err) => {
         console.error('VISITOR SAVE ERR', err);
@@ -321,11 +323,10 @@ class NewVisitor extends Component {
 
 
     return (
-      <div className='newVisitor' >
+      <div>
         { this.renderValidationMsg() }
         { this.renderBusinessCardForPrint() }
-        <Article
-          direction='column'>
+
           <Section
             justify='center'
             >
@@ -410,7 +411,6 @@ class NewVisitor extends Component {
               </Box>
             </Split>
           </Section>
-        </Article>
       </div>
     );
   }

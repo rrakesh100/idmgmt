@@ -56,6 +56,7 @@ class Tasks extends Component {
           return;
         }
         let visitors = [];
+        console.log('####333##', data);
         snap.forEach(function(child){
           let a = {};
             a[child.key] = child.val()
@@ -65,7 +66,8 @@ class Tasks extends Component {
 
         this.setState({
           visitorSuggestions: [...Object.keys(data)],
-          visitors
+          visitors,
+          serialNo : data.serialNo
         });
       })
       .catch((err) => {
@@ -227,7 +229,7 @@ class Tasks extends Component {
 
   print() {
     if(this.state.printVisitorId)
-     this.setState({printVisitorId : null},  setTimeout(() => window.print(), 2000) );
+     this.setState({printVisitorId : null},  setTimeout(() => window.print(), 4000) );
   }
 
   renderSearchedVisitor() {
@@ -327,7 +329,7 @@ class Tasks extends Component {
 
 
   render() {
-    const {serialNo=1} = this.state.visitors;
+    const {serialNo=1} = this.state;
     const { error, tasks } = this.props;
     const { intl } = this.context;
 
@@ -344,7 +346,7 @@ class Tasks extends Component {
     }
 
     return (
-      <Article primary={true} className='visitors'>
+      <div >
       <Header
         direction='row'
         size='large'
@@ -366,7 +368,7 @@ class Tasks extends Component {
             { this.print() }
             </Tab>
             <Tab title='VISITOR IN'>
-            <NewVisitor serialNo={serialNo}/>
+            <NewVisitor serialNo={serialNo} style={{height : '400px'}}/>
             </Tab>
             <Tab title='VISITOR OUT'>
             <VisitorOut />
@@ -375,7 +377,7 @@ class Tasks extends Component {
             <Reports />
             </Tab>
             </Tabs>
-      </Article>
+      </div>
     );
   }
 }
