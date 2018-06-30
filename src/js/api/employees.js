@@ -9,6 +9,7 @@ export function saveEmployee(data) {
   const dateStr = moment(date).format('DD-MM-YYYY');
   const dbRef = firebase.database().ref();
   const updates = {};
+  delete data['countObj']
   const newData = Object.assign({}, data)
 
   updates[`employees/${data.employeeId}`] = newData;

@@ -198,9 +198,6 @@ class Employees extends Component {
         {errorNode}
         <Split>
             <Tabs justify='start' style={{marginLeft:'40px'}}>
-            <Tab title='ADD'>
-            <NewEmployee />
-            </Tab>
             <Tab title='ATTENDANCE IN'>
             <AttendanceIn />
             </Tab>

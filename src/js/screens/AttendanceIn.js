@@ -17,16 +17,34 @@ import Anchor from 'grommet/components/Anchor';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 import Split from 'grommet/components/Split';
 import Headline from 'grommet/components/Headline';
+import Columns from 'grommet/components/Columns';
+import Form from 'grommet/components/Form';
+import FormField from 'grommet/components/FormField';
+import DateTime from 'grommet/components/DateTime';
+import Select from 'grommet/components/Select';
+import Grid from 'react-css-grid';
+import TextInput from 'grommet/components/TextInput';
+import Rand from 'random-key';
+import Barcode from 'react-barcode';
+import { Container, Row, Col } from 'react-grid-system';
+import Clock from 'react-live-clock';
+import { uploadEmployeeImage } from '../api/employees'
 
 
 class AttendanceIn extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      barCodeId: Rand.generateBase30(8),
       showLiveCameraFeed : true,
       msg : '',
       employeeSearchString : '',
-      selectedEmployeeData : null
+      selectedEmployeeData : null,
+      showLiveCameraFeed: true,
+      Date: '',
+      Shift: '',
+      numberOfPersons: '',
+      manpowerName: ''
     };
     this.onCompareClick.bind(this);
   }
@@ -152,49 +170,219 @@ class AttendanceIn extends Component {
 
   }
 
-  onCompareButtonClick() {
-    const { selectedEmployeeId, selectedEmployeeData } = this.state;
+  onMarkButtonClick() {
+    const { selectedEmployeeId, selectedEmployeeData, shift, screenshot, numberOfPersons, Date } = this.state;
+
     let selectedEmployeeName = selectedEmployeeData.name;
-    saveAttendanceInData(selectedEmployeeId, selectedEmployeeName).then(() => {
-      this.setState({msg:'Attendance data saved'})
+    let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    uploadEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
+         let screenshot = snapshot.downloadURL;
+    saveAttendanceInData({
+      selectedEmployeeId,
+      selectedEmployeeName,
+      shift,
+      screenshot,
+      numberOfPersons,
+      Date
+      }).then(() => {
+      this.setState({
+        msg:'Attendance data saved',
+        shift: '',
+        numberOfPersons: ''
+      })
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);
     })
+    }).catch((e) => console.log(e))
+  }
+
+  setRef(webcam) {
+    this.webcam = webcam;
+  }
+
+
+  capture() {
+    if (this.state.showLiveCameraFeed) {
+      const screenshot = this.webcam.getScreenshot();
+      this.setState({
+        screenshot,
+        showLiveCameraFeed: false
+      });
+    } else {
+      this.setState({
+        showLiveCameraFeed: true,
+        screenshot: ''
+      });
+    }
+  }
+
+
+  renderImage() {
+    if(this.state.showLiveCameraFeed) {
+      return (
+        <Webcam
+          audio={false}
+          height={300}
+          ref={this.setRef.bind(this)}
+          screenshotFormat='image/jpeg'
+          width={400}
+          onClick={this.capture.bind(this)}
+        />
+      );
+    }
+    return (
+      <Image src={this.state.screenshot} height={300}/>
+    );
+  }
+
+  renderCamera() {
+    return (
+      <Box>
+        { this.renderImage() }
+      </Box>
+    );
+  }
+
+  onDateChange(e) {
+    this.setState({Date:e})
+  }
+
+  onFieldChange(fieldName, e) {
+    if(fieldName == 'shift') {
+    this.setState({
+      [fieldName]: e.option
+    })
+  } else {
+    this.setState({
+      [fieldName]: e.target.value
+    })
+  }
   }
 
 renderSearchedEmployee() {
   const { selectedEmployeeData } = this.state;
+  console.log(selectedEmployeeData)
   if(selectedEmployeeData) {
     const { screenshot, name, employeeId } = selectedEmployeeData;
 
     let employeeName = `"${name}" (${employeeId})`
 
+    const iStyle = {
+      display : 'grid'
+    }
+
   return (
 
     <Article>
-    <Header
-      direction='row'
-      colorIndex='light-2'
-      align='center'
-      responsive={false}
-      pad={{ horizontal: 'small' }}
-    >
-      <Heading margin='none' strong={true}>
-        {employeeName}
-      </Heading>
-    </Header>
-    <Box direction='column' align='center'>
-    <Image src={screenshot} style={{marginTop:'5px'}}/>
 
+
+  <Container>
+  <Row>
+    <Col sm={2}>
+    <Form className='manPowerFields' style={{marginLeft:'10px'}}>
+    <FormField  label='Date *'  strong={true} style={{marginTop : '15px', width:'160px'}}  >
+    <DateTime id='id'
+    format='D/M/YYYY'
+    name='name'
+    onChange={this.onDateChange.bind(this)}
+    value={this.state.Date}
+    />
+    </FormField>
+    </Form>
+    </Col>
+    <Col sm={2}>
+    <Form style={{marginLeft:'10px'}}>
+    <FormField  label='Shift *'  strong={true} style={{marginTop : '15px',width:'160px'}}  >
+    <Select
+      placeHolder='Shift'
+      options={['Morning', 'Afternoon', 'Night']}
+      value={this.state.shift}
+      onChange={this.onFieldChange.bind(this, 'shift')}
+    />
+    </FormField>
+    </Form>
+    </Col>
+    <Col sm={4}>
+    <Form style={{marginLeft:'10px'}}>
+    <FormField  label='No of Persons Attendance *'  strong={true} style={{marginTop : '15px',width:'300px'}}  >
+    <TextInput
+        placeHolder='No of Persons Attendance'
+        value={this.state.numberOfPersons}
+        onDOMChange={this.onFieldChange.bind(this, 'numberOfPersons')}
+    />
+    </FormField>
+    </Form>
+    </Col>
+    <Col>
+    <div onClick={this.capture.bind(this)}
+      style={{marginBottom:'10px', marginTop:'10px', width:'200px'}}>
+    { this.renderCamera() }
+    </div>
+    </Col>
+    </Row>
+    <Headline size="small">
+            <span>In Date :   <Clock className='employeeClock' format={'DD/MM/YYYY'}/></span>
+            <span style={{marginLeft : '20px'}}>In Time :   <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
+    </Headline>
+    <Row>
+    <Col>
+    <Box align='start'
+    pad='small'
+    margin='small'
+    colorIndex='light-2' style={{width:'400px'}}>
+    Name : {selectedEmployeeData.name}
     </Box>
-    <Box direction='column' align='center'>
-
-    <Button style={{marginTop:'2px'}}
+    <Box align='start'
+    pad='small'
+    margin='small'
+    colorIndex='light-2' style={{width:'400px'}}>
+    DOJ : {selectedEmployeeData.joinedDate}
+    </Box>
+    <Box align='start'
+    pad='small'
+    margin='small'
+    colorIndex='light-2' style={{width:'400px'}}>
+    Villge : {selectedEmployeeData.village}
+    </Box>
+    <Box align='start'
+    pad='small'
+    margin='small'
+    colorIndex='light-2' style={{width:'400px'}}>
+    Address : {selectedEmployeeData.address}
+    </Box>
+    <Box align='start'
+    pad='small'
+    margin='small'
+    colorIndex='light-2' style={{width:'400px'}}>
+    Payment Mode: {selectedEmployeeData.paymentType}
+    </Box>
+    <Box align='start'
+    pad='small'
+    margin='small'
+    colorIndex='light-2' style={{width:'400px'}}>
+    No of persons : {selectedEmployeeData.numberOfPersons}
+    </Box>
+    <Box align='start'
+    pad='small'
+    margin='small'
+    colorIndex='light-2' style={{width:'400px'}}>
+    Remarks : {selectedEmployeeData.remarks}
+    </Box>
+    </Col>
+    <Col>
+    <div style={{marginLeft:'160px'}}>
+    <Image src={screenshot} style={{marginTop:'15px', height:'400px'}}/>
+    </div>
+    </Col>
+    </Row>
+    </Container>
+    <div style={{marginLeft: '450px'}}>
+    <Button style={{marginTop:'25px'}}
       label='MARK PRESENT'
-      onClick={this.onCompareButtonClick.bind(this)}
+      onClick={this.onMarkButtonClick.bind(this)}
       href='#'
       primary={true} />
-    </Box>
+    </div>
     </Article>
 
   )
@@ -246,7 +434,7 @@ onOkButtonClick() {
     }
     return (
       <Article primary={true} className='employees'>
-      
+
 
       { this.renderEmployeeSearch() }
       { this.renderSearchedEmployee() }

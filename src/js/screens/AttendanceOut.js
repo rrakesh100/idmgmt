@@ -17,6 +17,14 @@ import Anchor from 'grommet/components/Anchor';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 import Split from 'grommet/components/Split';
 import Headline from 'grommet/components/Headline';
+import { Container, Row, Col } from 'react-grid-system';
+import Clock from 'react-live-clock';
+import { uploadEmployeeImage } from '../api/employees'
+import Form from 'grommet/components/Form';
+import FormField from 'grommet/components/FormField';
+import DateTime from 'grommet/components/DateTime';
+import Label from 'grommet/components/Label';
+
 
 
 class AttendanceOut extends Component {
@@ -26,9 +34,9 @@ class AttendanceOut extends Component {
       showLiveCameraFeed : true,
       msg : '',
       employeeSearchString : '',
-      selectedEmployeeData : null
+      selectedEmployeeData : null,
+      showLiveCameraFeed: true
     };
-    this.onCompareClick.bind(this);
   }
 
   componentDidMount() {
@@ -60,6 +68,7 @@ class AttendanceOut extends Component {
     if(selectedEmployeeId) {
     getEmployee(selectedEmployeeId).then((snap) => {
       const selectedEmployeeData = snap.val();
+      console.log(selectedEmployeeData)
       this.setState({
         selectedEmployeeData
       })
@@ -152,7 +161,54 @@ class AttendanceOut extends Component {
 
   }
 
-  onCompareButtonClick() {
+  setRef(webcam) {
+    this.webcam = webcam;
+  }
+
+
+  capture() {
+    if (this.state.showLiveCameraFeed) {
+      const screenshot = this.webcam.getScreenshot();
+      this.setState({
+        screenshot,
+        showLiveCameraFeed: false
+      });
+    } else {
+      this.setState({
+        showLiveCameraFeed: true,
+        screenshot: ''
+      });
+    }
+  }
+
+
+  renderImage() {
+    if(this.state.showLiveCameraFeed) {
+      return (
+        <Webcam
+          audio={false}
+          height={300}
+          ref={this.setRef.bind(this)}
+          screenshotFormat='image/jpeg'
+          width={400}
+          onClick={this.capture.bind(this)}
+        />
+      );
+    }
+    return (
+      <Image src={this.state.screenshot} height={300}/>
+    );
+  }
+
+  renderCamera() {
+    return (
+      <Box>
+        { this.renderImage() }
+      </Box>
+    );
+  }
+
+  onMarkButtonClick() {
     const { selectedEmployeeId, selectedEmployeeData } = this.state;
     let selectedEmployeeName = selectedEmployeeData.name;
     saveAttendanceOutData(selectedEmployeeId, selectedEmployeeName).then(() => {
@@ -172,29 +228,92 @@ renderSearchedEmployee() {
   return (
 
     <Article>
-    <Header
-      direction='row'
-      colorIndex='light-2'
-      align='center'
-      responsive={false}
-      pad={{ horizontal: 'small' }}
-    >
-      <Heading margin='none' strong={true}>
-        {employeeName}
-      </Heading>
-    </Header>
-    <Box direction='column' align='center'>
-    <Image src={screenshot} style={{marginTop:'5px'}}/>
 
-    </Box>
-    <Box direction='column' align='center'>
+    <Container>
+    <Row>
+      <Col sm={2}>
 
-    <Button style={{marginTop:'2px'}}
-      label='MARK AS LEFT'
-      onClick={this.onCompareButtonClick.bind(this)}
-      href='#'
-      primary={true} />
-    </Box>
+      </Col>
+      <Col sm={2}>
+      <Label>
+      Girish
+      </Label>
+      </Col>
+      <Col sm={4}>
+      <Label>
+      Girish
+      </Label>
+      </Col>
+      <Col>
+      <div onClick={this.capture.bind(this)}
+        style={{marginBottom:'10px', marginTop:'10px', width:'200px'}}>
+      { this.renderCamera() }
+      </div>
+      </Col>
+      </Row>
+      <Headline size="small">
+              <span>In Date :   <Clock className='employeeClock' format={'DD/MM/YYYY'}/></span>
+              <span style={{marginLeft : '20px'}}>In Time :   <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
+      </Headline>
+      <Row>
+      <Col>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      Name : {selectedEmployeeData.name}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      DOJ : {selectedEmployeeData.joinedDate}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      Villge : {selectedEmployeeData.village}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      Address : {selectedEmployeeData.address}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      Payment Mode: {selectedEmployeeData.paymentType}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      No of persons : {selectedEmployeeData.numberOfPersons}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      Remarks : {selectedEmployeeData.remarks}
+      </Box>
+      </Col>
+      <Col>
+      <div>
+      <Image src={screenshot} style={{marginTop:'15px', height:'350px'}}/>
+      </div>
+      </Col>
+      </Row>
+      </Container>
+      <div style={{marginLeft: '450px'}}>
+      <Button style={{marginTop:'25px'}}
+        label='MARK AS LEFT'
+        onClick={this.onMarkButtonClick.bind(this)}
+        href='#'
+        primary={true} />
+      </div>
     </Article>
 
   )
@@ -246,7 +365,7 @@ onOkButtonClick() {
     }
     return (
       <Article primary={true} className='employees'>
-      
+
 
       { this.renderEmployeeSearch() }
       { this.renderSearchedEmployee() }
