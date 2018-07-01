@@ -268,11 +268,12 @@ export default class ManPower extends Component {
 
   renderBarcode() {
     const { employeeId } = this.state;
-     return (
+
+     return ( employeeId != '' ?
        <div className='barCode'>
           <Barcode value={employeeId} height={20} />
-       </div>
-     )
+       </div> :  null );
+
   }
 
   renderInputFields() {
@@ -284,7 +285,7 @@ export default class ManPower extends Component {
         <Box direction='column' style={{marginLeft:'30px'}}>
         <Form className='manPowerFields'>
 
-        <FormField  label='Joined Date *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+        <FormField  label='Joined Date *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
         <DateTime id='id'
         format='D/M/YYYY'
         name='name'
@@ -292,14 +293,14 @@ export default class ManPower extends Component {
         value={this.state.joinedDate}
         />
         </FormField>
-        <FormField  label='Name *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+        <FormField  label='Name *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
           <TextInput
               placeHolder='Name'
               value={this.state.name}
               onDOMChange={this.onFieldChange.bind(this, 'name')}
           />
         </FormField>
-          <FormField  label='Gender *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <FormField  label='Gender *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
             <Select
               placeHolder='Gender'
               options={['Male', 'Female']}
@@ -307,14 +308,14 @@ export default class ManPower extends Component {
               onChange={this.onFieldChange.bind(this, 'gender')}
             />
           </FormField>
-          <FormField  label='Village *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <FormField  label='Village *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
             <TextInput
               placeHolder='Village'
               value={this.state.village}
               onDOMChange={this.onFieldChange.bind(this, 'village')}
             />
           </FormField>
-          <FormField  label='Address'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <FormField  label='Address'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
             <TextInput
               placeHolder='Address'
               value={this.state.address}
@@ -325,7 +326,7 @@ export default class ManPower extends Component {
           </Box>
           <Box direction='column' style={{marginLeft:'20px'}}>
           <Form>
-          <FormField  label='Payment Type *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <FormField  label='Payment Type *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
             <Select
               placeHolder='Payment Type'
               options={['Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
@@ -333,14 +334,14 @@ export default class ManPower extends Component {
               onChange={this.onFieldChange.bind(this, 'paymentType')}
             />
           </FormField>
-          <FormField  label='Remarks'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <FormField  label='Remarks'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
             <TextInput
               placeHolder='Remarks'
               value={this.state.remarks}
               onDOMChange={this.onFieldChange.bind(this, 'remarks')}
             />
           </FormField>
-          <FormField  label='No of persons *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <FormField  label='No of persons *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
             <TextInput
               placeHolder='No of persons'
               value={this.state.numberOfPersons}
@@ -351,21 +352,16 @@ export default class ManPower extends Component {
         </Box>
         <Box onClick={this.capture.bind(this)}
         size='small' direction='column'
-        style={{marginLeft:'10px', marginTop:'10px', width:'300px'}}
+        style={{marginLeft:'10px', marginTop:'10px', width:'200px'}}
         align='center'>
         { this.renderCamera() }
-        <div className='barCode'>
         { this.renderBarcode() }
-        </div>
-        <Section pad='small'
-          align='center'>
-          <Button icon={<Edit />}
+          <Button icon={<Edit />} style= {{marginTop : '20px'}}
             label='SAVE'
             onClick={this.onSubmitClick.bind(this)}
             disabled={true}
             href='#'
             primary={true} />
-        </Section>
         </Box>
         </Split>
         </Section>
@@ -411,7 +407,7 @@ export default class ManPower extends Component {
 
     console.log(this.state)
     return (
-      <div className='manPower'>
+      <div className=''>
       <Header
         direction='row'
         size='large'

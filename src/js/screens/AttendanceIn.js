@@ -280,40 +280,55 @@ renderSearchedEmployee() {
 
   <Container>
   <Row>
-    <Col sm={2}>
-    <Form className='manPowerFields' style={{marginLeft:'10px'}}>
-    <FormField  label='Date *'  strong={true} style={{marginTop : '15px', width:'160px'}}  >
-    <DateTime id='id'
-    format='D/M/YYYY'
-    name='name'
-    onChange={this.onDateChange.bind(this)}
-    value={this.state.Date}
-    />
-    </FormField>
-    </Form>
-    </Col>
-    <Col sm={2}>
-    <Form style={{marginLeft:'10px'}}>
-    <FormField  label='Shift *'  strong={true} style={{marginTop : '15px',width:'160px'}}  >
-    <Select
-      placeHolder='Shift'
-      options={['Morning', 'Afternoon', 'Night']}
-      value={this.state.shift}
-      onChange={this.onFieldChange.bind(this, 'shift')}
-    />
-    </FormField>
-    </Form>
-    </Col>
-    <Col sm={4}>
-    <Form style={{marginLeft:'10px'}}>
-    <FormField  label='No of Persons Attendance *'  strong={true} style={{marginTop : '15px',width:'300px'}}  >
-    <TextInput
-        placeHolder='No of Persons Attendance'
-        value={this.state.numberOfPersons}
-        onDOMChange={this.onFieldChange.bind(this, 'numberOfPersons')}
-    />
-    </FormField>
-    </Form>
+    <Col sm={8}>
+        <Row>
+            <Col>
+            <Form className='manPowerFields' style={{marginLeft:'10px'}}>
+            <FormField  label='Date *'  strong={true} style={{marginTop : '15px', width:'150px'}}  >
+            <DateTime id='id'
+            format='D/M/YYYY'
+            name='name'
+            onChange={this.onDateChange.bind(this)}
+            value={this.state.Date}
+            />
+            </FormField>
+            </Form>
+            </Col>
+            <Col>
+            <Form style={{marginLeft:'10px'}}>
+            <FormField  label='Shift *'  strong={true} style={{marginTop : '15px',width:'160px'}}  >
+            <Select
+              placeHolder='Shift'
+              options={['Morning', 'Afternoon', 'Night']}
+              value={this.state.shift}
+              onChange={this.onFieldChange.bind(this, 'shift')}
+            />
+            </FormField>
+            </Form>
+            </Col>
+            <Col>
+            <Form style={{marginLeft:'10px'}}>
+            <FormField  label='No of Persons *'  strong={true} style={{marginTop : '15px',width:'200px'}}  >
+            <TextInput
+                placeHolder='No of Persons'
+                value={this.state.numberOfPersons}
+                onDOMChange={this.onFieldChange.bind(this, 'numberOfPersons')}
+            />
+            </FormField>
+            </Form>
+            </Col>
+        </Row>
+        <Row>
+          <Col style={{margin : '0', padding: '0'}}>
+          <div style={{marginTop:'40px'}}>
+            <Button
+              label='MARK PRESENT'
+              onClick={this.onMarkButtonClick.bind(this)}
+              href='#'
+              primary={true} />
+          </div>
+          </Col>
+        </Row>
     </Col>
     <Col>
     <div onClick={this.capture.bind(this)}
@@ -384,13 +399,6 @@ renderSearchedEmployee() {
     </Col>
     </Row>
     </Container>
-    <div style={{marginLeft: '450px'}}>
-    <Button style={{marginTop:'25px'}}
-      label='MARK PRESENT'
-      onClick={this.onMarkButtonClick.bind(this)}
-      href='#'
-      primary={true} />
-    </div>
     </Article>
 
   )
