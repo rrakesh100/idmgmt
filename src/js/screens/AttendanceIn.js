@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { getEmployees, getEmployee } from '../api/employees';
-import { saveAttendanceInData } from '../api/attendance';
 import Webcam from 'react-webcam';
 import Search from 'grommet/components/Search';
 import Box from 'grommet/components/Box';
@@ -28,7 +27,9 @@ import Rand from 'random-key';
 import Barcode from 'react-barcode';
 import { Container, Row, Col } from 'react-grid-system';
 import Clock from 'react-live-clock';
-import { uploadEmployeeImage } from '../api/employees'
+import { saveAttendaceEmployee } from '../api/employees';
+import { uploadAttendanceEmployeeImage, saveAttendanceInData } from '../api/attendance';
+
 
 
 class AttendanceIn extends Component {
@@ -177,15 +178,14 @@ class AttendanceIn extends Component {
 
     let selectedEmployeeName = selectedEmployeeData.name;
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
-    uploadEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
-         let screenshot = snapshot.downloadURL;
+    uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
+         let inwardPhoto = snapshot.downloadURL;
     saveAttendanceInData({
       selectedEmployeeId,
       selectedEmployeeName,
       shift,
-      screenshot,
-      numberOfPersons,
-      Date
+      inwardPhoto,
+      numberOfPersons
       }).then(() => {
       this.setState({
         msg:'Attendance data saved',
@@ -397,17 +397,17 @@ renderSearchedEmployee() {
 }
 }
 
-onCloseLayer()  {
-  this.setState({msg:''})
-}
+  onCloseLayer()  {
+    this.setState({msg:''})
+  }
 
-onOkButtonClick() {
-  this.setState({
-    msg:'',
-    employeeSearchString:'',
-    selectedEmployeeData:null
-  })
-}
+  onOkButtonClick() {
+    this.setState({
+      msg:'',
+      employeeSearchString:'',
+      selectedEmployeeData:null
+    })
+  }
 
   render() {
     const { msg } = this.state;

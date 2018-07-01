@@ -11,22 +11,29 @@ export function saveAttendanceInData(data) {
   const dbRef = firebase.database().ref();
   const updates = {};
 
+  updates[`employees/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
+  updates[`employees/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
+  updates[`employees/${data.selectedEmployeeId}/shift`] = data.shift;
+  updates[`employees/${data.selectedEmployeeId}/inDate`] = dateStr;
+  updates[`employees/${data.selectedEmployeeId}/inTime`] = timeStr;
+  updates[`employees/${data.selectedEmployeeId}/inSide`] = true;
+
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/in`] = timeStr;
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/name`] = data.selectedEmployeeName;
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/shift`] = data.shift;
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
-  updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/screenshot`] = data.screenshot;
+  updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/in`] = timeStr;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/name`] = data.selectedEmployeeName;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/shift`] = data.shift;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/numberOfPersons`] = data.numberOfPersons;
-  updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/screenshot`] = data.screenshot;
+  updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/inwardPhoto`] = data.inwardPhoto;
 
 
   return dbRef.update(updates);
 }
 
-export function saveAttendanceOutData(employeeId, employeeName) {
+export function saveAttendanceOutData(data) {
   const date = new Date();
   const dateStr = moment(date).format('DD-MM-YYYY');
   const timeStr = moment(date).format('h:mm A');
@@ -34,10 +41,15 @@ export function saveAttendanceOutData(employeeId, employeeName) {
   const dbRef = firebase.database().ref();
   const updates = {};
 
-  updates[`attendance/dates/${dateStr}/${employeeId}/out`] = timeStr;
-  updates[`attendance/dates/${dateStr}/${employeeId}/name`] = employeeName;
-  updates[`attendance/employees/${employeeId}/${dateStr}/out`] = timeStr;
-  updates[`attendance/employees/${employeeId}/${dateStr}/name`] = employeeName;
+  updates[`employees/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
+  updates[`employees/${data.selectedEmployeeId}/outDate`] = dateStr;
+  updates[`employees/${data.selectedEmployeeId}/outTime`] = timeStr;
+  updates[`employees/${data.selectedEmployeeId}/inSide`] = false;
+
+  updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/out`] = timeStr;
+  updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
+  updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/out`] = timeStr;
+  updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/outwardPhoto`] = data.outwardPhoto;
 
   return dbRef.update(updates);
 }
@@ -50,4 +62,12 @@ export function getAttendanceDetails(date) {
 export function getEmployeeAttendanceDates(employeeId) {
   const dbRef = firebase.database().ref(`attendance/employees/${employeeId}`);
   return dbRef.once('value');
+}
+
+export function uploadAttendanceEmployeeImage(file, employeeId) {
+  const storageRef = firebase.storage().ref();
+  let epochTime = new Date().getTime();
+  const path = 'Attendance/employees/'+employeeId+'/'+epochTime+'.jpeg';
+  const imgRef = storageRef.child(path);
+  return  imgRef.putString(file, 'base64')
 }

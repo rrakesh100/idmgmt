@@ -6,6 +6,8 @@ export function saveEmployee(data) {
   const gender = data.gender;
   const countObj = data.countObj;
   const date = new Date();
+  const timeStr = moment(date).format('h:mm A');
+
   const dateStr = moment(date).format('DD-MM-YYYY');
   const dbRef = firebase.database().ref();
   const updates = {};
@@ -21,6 +23,8 @@ export function saveEmployee(data) {
     updates[`employees/count/maxFemaleCount`] = countObj.maxFemaleCount + 1;
   }
 
+
+
   // if(gender == 'Male') {
   //   const maleCountVal = firebase.database().ref(`employees/count/maxMaleCount`).once('value');
   //   console.log(maleCountVal)
@@ -31,6 +35,24 @@ export function saveEmployee(data) {
   // updates[`employees/maxFemaleCount`] = count++;
   // }
   return dbRef.update(updates);
+  }
+
+  export function saveAttendaceEmployee(data) {
+    console.log(data);
+    const date = new Date();
+    const timeStr = moment(date).format('h:mm A');
+
+    const dateStr = moment(date).format('DD-MM-YYYY');
+    const dbRef = firebase.database().ref();
+    const updates = {};
+    updates[`employees/${data.selectedEmployeeId}`] = data;
+    updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/in`] = timeStr;
+    updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/name`] = data.selectedEmployeeName;
+    updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/shift`] = data.shift;
+    updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
+    updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
+    
+    return dbRef.update(updates);
   }
 
 export function getEmployee(employeeId) {

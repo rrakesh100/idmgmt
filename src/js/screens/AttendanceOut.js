@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { getEmployees, getEmployee } from '../api/employees';
-import { saveAttendanceOutData } from '../api/attendance';
+import { saveAttendanceOutData, uploadAttendanceEmployeeImage } from '../api/attendance';
 import Webcam from 'react-webcam';
 import Search from 'grommet/components/Search';
 import Box from 'grommet/components/Box';
@@ -210,13 +210,24 @@ class AttendanceOut extends Component {
   }
 
   onMarkButtonClick() {
-    const { selectedEmployeeId, selectedEmployeeData } = this.state;
+    const { selectedEmployeeId, selectedEmployeeData, screenshot } = this.state;
     let selectedEmployeeName = selectedEmployeeData.name;
-    saveAttendanceOutData(selectedEmployeeId, selectedEmployeeName).then(() => {
-      this.setState({msg:'Attendance marked as left'})
+    let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
+         let outwardPhoto = snapshot.downloadURL;
+    saveAttendanceOutData({
+      selectedEmployeeId,
+      outwardPhoto
+      }).then(() => {
+      this.setState({
+        msg:'Attendance out data saved',
+        shift: '',
+        numberOfPersons: ''
+      })
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);
     })
+    }).catch((e) => console.log(e))
   }
 
 renderSearchedEmployee() {
@@ -225,7 +236,7 @@ renderSearchedEmployee() {
     const { screenshot, name, employeeId } = selectedEmployeeData;
 
     let employeeName = `"${name}" (${employeeId})`
-
+    let inSide = selectedEmployeeData.inSide;
   return (
 
     <Article>
@@ -233,28 +244,63 @@ renderSearchedEmployee() {
     <Container>
     <Row>
       <Col sm={2}>
-
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      In Date : {selectedEmployeeData.inDate}
+      </Box>
       </Col>
       <Col sm={2}>
-      <Label>
-      Girish
-      </Label>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      In Time : {selectedEmployeeData.inTime}
+      </Box>
+      </Col>
+      </Row>
+      <Row>
+      <Col sm={2}>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      Shift : {selectedEmployeeData.shift}
+      </Box>
       </Col>
       <Col sm={4}>
-      <Label>
-      Girish
-      </Label>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'350px'}}>
+      No of Persons Attendance : {selectedEmployeeData.numberOfPersons}
+      </Box>
       </Col>
       <Col>
+      <div>
+      {inSide ?
       <div onClick={this.capture.bind(this)}
         style={{marginBottom:'10px', marginTop:'10px', width:'200px'}}>
       { this.renderCamera() }
+      </div> :
+      <div>
+      <Image src={selectedEmployeeData.outwardPhoto} style={{marginTop:'15px', height:'350px'}}/>
+      </div>}
       </div>
       </Col>
       </Row>
+      {inSide &&
+      <div style={{marginLeft: '10px', marginBottom: '30px'}}>
+      <Button
+        label='MARK AS LEFT'
+        onClick={this.onMarkButtonClick.bind(this)}
+        href='#'
+        primary={true} />
+      </div> }
       <Headline size="small">
-              <span>In Date :   <Clock className='employeeClock' format={'DD/MM/YYYY'}/></span>
-              <span style={{marginLeft : '20px'}}>In Time :   <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
+              <span>Out Date :   <Clock className='employeeClock' format={'DD/MM/YYYY'}/></span>
+              <span style={{marginLeft : '20px'}}>Out Time :   <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
       </Headline>
       <Row>
       <Col>
@@ -312,15 +358,14 @@ renderSearchedEmployee() {
       <Image src={screenshot} style={{marginTop:'15px', height:'350px'}}/>
       </div>
       </Col>
+      <Col>
+      <div>
+      <Image src={selectedEmployeeData.inwardPhoto} style={{marginTop:'15px', height:'350px'}}/>
+      </div>
+      </Col>
       </Row>
       </Container>
-      <div style={{marginLeft: '450px'}}>
-      <Button style={{marginTop:'25px'}}
-        label='MARK AS LEFT'
-        onClick={this.onMarkButtonClick.bind(this)}
-        href='#'
-        primary={true} />
-      </div>
+
     </Article>
 
   )
