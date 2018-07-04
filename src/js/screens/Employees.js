@@ -192,7 +192,7 @@ class Employees extends Component {
         pad={{ horizontal: 'small' }}>
         <NavControl />
         <Heading margin='none' strong={true}>
-          DAILY LABOUR REGISTER
+          ATTENDANCE REGISTER
         </Heading>
       </Header>
         {errorNode}

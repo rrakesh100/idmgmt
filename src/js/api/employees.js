@@ -16,24 +16,15 @@ export function saveEmployee(data) {
 
   updates[`employees/${data.employeeId}`] = newData;
   updates[`daywiseEmployees/${dateStr}/${data.employeeId}`] = newData;
-  if(gender == 'Male') {
+  if(gender == 'Male' && data.paymentType !== 'Jattu-Daily payment') {
   updates[`employees/count/maxMaleCount`] = countObj.maxMaleCount + 1;
   }
-  if(gender == 'Female') {
+  else if(gender == 'Female' && data.paymentType !== 'Jattu-Daily payment') {
     updates[`employees/count/maxFemaleCount`] = countObj.maxFemaleCount + 1;
+  } else {
+    updates[`employees/count/maxJattuCount`] = countObj.maxJattuCount + 1;
   }
 
-
-
-  // if(gender == 'Male') {
-  //   const maleCountVal = firebase.database().ref(`employees/count/maxMaleCount`).once('value');
-  //   console.log(maleCountVal)
-  // updates[`employees/count/maxMaleCount`] = maleCountVal+1;
-  // }
-  // if(gender == 'Female') {
-  //   const femaleCountVal = firebase.database().ref(`employees/maxFemaleCount`).once('value');
-  // updates[`employees/maxFemaleCount`] = count++;
-  // }
   return dbRef.update(updates);
   }
 
@@ -51,7 +42,7 @@ export function saveEmployee(data) {
     updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/shift`] = data.shift;
     updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
     updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
-    
+
     return dbRef.update(updates);
   }
 
@@ -65,6 +56,31 @@ export function getEmployees() {
   const date = new Date();
   const dbRef = firebase.database().ref('employees');
   return dbRef.once('value');
+}
+
+export function removeEmployee(employeeId, paymentType, gender, countObj) {
+  console.log(employeeId)
+  console.log(paymentType)
+  console.log(gender)
+  console.log(countObj)
+
+  const dbRef = firebase.database().ref();
+  const employeeDbRef = firebase.database().ref(`employees/${employeeId}`);
+  employeeDbRef.remove();
+
+  const updates = {};
+
+  if(gender == 'Male' && paymentType !== 'Jattu-Daily payment') {
+  updates[`employees/count/maxMaleCount`] = countObj.maxMaleCount - 1;
+  }
+  else if(gender == 'Female' && paymentType !== 'Jattu-Daily payment') {
+    updates[`employees/count/maxFemaleCount`] = countObj.maxFemaleCount - 1;
+  } else {
+    updates[`employees/count/maxJattuCount`] = countObj.maxJattuCount - 1;
+  }
+
+  return dbRef.update(updates);
+
 }
 
 export function updateEmployeeStatus(data) {

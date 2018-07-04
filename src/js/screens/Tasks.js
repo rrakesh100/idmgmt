@@ -346,7 +346,7 @@ class Tasks extends Component {
     }
 
     return (
-      <div >
+      <Article>
       <Header
         direction='row'
         size='large'
@@ -377,7 +377,7 @@ class Tasks extends Component {
             <Reports />
             </Tab>
             </Tabs>
-      </div>
+      </Article>
     );
   }
 }

@@ -29,6 +29,7 @@ import { Container, Row, Col } from 'react-grid-system';
 import Clock from 'react-live-clock';
 import { saveAttendaceEmployee } from '../api/employees';
 import { uploadAttendanceEmployeeImage, saveAttendanceInData } from '../api/attendance';
+import Label from 'grommet/components/Label';
 
 
 
@@ -123,9 +124,10 @@ class AttendanceIn extends Component {
   }
 
   renderEmployeeSearch() {
+
     return (
-      <div style={{marginTop : '40px', marginLeft :'30px'}}>
-      <Search placeHolder='Search employee By Name or Barcode' style={{width:'800px'}}
+      <div style={{marginTop : '10px', marginLeft :'30px'}}>
+      <Search placeHolder='Search manpower By Name or Barcode' style={{width:'800px'}}
         inline={true}
         iconAlign='start'
         size='small'
@@ -134,6 +136,12 @@ class AttendanceIn extends Component {
         onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)}
         />
+        { this.state.selectedEmployeeData ?
+          <Button
+          label='Save'
+          onClick={this.onMarkButtonClick.bind(this)}
+          href='#' style={{marginLeft: '80px'}}
+          primary={true} /> : null }
     </div>
     )
   }
@@ -177,6 +185,8 @@ class AttendanceIn extends Component {
     const { selectedEmployeeId, selectedEmployeeData, shift, screenshot, numberOfPersons, Date } = this.state;
 
     let selectedEmployeeName = selectedEmployeeData.name;
+    let paymentType = selectedEmployeeData.paymentType;
+
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
          let inwardPhoto = snapshot.downloadURL;
@@ -185,7 +195,8 @@ class AttendanceIn extends Component {
       selectedEmployeeName,
       shift,
       inwardPhoto,
-      numberOfPersons
+      numberOfPersons,
+      paymentType
       }).then(() => {
       this.setState({
         msg:'Attendance data saved',
@@ -263,15 +274,10 @@ class AttendanceIn extends Component {
 
 renderSearchedEmployee() {
   const { selectedEmployeeData } = this.state;
-  console.log(selectedEmployeeData)
+
   if(selectedEmployeeData) {
-    const { screenshot, name, employeeId } = selectedEmployeeData;
+    const { screenshot, name, employeeId, paymentType } = selectedEmployeeData;
 
-    let employeeName = `"${name}" (${employeeId})`
-
-    const iStyle = {
-      display : 'grid'
-    }
 
   return (
 
@@ -283,8 +289,8 @@ renderSearchedEmployee() {
     <Col sm={8}>
         <Row>
             <Col>
-            <Form className='manPowerFields' style={{marginLeft:'10px'}}>
-            <FormField  label='Date *'  strong={true} style={{marginTop : '15px', width:'150px'}}  >
+            <Form className='manPowerFields' style={{marginLeft:'15px'}}>
+            <FormField  label='Date *'  strong={true} style={{marginTop : '15px', width:'200px'}}  >
             <DateTime id='id'
             format='D/M/YYYY'
             name='name'
@@ -296,19 +302,20 @@ renderSearchedEmployee() {
             </Col>
             <Col>
             <Form style={{marginLeft:'10px'}}>
-            <FormField  label='Shift *'  strong={true} style={{marginTop : '15px',width:'160px'}}  >
+            <FormField  label='Shift *'  strong={true} style={{marginTop : '15px',width:'200px'}}  >
             <Select
               placeHolder='Shift'
-              options={['Morning', 'Afternoon', 'Night']}
+              options={['Day', 'Night']}
               value={this.state.shift}
               onChange={this.onFieldChange.bind(this, 'shift')}
             />
             </FormField>
             </Form>
             </Col>
+            {paymentType=='Jattu-Daily payment' ?
             <Col>
             <Form style={{marginLeft:'10px'}}>
-            <FormField  label='No of Persons *'  strong={true} style={{marginTop : '15px',width:'200px'}}  >
+            <FormField  label='No of Persons'  strong={true} style={{marginTop : '15px',width:'200px'}}  >
             <TextInput
                 placeHolder='No of Persons'
                 value={this.state.numberOfPersons}
@@ -316,31 +323,42 @@ renderSearchedEmployee() {
             />
             </FormField>
             </Form>
+            </Col> :
+            <Col sm={4}>
+            <Box align='start'
+            pad='medium'
+            margin='small'
+            colorIndex='light-2'>
+            No of Persons: 1
+            </Box>
+            </Col>}
+          </Row>
+          <Row>
+            <Col sm={6}>
+            <Box align='start'
+            pad='medium'
+            margin='medium'
+            colorIndex='light-2'>
+            <span>In Date :<Clock className='employeeClock' format={'DD-MM-YYYY'}/></span>
+            </Box>
             </Col>
-        </Row>
-        <Row>
-          <Col style={{margin : '0', padding: '0'}}>
-          <div style={{marginTop:'40px'}}>
-            <Button
-              label='MARK PRESENT'
-              onClick={this.onMarkButtonClick.bind(this)}
-              href='#'
-              primary={true} />
-          </div>
-          </Col>
-        </Row>
+            <Col sm={6}>
+            <Box align='start'
+            pad='medium'
+            margin='medium'
+            colorIndex='light-2'>
+            <span>In Time : <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
+            </Box>
+            </Col>
+            </Row>
+
     </Col>
-    <Col>
+
     <div onClick={this.capture.bind(this)}
       style={{marginBottom:'10px', marginTop:'10px', width:'200px'}}>
     { this.renderCamera() }
     </div>
-    </Col>
     </Row>
-    <Headline size="small">
-            <span>In Date :   <Clock className='employeeClock' format={'DD/MM/YYYY'}/></span>
-            <span style={{marginLeft : '20px'}}>In Time :   <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
-    </Headline>
     <Row>
     <Col>
     <Box align='start'
@@ -352,7 +370,7 @@ renderSearchedEmployee() {
     <Box align='start'
     pad='small'
     margin='small'
-    colorIndex='light-2' style={{width:'350px'}}>
+    colorIndex='light-2' style={{width:'400px'}}>
     MCode : {selectedEmployeeData.employeeId}
     </Box>
     <Box align='start'
@@ -365,7 +383,7 @@ renderSearchedEmployee() {
     pad='small'
     margin='small'
     colorIndex='light-2' style={{width:'400px'}}>
-    Villge : {selectedEmployeeData.village}
+    Village : {selectedEmployeeData.village}
     </Box>
     <Box align='start'
     pad='small'

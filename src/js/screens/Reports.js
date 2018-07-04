@@ -94,12 +94,14 @@ class Reports extends Component {
 
     Object.keys(response).map((date, index) => {
       const attendanceObj = response[date];
+      console.log(attendanceObj)
       if(attendanceObj == null)
         return;
       let i = 0;
+
       tablesArray.push(<div className='tablesArray' key={index}>
       <h2 style={{marginLeft : '20px'}}>{date}</h2>
-      <Table scrollable={true} style={{marginTop : '30px', marginLeft : '40px'}}>
+      <Table scrollable={true} style={{marginTop : '30px', marginLeft : '20px'}}>
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
@@ -117,6 +119,8 @@ class Reports extends Component {
             {
                 Object.keys(attendanceObj).map((key,index)=> {
                   const visitorAttendaceObj = attendanceObj[key];
+                  if(key == 'serialNo')
+                  return null;
                   let inTime = visitorAttendaceObj.inTime;
                   let outTime = visitorAttendaceObj.outTime || 'N/A';
                   let totalTime = 'N/A';

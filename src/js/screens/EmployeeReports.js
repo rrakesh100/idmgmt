@@ -17,6 +17,10 @@ import Box from 'grommet/components/Box';
 import Search from 'grommet/components/Search';
 import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
+import Workbook from 'react-excel-workbook';
+import DownloadIcon from 'grommet/components/icons/base/Download';
+import Button from 'grommet/components/Button';
+
 
 
 class Reports extends Component {
@@ -128,10 +132,12 @@ renderDateFields() {
 }
 
   showEmployeeReportsTable() {
-    const {response} = this.state;
+    const {response,startDate,endDate} = this.state;
     if(!response)
     return null;
     let tablesArray = [];
+
+    let reportData = [];
     Object.keys(response).map((attendance, index) => {
       const attendanceObj = response[attendance];
       if(attendanceObj ==null)
@@ -142,8 +148,9 @@ renderDateFields() {
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
-             <th>Barcode</th>
+             <th>Manpower Id</th>
              <th>Name</th>
+             <th>Payment Type</th>
              <th>In Time</th>
              <th>Out Time</th>
              <th>Total Time Spent</th>
@@ -153,6 +160,8 @@ renderDateFields() {
             {
                 Object.keys(attendanceObj).map((key,index)=> {
                   const employeeAttendaceObj = attendanceObj[key];
+                  console.log(employeeAttendaceObj)
+                  console.log(key)
                   if(employeeAttendaceObj !== null)
                   {
                   let inTime = employeeAttendaceObj.in;
@@ -167,12 +176,31 @@ renderDateFields() {
                     totalTime = hours + ' hr ' + minutes + ' min '
                   }
 
+                  let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
 
+                  let istOutTime =  '--'
+                  if(outTime !== 'N/A')
+                    istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
 
-                return <TableRow key={index}>
+                  reportData.push({
+                    serialNo : index + 1,
+                    manpowerId : key,
+                    name :  employeeAttendaceObj.name,
+                    numberOfPersons : employeeAttendaceObj.numberOfPersons,
+                    shift : employeeAttendaceObj.shift,
+                    inTime : istInTime,
+                    outTime : istOutTime,
+                    totalTime : totalTime
+                  })
+
+                return <TableRow key={index} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+                {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
+                {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
+                {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
                 <td>{index+1}</td>
                 <td>{key}</td>
                 <td>{employeeAttendaceObj.name}</td>
+                <td>{employeeAttendaceObj.paymentType}</td>
                 <td>{employeeAttendaceObj.in}</td>
                 <td>{employeeAttendaceObj.out}</td>
                 <td>{totalTime}</td>
@@ -188,8 +216,33 @@ renderDateFields() {
       </div>)
 
     })
+    let ob = [{
+      start : startDate,
+      end : endDate
+    }]
     return (
       <div className='table'>
+      <div style={{float : 'right'}}>
+        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '40px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
+          <Workbook.Sheet data={reportData} name="Sheet 1">
+
+              <Workbook.Column label="Serial No" value="serialNo"/>
+              <Workbook.Column label="MPId" value="serialNo"/>
+              <Workbook.Column label="Name" value="name"/>
+              <Workbook.Column label="Number Of Persons" value="numberOfPersons"/>
+              <Workbook.Column label="Shift" value="shift"/>
+              <Workbook.Column label="In Time" value="inTime"/>
+              <Workbook.Column label="Out Time" value="outTime"/>
+              <Workbook.Column label="Total Time" value="totalTime"/>
+          </Workbook.Sheet>
+          <Workbook.Sheet  data={ob} name="Information">
+              <Workbook.Column label="Start Date" value="start"/>
+              <Workbook.Column label="End Date" value="end"/>
+          </Workbook.Sheet>
+
+        </Workbook>
+
+      </div>
       {tablesArray}
       </div>
     )
@@ -283,6 +336,7 @@ renderDateFields() {
               {
                 Object.keys(selectedEmployeeData).map((key, index) => {
                   const employeeAttendaceObj = selectedEmployeeData[key];
+                  console.log(employeeAttendaceObj)
                   if(employeeAttendaceObj !== null)
                   {
                   let inTime = employeeAttendaceObj.in;
@@ -319,14 +373,11 @@ renderDateFields() {
 
       return (
         <Article>
-        
+
         <Tabs>
         <Tab title='Datewise'>
         { this.renderDateFields() }
-        <div style={{marginTop:'30px'}}>
         { this.showEmployeeReportsTable() }
-
-        </div>
         </Tab>
         <Tab title='Employeewise'>
         { this.renderSearchField() }

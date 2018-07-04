@@ -14,6 +14,7 @@ export function saveAttendanceInData(data) {
   updates[`employees/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
   updates[`employees/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
   updates[`employees/${data.selectedEmployeeId}/shift`] = data.shift;
+  updates[`employees/${data.selectedEmployeeId}/paymentType`] = data.paymentType;
   updates[`employees/${data.selectedEmployeeId}/inDate`] = dateStr;
   updates[`employees/${data.selectedEmployeeId}/inTime`] = timeStr;
   updates[`employees/${data.selectedEmployeeId}/inSide`] = true;
@@ -21,11 +22,13 @@ export function saveAttendanceInData(data) {
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/in`] = timeStr;
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/name`] = data.selectedEmployeeName;
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/shift`] = data.shift;
+  updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/paymentType`] = data.paymentType;
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/in`] = timeStr;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/name`] = data.selectedEmployeeName;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/shift`] = data.shift;
+  updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/paymentType`] = data.paymentType;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/numberOfPersons`] = data.numberOfPersons;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/inwardPhoto`] = data.inwardPhoto;
 

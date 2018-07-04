@@ -113,8 +113,8 @@ class AttendanceOut extends Component {
 
   renderEmployeeSearch() {
     return (
-      <div style={{marginTop : '40px', marginLeft :'30px'}}>
-      <Search placeHolder='Search employee By Name or Barcode' style={{width:'800px'}}
+      <div style={{marginTop : '10px', marginLeft :'30px'}}>
+      <Search placeHolder='Search manpower By Name or Barcode' style={{width:'800px'}}
         inline={true}
         iconAlign='start'
         size='small'
@@ -191,7 +191,7 @@ class AttendanceOut extends Component {
           height={300}
           ref={this.setRef.bind(this)}
           screenshotFormat='image/jpeg'
-          width={400}
+          width={300}
           onClick={this.capture.bind(this)}
         />
       );
@@ -234,8 +234,7 @@ renderSearchedEmployee() {
   const { selectedEmployeeData } = this.state;
   if(selectedEmployeeData) {
     const { screenshot, name, employeeId } = selectedEmployeeData;
-
-    let employeeName = `"${name}" (${employeeId})`
+    console.log(selectedEmployeeData);
     let inSide = selectedEmployeeData.inSide;
   return (
 
@@ -243,65 +242,93 @@ renderSearchedEmployee() {
 
     <Container>
     <Row>
-      <Col sm={2}>
+    <Col sm={8}>
+    <Row>
+      <Col sm={5}>
       <Box align='start'
       pad='small'
       margin='small'
-      colorIndex='light-2' style={{width:'350px'}}>
+      colorIndex='light-2'>
       In Date : {selectedEmployeeData.inDate}
       </Box>
       </Col>
-      <Col sm={2}>
+      <Col sm={5}>
       <Box align='start'
       pad='small'
       margin='small'
-      colorIndex='light-2' style={{width:'350px'}}>
+      colorIndex='light-2'>
       In Time : {selectedEmployeeData.inTime}
       </Box>
       </Col>
       </Row>
       <Row>
-      <Col sm={2}>
+        <Col sm={5}>
+        <Box align='start'
+        pad='small'
+        margin='small'
+        colorIndex='light-2'>
+        <span>Out Date : <Clock className='employeeClock' format={'DD-MM-YYYY'}/></span>
+        </Box>
+        </Col>
+        <Col sm={5}>
+        <Box align='start'
+        pad='small'
+        margin='small'
+        colorIndex='light-2'>
+        <span>Out Time : <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
+        </Box>
+        </Col>
+        </Row>
+      <Row>
+      <Col sm={5}>
       <Box align='start'
       pad='small'
       margin='small'
-      colorIndex='light-2' style={{width:'350px'}}>
+      colorIndex='light-2'>
+      No of Persons Attendance : {selectedEmployeeData.numberOfPersons || 1}
+      </Box>
+      </Col>
+      <Col sm={5}>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2'>
       Shift : {selectedEmployeeData.shift}
       </Box>
       </Col>
-      <Col sm={4}>
+      </Row>
+      <Row>
+      <Col sm={5}>
       <Box align='start'
       pad='small'
       margin='small'
-      colorIndex='light-2' style={{width:'350px'}}>
-      No of Persons Attendance : {selectedEmployeeData.numberOfPersons}
+      colorIndex='light-2'>
+      Working Hours : 10
       </Box>
       </Col>
-      <Col>
-      <div>
+      <Col sm={4}>
+      <Box>
+      {inSide && <Button
+        label='SAVE'
+        onClick={this.onMarkButtonClick.bind(this)}
+        href='#' style={{marginTop:'15px', marginLeft:'20px'}}
+        primary={true} /> }
+      </Box>
+      </Col>
+      </Row>
+      </Col>
       {inSide ?
       <div onClick={this.capture.bind(this)}
-        style={{marginBottom:'10px', marginTop:'10px', width:'200px'}}>
+        style={{marginTop: '20px', marginBottom:'30px', width:'300px', height: '300px'}}>
       { this.renderCamera() }
       </div> :
       <div>
       <Image src={selectedEmployeeData.outwardPhoto} style={{marginTop:'15px', height:'350px'}}/>
       </div>}
-      </div>
-      </Col>
+
       </Row>
-      {inSide &&
-      <div style={{marginLeft: '10px', marginBottom: '30px'}}>
-      <Button
-        label='MARK AS LEFT'
-        onClick={this.onMarkButtonClick.bind(this)}
-        href='#'
-        primary={true} />
-      </div> }
-      <Headline size="small">
-              <span>Out Date :   <Clock className='employeeClock' format={'DD/MM/YYYY'}/></span>
-              <span style={{marginLeft : '20px'}}>Out Time :   <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
-      </Headline>
+
+
       <Row>
       <Col>
       <Box align='start'
@@ -326,7 +353,7 @@ renderSearchedEmployee() {
       pad='small'
       margin='small'
       colorIndex='light-2' style={{width:'350px'}}>
-      Villge : {selectedEmployeeData.village}
+      Village : {selectedEmployeeData.village}
       </Box>
       <Box align='start'
       pad='small'

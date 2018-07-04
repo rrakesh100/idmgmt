@@ -229,7 +229,7 @@ class NewVisitor extends Component {
               <tbody>
                 <TableRow>
                   <td>
-                    Name: <b>{name.toUpperCase()}</b>
+                    <div style={{overflowWrap: 'break-word'}}>Name: <b>{name.toUpperCase()}</b></div>
                   </td>
                   <td>
                     From: <b>{comingFrom.toUpperCase()}</b>

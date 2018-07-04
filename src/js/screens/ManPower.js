@@ -21,7 +21,12 @@ import Toast from 'grommet/components/Toast';
 import Edit from 'grommet/components/icons/base/Print';
 import Table from 'grommet/components/Table'
 import TableRow from 'grommet/components/TableRow'
-import { saveEmployee, uploadEmployeeImage, getEmployees } from '../api/employees';
+import { saveEmployee, uploadEmployeeImage, getEmployees, removeEmployee } from '../api/employees';
+import PrintIcon from 'grommet/components/icons/base/Print';
+import TrashIcon from 'grommet/components/icons/base/Trash';
+import { Print } from 'react-easy-print';
+import List from 'grommet/components/List';
+import ListItem from 'grommet/components/ListItem';
 
 
 export default class ManPower extends Component {
@@ -38,7 +43,8 @@ export default class ManPower extends Component {
       address: '',
       remarks: '',
       numberOfPersons: '',
-      showLiveCameraFeed: true
+      showLiveCameraFeed: true,
+      jattuValid: false
     }
   }
 
@@ -63,6 +69,14 @@ export default class ManPower extends Component {
       fieldValue =  e.option
     } else {
       fieldValue = e.target.value
+    }
+
+    if(fieldName ==='paymentType' && e.option === 'Jattu-Daily payment') {
+      this.setState({jattuValid : true})
+    }
+
+    if(fieldName ==='paymentType' && e.option === 'Daily payment' || fieldName ==='paymentType' && e.option === 'Weekly payment') {
+      this.setState({jattuValid : false})
     }
 
     this.setState({
@@ -194,6 +208,15 @@ export default class ManPower extends Component {
   onSubmitClick(e) {
     e.stopPropagation();
     const {name, joinedDate, screenshot, gender, village, address, paymentType, remarks, numberOfPersons} = this.state;
+
+    if (!joinedDate) {
+      alert('JOINED DATA is missing');
+      this.setState({
+        validationMsg: 'JOINED DATA is missing'
+      });
+      return;
+    }
+
     if (!name) {
       alert('NAME is missing');
       this.setState({
@@ -201,6 +224,7 @@ export default class ManPower extends Component {
       });
       return;
     }
+
     if (!gender) {
       alert('GENDER is missing');
       this.setState({
@@ -208,6 +232,7 @@ export default class ManPower extends Component {
       });
       return;
     }
+
     if (!village) {
       alert('VILLAGE is missing');
       this.setState({
@@ -215,13 +240,7 @@ export default class ManPower extends Component {
       });
       return;
     }
-    if (!screenshot) {
-      alert('IMAGE is not taken. Click on the camera to take photo!');
-      this.setState({
-        validationMsg: 'IMAGE is not taken. Click on the camera to take photo!'
-      });
-      return
-    }
+
     if (!paymentType) {
       alert('PAYMENT TYPE is missing');
       this.setState({
@@ -229,12 +248,13 @@ export default class ManPower extends Component {
       });
       return
     }
-    if (!joinedDate) {
-      alert('JOINED DATA is missing');
+
+    if (!screenshot) {
+      alert('IMAGE is not taken. Click on the camera to take photo!');
       this.setState({
-        validationMsg: 'JOINED DATA is missing'
+        validationMsg: 'IMAGE is not taken. Click on the camera to take photo!'
       });
-      return;
+      return
     }
 
     if (paymentType === 'Jattu-Daily payment' && !numberOfPersons) {
@@ -268,16 +288,15 @@ export default class ManPower extends Component {
 
   renderBarcode() {
     const { employeeId } = this.state;
-
-     return ( employeeId != '' ?
+     return (
        <div className='barCode'>
           <Barcode value={employeeId} height={20} />
-       </div> :  null );
-
+       </div>
+     )
   }
 
   renderInputFields() {
-    const {employeeId} = this.state;
+    const {employeeId, jattuValid} = this.state;
     return (
       <Article>
       <Section>
@@ -285,7 +304,7 @@ export default class ManPower extends Component {
         <Box direction='column' style={{marginLeft:'30px'}}>
         <Form className='manPowerFields'>
 
-        <FormField  label='Joined Date *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
+        <FormField  label='Joined Date *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
         <DateTime id='id'
         format='D/M/YYYY'
         name='name'
@@ -293,14 +312,14 @@ export default class ManPower extends Component {
         value={this.state.joinedDate}
         />
         </FormField>
-        <FormField  label='Name *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
+        <FormField  label='Name *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
           <TextInput
               placeHolder='Name'
               value={this.state.name}
               onDOMChange={this.onFieldChange.bind(this, 'name')}
           />
         </FormField>
-          <FormField  label='Gender *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
+          <FormField  label='Gender *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <Select
               placeHolder='Gender'
               options={['Male', 'Female']}
@@ -308,14 +327,14 @@ export default class ManPower extends Component {
               onChange={this.onFieldChange.bind(this, 'gender')}
             />
           </FormField>
-          <FormField  label='Village *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
+          <FormField  label='Village *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <TextInput
               placeHolder='Village'
               value={this.state.village}
               onDOMChange={this.onFieldChange.bind(this, 'village')}
             />
           </FormField>
-          <FormField  label='Address'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
+          <FormField  label='Address'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <TextInput
               placeHolder='Address'
               value={this.state.address}
@@ -326,7 +345,7 @@ export default class ManPower extends Component {
           </Box>
           <Box direction='column' style={{marginLeft:'20px'}}>
           <Form>
-          <FormField  label='Payment Type *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
+          <FormField  label='Payment Type *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <Select
               placeHolder='Payment Type'
               options={['Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
@@ -334,34 +353,39 @@ export default class ManPower extends Component {
               onChange={this.onFieldChange.bind(this, 'paymentType')}
             />
           </FormField>
-          <FormField  label='Remarks'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
+          <FormField  label='Remarks'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <TextInput
               placeHolder='Remarks'
               value={this.state.remarks}
               onDOMChange={this.onFieldChange.bind(this, 'remarks')}
             />
           </FormField>
-          <FormField  label='No of persons *'  strong={true} style={{marginTop : '15px', width:'300px'}}  >
+          { jattuValid ? <FormField  label='No of persons *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <TextInput
               placeHolder='No of persons'
               value={this.state.numberOfPersons}
               onDOMChange={this.onFieldChange.bind(this, 'numberOfPersons')}
             />
-          </FormField>
+          </FormField> : null }
         </Form>
         </Box>
         <Box onClick={this.capture.bind(this)}
         size='small' direction='column'
-        style={{marginLeft:'10px', marginTop:'10px', width:'200px'}}
+        style={{marginLeft:'10px', marginTop:'10px', width:'300px'}}
         align='center'>
         { this.renderCamera() }
+        <div className='barCode'>
         { this.renderBarcode() }
-          <Button icon={<Edit />} style= {{marginTop : '20px'}}
+        </div>
+        <Section pad='small'
+          align='center'>
+          <Button icon={<Edit />}
             label='SAVE'
             onClick={this.onSubmitClick.bind(this)}
             disabled={true}
             href='#'
             primary={true} />
+        </Section>
         </Box>
         </Split>
         </Section>
@@ -369,8 +393,108 @@ export default class ManPower extends Component {
     )
   }
 
+  saveAndPrint(employeeId, employeeObj) {
+    this.setState({
+      printEmployeeId : employeeId,
+      printEmployeeObj : employeeObj
+    })
+  }
+
+  printBusinessCard() {
+      if(this.state.printEmployeeObj) {
+   const { employeeId, name, gender, village, paymentType, numberOfPersons, screenshot, address } = this.state.printEmployeeObj;
+
+      return(
+        <Print name='bizCard' exclusive>
+         <div className='card' style={{width:'100%', height:'30%'}}>
+           <div className='card-body' >
+             <div className='box header'>
+               <h5 style={{fontWeight: 'bold'}}>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
+               <h5>Unit-2, Valuthimmapuram Road, Peddapuram</h5>
+               <h5 style={{textDecoration : 'underline',fontWeight : 'bold', fontStyle: 'italic'}}>
+               MANPOWER ID CARD
+               </h5>
+               </div>
+
+               <div className='content'>
+               <Table>
+                 <tbody>
+                   <TableRow>
+                     <td>
+                        <div style={{fontSize: 'large'}}>MPID:<b>{employeeId.toUpperCase()}</b></div>
+                     </td>
+                   </TableRow>
+                   <TableRow>
+                     <td>
+                       <div style={{fontSize: 'large'}}>Name: <b>{name.toUpperCase()}</b></div>
+                     </td>
+                   </TableRow>
+                   <TableRow>
+                     <td>
+                        <div style={{fontSize: 'large'}}>Gender: <b>{gender.toUpperCase()}</b></div>
+                     </td>
+                     <td>
+                      <div style={{fontSize: 'large'}}>Village: <b>{village.toUpperCase()}</b></div>
+                     </td>
+                   </TableRow>
+                   <TableRow>
+                     <td>
+                        <div style={{fontSize: 'large'}}>Address: <b>{address.toUpperCase()}</b></div>
+                     </td>
+                   </TableRow>
+                   <TableRow>
+                     <td>
+                        <div style={{fontSize: 'large'}}>Payment Type: <b>{paymentType.toUpperCase()}</b></div>
+                     </td>
+                     <td>
+                      <div style={{fontSize: 'large'}}>No Of Persons: <b>{numberOfPersons.toUpperCase()}</b></div>
+                     </td>
+                   </TableRow>
+                   <TableRow>
+                   <td>
+                   </td>
+                   </TableRow>
+                   <TableRow>
+                     <td>
+                       <div style={{fontSize: 'large'}}>Authorised Signature</div>
+                      </td>
+                   </TableRow>
+
+                </tbody>
+              </Table>
+
+              </div>
+              <div className='box sidebar'>
+                <Image src={screenshot} />
+                <Barcode value={employeeId} height={20}/>
+              </div>
+           </div>
+          </div>
+        </Print>
+      );
+    }
+
+
+  }
+
+  setTimeoutFunc() {
+    setTimeout(() => window.print(), 4000)
+  }
+
+  print() {
+    if(this.state.printEmployeeId)
+     this.setState({printEmployeeId : null}, this.setTimeoutFunc() );
+  }
+
+  onRemovingEmployee(employeeId, paymentType, gender, countObj) {
+
+    removeEmployee(employeeId, paymentType, gender, countObj).then(() => {
+      alert("successfully removed employee");
+    }).catch((e) => console.log(e))
+  }
+
   renderAllEmployees() {
-    const { employeeData } = this.state;
+    const { employeeData, printEmployeeObj } = this.state;
     if(!employeeData)
     return null;
     return (
@@ -382,18 +506,37 @@ export default class ManPower extends Component {
              <th>Employee ID</th>
              <th>Name</th>
              <th>Payment Type</th>
+             <th></th>
+             <th></th>
+
            </tr>
           </thead>
           <tbody>
             {
               Object.keys(employeeData).map((employee, index) => {
                 const employeeObj = employeeData[employee];
+                console.log(employeeObj)
+                let employeeId = employeeObj.employeeId;
+                let name = employeeObj.name;
+                let paymentType = employeeObj.paymentType;
+                let gender = employeeObj.gender;
+
                 if(employee !== 'count')
                 return <TableRow key={index}>
                 <td>{index+1}</td>
-                <td>{employeeObj.employeeId}</td>
-                <td>{employeeObj.name}</td>
-                <td>{employeeObj.paymentType}</td>
+                <td>{employeeId}</td>
+                <td>{name}</td>
+                <td>{paymentType}</td>
+                <td>
+                   <Button icon={<PrintIcon />}
+                         onClick={this.saveAndPrint.bind(this, employee, employeeObj)}
+                         plain={true} />
+                </td>
+                <td>
+                  <Button icon={<TrashIcon />}
+                    onClick={this.onRemovingEmployee.bind(this, employeeId, paymentType, gender, employeeData.count)}
+                    plain={true} />
+                </td>
                 </TableRow>
               })
             }
@@ -401,13 +544,13 @@ export default class ManPower extends Component {
       </Table>
       </div>
     )
+
   }
 
   render() {
 
-    console.log(this.state)
     return (
-      <div className=''>
+      <div className='manPower'>
       <Header
         direction='row'
         size='large'
@@ -417,15 +560,17 @@ export default class ManPower extends Component {
         pad={{ horizontal: 'small' }}
         style={{marginLeft:'10px'}}>
         <Heading margin='none' strong={true}>
-          MAN POWER
+          MAN POWER REGISTER
         </Heading>
       </Header>
       <Tabs justify='start' style={{marginLeft:'40px'}}>
       <Tab title='ADD'>
       { this.renderInputFields() }
       </Tab>
-      <Tab title='EMPLOYEES'>
+      <Tab title='REPORTS'>
       { this.renderAllEmployees() }
+      { this.printBusinessCard() }
+      { this.print() }
       </Tab>
       </Tabs>
       { this.renderToastMsg() }
