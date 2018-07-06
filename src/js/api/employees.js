@@ -28,6 +28,15 @@ export function saveEmployee(data) {
   return dbRef.update(updates);
   }
 
+  export function saveEditedEmployee(data) {
+    console.log(data);
+    const dbRef = firebase.database().ref();
+    const updates = {};
+    updates[`employees/${data.employeeId}`] = data;
+
+    return dbRef.update(updates);
+  }
+
   export function saveAttendaceEmployee(data) {
     console.log(data);
     const date = new Date();
@@ -59,28 +68,11 @@ export function getEmployees() {
 }
 
 export function removeEmployee(employeeId, paymentType, gender, countObj) {
-  console.log(employeeId)
-  console.log(paymentType)
-  console.log(gender)
-  console.log(countObj)
 
   const dbRef = firebase.database().ref();
   const employeeDbRef = firebase.database().ref(`employees/${employeeId}`);
-  employeeDbRef.remove();
 
-  const updates = {};
-
-  if(gender == 'Male' && paymentType !== 'Jattu-Daily payment') {
-  updates[`employees/count/maxMaleCount`] = countObj.maxMaleCount - 1;
-  }
-  else if(gender == 'Female' && paymentType !== 'Jattu-Daily payment') {
-    updates[`employees/count/maxFemaleCount`] = countObj.maxFemaleCount - 1;
-  } else {
-    updates[`employees/count/maxJattuCount`] = countObj.maxJattuCount - 1;
-  }
-
-  return dbRef.update(updates);
-
+  return employeeDbRef.remove();
 }
 
 export function updateEmployeeStatus(data) {

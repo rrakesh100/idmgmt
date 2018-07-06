@@ -238,7 +238,7 @@ class AttendanceIn extends Component {
           height={300}
           ref={this.setRef.bind(this)}
           screenshotFormat='image/jpeg'
-          width={400}
+          width={300}
           onClick={this.capture.bind(this)}
         />
       );
@@ -355,7 +355,7 @@ renderSearchedEmployee() {
     </Col>
 
     <div onClick={this.capture.bind(this)}
-      style={{marginBottom:'10px', marginTop:'10px', width:'200px'}}>
+      style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
     { this.renderCamera() }
     </div>
     </Row>

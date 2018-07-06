@@ -10,6 +10,7 @@ import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
 import Section from 'grommet/components/Section';
 import Split from 'grommet/components/Split';
+import Label from 'grommet/components/Label';
 import Select from 'grommet/components/Select';
 import Webcam from 'react-webcam';
 import DateTime from 'grommet/components/DateTime';
@@ -21,12 +22,18 @@ import Toast from 'grommet/components/Toast';
 import Edit from 'grommet/components/icons/base/Print';
 import Table from 'grommet/components/Table'
 import TableRow from 'grommet/components/TableRow'
-import { saveEmployee, uploadEmployeeImage, getEmployees, removeEmployee } from '../api/employees';
+import { saveEmployee, uploadEmployeeImage, getEmployees, removeEmployee, getEmployee, saveEditedEmployee } from '../api/employees';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import TrashIcon from 'grommet/components/icons/base/Trash';
+import UpdateIcon from 'grommet/components/icons/base/Update';
+import EditIcon from 'grommet/components/icons/base/Edit';
 import { Print } from 'react-easy-print';
 import List from 'grommet/components/List';
 import ListItem from 'grommet/components/ListItem';
+import Layer from 'grommet/components/Layer';
+import { Container, Row, Col } from 'react-grid-system';
+import Footer from 'grommet/components/Footer';
+import ManPowerComponent from './ManPowerComponent';
 
 
 export default class ManPower extends Component {
@@ -44,7 +51,9 @@ export default class ManPower extends Component {
       remarks: '',
       numberOfPersons: '',
       showLiveCameraFeed: true,
-      jattuValid: false
+      jattuValid: false,
+      removeBtnClick: false,
+      editBtnClick: false
     }
   }
 
@@ -486,14 +495,58 @@ export default class ManPower extends Component {
      this.setState({printEmployeeId : null}, this.setTimeoutFunc() );
   }
 
-  onRemovingEmployee(employeeId, paymentType, gender, countObj) {
 
-    removeEmployee(employeeId, paymentType, gender, countObj).then(() => {
-      alert("successfully removed employee");
-    }).catch((e) => console.log(e))
+
+  onEditClick(id, e) {
+
+    e.stopPropagation();
+    this.setState({
+      editBtnClick: true,
+      editEmployeeId: id
+    })
   }
 
+  onCloseLayer() {
+    this.setState({
+      editBtnClick: false
+    })
+  }
+
+  onEmployeeUpdate(res, employeeName) {
+
+    if(res) {
+      this.setState({
+        toastMsg: `Edited successfully`,
+        editBtnClick: false,
+
+      }, this.getEmployees())
+    } else {
+      this.setState({
+        toastMsg: `Error occured while editing`
+      })
+    }
+  }
+
+
+
+  renderEditForm() {
+    const {editBtnClick, paymentType, screenshot, editEmployeeId} = this.state;
+
+    if(editBtnClick) {
+      return (
+        <Layer closer={true}
+        flush={false}
+        onClose={this.onCloseLayer.bind(this)}>
+        <ManPowerComponent employeeId={editEmployeeId} screenshot={screenshot} onSubmit={this.onEmployeeUpdate.bind(this)}/>
+        </Layer>
+      );
+    }
+  }
+
+
+
   renderAllEmployees() {
+    const email = window.localStorage.email;
     const { employeeData, printEmployeeObj } = this.state;
     if(!employeeData)
     return null;
@@ -508,6 +561,7 @@ export default class ManPower extends Component {
              <th>Payment Type</th>
              <th></th>
              <th></th>
+             {email == 'admin@gmail.com' ? <th></th> : null }
 
            </tr>
           </thead>
@@ -515,7 +569,6 @@ export default class ManPower extends Component {
             {
               Object.keys(employeeData).map((employee, index) => {
                 const employeeObj = employeeData[employee];
-                console.log(employeeObj)
                 let employeeId = employeeObj.employeeId;
                 let name = employeeObj.name;
                 let paymentType = employeeObj.paymentType;
@@ -533,10 +586,16 @@ export default class ManPower extends Component {
                          plain={true} />
                 </td>
                 <td>
-                  <Button icon={<TrashIcon />}
-                    onClick={this.onRemovingEmployee.bind(this, employeeId, paymentType, gender, employeeData.count)}
-                    plain={true} />
+                   <Button icon={<EditIcon />}
+                         onClick={this.onEditClick.bind(this, employeeId)}
+                         plain={true} />
                 </td>
+                { email == 'admin@gmail.com' ?
+                <td>
+                  <Button icon={<TrashIcon />}
+                    onClick={this.onDeleteEmployee.bind(this, employeeId, paymentType, gender, employeeData.count)}
+                    plain={true} />
+                </td> : null }
                 </TableRow>
               })
             }
@@ -547,8 +606,85 @@ export default class ManPower extends Component {
 
   }
 
-  render() {
+  onDeleteEmployee(employeeId, paymentType, gender, countObj) {
+    this.setState({
+      removeBtnClick: true,
+      deleteEmployeeId: employeeId,
+      deletePaymentType: paymentType,
+      deleteGender: gender,
+      deleteCountObj: countObj
+    })
+  }
 
+  onRemovingEmployee() {
+    const {deleteEmployeeId, deletePaymentType, deleteGender, deleteCountObj} = this.state;
+
+    removeEmployee(deleteEmployeeId, deletePaymentType, deleteGender, deleteCountObj).then(() => {
+      this.setState({
+        toastMsg: 'successfully removed employee'
+      }, this.getEmployees())
+    }).catch((e) => console.log(e))
+  }
+
+
+  onYesButtonClick(e) {
+    e.stopPropagation();
+    this.setState({
+      removeBtnClick: false
+    }, this.onRemovingEmployee())
+  }
+
+  onNoButtonClick(e) {
+    e.stopPropagation();
+    this.setState({
+      removeBtnClick: false
+    })
+  }
+
+  renderConfirmationDialog() {
+    const { removeBtnClick } = this.state;
+
+    if(!removeBtnClick) {
+      return null;
+    }
+
+      return(
+        <Layer>
+        <Row>
+        <Col sm={14}>
+        <Box align='start'
+        pad='small'
+        style={{backgroundColor: '#9E9E9E', width:'130%'}}>
+        confirmation
+        </Box>
+        </Col>
+        </Row>
+        <strong><h4 style={{marginTop: '20px', marginLeft:'15px', marginBottom: '70px'}}>
+         Are you sure you want to remove the selected employee?
+        </h4></strong>
+
+        <Row>
+        <Button
+          label='No'
+          onClick={this.onNoButtonClick.bind(this)}
+          href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
+          primary={false} />
+
+        <Button
+          label='yes'
+          onClick={this.onYesButtonClick.bind(this)}
+          href='#' style={{marginLeft: '20px', marginBottom: '10px'}}
+          primary={true} />
+       </Row>
+        </Layer>
+      )
+
+  }
+
+
+
+  render() {
+    console.log(this.state)
     return (
       <div className='manPower'>
       <Header
@@ -571,6 +707,8 @@ export default class ManPower extends Component {
       { this.renderAllEmployees() }
       { this.printBusinessCard() }
       { this.print() }
+      { this.renderConfirmationDialog() }
+      { this.renderEditForm() }
       </Tab>
       </Tabs>
       { this.renderToastMsg() }

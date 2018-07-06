@@ -307,12 +307,9 @@ class Reports extends Component {
 
       return (
         <Article>
-
         { this.renderDateFields() }
         { this.renderCheckBox() }
         { this.showVisitorReportsTable() }
-
-
         </Article>
 
       )

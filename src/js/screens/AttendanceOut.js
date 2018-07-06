@@ -24,6 +24,7 @@ import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import DateTime from 'grommet/components/DateTime';
 import Label from 'grommet/components/Label';
+import moment from 'moment';
 
 
 
@@ -123,6 +124,13 @@ class AttendanceOut extends Component {
         onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)}
         />
+
+        {this.state.selectedEmployeeData  && <Button
+          label='SAVE'
+          onClick={this.onMarkButtonClick.bind(this)}
+          href='#' style={{marginTop:'15px', marginLeft:'80px'}}
+          primary={true} /> }
+
     </div>
     )
   }
@@ -210,7 +218,12 @@ class AttendanceOut extends Component {
   }
 
   onMarkButtonClick() {
+
     const { selectedEmployeeId, selectedEmployeeData, screenshot } = this.state;
+
+    if(!screenshot) {
+      alert("please click on the camera to take picture")
+    }
     let selectedEmployeeName = selectedEmployeeData.name;
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
@@ -236,6 +249,14 @@ renderSearchedEmployee() {
     const { screenshot, name, employeeId } = selectedEmployeeData;
     console.log(selectedEmployeeData);
     let inSide = selectedEmployeeData.inSide;
+    let inTime = selectedEmployeeData.inTime;
+    let outTime = selectedEmployeeData.outTime;
+
+    let startTime=moment(inTime, "HH:mm a");
+    let endTime=moment(outTime, "HH:mm a");
+    let duration = moment.duration(endTime.diff(startTime));
+    let hours = parseInt(duration.asHours());
+    let minutes = parseInt(duration.asMinutes())%60;
   return (
 
     <Article>
@@ -249,7 +270,7 @@ renderSearchedEmployee() {
       pad='small'
       margin='small'
       colorIndex='light-2'>
-      In Date : {selectedEmployeeData.inDate}
+      In Date : {selectedEmployeeData.inDate || ' --'}
       </Box>
       </Col>
       <Col sm={5}>
@@ -257,7 +278,7 @@ renderSearchedEmployee() {
       pad='small'
       margin='small'
       colorIndex='light-2'>
-      In Time : {selectedEmployeeData.inTime}
+      In Time : {selectedEmployeeData.inTime || ' --'}
       </Box>
       </Col>
       </Row>
@@ -275,7 +296,7 @@ renderSearchedEmployee() {
         pad='small'
         margin='small'
         colorIndex='light-2'>
-        <span>Out Time : <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
+        <span>Out Time : {outTime ||<Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /> }</span>
         </Box>
         </Col>
         </Row>
@@ -303,29 +324,19 @@ renderSearchedEmployee() {
       pad='small'
       margin='small'
       colorIndex='light-2'>
-      Working Hours : 10
-      </Box>
-      </Col>
-      <Col sm={4}>
-      <Box>
-      {inSide && <Button
-        label='SAVE'
-        onClick={this.onMarkButtonClick.bind(this)}
-        href='#' style={{marginTop:'15px', marginLeft:'20px'}}
-        primary={true} /> }
+      Working Hours : {inTime&&outTime ? hours + ' hr ' + minutes + ' min ' : ' -- '}
       </Box>
       </Col>
       </Row>
       </Col>
+      <Col>
       {inSide ?
       <div onClick={this.capture.bind(this)}
         style={{marginTop: '20px', marginBottom:'30px', width:'300px', height: '300px'}}>
       { this.renderCamera() }
       </div> :
-      <div>
-      <Image src={selectedEmployeeData.outwardPhoto} style={{marginTop:'15px', height:'350px'}}/>
-      </div>}
-
+      <Image src={selectedEmployeeData.outwardPhoto} style={{marginTop:'15px', height:'300px'}}/> }
+      </Col>
       </Row>
 
 

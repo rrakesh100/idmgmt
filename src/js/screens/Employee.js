@@ -314,7 +314,7 @@ class Employee extends Component {
         {toastNode}
         { this.renderEmployee() }
         { this.renderActions() }
-        { this.renderHistory() }
+        
       </Article>
     );
   }
