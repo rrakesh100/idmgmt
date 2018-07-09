@@ -41,6 +41,7 @@ class Reports extends Component {
         }
         let suggests = [];
         Object.keys(data).forEach((employee) => {
+          if(employee !== 'count')
           suggests.push({
              label : data[employee].name,
              employeeId : employee
