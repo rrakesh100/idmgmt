@@ -36,7 +36,7 @@ import NewEmployee from '../screens/NewEmployee';
 import NotFound from '../screens/NotFound';
 import EmployeeReports from '../screens/EmployeeReports';
 import ManPower from '../screens/ManPower';
-
+import Configuration from '../screens/Configuration';
 
 
 class Main extends Component {
@@ -96,6 +96,7 @@ class Main extends Component {
                   <Route path='/vehicles' component={Vehicles} />
                   <Route path='/in/vehicle' component={VehicleIn} />
                   <Route path='/out/vehicle' component={VehicleOut} />
+                  <Route path='/configuration' component={Configuration} />
                   <Route path='/*' component={NotFound} />
                 </Switch>
               </Split>

@@ -34,6 +34,11 @@ import Layer from 'grommet/components/Layer';
 import { Container, Row, Col } from 'react-grid-system';
 import Footer from 'grommet/components/Footer';
 import ManPowerComponent from './ManPowerComponent';
+import Status from 'grommet/components/icons/Status';
+import { getVillages } from '../api/configuration';
+import Workbook from 'react-excel-workbook';
+import DownloadIcon from 'grommet/components/icons/base/Download';
+
 
 
 export default class ManPower extends Component {
@@ -58,18 +63,59 @@ export default class ManPower extends Component {
   }
 
   componentDidMount() {
-    { this.getEmployees() }
+    { this.getEmployeeDetails() }
+    { this.getVillageOptions() }
   }
 
-  getEmployees() {
+  getVillageOptions() {
+    getVillages().then((snap) => {
+      const options = snap.val();
+      console.log(options);
+      let villageOpt = [];
+      Object.keys(options).forEach((opt) => {
+        villageOpt.push(opt)
+      })
+      this.setState({villageOpt})
+    })
+  }
+
+  getEmployeeDetails() {
     getEmployees().then((snap) => {
       this.setState({
-        employeeData: snap.val()
+        employeeData: snap.val(),
+        dailyPaymentSelected: true,
+        weeklyPaymentSelected: true,
+        jattuPaymentSelected: true
       })
 
     }).catch((err) => {
       console.error('ALL EMPLOYEES FETCH FAILED', err)
     })
+  }
+
+  onReportFieldChange(fieldName, e) {
+    if(e.option == 'Daily payment') {
+      this.setState({
+        dailyPaymentSelected: true,
+        weeklyPaymentSelected: false,
+        jattuPaymentSelected: false,
+        [fieldName] : e.option
+      })
+    } else if (e.option == 'Weekly payment') {
+      this.setState({
+        weeklyPaymentSelected: true,
+        jattuPaymentSelected: false,
+        dailyPaymentSelected: false,
+        [fieldName] : e.option
+      })
+    } else {
+      this.setState({
+        jattuPaymentSelected: true,
+        dailyPaymentSelected: false,
+        weeklyPaymentSelected: false,
+        [fieldName]: e.option
+      })
+    }
   }
 
   onFieldChange(fieldName, e) {
@@ -92,6 +138,7 @@ export default class ManPower extends Component {
       [fieldName]: fieldValue
     },() => {
       const { employeeData, gender, paymentType } = this.state;
+      console.log(employeeData)
       if(gender && paymentType) {
         let genderStr = gender.substring(0,1);
         let paymentTypeStr = paymentType.substring(0,1);
@@ -204,7 +251,7 @@ export default class ManPower extends Component {
       numberOfPersons: '',
       showLiveCameraFeed: true,
       toastMsg: `User ${name} is saved`
-    }, this.getEmployees())
+    }, this.getEmployeeDetails())
   ).catch((err) => {
     console.error('VISITOR SAVE ERR', err);
     this.setState({
@@ -305,14 +352,16 @@ export default class ManPower extends Component {
   }
 
   renderInputFields() {
-    const {employeeId, jattuValid} = this.state;
+    const {employeeId, jattuValid, villageOpt } = this.state;
     return (
       <Article>
       <Section>
        <Split>
         <Box direction='column' style={{marginLeft:'30px'}}>
         <Form className='manPowerFields'>
-
+        <FormField  label='MPID'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <Label style={{marginLeft:'20px'}}><strong>{employeeId}</strong></Label>
+        </FormField>
         <FormField  label='Joined Date *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
         <DateTime id='id'
         format='D/M/YYYY'
@@ -337,12 +386,17 @@ export default class ManPower extends Component {
             />
           </FormField>
           <FormField  label='Village *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
-            <TextInput
-              placeHolder='Village'
-              value={this.state.village}
-              onDOMChange={this.onFieldChange.bind(this, 'village')}
-            />
+          <Select
+            placeHolder='Village'
+            options={villageOpt}
+            value={this.state.village}
+            onChange={this.onFieldChange.bind(this, 'village')}
+          />
           </FormField>
+          </Form>
+          </Box>
+          <Box direction='column' style={{marginLeft:'20px'}}>
+          <Form>
           <FormField  label='Address'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <TextInput
               placeHolder='Address'
@@ -350,10 +404,6 @@ export default class ManPower extends Component {
               onDOMChange={this.onFieldChange.bind(this, 'address')}
             />
           </FormField>
-          </Form>
-          </Box>
-          <Box direction='column' style={{marginLeft:'20px'}}>
-          <Form>
           <FormField  label='Payment Type *'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
             <Select
               placeHolder='Payment Type'
@@ -519,7 +569,7 @@ export default class ManPower extends Component {
         toastMsg: `Edited successfully`,
         editBtnClick: false,
 
-      }, this.getEmployees())
+      }, this.getEmployeeDetails())
     } else {
       this.setState({
         toastMsg: `Error occured while editing`
@@ -543,16 +593,55 @@ export default class ManPower extends Component {
     }
   }
 
+  renderComboBox() {
+    return (
+      <Box direction='row'
+        justify='start'
+        align='center'
+        wrap={true}
+        pad='small'
+        margin='small'
+        colorIndex='light-2'>
+      <p style={{marginLeft : '30px'}}>Select Payment Type</p>
+        <Select style={{marginLeft: '20px', width:'300px'}}
+          placeHolder='Payment Type'
+          options={['Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
+          value={this.state.reportPaymentType}
+          onChange={this.onReportFieldChange.bind(this, 'reportPaymentType')}
+        />
+      </Box>
+    )
+  }
+
 
 
   renderAllEmployees() {
     const email = window.localStorage.email;
-    const { employeeData, printEmployeeObj } = this.state;
+    const { employeeData, printEmployeeObj, dailyPaymentSelected, weeklyPaymentSelected, jattuPaymentSelected } = this.state;
     if(!employeeData)
     return null;
+    let i = 0;
+    let reportData = [];
+
     return (
       <div className='table'>
-      <Table scrollable={true} style={{marginTop : '30px'}}>
+      <div>
+        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '910px', marginRight: '10px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
+          <Workbook.Sheet data={reportData} name="Sheet 1">
+
+              <Workbook.Column label="Serial No" value="serialNo"/>
+              <Workbook.Column label="Employee ID" value="employeeId"/>
+              <Workbook.Column label="Name" value="name"/>
+              <Workbook.Column label="Payment Type" value="paymentType"/>
+              <Workbook.Column label="Gender" value="gender"/>
+              <Workbook.Column label="Joined Date" value="joinedDate"/>
+              <Workbook.Column label="Shift" value="shift"/>
+              <Workbook.Column label="Remarks" value="remarks"/>
+              <Workbook.Column label="Village" value="village"/>
+          </Workbook.Sheet>
+        </Workbook>
+      </div>
+      <Table scrollable={true} style={{marginTop : '60px'}}>
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
@@ -569,14 +658,31 @@ export default class ManPower extends Component {
             {
               Object.keys(employeeData).map((employee, index) => {
                 const employeeObj = employeeData[employee];
+                console.log(employeeObj)
                 let employeeId = employeeObj.employeeId;
                 let name = employeeObj.name;
                 let paymentType = employeeObj.paymentType;
                 let gender = employeeObj.gender;
 
-                if(employee !== 'count')
+                reportData.push({
+                  serialNo : index + 1,
+                  employeeId : employeeId,
+                  name : name,
+                  paymentType: paymentType,
+                  gender: gender,
+                  address: employeeObj.address,
+                  joinedDate: employeeObj.joinedDate,
+                  shift: employeeObj.shift,
+                  remarks: employeeObj.remarks,
+                  village: employeeObj.village
+                })
+
+                if(employee !== 'count' && (dailyPaymentSelected && paymentType == 'Daily payment' ||
+                 weeklyPaymentSelected && paymentType == 'Weekly payment' ||
+                 jattuPaymentSelected && paymentType == 'Jattu-Daily payment' )) {
+                   i++;
                 return <TableRow key={index}>
-                <td>{index+1}</td>
+                <td>{i}</td>
                 <td>{employeeId}</td>
                 <td>{name}</td>
                 <td>{paymentType}</td>
@@ -597,12 +703,14 @@ export default class ManPower extends Component {
                     plain={true} />
                 </td> : null }
                 </TableRow>
+              }
               })
             }
           </tbody>
       </Table>
       </div>
     )
+
 
   }
 
@@ -622,7 +730,7 @@ export default class ManPower extends Component {
     removeEmployee(deleteEmployeeId, deletePaymentType, deleteGender, deleteCountObj).then(() => {
       this.setState({
         toastMsg: 'successfully removed employee'
-      }, this.getEmployees())
+      }, this.getEmployeeDetails())
     }).catch((e) => console.log(e))
   }
 
@@ -650,15 +758,18 @@ export default class ManPower extends Component {
 
       return(
         <Layer>
-        <Row>
-        <Col sm={14}>
-        <Box align='start'
-        pad='small'
-        style={{backgroundColor: '#9E9E9E', width:'130%'}}>
-        confirmation
-        </Box>
-        </Col>
-        </Row>
+        <div style={{color:'#7F7F7F'}}>
+
+          <Heading strong={true}
+            uppercase={false}
+            truncate={true}
+            margin='small'
+            align='center'>
+          <Status value='unknown' size='medium' style={{marginRight:'10px'}} />
+          confirmation
+        </Heading>
+        </div>
+        <hr/>
         <strong><h4 style={{marginTop: '20px', marginLeft:'15px', marginBottom: '70px'}}>
          Are you sure you want to remove the selected employee?
         </h4></strong>
@@ -676,7 +787,7 @@ export default class ManPower extends Component {
           href='#' style={{marginLeft: '20px', marginBottom: '10px'}}
           primary={true} />
        </Row>
-        </Layer>
+      </Layer>
       )
 
   }
@@ -684,7 +795,6 @@ export default class ManPower extends Component {
 
 
   render() {
-    console.log(this.state)
     return (
       <div className='manPower'>
       <Header
@@ -704,6 +814,7 @@ export default class ManPower extends Component {
       { this.renderInputFields() }
       </Tab>
       <Tab title='REPORTS'>
+      { this.renderComboBox() }
       { this.renderAllEmployees() }
       { this.printBusinessCard() }
       { this.print() }

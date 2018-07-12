@@ -24,13 +24,16 @@ import Select from 'grommet/components/Select';
 import Grid from 'react-css-grid';
 import TextInput from 'grommet/components/TextInput';
 import Rand from 'random-key';
+import Notification from 'grommet/components/Notification';
 import Barcode from 'react-barcode';
 import { Container, Row, Col } from 'react-grid-system';
 import Clock from 'react-live-clock';
 import { saveAttendaceEmployee } from '../api/employees';
 import { uploadAttendanceEmployeeImage, saveAttendanceInData } from '../api/attendance';
 import Label from 'grommet/components/Label';
-
+import moment from 'moment';
+import Status from 'grommet/components/icons/Status';
+import { getShifts, getTimeslots } from '../api/configuration';
 
 
 class AttendanceIn extends Component {
@@ -44,14 +47,43 @@ class AttendanceIn extends Component {
       selectedEmployeeData : null,
       showLiveCameraFeed: true,
       Date: '',
-      Shift: '',
+      shift: '',
       numberOfPersons: '',
-      manpowerName: ''
+      manpowerName: '',
+      timeslot: ''
     };
     this.onCompareClick.bind(this);
   }
 
   componentDidMount() {
+    { this.getEmployeeDetails() }
+    { this.getShiftOptions() }
+    { this.getTimeslotOptions() }
+  }
+
+  getTimeslotOptions() {
+    getTimeslots().then((snap) => {
+      const options = snap.val();
+      let timeslotOpt = [];
+      Object.keys(options).forEach((opt) => {
+        timeslotOpt.push(opt)
+      })
+      this.setState({timeslotOpt})
+    }).catch((e) => console.log(e))
+  }
+
+  getShiftOptions() {
+    getShifts().then((snap) => {
+      const options = snap.val()
+      let shiftOpt = [];
+      Object.keys(options).forEach((opt) => {
+        shiftOpt.push(opt)
+      })
+      this.setState({shiftOpt})
+    }).catch((e) => console.log(e))
+  }
+
+  getEmployeeDetails() {
     getEmployees().then((snap) => {
       const data = snap.val();
       console.log(data);
@@ -82,7 +114,9 @@ class AttendanceIn extends Component {
     getEmployee(selectedEmployeeId).then((snap) => {
       const selectedEmployeeData = snap.val();
       this.setState({
-        selectedEmployeeData
+        selectedEmployeeData,
+        shift: '',
+        timeslot: ''
       })
     }).catch((e) => console.log(e))
   }
@@ -103,7 +137,7 @@ class AttendanceIn extends Component {
   }
 
   onSearchEntry(e) {
-    console.log(e)
+    this.setState({selectedEmployeeData: ''})
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
 
@@ -126,7 +160,6 @@ class AttendanceIn extends Component {
   renderEmployeeSearch() {
 
     return (
-      <div style={{marginTop : '10px', marginLeft :'30px'}}>
       <Search placeHolder='Search manpower By Name or Barcode' style={{width:'800px'}}
         inline={true}
         iconAlign='start'
@@ -136,13 +169,6 @@ class AttendanceIn extends Component {
         onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)}
         />
-        { this.state.selectedEmployeeData ?
-          <Button
-          label='Save'
-          onClick={this.onMarkButtonClick.bind(this)}
-          href='#' style={{marginLeft: '80px'}}
-          primary={true} /> : null }
-    </div>
     )
   }
 
@@ -219,7 +245,8 @@ class AttendanceIn extends Component {
       const screenshot = this.webcam.getScreenshot();
       this.setState({
         screenshot,
-        showLiveCameraFeed: false
+        showLiveCameraFeed: false,
+        validationMsg: ''
       });
     } else {
       this.setState({
@@ -261,9 +288,10 @@ class AttendanceIn extends Component {
   }
 
   onFieldChange(fieldName, e) {
-    if(fieldName == 'shift') {
+    if(fieldName == 'shift' || fieldName == 'timeslot') {
     this.setState({
-      [fieldName]: e.option
+      [fieldName]: e.option,
+      validationMsg: ''
     })
   } else {
     this.setState({
@@ -273,7 +301,9 @@ class AttendanceIn extends Component {
   }
 
 renderSearchedEmployee() {
-  const { selectedEmployeeData } = this.state;
+  const { selectedEmployeeData, shiftOpt, timeslotOpt } = this.state;
+  const date = new Date();
+  const dateStr = moment(date).format('DD/M/YYYY');
 
   if(selectedEmployeeData) {
     const { screenshot, name, employeeId, paymentType } = selectedEmployeeData;
@@ -282,146 +312,158 @@ renderSearchedEmployee() {
   return (
 
     <Article>
-
-
-  <Container>
-  <Row>
-    <Col sm={8}>
-        <Row>
-            <Col>
-            <Form className='manPowerFields' style={{marginLeft:'15px'}}>
-            <FormField  label='Date *'  strong={true} style={{marginTop : '15px', width:'200px'}}  >
-            <DateTime id='id'
-            format='D/M/YYYY'
-            name='name'
-            onChange={this.onDateChange.bind(this)}
-            value={this.state.Date}
-            />
-            </FormField>
-            </Form>
-            </Col>
-            <Col>
-            <Form style={{marginLeft:'10px'}}>
-            <FormField  label='Shift *'  strong={true} style={{marginTop : '15px',width:'200px'}}  >
-            <Select
-              placeHolder='Shift'
-              options={['Day', 'Night']}
-              value={this.state.shift}
-              onChange={this.onFieldChange.bind(this, 'shift')}
-            />
-            </FormField>
-            </Form>
-            </Col>
-            {paymentType=='Jattu-Daily payment' ?
-            <Col>
-            <Form style={{marginLeft:'10px'}}>
-            <FormField  label='No of Persons'  strong={true} style={{marginTop : '15px',width:'200px'}}  >
-            <TextInput
-                placeHolder='No of Persons'
-                value={this.state.numberOfPersons}
-                onDOMChange={this.onFieldChange.bind(this, 'numberOfPersons')}
-            />
-            </FormField>
-            </Form>
-            </Col> :
-            <Col sm={4}>
-            <Box align='start'
-            pad='medium'
-            margin='small'
-            colorIndex='light-2'>
-            No of Persons: 1
-            </Box>
-            </Col>}
-          </Row>
+    <Container>
+    <Row>
+      <Col sm={8}>
           <Row>
-            <Col sm={6}>
-            <Box align='start'
-            pad='medium'
-            margin='medium'
-            colorIndex='light-2'>
-            <span>In Date :<Clock className='employeeClock' format={'DD-MM-YYYY'}/></span>
-            </Box>
-            </Col>
-            <Col sm={6}>
-            <Box align='start'
-            pad='medium'
-            margin='medium'
-            colorIndex='light-2'>
-            <span>In Time : <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
-            </Box>
+              <Col>
+              <Form className='manPowerFields' style={{marginLeft:'15px'}}>
+              <FormField  label='Date *'  strong={true} style={{marginTop : '15px', width:'200px'}}  >
+              <DateTime id='id'
+              format='D/M/YYYY'
+              name='name'
+              onChange={this.onDateChange.bind(this)}
+              value={this.state.Date || dateStr}
+              />
+              </FormField>
+              </Form>
+              </Col>
+              <Col>
+              <Form style={{marginLeft:'10px'}}>
+              <FormField  label='Shift *'  strong={true} style={{marginTop : '15px',width:'200px'}}  >
+              <Select
+                placeHolder='Shift'
+                options={shiftOpt}
+                value={this.state.shift}
+                onChange={this.onFieldChange.bind(this, 'shift')}
+              />
+              </FormField>
+              </Form>
+              </Col>
+              {paymentType=='Jattu-Daily payment' ?
+              <Col>
+              <Form style={{marginLeft:'10px'}}>
+              <FormField  label='No of Persons'  strong={true} style={{marginTop : '15px',width:'200px'}}  >
+              <TextInput
+                  placeHolder='No of Persons'
+                  value={this.state.numberOfPersons}
+                  onDOMChange={this.onFieldChange.bind(this, 'numberOfPersons')}
+              />
+              </FormField>
+              </Form>
+              </Col> :
+              <Col sm={4}>
+              <Box align='start'
+              pad='medium'
+              margin='small'
+              colorIndex='light-2'>
+              No of Persons: 1
+              </Box>
+              </Col>}
+            </Row>
+            <Row>
+              <Col sm={6}>
+              <Box align='start'
+              pad='medium'
+              margin='medium'
+              colorIndex='light-2'>
+              <span>In Date :<Clock className='employeeClock' format={'DD-MM-YYYY'}/></span>
+              </Box>
+              </Col>
+              <Col sm={6}>
+              <Box align='start'
+              pad='medium'
+              margin='medium'
+              colorIndex='light-2'>
+              <span>In Time : <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
+              </Box>
+              </Col>
+              </Row>
+            <Row>
+            <Col>
+            <Form style={{marginLeft:'10px'}}>
+            <FormField  label='Time Slot *'  strong={true} style={{marginTop : '15px',width:'400px'}}  >
+            <Select
+              placeHolder='Time Slot'
+              options={timeslotOpt}
+              value={this.state.timeslot}
+              onChange={this.onFieldChange.bind(this, 'timeslot')}
+            />
+            </FormField>
+            </Form>
             </Col>
             </Row>
 
-    </Col>
+      </Col>
 
-    <div onClick={this.capture.bind(this)}
-      style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
-    { this.renderCamera() }
-    </div>
-    </Row>
-    <Row>
-    <Col>
-    <Box align='start'
-    pad='small'
-    margin='small'
-    colorIndex='light-2' style={{width:'400px'}}>
-    Name : {selectedEmployeeData.name}
-    </Box>
-    <Box align='start'
-    pad='small'
-    margin='small'
-    colorIndex='light-2' style={{width:'400px'}}>
-    MCode : {selectedEmployeeData.employeeId}
-    </Box>
-    <Box align='start'
-    pad='small'
-    margin='small'
-    colorIndex='light-2' style={{width:'400px'}}>
-    DOJ : {selectedEmployeeData.joinedDate}
-    </Box>
-    <Box align='start'
-    pad='small'
-    margin='small'
-    colorIndex='light-2' style={{width:'400px'}}>
-    Village : {selectedEmployeeData.village}
-    </Box>
-    <Box align='start'
-    pad='small'
-    margin='small'
-    colorIndex='light-2' style={{width:'400px'}}>
-    Address : {selectedEmployeeData.address}
-    </Box>
-    <Box align='start'
-    pad='small'
-    margin='small'
-    colorIndex='light-2' style={{width:'400px'}}>
-    Payment Mode: {selectedEmployeeData.paymentType}
-    </Box>
-    <Box align='start'
-    pad='small'
-    margin='small'
-    colorIndex='light-2' style={{width:'400px'}}>
-    No of persons : {selectedEmployeeData.numberOfPersons}
-    </Box>
-    <Box align='start'
-    pad='small'
-    margin='small'
-    colorIndex='light-2' style={{width:'400px'}}>
-    Remarks : {selectedEmployeeData.remarks}
-    </Box>
-    </Col>
-    <Col>
-    <div style={{marginLeft:'160px'}}>
-    <Image src={screenshot} style={{marginTop:'15px', height:'400px'}}/>
-    </div>
-    </Col>
-    </Row>
-    </Container>
-    </Article>
+      <div onClick={this.capture.bind(this)}
+        style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
+      { this.renderCamera() }
+      </div>
+      </Row>
+      <Row>
+      <Col>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'400px'}}>
+      Name : {selectedEmployeeData.name}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'400px'}}>
+      MCode : {selectedEmployeeData.employeeId}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'400px'}}>
+      DOJ : {selectedEmployeeData.joinedDate}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'400px'}}>
+      Village : {selectedEmployeeData.village}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'400px'}}>
+      Address : {selectedEmployeeData.address}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'400px'}}>
+      Payment Mode: {selectedEmployeeData.paymentType}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'400px'}}>
+      No of persons : {selectedEmployeeData.numberOfPersons}
+      </Box>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2' style={{width:'400px'}}>
+      Remarks : {selectedEmployeeData.remarks}
+      </Box>
+      </Col>
+      <Col>
+      <div style={{marginLeft:'160px'}}>
+      <Image src={screenshot} style={{marginTop:'15px', height:'400px'}}/>
+      </div>
+      </Col>
+      </Row>
+      </Container>
+      </Article>
 
-  )
-}
-}
+    )
+  }
+  }
 
   onCloseLayer()  {
     this.setState({msg:''})
@@ -435,12 +477,57 @@ renderSearchedEmployee() {
     })
   }
 
+  renderValidationMsg() {
+    const { validationMsg } = this.state;
+    if (validationMsg) {
+      return (
+        <Notification message={validationMsg} size='small' status='critical' />
+      );
+    }
+    return null;
+  }
+
+  onSaveButtonClick() {
+    const {shift, screenshot} = this.state;
+
+    if(!shift) {
+      this.setState({
+        validationMsg: 'SHIFT is missing'
+      })
+      return
+    }
+
+    if(!screenshot) {
+      this.setState({
+        validationMsg: 'SCREENSHOT is missing'
+      })
+      return
+    }
+    this.setState({
+      validationMsg:''
+    }, this.onMarkButtonClick.bind(this))
+  }
+
+  renderSaveButton() {
+    const { selectedEmployeeData } = this.state;
+    if(selectedEmployeeData) {
+      let inSide = selectedEmployeeData.inSide;
+      return (
+        !inSide ?
+          <Button
+          label='Save'
+          onClick={this.onSaveButtonClick.bind(this)}
+          href='#' style={{marginLeft: '80px'}}
+          primary={true} /> : null
+      );
+    }
+  }
+
   render() {
     const { msg } = this.state;
-
+    console.log(this.state)
     if(msg) {
       return (
-        <div>
         <Layer
         onClose={this.onCloseLayer.bind(this)}>
         <div style={{color:'#7F7F7F'}}>
@@ -449,30 +536,34 @@ renderSearchedEmployee() {
             truncate={false}
             margin='small'
             align='center'>
-          Success!
-          </Heading>
+          <Status value='ok'
+          size='medium'
+          style={{marginRight:'10px'}} />
+          success!
+        </Heading>
         </div>
-          <Paragraph>
+        <hr/>
+          <strong><h4 style={{marginTop: '10px', marginLeft:'90px', marginBottom: '60px'}}>
           {msg}
-          </Paragraph>
-          <div style={{marginLeft:'480px'}}>
+          </h4></strong>
+          <Row>
           <Button
             label='OK'
             onClick={this.onOkButtonClick.bind(this)}
-            href='#'
+            href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
             primary={true} />
-         </div>
+          </Row>
         </Layer>
-        </div>
       )
     }
     return (
       <Article primary={true} className='employees'>
-
-
+      <div style={{marginTop : '10px', marginLeft :'30px'}}>
       { this.renderEmployeeSearch() }
+      { this.renderSaveButton() }
+      { this.renderValidationMsg() }
+      </div>
       { this.renderSearchedEmployee() }
-
         </Article>
       );
   }

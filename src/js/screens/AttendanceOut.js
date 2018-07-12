@@ -25,6 +25,7 @@ import FormField from 'grommet/components/FormField';
 import DateTime from 'grommet/components/DateTime';
 import Label from 'grommet/components/Label';
 import moment from 'moment';
+import Status from 'grommet/components/icons/Status';
 
 
 
@@ -93,6 +94,7 @@ class AttendanceOut extends Component {
   }
 
   onSearchEntry(e) {
+    this.setState({selectedEmployeeData: ''})
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
 
@@ -224,13 +226,14 @@ class AttendanceOut extends Component {
     if(!screenshot) {
       alert("please click on the camera to take picture")
     }
-    let selectedEmployeeName = selectedEmployeeData.name;
+    let shift = selectedEmployeeData.shift;
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
          let outwardPhoto = snapshot.downloadURL;
     saveAttendanceOutData({
       selectedEmployeeId,
-      outwardPhoto
+      outwardPhoto,
+      shift
       }).then(() => {
       this.setState({
         msg:'Attendance out data saved',
@@ -265,7 +268,7 @@ renderSearchedEmployee() {
     <Row>
     <Col sm={8}>
     <Row>
-      <Col sm={5}>
+      <Col sm={4}>
       <Box align='start'
       pad='small'
       margin='small'
@@ -273,12 +276,20 @@ renderSearchedEmployee() {
       In Date : {selectedEmployeeData.inDate || ' --'}
       </Box>
       </Col>
-      <Col sm={5}>
+      <Col sm={4}>
       <Box align='start'
       pad='small'
       margin='small'
       colorIndex='light-2'>
       In Time : {selectedEmployeeData.inTime || ' --'}
+      </Box>
+      </Col>
+      <Col sm={4}>
+      <Box align='start'
+      pad='small'
+      margin='small'
+      colorIndex='light-2'>
+      Shift : {selectedEmployeeData.shift}
       </Box>
       </Col>
       </Row>
@@ -300,34 +311,24 @@ renderSearchedEmployee() {
         </Box>
         </Col>
         </Row>
-      <Row>
-      <Col sm={5}>
-      <Box align='start'
-      pad='small'
-      margin='small'
-      colorIndex='light-2'>
-      No of Persons Attendance : {selectedEmployeeData.numberOfPersons || 1}
-      </Box>
-      </Col>
-      <Col sm={5}>
-      <Box align='start'
-      pad='small'
-      margin='small'
-      colorIndex='light-2'>
-      Shift : {selectedEmployeeData.shift}
-      </Box>
-      </Col>
-      </Row>
-      <Row>
-      <Col sm={5}>
-      <Box align='start'
-      pad='small'
-      margin='small'
-      colorIndex='light-2'>
-      Working Hours : {inTime&&outTime ? hours + ' hr ' + minutes + ' min ' : ' -- '}
-      </Box>
-      </Col>
-      </Row>
+        <Row>
+        <Col sm={5}>
+        <Box align='start'
+        pad='small'
+        margin='small'
+        colorIndex='light-2'>
+        No of Persons Attendance : {selectedEmployeeData.numberOfPersons || 1}
+        </Box>
+        </Col>
+        <Col sm={5}>
+        <Box align='start'
+        pad='small'
+        margin='small'
+        colorIndex='light-2'>
+        Working Hours : {inTime&&outTime ? hours + ' hr ' + minutes + ' min ' : ' -- '}
+        </Box>
+        </Col>
+        </Row>
       </Col>
       <Col>
       {inSide ?
@@ -427,7 +428,6 @@ onOkButtonClick() {
 
     if(msg) {
       return (
-        <div>
         <Layer
         onClose={this.onCloseLayer.bind(this)}>
         <div style={{color:'#7F7F7F'}}>
@@ -436,21 +436,24 @@ onOkButtonClick() {
             truncate={false}
             margin='small'
             align='center'>
-          Success!
-          </Heading>
+          <Status value='ok'
+            size='medium'
+            style={{marginRight:'10px'}} />
+          success!
+        </Heading>
         </div>
-          <Paragraph>
+        <hr/>
+          <strong><h4 style={{marginTop: '10px', marginLeft:'90px', marginBottom: '60px'}}>
           {msg}
-          </Paragraph>
-          <div style={{marginLeft:'480px'}}>
+          </h4></strong>
+          <Row>
           <Button
             label='OK'
             onClick={this.onOkButtonClick.bind(this)}
-            href='#'
+            href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
             primary={true} />
-         </div>
+          </Row>
         </Layer>
-        </div>
       )
     }
     return (
