@@ -120,7 +120,7 @@ export default class ManPower extends Component {
 
   onFieldChange(fieldName, e) {
     let fieldValue = '';
-    if(fieldName === 'joinedDate' || fieldName === 'gender' || fieldName ==='paymentType') {
+    if(fieldName === 'joinedDate' || fieldName === 'gender' || fieldName ==='paymentType' || fieldName === 'village') {
       fieldValue =  e.option
     } else {
       fieldValue = e.target.value
@@ -138,7 +138,6 @@ export default class ManPower extends Component {
       [fieldName]: fieldValue
     },() => {
       const { employeeData, gender, paymentType } = this.state;
-      console.log(employeeData)
       if(gender && paymentType) {
         let genderStr = gender.substring(0,1);
         let paymentTypeStr = paymentType.substring(0,1);
@@ -297,12 +296,28 @@ export default class ManPower extends Component {
       return;
     }
 
+    if (!address) {
+      alert('ADDRESS is missing');
+      this.setState({
+        validationMsg: 'ADDRESS is missing'
+      });
+      return;
+    }
+
     if (!paymentType) {
       alert('PAYMENT TYPE is missing');
       this.setState({
         validationMsg: 'PAYMENT TYPE is missing'
       });
       return
+    }
+
+    if (!remarks) {
+      alert('REMARKS is required');
+      this.setState({
+        validationMsg: 'REMARKS is required'
+      });
+      return;
     }
 
     if (!screenshot) {
@@ -603,12 +618,13 @@ export default class ManPower extends Component {
         margin='small'
         colorIndex='light-2'>
       <p style={{marginLeft : '30px'}}>Select Payment Type</p>
-        <Select style={{marginLeft: '20px', width:'300px'}}
+        <Select style={{marginLeft: '20px', width:'240px'}}
           placeHolder='Payment Type'
           options={['Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
           value={this.state.reportPaymentType}
           onChange={this.onReportFieldChange.bind(this, 'reportPaymentType')}
         />
+        
       </Box>
     )
   }
@@ -658,7 +674,6 @@ export default class ManPower extends Component {
             {
               Object.keys(employeeData).map((employee, index) => {
                 const employeeObj = employeeData[employee];
-                console.log(employeeObj)
                 let employeeId = employeeObj.employeeId;
                 let name = employeeObj.name;
                 let paymentType = employeeObj.paymentType;

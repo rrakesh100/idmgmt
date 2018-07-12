@@ -11,6 +11,10 @@ import Layer from 'grommet/components/Layer';
 import Select from 'grommet/components/Select';
 import { saveShift, saveTimeslot, saveVillage } from '../api/configuration';
 import { Container, Row, Col } from 'react-grid-system';
+import Table from 'grommet/components/Table';
+import TableRow from 'grommet/components/TableRow';
+import { getShifts, getTimeslots, getVillages } from '../api/configuration';
+
 
 
 export default class Configuration extends Component {
@@ -25,6 +29,36 @@ export default class Configuration extends Component {
       shift: '',
       village: ''
     }
+  }
+
+  componentDidMount() {
+    { this.getShiftDetails() }
+    { this.getTimeslotDetails() }
+    { this.getVillageDetails() }
+  }
+
+  getShiftDetails() {
+    getShifts().then((snap) => {
+      this.setState({
+        shifts: snap.val()
+      })
+    })
+  }
+
+  getTimeslotDetails() {
+    getTimeslots().then((snap) => {
+      this.setState({
+        timeslots: snap.val()
+      })
+    })
+  }
+
+  getVillageDetails() {
+    getVillages().then((snap) => {
+      this.setState({
+        villages: snap.val()
+      })
+    })
   }
 
   onFieldChange(fieldName, e) {
@@ -213,8 +247,98 @@ export default class Configuration extends Component {
     }
   }
 
+  renderAllShifts() {
+    const { shifts } = this.state;
+    console.log(shifts)
+    if(shifts) {
+    return (
+      <Table>
+      <thead style={{position:'relative'}}>
+       <tr>
+         <th>S No.</th>
+         <th>Shift</th>
+       </tr>
+      </thead>
+      <tbody>
+       {
+         Object.keys(shifts).map((key, index) => {
+           console.log(key)
+           return (
+             <TableRow key={index}>
+              <td>{index+1}</td>
+              <td>{key}</td>
+              </TableRow>
+           )
+         })
+       }
+       </tbody>
+       </Table>
+    )
+  }
+  }
+
+  renderAllTimeslots() {
+    const { timeslots } = this.state;
+    console.log(timeslots)
+    if(timeslots) {
+    return (
+      <Table>
+      <thead style={{position:'relative'}}>
+       <tr>
+         <th>S No.</th>
+         <th>Time Slot</th>
+       </tr>
+      </thead>
+      <tbody>
+       {
+         Object.keys(timeslots).map((key, index) => {
+           console.log(key)
+           return (
+             <TableRow key={index}>
+              <td>{index+1}</td>
+              <td>{key}</td>
+              </TableRow>
+           )
+         })
+       }
+       </tbody>
+       </Table>
+    )
+  }
+  }
+
+  renderAllVillages() {
+    const { villages } = this.state;
+    console.log(villages)
+    if(villages) {
+    return (
+      <Table>
+      <thead style={{position:'relative'}}>
+       <tr>
+         <th>S No.</th>
+         <th>Village</th>
+       </tr>
+      </thead>
+      <tbody>
+       {
+         Object.keys(villages).map((key, index) => {
+           console.log(key)
+           return (
+             <TableRow key={index}>
+              <td>{index+1}</td>
+              <td>{key}</td>
+              </TableRow>
+           )
+         })
+       }
+       </tbody>
+       </Table>
+    )
+  }
+  }
   render() {
-    console.log(this.state)
+    const { shifts, timeslots, villages } = this.state;
+
     return (
       <div className='configuration'>
       <Header
@@ -233,14 +357,17 @@ export default class Configuration extends Component {
       <Tab title='SHIFT'>
       { this.renderShiftTab() }
       { this.renderShiftLayer() }
+      { this.renderAllShifts() }
       </Tab>
       <Tab title='TIME SLOT'>
       { this.renderTimeslot() }
       { this.renderTimeslotLayer() }
+      { this.renderAllTimeslots() }
       </Tab>
       <Tab title='VILLAGE'>
       { this.renderVillage() }
       { this.renderVillageLayer() }
+      { this.renderAllVillages() }
       </Tab>
       </Tabs>
       </div>
