@@ -3,6 +3,7 @@ import { getEmployees, getEmployee } from '../api/employees';
 import { attendanceDatesLoop, getEmployeeAttendanceDates } from '../api/attendance';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
+import Select from 'grommet/components/Select';
 import DateTime from 'grommet/components/DateTime';
 import moment from 'moment';
 import * as firebase from 'firebase';
@@ -28,7 +29,9 @@ class Reports extends Component {
     super(props);
     this.state ={
       startDate:'',
-      endDate:''
+      endDate:'',
+      paymentType: '',
+      shift: ''
     }
   }
 
@@ -98,10 +101,58 @@ class Reports extends Component {
   onEndDateChange(e) {
     let endDate = e.replace(/\//g, '-');
 
-    this.setState({endDate},this.attendanceDatesLoop(endDate))
+    this.setState({
+      endDate,
+      dailyPaymentSelected: true,
+      weeklyPaymentSelected: true,
+      jattuPaymentSelected: true,
+      dayShiftSelected: true,
+      nightShiftSelected: true
+    },this.attendanceDatesLoop(endDate))
   }
 
-renderDateFields() {
+  onPaymentFieldChange(fieldName, e) {
+    if(e.option == 'Daily payment') {
+      this.setState({
+        dailyPaymentSelected: true,
+        weeklyPaymentSelected: false,
+        jattuPaymentSelected: false,
+        [fieldName] : e.option
+      })
+    } else if (e.option == 'Weekly payment') {
+      this.setState({
+        weeklyPaymentSelected: true,
+        jattuPaymentSelected: false,
+        dailyPaymentSelected: false,
+        [fieldName] : e.option
+      })
+    } else {
+      this.setState({
+        jattuPaymentSelected: true,
+        dailyPaymentSelected: false,
+        weeklyPaymentSelected: false,
+        [fieldName]: e.option
+      })
+    }
+  }
+
+  onShiftFieldChange(fieldName, e) {
+    if(e.option == 'Day') {
+      this.setState({
+        dayShiftSelected: true,
+        nightShiftSelected: false,
+        [fieldName] : e.option
+      })
+    } else if(e.option == 'Night') {
+      this.setState({
+        nightShiftSelected: true,
+        dayShiftSelected: false,
+        [fieldName] : e.option
+      })
+    }
+  }
+
+renderInputFields() {
 
   return (
     <div style={{marginLeft:'20px'}}>
@@ -127,15 +178,40 @@ renderDateFields() {
     onChange={this.onEndDateChange.bind(this)}
     value={this.state.endDate}
     />
+    <p style={{marginLeft : '40px'}}>Select Payment Type</p>
+      <Select
+        placeHolder='Payment Type'
+        options={['Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
+        value={this.state.paymentType}
+        onChange={this.onPaymentFieldChange.bind(this, 'paymentType')}
+      />
+      <p style={{marginLeft : '40px', marginRight: '50px'}}>Select Shift</p>
+        <Select
+          placeHolder='Shift'
+          options={['Day', 'Night']}
+          value={this.state.shift}
+          onChange={this.onShiftFieldChange.bind(this, 'shift')}
+        />
     </Box>
     </div>
   )
 }
 
   showEmployeeReportsTable() {
-    const {response,startDate,endDate} = this.state;
+    const { response,
+            startDate,
+            endDate,
+            paymentType,
+            shift,
+            dayShiftSelected,
+            nightShiftSelected,
+            dailyPaymentSelected,
+            weeklyPaymentSelected,
+            jattuPaymentSelected } = this.state;
     if(!response)
     return null;
+    let i = 0;
+
     let tablesArray = [];
 
     let reportData = [];
@@ -161,18 +237,17 @@ renderDateFields() {
             {
                 Object.keys(attendanceObj).map((key,index)=> {
                   const employeeAttendaceObj = attendanceObj[key];
-                  console.log(employeeAttendaceObj)
-                  console.log(key)
                   if(employeeAttendaceObj !== null)
                   {
                   let inTime = employeeAttendaceObj.in;
-                  let outTime = employeeAttendaceObj.out;
+                  let outTime = employeeAttendaceObj.shift === 'Night' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
                   let totalTime = 'N/A';
                   if(outTime && inTime) {
-                    let startTime=moment(inTime, "HH:mm a");
+                    let startTime = moment(inTime, "HH:mm a");
                     let endTime=moment(outTime, "HH:mm a");
                     let duration = moment.duration(endTime.diff(startTime));
                     let hours = parseInt(duration.asHours());
+
                     let minutes = parseInt(duration.asMinutes())%60;
                     totalTime = hours + ' hr ' + minutes + ' min '
                   }
@@ -194,20 +269,28 @@ renderDateFields() {
                     totalTime : totalTime
                   })
 
+                  if((dailyPaymentSelected && employeeAttendaceObj.paymentType == 'Daily payment' ||
+                   weeklyPaymentSelected && employeeAttendaceObj.paymentType == 'Weekly payment' ||
+                   jattuPaymentSelected && employeeAttendaceObj.paymentType == 'Jattu-Daily payment') &&
+                   (dayShiftSelected && employeeAttendaceObj.shift == 'Day' ||
+                   nightShiftSelected &&  employeeAttendaceObj.shift == 'Night')){
+                    i++;
                 return <TableRow key={index} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
                 {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                 {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
                 {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
-                <td>{index+1}</td>
+
+                <td>{i}</td>
                 <td>{key}</td>
                 <td>{employeeAttendaceObj.name}</td>
                 <td>{employeeAttendaceObj.paymentType}</td>
                 <td>{employeeAttendaceObj.in}</td>
-                <td>{employeeAttendaceObj.out}</td>
+                <td>{outTime}</td>
                 <td>{totalTime}</td>
 
 
                 </TableRow>
+              }
               }
               })
             }
@@ -224,7 +307,7 @@ renderDateFields() {
     return (
       <div className='table'>
       <div style={{float : 'right'}}>
-        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '40px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
+        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
           <Workbook.Sheet data={reportData} name="Sheet 1">
 
               <Workbook.Column label="Serial No" value="serialNo"/>
@@ -370,14 +453,13 @@ renderDateFields() {
 
 
   render() {
-    const {response} = this.state;
 
       return (
         <Article>
 
         <Tabs>
         <Tab title='Datewise'>
-        { this.renderDateFields() }
+        { this.renderInputFields() }
         { this.showEmployeeReportsTable() }
         </Tab>
         <Tab title='Employeewise'>

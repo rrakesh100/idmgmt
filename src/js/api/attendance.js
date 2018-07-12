@@ -25,6 +25,7 @@ export function saveAttendanceInData(data) {
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/paymentType`] = data.paymentType;
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
   updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
+
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/in`] = timeStr;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/name`] = data.selectedEmployeeName;
   updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/shift`] = data.shift;
@@ -40,6 +41,8 @@ export function saveAttendanceOutData(data) {
   const date = new Date();
   const dateStr = moment(date).format('DD-MM-YYYY');
   const timeStr = moment(date).format('h:mm A');
+  const yesterDateStr = moment().subtract('1', 'day').format('DD-MM-YYYY');
+
 
   const dbRef = firebase.database().ref();
   const updates = {};
@@ -49,11 +52,15 @@ export function saveAttendanceOutData(data) {
   updates[`employees/${data.selectedEmployeeId}/outTime`] = timeStr;
   updates[`employees/${data.selectedEmployeeId}/inSide`] = false;
 
-  updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/out`] = timeStr;
-  updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
-  updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/out`] = timeStr;
-  updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/outwardPhoto`] = data.outwardPhoto;
-
+  if(data.shift === 'Night') {
+  updates[`attendance/dates/${yesterDateStr}/${data.selectedEmployeeId}/tomorrowsOutTime`] = timeStr;
+  updates[`attendance/employees/${data.selectedEmployeeId}/${yesterDateStr}/tomorrowsOutTime`] = timeStr;
+  } else {
+    updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/out`] = timeStr;
+    updates[`attendance/dates/${dateStr}/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
+    updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/out`] = timeStr;
+    updates[`attendance/employees/${data.selectedEmployeeId}/${dateStr}/outwardPhoto`] = data.outwardPhoto;
+  }
   return dbRef.update(updates);
 }
 
