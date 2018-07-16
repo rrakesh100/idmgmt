@@ -257,11 +257,11 @@ renderInputFields() {
                   if(outTime !== 'N/A')
                     istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
 
-                  if((dailyPaymentSelected && employeeAttendaceObj.paymentType == 'Daily payment' ||
-                   weeklyPaymentSelected && employeeAttendaceObj.paymentType == 'Weekly payment' ||
-                   jattuPaymentSelected && employeeAttendaceObj.paymentType == 'Jattu-Daily payment') &&
-                   (dayShiftSelected && employeeAttendaceObj.shift == 'Day' ||
-                   nightShiftSelected &&  employeeAttendaceObj.shift == 'Night')) {
+                  if((dailyPaymentSelected && employeeAttendaceObj.paymentType == 'Daily payment' ) ||
+                    (weeklyPaymentSelected && employeeAttendaceObj.paymentType == 'Weekly payment' ) ||
+                   (jattuPaymentSelected && employeeAttendaceObj.paymentType == 'Jattu-Daily payment') ||
+                   (dayShiftSelected && employeeAttendaceObj.shift == 'Day' ) ||
+                   (nightShiftSelected &&  employeeAttendaceObj.shift == 'Night')) {
                     i++;
 
                     reportData.push({
