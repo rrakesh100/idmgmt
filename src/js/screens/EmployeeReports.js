@@ -237,8 +237,7 @@ renderInputFields() {
             {
                 Object.keys(attendanceObj).map((key,index)=> {
                   const employeeAttendaceObj = attendanceObj[key];
-                  if(employeeAttendaceObj !== null)
-                  {
+                  if(employeeAttendaceObj !== null){
                   let inTime = employeeAttendaceObj.in;
                   let outTime = employeeAttendaceObj.shift === 'Night' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
                   let totalTime = 'N/A';
@@ -256,40 +255,41 @@ renderInputFields() {
                   let istOutTime =  '--'
                   if(outTime !== 'N/A')
                     istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
+                  let isIgnore = false;
+                  if((dailyPaymentSelected && employeeAttendaceObj.paymentType != 'Daily payment' ) ||
+                    (weeklyPaymentSelected && employeeAttendaceObj.paymentType ! = 'Weekly payment' ) ||
+                   (jattuPaymentSelected && employeeAttendaceObj.paymentType != 'Jattu-Daily payment') ||
+                   (dayShiftSelected && employeeAttendaceObj.shift != 'Day' ) ||
+                   (nightShiftSelected &&  employeeAttendaceObj.shift != 'Night')) {
+                      isIgnore = true;
+                   }
 
-                  if((dailyPaymentSelected && employeeAttendaceObj.paymentType == 'Daily payment' ) ||
-                    (weeklyPaymentSelected && employeeAttendaceObj.paymentType == 'Weekly payment' ) ||
-                   (jattuPaymentSelected && employeeAttendaceObj.paymentType == 'Jattu-Daily payment') ||
-                   (dayShiftSelected && employeeAttendaceObj.shift == 'Day' ) ||
-                   (nightShiftSelected &&  employeeAttendaceObj.shift == 'Night')) {
-                    i++;
+                   if(!isIgnore) {
+                     i++;
+                     reportData.push({
+                       serialNo : index + 1,
+                       manpowerId : key,
+                       name :  employeeAttendaceObj.name,
+                       numberOfPersons : employeeAttendaceObj.numberOfPersons,
+                       shift : employeeAttendaceObj.shift,
+                       inTime : istInTime,
+                       outTime : istOutTime,
+                       totalTime : totalTime
+                     })
+                     return <TableRow key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+                     {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
+                     {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
+                     {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
 
-                    reportData.push({
-                      serialNo : index + 1,
-                      manpowerId : key,
-                      name :  employeeAttendaceObj.name,
-                      numberOfPersons : employeeAttendaceObj.numberOfPersons,
-                      shift : employeeAttendaceObj.shift,
-                      inTime : istInTime,
-                      outTime : istOutTime,
-                      totalTime : totalTime
-                    })
-
-                return <TableRow key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
-                {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
-                {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
-                {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
-
-                <td>{i}</td>
-                <td>{key}</td>
-                <td>{employeeAttendaceObj.name}</td>
-                <td>{employeeAttendaceObj.paymentType}</td>
-                <td>{employeeAttendaceObj.in}</td>
-                <td>{outTime}</td>
-                <td>{totalTime}</td>
-
-
-                </TableRow>
+                     <td>{i}</td>
+                     <td>{key}</td>
+                     <td>{employeeAttendaceObj.name}</td>
+                     <td>{employeeAttendaceObj.paymentType}</td>
+                     <td>{employeeAttendaceObj.in}</td>
+                     <td>{outTime}</td>
+                     <td>{totalTime}</td>
+                     </TableRow>
+                   }
               }
               }
               })
