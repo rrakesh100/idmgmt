@@ -135,8 +135,9 @@ export default class Configuration extends Component {
       alert('shift successfully saved')
       this.setState({
         msg: 'shift successfully saved',
-        shiftBtnClick: false
-      })
+        shiftBtnClick: false,
+        shift:''
+      }, this.getShiftDetails())
     }).catch((e) => console.log(e))
   }
 
@@ -147,8 +148,9 @@ export default class Configuration extends Component {
       alert('timeslot successfully saved')
       this.setState({
         msg: 'timeslot successfully saved',
-        timeslotBtnClick: false
-      })
+        timeslotBtnClick: false,
+        timeslot: ''
+      }, this.getTimeslotDetails())
     }).catch((e) => console.log(e))
   }
 
@@ -159,8 +161,9 @@ export default class Configuration extends Component {
       alert('village successfully saved')
       this.setState({
         msg: 'village successfully saved',
-        villageBtnClick: false
-      })
+        villageBtnClick: false,
+        village: ''
+      }, this.getVillageDetails())
     }).catch((e) => console.log(e))
   }
 
@@ -249,10 +252,9 @@ export default class Configuration extends Component {
 
   renderAllShifts() {
     const { shifts } = this.state;
-    console.log(shifts)
     if(shifts) {
     return (
-      <Table>
+      <Table style={{marginLeft: '40px', width: '80%'}}>
       <thead style={{position:'relative'}}>
        <tr>
          <th>S No.</th>
@@ -262,7 +264,6 @@ export default class Configuration extends Component {
       <tbody>
        {
          Object.keys(shifts).map((key, index) => {
-           console.log(key)
            return (
              <TableRow key={index}>
               <td>{index+1}</td>
@@ -279,10 +280,9 @@ export default class Configuration extends Component {
 
   renderAllTimeslots() {
     const { timeslots } = this.state;
-    console.log(timeslots)
     if(timeslots) {
     return (
-      <Table>
+      <Table style={{marginLeft: '40px', width: '80%'}}>
       <thead style={{position:'relative'}}>
        <tr>
          <th>S No.</th>
@@ -292,7 +292,6 @@ export default class Configuration extends Component {
       <tbody>
        {
          Object.keys(timeslots).map((key, index) => {
-           console.log(key)
            return (
              <TableRow key={index}>
               <td>{index+1}</td>
@@ -309,10 +308,9 @@ export default class Configuration extends Component {
 
   renderAllVillages() {
     const { villages } = this.state;
-    console.log(villages)
     if(villages) {
     return (
-      <Table>
+      <Table style={{marginLeft: '40px', width: '80%'}}>
       <thead style={{position:'relative'}}>
        <tr>
          <th>S No.</th>
@@ -322,7 +320,6 @@ export default class Configuration extends Component {
       <tbody>
        {
          Object.keys(villages).map((key, index) => {
-           console.log(key)
            return (
              <TableRow key={index}>
               <td>{index+1}</td>

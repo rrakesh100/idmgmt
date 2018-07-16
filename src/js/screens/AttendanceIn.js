@@ -147,7 +147,7 @@ class AttendanceIn extends Component {
       options.forEach((opt) => {
         if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
-        else if(opt.employeeId === e.target.value)
+        else if(opt.employeeId === e.target.value.toUpperCase())
           filtered.push(opt)
       })
     }
@@ -488,13 +488,19 @@ renderSearchedEmployee() {
   }
 
   onSaveButtonClick() {
-    const {shift, screenshot} = this.state;
+    const { shift, timeslot, screenshot } = this.state;
 
     if(!shift) {
       this.setState({
         validationMsg: 'SHIFT is missing'
       })
       return
+    }
+
+    if(!timeslot) {
+      this.setState({
+        validationMsg: 'TIMESLOT is missing'
+      })
     }
 
     if(!screenshot) {

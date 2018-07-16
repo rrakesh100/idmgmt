@@ -58,7 +58,10 @@ export default class ManPower extends Component {
       showLiveCameraFeed: true,
       jattuValid: false,
       removeBtnClick: false,
-      editBtnClick: false
+      editBtnClick: false,
+      villageFieldSelected: false,
+      reportGenderSelected: false,
+      reportPaymentTypeSelected: false
     }
   }
 
@@ -82,40 +85,12 @@ export default class ManPower extends Component {
   getEmployeeDetails() {
     getEmployees().then((snap) => {
       this.setState({
-        employeeData: snap.val(),
-        dailyPaymentSelected: true,
-        weeklyPaymentSelected: true,
-        jattuPaymentSelected: true
+        employeeData: snap.val()
       })
 
     }).catch((err) => {
       console.error('ALL EMPLOYEES FETCH FAILED', err)
     })
-  }
-
-  onReportFieldChange(fieldName, e) {
-    if(e.option == 'Daily payment') {
-      this.setState({
-        dailyPaymentSelected: true,
-        weeklyPaymentSelected: false,
-        jattuPaymentSelected: false,
-        [fieldName] : e.option
-      })
-    } else if (e.option == 'Weekly payment') {
-      this.setState({
-        weeklyPaymentSelected: true,
-        jattuPaymentSelected: false,
-        dailyPaymentSelected: false,
-        [fieldName] : e.option
-      })
-    } else {
-      this.setState({
-        jattuPaymentSelected: true,
-        dailyPaymentSelected: false,
-        weeklyPaymentSelected: false,
-        [fieldName]: e.option
-      })
-    }
   }
 
   onFieldChange(fieldName, e) {
@@ -560,8 +535,6 @@ export default class ManPower extends Component {
      this.setState({printEmployeeId : null}, this.setTimeoutFunc() );
   }
 
-
-
   onEditClick(id, e) {
 
     e.stopPropagation();
@@ -592,8 +565,6 @@ export default class ManPower extends Component {
     }
   }
 
-
-
   renderEditForm() {
     const {editBtnClick, paymentType, screenshot, editEmployeeId} = this.state;
 
@@ -608,32 +579,74 @@ export default class ManPower extends Component {
     }
   }
 
+  onReportPaymentFieldChange(fieldName, e) {
+    this.setState({
+      [fieldName] : e.option,
+      reportPaymentTypeSelected: true
+    })
+  }
+
+  onReportVillageFieldChange(fieldName, e) {
+    this.setState({
+      [fieldName] : e.option,
+      villageFieldSelected: true
+    })
+  }
+
+  onReportGenderFieldChange(fieldName, e) {
+    this.setState({
+      [fieldName] : e.option,
+      reportGenderSelected: true
+    })
+  }
+
   renderComboBox() {
     return (
       <Box direction='row'
         justify='start'
         align='center'
         wrap={true}
-        pad='small'
+        pad='medium'
         margin='small'
         colorIndex='light-2'>
-      <p style={{marginLeft : '30px'}}>Select Payment Type</p>
-        <Select style={{marginLeft: '20px', width:'240px'}}
+      <p style={{marginLeft : '40px'}}>Select Payment Type</p>
+        <Select style={{marginLeft: '20px', width: '250px'}}
           placeHolder='Payment Type'
           options={['Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
           value={this.state.reportPaymentType}
-          onChange={this.onReportFieldChange.bind(this, 'reportPaymentType')}
+          onChange={this.onReportPaymentFieldChange.bind(this, 'reportPaymentType')}
         />
-        
+        <p style={{marginLeft : '40px'}}>Select Village</p>
+          <Select style={{marginLeft: '20px', width: '250px'}}
+            placeHolder='Payment Type'
+            options={this.state.villageOpt}
+            value={this.state.reportVillage}
+            onChange={this.onReportVillageFieldChange.bind(this, 'reportVillage')}
+          />
+          <p style={{marginLeft : '80px'}}>Select Gender</p>
+            <Select style={{marginLeft: '30px', width: '250px'}}
+              placeHolder='Payment Type'
+              options={['Male', 'Female']}
+              value={this.state.reportGender}
+              onChange={this.onReportGenderFieldChange.bind(this, 'reportGender')}
+            />
+
       </Box>
     )
   }
 
-
-
   renderAllEmployees() {
     const email = window.localStorage.email;
-    const { employeeData, printEmployeeObj, dailyPaymentSelected, weeklyPaymentSelected, jattuPaymentSelected } = this.state;
+    const { employeeData,
+            printEmployeeObj,
+            reportPaymentTypeSelected,
+            reportGenderSelected,
+            villageFieldSelected,
+            reportPaymentType,
+            reportGender,
+            reportVillage } = this.state;
+
+    console.log(villageFieldSelected)
     if(!employeeData)
     return null;
     let i = 0;
@@ -644,7 +657,6 @@ export default class ManPower extends Component {
       <div>
         <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '910px', marginRight: '10px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
           <Workbook.Sheet data={reportData} name="Sheet 1">
-
               <Workbook.Column label="Serial No" value="serialNo"/>
               <Workbook.Column label="Employee ID" value="employeeId"/>
               <Workbook.Column label="Name" value="name"/>
@@ -666,8 +678,7 @@ export default class ManPower extends Component {
              <th>Payment Type</th>
              <th></th>
              <th></th>
-             {email == 'admin@gmail.com' ? <th></th> : null }
-
+             { email == 'sleipl_admin@gmail.com' ? <th></th> : null }
            </tr>
           </thead>
           <tbody>
@@ -678,55 +689,69 @@ export default class ManPower extends Component {
                 let name = employeeObj.name;
                 let paymentType = employeeObj.paymentType;
                 let gender = employeeObj.gender;
+                let isValid = true;
+                if(employee === 'count') {
+                  isValid = false;
+                }
 
-                reportData.push({
-                  serialNo : index + 1,
-                  employeeId : employeeId,
-                  name : name,
-                  paymentType: paymentType,
-                  gender: gender,
-                  address: employeeObj.address,
-                  joinedDate: employeeObj.joinedDate,
-                  shift: employeeObj.shift,
-                  remarks: employeeObj.remarks,
-                  village: employeeObj.village
-                })
+                if(reportPaymentTypeSelected && reportPaymentType !== employeeObj.paymentType) {
+                  isValid = false;
+                }
+                  if(reportGenderSelected && reportGender !== employeeObj.gender) {
+                    isValid = false;
+                  }
+                       if(villageFieldSelected && reportVillage !== employeeObj.village) {
+                         isValid = false;
+                       }
 
-                if(employee !== 'count' && (dailyPaymentSelected && paymentType == 'Daily payment' ||
-                 weeklyPaymentSelected && paymentType == 'Weekly payment' ||
-                 jattuPaymentSelected && paymentType == 'Jattu-Daily payment' )) {
-                   i++;
-                return <TableRow key={index}>
-                <td>{i}</td>
-                <td>{employeeId}</td>
-                <td>{name}</td>
-                <td>{paymentType}</td>
-                <td>
-                   <Button icon={<PrintIcon />}
-                         onClick={this.saveAndPrint.bind(this, employee, employeeObj)}
-                         plain={true} />
-                </td>
-                <td>
-                   <Button icon={<EditIcon />}
-                         onClick={this.onEditClick.bind(this, employeeId)}
-                         plain={true} />
-                </td>
-                { email == 'admin@gmail.com' ?
-                <td>
-                  <Button icon={<TrashIcon />}
-                    onClick={this.onDeleteEmployee.bind(this, employeeId, paymentType, gender, employeeData.count)}
-                    plain={true} />
-                </td> : null }
-                </TableRow>
-              }
+                 if(isValid) {
+                   reportData.push({
+                     serialNo : index+1,
+                     employeeId : employeeId,
+                     name : name,
+                     paymentType: paymentType,
+                     gender: gender,
+                     address: employeeObj.address,
+                     joinedDate: employeeObj.joinedDate,
+                     shift: employeeObj.shift,
+                     remarks: employeeObj.remarks,
+                     village: employeeObj.village
+                   })
+                     i++;
+                   return <TableRow key={index}>
+                   <td>{i}</td>
+                   <td>{employeeId}</td>
+                   <td>{name}</td>
+                   <td>{paymentType}</td>
+                   <td>
+                      <Button icon={<PrintIcon />}
+                            onClick={this.saveAndPrint.bind(this, employee, employeeObj)}
+                            plain={true} />
+                   </td>
+                   <td>
+                      <Button icon={<EditIcon />}
+                            onClick={this.onEditClick.bind(this, employeeId)}
+                            plain={true} />
+                   </td>
+                   { email == 'sleipl_admin@gmail.com' ?
+                   <td>
+                     <Button icon={<TrashIcon />}
+                       onClick={this.onDeleteEmployee.bind(this, employeeId, paymentType, gender, employeeData.count)}
+                       plain={true} />
+                   </td> : null }
+                   </TableRow>
+                 } else {
+                   return null;
+                 }
+
+
+
               })
             }
           </tbody>
       </Table>
       </div>
     )
-
-
   }
 
   onDeleteEmployee(employeeId, paymentType, gender, countObj) {
@@ -749,7 +774,6 @@ export default class ManPower extends Component {
     }).catch((e) => console.log(e))
   }
 
-
   onYesButtonClick(e) {
     e.stopPropagation();
     this.setState({
@@ -771,10 +795,9 @@ export default class ManPower extends Component {
       return null;
     }
 
-      return(
+      return (
         <Layer>
         <div style={{color:'#7F7F7F'}}>
-
           <Heading strong={true}
             uppercase={false}
             truncate={true}
@@ -788,14 +811,12 @@ export default class ManPower extends Component {
         <strong><h4 style={{marginTop: '20px', marginLeft:'15px', marginBottom: '70px'}}>
          Are you sure you want to remove the selected employee?
         </h4></strong>
-
         <Row>
         <Button
           label='No'
           onClick={this.onNoButtonClick.bind(this)}
           href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
           primary={false} />
-
         <Button
           label='yes'
           onClick={this.onYesButtonClick.bind(this)}
@@ -804,12 +825,10 @@ export default class ManPower extends Component {
        </Row>
       </Layer>
       )
-
   }
 
-
-
   render() {
+    console.log(this.state)
     return (
       <div className='manPower'>
       <Header

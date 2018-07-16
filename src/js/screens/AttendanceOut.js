@@ -9,6 +9,7 @@ import Button from 'grommet/components/Button';
 import Layer from 'grommet/components/Layer';
 import Paragraph from 'grommet/components/Paragraph';
 import Heading from 'grommet/components/Heading';
+import Notification from 'grommet/components/Notification';
 import axios from 'axios';
 import $ from 'jquery';
 import Article from 'grommet/components/Article';
@@ -104,7 +105,7 @@ class AttendanceOut extends Component {
       options.forEach((opt) => {
         if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
-        else if(opt.employeeId === e.target.value)
+        else if(opt.employeeId === e.target.value.toUpperCase())
             filtered.push(opt)
       })
     }
@@ -129,7 +130,7 @@ class AttendanceOut extends Component {
 
         {this.state.selectedEmployeeData  && <Button
           label='SAVE'
-          onClick={this.onMarkButtonClick.bind(this)}
+          onClick={this.onSaveButtonClick.bind(this)}
           href='#' style={{marginTop:'15px', marginLeft:'80px'}}
           primary={true} /> }
 
@@ -219,6 +220,31 @@ class AttendanceOut extends Component {
     );
   }
 
+  renderValidationMsg() {
+    const { validationMsg } = this.state;
+    if (validationMsg) {
+      return (
+        <Notification message={validationMsg} size='small' status='critical' />
+      );
+    }
+    return null;
+  }
+
+  onSaveButtonClick() {
+    const { screenshot } = this.state;
+    console.log(screenshot)
+    if(!screenshot) {
+      this.setState({
+        validationMsg: 'SCREENSHOT is missing'
+      })
+      return
+    }
+
+    this.setState({
+      validationMsg: ''
+    }, this.onMarkButtonClick())
+  }
+
   onMarkButtonClick() {
 
     const { selectedEmployeeId, selectedEmployeeData, screenshot } = this.state;
@@ -226,6 +252,7 @@ class AttendanceOut extends Component {
     if(!screenshot) {
       alert("please click on the camera to take picture")
     }
+
     let shift = selectedEmployeeData.shift;
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
@@ -423,6 +450,16 @@ onOkButtonClick() {
   })
 }
 
+renderValidationMsg() {
+  const { validationMsg } = this.state;
+  if (validationMsg) {
+    return (
+      <Notification message={validationMsg} size='small' status='critical' />
+    );
+  }
+  return null;
+}
+
   render() {
     const { msg } = this.state;
 
@@ -462,7 +499,7 @@ onOkButtonClick() {
 
       { this.renderEmployeeSearch() }
       { this.renderSearchedEmployee() }
-
+      { this.renderValidationMsg() }
         </Article>
       );
   }

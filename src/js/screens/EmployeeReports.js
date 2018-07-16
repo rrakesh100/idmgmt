@@ -247,7 +247,6 @@ renderInputFields() {
                     let endTime=moment(outTime, "HH:mm a");
                     let duration = moment.duration(endTime.diff(startTime));
                     let hours = parseInt(duration.asHours());
-
                     let minutes = parseInt(duration.asMinutes())%60;
                     totalTime = hours + ' hr ' + minutes + ' min '
                   }
@@ -258,24 +257,25 @@ renderInputFields() {
                   if(outTime !== 'N/A')
                     istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
 
-                  reportData.push({
-                    serialNo : index + 1,
-                    manpowerId : key,
-                    name :  employeeAttendaceObj.name,
-                    numberOfPersons : employeeAttendaceObj.numberOfPersons,
-                    shift : employeeAttendaceObj.shift,
-                    inTime : istInTime,
-                    outTime : istOutTime,
-                    totalTime : totalTime
-                  })
-
                   if((dailyPaymentSelected && employeeAttendaceObj.paymentType == 'Daily payment' ||
                    weeklyPaymentSelected && employeeAttendaceObj.paymentType == 'Weekly payment' ||
                    jattuPaymentSelected && employeeAttendaceObj.paymentType == 'Jattu-Daily payment') &&
                    (dayShiftSelected && employeeAttendaceObj.shift == 'Day' ||
-                   nightShiftSelected &&  employeeAttendaceObj.shift == 'Night')){
+                   nightShiftSelected &&  employeeAttendaceObj.shift == 'Night')) {
                     i++;
-                return <TableRow key={index} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+
+                    reportData.push({
+                      serialNo : index + 1,
+                      manpowerId : key,
+                      name :  employeeAttendaceObj.name,
+                      numberOfPersons : employeeAttendaceObj.numberOfPersons,
+                      shift : employeeAttendaceObj.shift,
+                      inTime : istInTime,
+                      outTime : istOutTime,
+                      totalTime : totalTime
+                    })
+
+                return <TableRow key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
                 {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                 {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
                 {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
@@ -307,7 +307,7 @@ renderInputFields() {
     return (
       <div className='table'>
       <div style={{float : 'right'}}>
-        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
+        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
           <Workbook.Sheet data={reportData} name="Sheet 1">
 
               <Workbook.Column label="Serial No" value="serialNo"/>
@@ -420,7 +420,6 @@ renderInputFields() {
               {
                 Object.keys(selectedEmployeeData).map((key, index) => {
                   const employeeAttendaceObj = selectedEmployeeData[key];
-                  console.log(employeeAttendaceObj)
                   if(employeeAttendaceObj !== null)
                   {
                   let inTime = employeeAttendaceObj.in;
