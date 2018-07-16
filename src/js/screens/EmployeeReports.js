@@ -103,11 +103,11 @@ class Reports extends Component {
 
     this.setState({
       endDate,
-      dailyPaymentSelected: true,
-      weeklyPaymentSelected: true,
-      jattuPaymentSelected: true,
-      dayShiftSelected: true,
-      nightShiftSelected: true
+      dailyPaymentSelected: false,
+      weeklyPaymentSelected: false,
+      jattuPaymentSelected: false,
+      dayShiftSelected: false,
+      nightShiftSelected: false
     },this.attendanceDatesLoop(endDate))
   }
 
@@ -256,11 +256,11 @@ renderInputFields() {
                   if(outTime !== 'N/A')
                     istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
                   let isIgnore = false;
-                  if((dailyPaymentSelected && employeeAttendaceObj.paymentType != 'Daily payment' ) ||
-                    (weeklyPaymentSelected && employeeAttendaceObj.paymentType ! = 'Weekly payment' ) ||
-                   (jattuPaymentSelected && employeeAttendaceObj.paymentType != 'Jattu-Daily payment') ||
-                   (dayShiftSelected && employeeAttendaceObj.shift != 'Day' ) ||
-                   (nightShiftSelected &&  employeeAttendaceObj.shift != 'Night')) {
+                  if(dailyPaymentSelected && employeeAttendaceObj.paymentType != 'Daily payment'  ||
+                    weeklyPaymentSelected && employeeAttendaceObj.paymentType != 'Weekly payment' ||
+                    jattuPaymentSelected && employeeAttendaceObj.paymentType != 'Jattu-Daily payment' ||
+                    dayShiftSelected && employeeAttendaceObj.shift != 'Day Shift' ||
+                    nightShiftSelected &&  employeeAttendaceObj.shift != 'Night Shift') {
                       isIgnore = true;
                    }
 
@@ -290,7 +290,6 @@ renderInputFields() {
                      <td>{totalTime}</td>
                      </TableRow>
                    }
-              }
               }
               })
             }
