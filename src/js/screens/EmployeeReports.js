@@ -20,22 +20,44 @@ import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
 import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
+import PrintIcon from 'grommet/components/icons/base/Print';
 import Button from 'grommet/components/Button';
-
+import { getShifts } from '../api/configuration';
+import { Print } from 'react-easy-print';
 
 
 class Reports extends Component {
   constructor(props) {
     super(props);
-    this.state ={
+    this.state = {
       startDate:'',
       endDate:'',
       paymentType: '',
-      shift: ''
+      shift: '',
+      printTableSelected: false
     }
   }
 
   componentDidMount() {
+    { this.getEmployees() }
+    { this.getShifts() }
+  }
+
+  getShifts() {
+    getShifts().then((snap) => {
+      const shiftOptions = snap.val();
+      let shiftOpt = [];
+      Object.keys(shiftOptions).forEach((opt) => {
+        shiftOpt.push(opt)
+      })
+      this.setState({
+        shiftOpt,
+        shiftOptions
+      })
+    }).catch((e) => console.log(e))
+  }
+
+  getEmployees() {
     getEmployees()
       .then((snap) => {
         const data = snap.val();
@@ -95,64 +117,30 @@ class Reports extends Component {
   onStartDateChange(e) {
     let startDate = e.replace(/\//g, '-');
     this.setState({startDate})
-
   }
 
   onEndDateChange(e) {
     let endDate = e.replace(/\//g, '-');
-
-    this.setState({
-      endDate,
-      dailyPaymentSelected: false,
-      weeklyPaymentSelected: false,
-      jattuPaymentSelected: false,
-      dayShiftSelected: false,
-      nightShiftSelected: false
-    },this.attendanceDatesLoop(endDate))
+    this.setState({endDate},this.attendanceDatesLoop(endDate))
   }
 
   onPaymentFieldChange(fieldName, e) {
-    if(e.option == 'Daily payment') {
       this.setState({
-        dailyPaymentSelected: true,
-        weeklyPaymentSelected: false,
-        jattuPaymentSelected: false,
-        [fieldName] : e.option
-      })
-    } else if (e.option == 'Weekly payment') {
-      this.setState({
-        weeklyPaymentSelected: true,
-        jattuPaymentSelected: false,
-        dailyPaymentSelected: false,
-        [fieldName] : e.option
-      })
-    } else {
-      this.setState({
-        jattuPaymentSelected: true,
-        dailyPaymentSelected: false,
-        weeklyPaymentSelected: false,
-        [fieldName]: e.option
+        [fieldName] : e.option,
+        paymentTypeSelected: true
       })
     }
-  }
 
   onShiftFieldChange(fieldName, e) {
-    if(e.option == 'Day') {
-      this.setState({
-        dayShiftSelected: true,
-        nightShiftSelected: false,
-        [fieldName] : e.option
-      })
-    } else if(e.option == 'Night') {
-      this.setState({
-        nightShiftSelected: true,
-        dayShiftSelected: false,
-        [fieldName] : e.option
-      })
-    }
+    this.setState({
+      [fieldName]: e.option,
+      shiftSelected: true
+    })
   }
 
 renderInputFields() {
+
+  const {shiftOpt} = this.state;
 
   return (
     <div style={{marginLeft:'20px'}}>
@@ -188,7 +176,7 @@ renderInputFields() {
       <p style={{marginLeft : '40px', marginRight: '50px'}}>Select Shift</p>
         <Select
           placeHolder='Shift'
-          options={['Day', 'Night']}
+          options={shiftOpt}
           value={this.state.shift}
           onChange={this.onShiftFieldChange.bind(this, 'shift')}
         />
@@ -197,23 +185,136 @@ renderInputFields() {
   )
 }
 
+  printTableData() {
+    this.setState({
+      printTableSelected: true
+    })
+  }
+
+  setTimeoutFunc() {
+    setTimeout(() => window.print(), 4000)
+  }
+
+  print() {
+    if(this.state.printTableSelected) {
+      this.setState({
+        printTableSelected: false
+      }, this.setTimeoutFunc())
+    }
+  }
+
+  printBusinessCard() {
+      if(this.state.printTableSelected) {
+        const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate } = this.state;
+
+        let i = 0;
+        let tablesArray = [];
+        Object.keys(response).map((attendance, index) => {
+          const attendanceObj = response[attendance];
+          if(attendanceObj ==null)
+            return;
+          tablesArray.push(<div className='tablesArray' key={index}>
+          <h2 style={{marginLeft : '20px'}}>{attendance}</h2>
+          <Table scrollable={true} style={{marginTop : '30px', marginLeft : '20px'}}>
+              <thead style={{position:'relative'}}>
+               <tr>
+                 <th>S No.</th>
+                 <th>Manpower Id</th>
+                 <th>Name</th>
+                 <th>Payment Type</th>
+                 <th>Shift</th>
+                 <th>In Time</th>
+                 <th>Out Time</th>
+                 <th>Total Time Spent</th>
+               </tr>
+              </thead>
+              <tbody>
+                {
+                    Object.keys(attendanceObj).map((key,index)=> {
+                      const employeeAttendaceObj = attendanceObj[key];
+                      if(employeeAttendaceObj !== null){
+                      let inTime = employeeAttendaceObj.in;
+                      let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
+                      let totalTime = 'N/A';
+                      if(outTime && inTime) {
+                        let startTime = moment(inTime, "HH:mm a");
+                        let endTime=moment(outTime, "HH:mm a");
+                        let duration = moment.duration(endTime.diff(startTime));
+                        let hours = parseInt(duration.asHours());
+                        let minutes = parseInt(duration.asMinutes())%60;
+                        totalTime = hours + ' hr ' + minutes + ' min '
+                      }
+
+                      let isValid = true;
+
+                      if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
+                        isValid = false;
+                      }
+                        if(shiftSelected && shift !== employeeAttendaceObj.shift) {
+                          isValid = false;
+                        }
+
+                        if(isValid && inTime) {
+                         i++;
+                         return <TableRow key={key}>
+
+                         <td>{i}</td>
+                         <td>{key}</td>
+                         <td>{employeeAttendaceObj.name}</td>
+                         <td>{employeeAttendaceObj.paymentType}</td>
+                         <td>{employeeAttendaceObj.shift}</td>
+                         <td>{employeeAttendaceObj.in}</td>
+                         <td>{outTime}</td>
+                         <td>{totalTime}</td>
+                         </TableRow>
+                       }
+                  }
+                  })
+                }
+              </tbody>
+          </Table>
+
+          </div>)
+        })
+      return(
+        <Print name='bizCard' exclusive>
+         <div className='eCard' style={{width:'100%', height:'100%'}}>
+           <div>
+             <div style={{marginLeft: '320px'}}>
+               <h5 style={{fontWeight: 'bold'}}>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
+               <h5 style={{marginLeft:'30px'}}>Unit-2, Valuthimmapuram Road, Peddapuram</h5>
+             </div>
+             <div style={{marginLeft: '250px'}}>
+             <h3>Man power report from {startDate} to {endDate}</h3>
+             <h3 style={{fontWeight:'bold', marginLeft: '100px'}}>{paymentType}, {shift}</h3>
+             </div>
+             <div>
+             {tablesArray}
+             </div>
+           </div>
+          </div>
+        </Print>
+      );
+    }
+
+
+  }
+
   showEmployeeReportsTable() {
     const { response,
             startDate,
             endDate,
             paymentType,
             shift,
-            dayShiftSelected,
-            nightShiftSelected,
-            dailyPaymentSelected,
-            weeklyPaymentSelected,
-            jattuPaymentSelected } = this.state;
+            shiftSelected,
+            paymentTypeSelected } = this.state;
+
+
     if(!response)
     return null;
     let i = 0;
 
     let tablesArray = [];
-
     let reportData = [];
     Object.keys(response).map((attendance, index) => {
       const attendanceObj = response[attendance];
@@ -228,6 +329,7 @@ renderInputFields() {
              <th>Manpower Id</th>
              <th>Name</th>
              <th>Payment Type</th>
+             <th>Shift</th>
              <th>In Time</th>
              <th>Out Time</th>
              <th>Total Time Spent</th>
@@ -239,8 +341,9 @@ renderInputFields() {
                   const employeeAttendaceObj = attendanceObj[key];
                   if(employeeAttendaceObj !== null){
                   let inTime = employeeAttendaceObj.in;
-                  let outTime = employeeAttendaceObj.shift === 'Night' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
+                  let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
                   let totalTime = 'N/A';
+
                   if(outTime && inTime) {
                     let startTime = moment(inTime, "HH:mm a");
                     let endTime=moment(outTime, "HH:mm a");
@@ -251,20 +354,19 @@ renderInputFields() {
                   }
 
                   let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
-
                   let istOutTime =  '--'
                   if(outTime !== 'N/A')
                     istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
-                  let isIgnore = false;
-                  if(dailyPaymentSelected && employeeAttendaceObj.paymentType != 'Daily payment'  ||
-                    weeklyPaymentSelected && employeeAttendaceObj.paymentType != 'Weekly payment' ||
-                    jattuPaymentSelected && employeeAttendaceObj.paymentType != 'Jattu-Daily payment' ||
-                    dayShiftSelected && employeeAttendaceObj.shift != 'Day Shift' ||
-                    nightShiftSelected &&  employeeAttendaceObj.shift != 'Night Shift') {
-                      isIgnore = true;
-                   }
+                  let isValid = true;
 
-                   if(!isIgnore) {
+                  if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
+                    isValid = false;
+                  }
+                    if(shiftSelected && shift !== employeeAttendaceObj.shift) {
+                      isValid = false;
+                    }
+
+                    if(isValid && inTime) {
                      i++;
                      reportData.push({
                        serialNo : index + 1,
@@ -285,6 +387,7 @@ renderInputFields() {
                      <td>{key}</td>
                      <td>{employeeAttendaceObj.name}</td>
                      <td>{employeeAttendaceObj.paymentType}</td>
+                     <td>{employeeAttendaceObj.shift}</td>
                      <td>{employeeAttendaceObj.in}</td>
                      <td>{outTime}</td>
                      <td>{totalTime}</td>
@@ -297,7 +400,6 @@ renderInputFields() {
       </Table>
 
       </div>)
-
     })
     let ob = [{
       start : startDate,
@@ -308,7 +410,6 @@ renderInputFields() {
       <div style={{float : 'right'}}>
         <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
           <Workbook.Sheet data={reportData} name="Sheet 1">
-
               <Workbook.Column label="Serial No" value="serialNo"/>
               <Workbook.Column label="MPId" value="serialNo"/>
               <Workbook.Column label="Name" value="name"/>
@@ -322,9 +423,11 @@ renderInputFields() {
               <Workbook.Column label="Start Date" value="start"/>
               <Workbook.Column label="End Date" value="end"/>
           </Workbook.Sheet>
-
         </Workbook>
-
+        <Button icon={<PrintIcon />} label='Print' fill={true}
+        onClick={this.printTableData.bind(this)}
+        primary={true} style={{marginRight: '13px'}}
+        href='#'/>
       </div>
       {tablesArray}
       </div>
@@ -382,7 +485,7 @@ renderInputFields() {
         justify='center'
         align='center'
         wrap={true}
-        pad='small'
+        pad='medium'
         margin='small'
         colorIndex='light-2'
       >
@@ -451,7 +554,6 @@ renderInputFields() {
 
 
   render() {
-
       return (
         <Article>
 
@@ -459,6 +561,8 @@ renderInputFields() {
         <Tab title='Datewise'>
         { this.renderInputFields() }
         { this.showEmployeeReportsTable() }
+        { this.printBusinessCard() }
+        { this.print() }
         </Tab>
         <Tab title='Employeewise'>
         { this.renderSearchField() }

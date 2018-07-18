@@ -3,7 +3,6 @@ import moment from 'moment';
 
 
 export function saveAttendanceInData(data) {
-  console.log(data)
   const date = new Date();
   const dateStr = moment(date).format('DD-MM-YYYY');
   const timeStr = moment(date).format('h:mm A');
@@ -52,7 +51,7 @@ export function saveAttendanceOutData(data) {
   updates[`employees/${data.selectedEmployeeId}/outTime`] = timeStr;
   updates[`employees/${data.selectedEmployeeId}/inSide`] = false;
 
-  if(data.shift === 'Night') {
+  if(data.shift === 'Night Shift') {
   updates[`attendance/dates/${yesterDateStr}/${data.selectedEmployeeId}/tomorrowsOutTime`] = timeStr;
   updates[`attendance/employees/${data.selectedEmployeeId}/${yesterDateStr}/tomorrowsOutTime`] = timeStr;
   } else {

@@ -450,15 +450,7 @@ onOkButtonClick() {
   })
 }
 
-renderValidationMsg() {
-  const { validationMsg } = this.state;
-  if (validationMsg) {
-    return (
-      <Notification message={validationMsg} size='small' status='critical' />
-    );
-  }
-  return null;
-}
+
 
   render() {
     const { msg } = this.state;
@@ -495,11 +487,9 @@ renderValidationMsg() {
     }
     return (
       <Article primary={true} className='employees'>
-
-
       { this.renderEmployeeSearch() }
-      { this.renderSearchedEmployee() }
       { this.renderValidationMsg() }
+      { this.renderSearchedEmployee() }
         </Article>
       );
   }

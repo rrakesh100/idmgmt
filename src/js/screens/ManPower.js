@@ -646,7 +646,6 @@ export default class ManPower extends Component {
             reportGender,
             reportVillage } = this.state;
 
-    console.log(villageFieldSelected)
     if(!employeeData)
     return null;
     let i = 0;

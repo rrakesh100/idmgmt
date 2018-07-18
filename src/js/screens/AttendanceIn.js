@@ -56,9 +56,9 @@ class AttendanceIn extends Component {
   }
 
   componentDidMount() {
-    { this.getEmployeeDetails() }
-    { this.getShiftOptions() }
-    { this.getTimeslotOptions() }
+    { this.getEmployeeDetails.bind(this) }
+    { this.getShiftOptions.bind(this) }
+    { this.getTimeslotOptions.bind(this) }
   }
 
   getTimeslotOptions() {
@@ -86,7 +86,6 @@ class AttendanceIn extends Component {
   getEmployeeDetails() {
     getEmployees().then((snap) => {
       const data = snap.val();
-      console.log(data);
       if (!data) {
         return;
       }
@@ -531,7 +530,6 @@ renderSearchedEmployee() {
 
   render() {
     const { msg } = this.state;
-    console.log(this.state)
     if(msg) {
       return (
         <Layer
