@@ -74,7 +74,7 @@ export default class ManPower extends Component {
     getVillages().then((snap) => {
       const options = snap.val();
       console.log(options);
-      let villageOpt = [];
+      let villageOpt = ['-EMPTY-'];
       Object.keys(options).forEach((opt) => {
         villageOpt.push(opt)
       })
@@ -580,24 +580,45 @@ export default class ManPower extends Component {
   }
 
   onReportPaymentFieldChange(fieldName, e) {
+    if(e.option == '-EMPTY-') {
+      this.setState({
+        [fieldName] : e.option,
+        reportPaymentTypeSelected: false
+      })
+    } else {
     this.setState({
       [fieldName] : e.option,
       reportPaymentTypeSelected: true
     })
+    }
   }
 
   onReportVillageFieldChange(fieldName, e) {
+    if(e.option == '-EMPTY-') {
+      this.setState({
+        [fieldName] : e.option,
+        villageFieldSelected: false
+      })
+    } else {
     this.setState({
       [fieldName] : e.option,
       villageFieldSelected: true
     })
+    }
   }
 
   onReportGenderFieldChange(fieldName, e) {
+    if(e.option == '-EMPTY-') {
+      this.setState({
+        [fieldName] : e.option,
+        reportGenderSelected: false
+      })
+    } else {
     this.setState({
       [fieldName] : e.option,
       reportGenderSelected: true
     })
+    }
   }
 
   renderComboBox() {
@@ -612,21 +633,21 @@ export default class ManPower extends Component {
       <p style={{marginLeft : '40px'}}>Select Payment Type</p>
         <Select style={{marginLeft: '20px', width: '250px'}}
           placeHolder='Payment Type'
-          options={['Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
+          options={['-EMPTY-', 'Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
           value={this.state.reportPaymentType}
           onChange={this.onReportPaymentFieldChange.bind(this, 'reportPaymentType')}
         />
         <p style={{marginLeft : '40px'}}>Select Village</p>
           <Select style={{marginLeft: '20px', width: '250px'}}
-            placeHolder='Payment Type'
+            placeHolder='Village'
             options={this.state.villageOpt}
             value={this.state.reportVillage}
             onChange={this.onReportVillageFieldChange.bind(this, 'reportVillage')}
           />
           <p style={{marginLeft : '80px'}}>Select Gender</p>
             <Select style={{marginLeft: '30px', width: '250px'}}
-              placeHolder='Payment Type'
-              options={['Male', 'Female']}
+              placeHolder='Gender'
+              options={['-EMPTY-', 'Male', 'Female']}
               value={this.state.reportGender}
               onChange={this.onReportGenderFieldChange.bind(this, 'reportGender')}
             />

@@ -46,13 +46,12 @@ class Reports extends Component {
   getShifts() {
     getShifts().then((snap) => {
       const shiftOptions = snap.val();
-      let shiftOpt = [];
+      let shiftOpt = ['-EMPTY-'];
       Object.keys(shiftOptions).forEach((opt) => {
         shiftOpt.push(opt)
       })
       this.setState({
-        shiftOpt,
-        shiftOptions
+        shiftOpt
       })
     }).catch((e) => console.log(e))
   }
@@ -125,18 +124,34 @@ class Reports extends Component {
   }
 
   onPaymentFieldChange(fieldName, e) {
+
+    if(e.option == '-EMPTY-') {
+      this.setState({
+        [fieldName] : e.option,
+        paymentTypeSelected: false
+      })
+    } else {
       this.setState({
         [fieldName] : e.option,
         paymentTypeSelected: true
       })
     }
+  }
 
   onShiftFieldChange(fieldName, e) {
+
+    if(e.option == '-EMPTY-') {
+      this.setState({
+        [fieldName] : e.option,
+        shiftSelected: false
+      })
+    } else {
     this.setState({
       [fieldName]: e.option,
       shiftSelected: true
     })
   }
+}
 
 renderInputFields() {
 
@@ -169,7 +184,7 @@ renderInputFields() {
     <p style={{marginLeft : '40px'}}>Select Payment Type</p>
       <Select
         placeHolder='Payment Type'
-        options={['Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
+        options={['-EMPTY-', 'Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
         value={this.state.paymentType}
         onChange={this.onPaymentFieldChange.bind(this, 'paymentType')}
       />
@@ -343,6 +358,11 @@ renderInputFields() {
                   let inTime = employeeAttendaceObj.in;
                   let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
                   let totalTime = 'N/A';
+
+                  if(employeeAttendaceObj.shift === 'Night Shift' ) {
+                    let inT = moment(key)
+                    console.log(inT)
+                  }
 
                   if(outTime && inTime) {
                     let startTime = moment(inTime, "HH:mm a");
