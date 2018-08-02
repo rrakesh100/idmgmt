@@ -56,9 +56,9 @@ class AttendanceIn extends Component {
   }
 
   componentDidMount() {
-    { this.getEmployeeDetails.bind(this) }
-    { this.getShiftOptions.bind(this) }
-    { this.getTimeslotOptions.bind(this) }
+    { this.getEmployeeDetails() }
+    { this.getShiftOptions() }
+    { this.getTimeslotOptions() }
   }
 
   getTimeslotOptions() {

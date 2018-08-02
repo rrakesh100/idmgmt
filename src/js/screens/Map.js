@@ -99,7 +99,7 @@ class Map extends Component {
           <ImageMapper
             src='/img/Unit2.jpeg'
             map={testMap}
-            width={800}
+            width={1200}
             fillColor='rgba(155, 89, 182,0.5)'
             strokeColor='rgba(155, 89, 182,1)'
             lineWidth={2}
