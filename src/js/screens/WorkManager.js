@@ -35,7 +35,7 @@ export default class WorkManager extends Component {
   }
 
   componentDidMount() {
-    { this.getWorkPlaces() }
+    this.getWorkPlaces() 
   }
 
   getWorkPlaces() {
@@ -271,6 +271,7 @@ export default class WorkManager extends Component {
   }
 
   render() {
+    const { workplaces } = this.state;
     return (
       <div>
       <Header

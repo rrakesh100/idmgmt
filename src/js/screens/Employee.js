@@ -137,6 +137,8 @@ class Employee extends Component {
 
   updateAssignedZone() {
     const { selectedZone, employeeId, employeeData } = this.state;
+    console.log(employeeId)
+    console.log(employeeData)
     const timestamp = new Date();
     const zoneData = {
       employeeId,

@@ -9,8 +9,9 @@ import DateTime from 'grommet/components/DateTime';
 import moment from 'moment';
 import Map from './Map';
 import Label from 'grommet/components/Label';
-import { getWorkPlaces } from '../api/workmanager';
+import { getWorkPlaces, updateWorkLocation, getCount } from '../api/workmanager';
 import Select from 'grommet/components/Select';
+import Toast from 'grommet/components/Toast';
 
 
 export default class WorkManagerComponent extends Component {
@@ -19,19 +20,31 @@ export default class WorkManagerComponent extends Component {
     super(props);
     this.state = {
       employeeSearchString : '',
-      selectedEmployeeData : null
+      selectedEmployeeData : null,
+      selectedZone : null,
+      countData : {},
+      workplaces : {}
     }
   }
 
   componentDidMount() {
-    { this.getEmployeeDetails() }
     { this.getWorkPlaces() }
+    { this.getEmployeeDetails() }
   }
 
   getWorkPlaces() {
     getWorkPlaces().then((snap) => {
+      const data = snap.val();
+      if(!data) {
+        return;
+      }
+      let arr = [];
+      Object.keys(data).forEach((place) => {
+        arr.push(place)
+      })
       this.setState({
-        workplaces: snap.val()
+        workplacesArr: arr,
+        workplaces: data
       })
     })
   }
@@ -58,6 +71,18 @@ export default class WorkManagerComponent extends Component {
     .catch((err) => {
       console.error('VISITOR FETCH FAILED', err);
     });
+  }
+
+  getCount() {
+    const { selectedZone } = this.state;
+    if(selectedZone) {
+      getCount(selectedZone).then((snap) => {
+        const data = snap.val();
+        this.setState({
+          countData: data
+        })
+      }).catch((e) => console.log(e))
+    }
   }
 
   onDateChange(e) {
@@ -114,7 +139,7 @@ export default class WorkManagerComponent extends Component {
   renderEmployeeSearch() {
 
     return (
-      <Search placeHolder='Search manpower By Name or Barcode' style={{width:'600px'}}
+      <Search placeHolder='Search manpower By Name or Barcode' style={{width:'800px'}}
         inline={true}
         iconAlign='start'
         size='small'
@@ -126,21 +151,45 @@ export default class WorkManagerComponent extends Component {
     )
   }
 
-  onWorkPlaceChange() {
-    console.log('hi')
+  onWorkPlaceChange(fieldName, e) {
+    this.setState({
+      [fieldName] : e.option
+    })
   }
 
   renderSearchedEmployee() {
-    const { selectedEmployeeData, workplaces } = this.state;
-    const date = new Date();
+    const { selectedEmployeeData, workplacesArr, workplaces, selectedZone, countData } = this.state;
+    console.log(workplaces);
+    let date = new Date();
+    let hours = date.getHours();
+    let allottedMaleCount;
+    let allottedFemaleCount;
+    if(hours < 15 && workplaces[selectedZone]) {
+      let allottedMaleCount = workplaces[selectedZone]['allocation'] && workplaces['allocation']['DAY']
+                          ? workplaces['allocation']['DAY']['male'] : 0;
+      let allottedFemaleCount = workplaces[selectedZone]['allocation'] && workplaces['allocation']['DAY']
+                            ? workplaces['allocation']['DAY']['female'] : 0;
+    } else if(workplaces[selectedZone]){
+      let allottedMaleCount = workplaces[selectedZone]['allocation'] &&
+          workplaces['allocation']['NIGHT'] ? workplaces['allocation']['NIGHT']['male'] : 0;
+      let allottedFemaleCount = workplaces[selectedZone]['allocation'] &&
+      workplaces['allocation']['NIGHT']? workplaces['allocation']['NIGHT']['female'] : 0;
+    }
+
+    const fCount = countData.Female ? Object.keys(countData.Female).length : 0;
+    const mCount = countData.Male ? Object.keys(countData.Male).length : 0;
     const dateStr = moment(date).format('DD/M/YYYY');
+
     if(selectedEmployeeData) {
       return (
         <div>
+        <Container>
         <Row>
         <Col>
-        <Form style={{marginLeft:'30px'}}>
-        <FormField  label='Date *'  strong={true} style={{marginTop : '15px', width:'200px'}}  >
+        <Row>
+        <Col>
+        <Form style={{marginLeft:'20px'}}>
+        <FormField  label='Date *'  strong={true} style={{marginTop : '15px', width:'300px' }}  >
         <DateTime id='id'
         format='D/M/YYYY'
         name='name'
@@ -150,71 +199,143 @@ export default class WorkManagerComponent extends Component {
         </FormField>
         </Form>
         </Col>
+        </Row>
+        <Row>
         <Col>
-        <Select style={{marginLeft: '20px'}}
-          placeHolder='Select Shift'
-          options={['DAY', 'NIGHT']}
-          value={this.state.shift}
-          onChange={this.onWorkPlaceChange.bind(this, 'shift')}
-        />
+        <Form style={{marginLeft: '20px',marginTop:'30px', width:'300px'}}>
+        <FormField  label='Old Work Location'  strong={true} style={{marginTop : '25px', width:'300px'}}  >
+          <Label style={{marginLeft:'20px'}}><strong>{selectedEmployeeData.currentWorkLocation || '----'}</strong></Label>
+        </FormField>
+        </Form>
         </Col>
         <Col>
-        <div style={{width:'400px', backgroundColor: '#F5F5F5'}}>
+        <Form style={{marginLeft: '20px',marginTop:'30px', width:'300px'}}>
+        <FormField style={{ height: '60px' }}>
+        <Select
+          placeHolder='New Work Location'
+          options={workplacesArr}
+          value={this.state.selectedZone}
+          onChange={this.onWorkPlaceChange.bind(this, 'selectedZone')}
+        />
+        </FormField>
+        </Form>
+        </Col>
+        </Row>
+        <Row>
+        <div style={{height: '60px', marginLeft: '35px', marginTop: '20px'}}>
+        Allotted Count : <span>Male - {allottedMaleCount}</span><span>Female - {allottedFemaleCount} </span>
+        </div>
+        <div style={{height: '60px', marginLeft: '120px', marginTop: '20px'}}>
+        Running Count : <span>Male - {mCount}</span><span style={{marginLeft: '10px'}}>Female - {fCount}</span>
+        </div>
+        </Row>
+        </Col>
+        <div>
+        <div style={{width:'350px', backgroundColor: '#F5F5F5'}}>
         Name : {selectedEmployeeData.name}
         </div>
         <div style={{height: '2px'}}>
         </div>
-        <div style={{width:'400px', backgroundColor: '#F5F5F5'}}>
+        <div style={{width:'350px', backgroundColor: '#F5F5F5'}}>
         DOJ : {selectedEmployeeData.joinedDate}
         </div>
         <div style={{height: '2px'}}>
         </div>
-        <div style={{width:'400px', backgroundColor: '#F5F5F5'}}>
+        <div style={{width:'350px', backgroundColor: '#F5F5F5'}}>
         Gender : {selectedEmployeeData.gender}
         </div>
         <div style={{height: '2px'}}>
         </div>
-        <div style={{width:'400px', backgroundColor: '#F5F5F5'}}>
+        <div style={{width:'350px', backgroundColor: '#F5F5F5'}}>
         Village : {selectedEmployeeData.village}
         </div>
         <div style={{height: '2px'}}>
         </div>
-        <div style={{width:'400px', backgroundColor: '#F5F5F5'}}>
+        <div style={{width:'350px', backgroundColor: '#F5F5F5'}}>
         Address : {selectedEmployeeData.address}
         </div>
         <div style={{height: '2px'}}>
         </div>
-        <div style={{width:'400px', backgroundColor: '#F5F5F5'}}>
+        <div style={{width:'350px', backgroundColor: '#F5F5F5'}}>
         Payment Mode: {selectedEmployeeData.paymentType}
         </div>
         <div style={{height: '2px'}}>
         </div>
-        <div style={{width:'400px', backgroundColor: '#F5F5F5'}}>
+        <div style={{width:'350px', backgroundColor: '#F5F5F5'}}>
         No of persons : {selectedEmployeeData.numberOfPersons}
         </div>
         <div style={{height: '2px'}}>
         </div>
-        <div style={{width:'400px', backgroundColor: '#F5F5F5'}}>
+        <div style={{width:'350px', backgroundColor: '#F5F5F5'}}>
         Remarks : {selectedEmployeeData.remarks}
         </div>
-        </Col>
+        </div>
 
         </Row>
+        </Container>
         </div>
       )
     }
   }
 
+  onSelectZone(area) {
+    this.setState({
+      selectedZone: area.name
+    }, this.getCount())
+  }
+
+  updateAssignedZone() {
+    const { selectedZone, selectedEmployeeId, selectedEmployeeData } = this.state;
+    const workLocation = selectedZone.name;
+    const gender = selectedEmployeeData.gender;
+    updateWorkLocation({
+      workLocation,
+      selectedEmployeeData,
+      selectedEmployeeId,
+      gender
+    }).then(() => {
+      this.setState({
+        toastMsg: `Success! Assigned ${selectedEmployeeData.name} to "${selectedZone.name}"`,
+        selectedZone: null
+      })
+    }).catch((e) => console.log(e))
+  }
+
+  onAssignZone(selectedZone) {
+    this.setState({
+      selectedZone
+    }, this.updateAssignedZone.bind(this))
+  }
+
+
+    toastClose() {
+      this.setState({ toastMsg: '' });
+    }
+
+  renderToastMsg() {
+    const { toastMsg } = this.state;
+    if(toastMsg) {
+      return (
+        <Toast status='ok'
+          onClose={ this.toastClose.bind(this) }>
+          { toastMsg }
+        </Toast>
+      );
+    }
+    return null;
+  }
+
   render() {
-    const { selectedEmployeeData } = this.state;
-    console.log(this.state)
+    const { selectedEmployeeData, workplacesArr } = this.state;
+
     return (
       <div>
       <div style={{marginTop : '10px', marginLeft :'30px'}}>
       { this.renderEmployeeSearch() }
       </div>
       { this.renderSearchedEmployee() }
-      { selectedEmployeeData ? <Map /> : null }
+      { selectedEmployeeData ? <Map onClick={this.onSelectZone.bind(this)} onSubmit={this.onAssignZone.bind(this)} /> : null }
+      { this.renderToastMsg() }
       </div>
     )
   }
