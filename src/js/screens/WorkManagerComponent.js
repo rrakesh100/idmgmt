@@ -162,18 +162,18 @@ export default class WorkManagerComponent extends Component {
     console.log(workplaces);
     let date = new Date();
     let hours = date.getHours();
-    let allottedMaleCount;
-    let allottedFemaleCount;
+    let allottedMaleCount = 0;
+    let allottedFemaleCount = 0;
     if(hours < 15 && workplaces[selectedZone]) {
-      let allottedMaleCount = workplaces[selectedZone]['allocation'] && workplaces['allocation']['DAY']
-                          ? workplaces['allocation']['DAY']['male'] : 0;
-      let allottedFemaleCount = workplaces[selectedZone]['allocation'] && workplaces['allocation']['DAY']
+       allottedMaleCount = workplaces[selectedZone]['allocation'] && workplaces[selectedZone]['allocation']['DAY']
+                          ? workplaces[selectedZone]['allocation']['DAY']['male'] : 0;
+       allottedFemaleCount = workplaces[selectedZone]['allocation'] && workplaces[selectedZone]['allocation']['DAY']
                             ? workplaces['allocation']['DAY']['female'] : 0;
     } else if(workplaces[selectedZone]){
-      let allottedMaleCount = workplaces[selectedZone]['allocation'] &&
-          workplaces['allocation']['NIGHT'] ? workplaces['allocation']['NIGHT']['male'] : 0;
-      let allottedFemaleCount = workplaces[selectedZone]['allocation'] &&
-      workplaces['allocation']['NIGHT']? workplaces['allocation']['NIGHT']['female'] : 0;
+       allottedMaleCount = workplaces[selectedZone]['allocation'] &&
+          workplaces[selectedZone]['allocation']['NIGHT'] ? workplaces[selectedZone]['allocation']['NIGHT']['male'] : 0;
+       allottedFemaleCount = workplaces[selectedZone]['allocation'] &&
+      workplaces[selectedZone]['allocation']['NIGHT']? workplaces[selectedZone]['allocation']['NIGHT']['female'] : 0;
     }
 
     const fCount = countData.Female ? Object.keys(countData.Female).length : 0;
@@ -223,7 +223,7 @@ export default class WorkManagerComponent extends Component {
         </Row>
         <Row>
         <div style={{height: '60px', marginLeft: '35px', marginTop: '20px'}}>
-        Allotted Count : <span>Male - {allottedMaleCount}</span><span>Female - {allottedFemaleCount} </span>
+        Allotted Count : <span>Male - {allottedMaleCount}</span><span style={{marginLeft: '10px'}}>Female - {allottedFemaleCount} </span>
         </div>
         <div style={{height: '60px', marginLeft: '120px', marginTop: '20px'}}>
         Running Count : <span>Male - {mCount}</span><span style={{marginLeft: '10px'}}>Female - {fCount}</span>
