@@ -149,14 +149,21 @@ class AttendanceIn extends Component {
       options.forEach((opt) => {
         if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
-        else if(opt.employeeId === e.target.value.toUpperCase())
+        else if(opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
       })
     }
     this.setState({
       employeeSearchString: e.target.value,
       filteredSuggestions: filtered
-    });
+    }, () => {
+      if(filtered.length == 1) {
+        let data = {};
+        data.suggestion = filtered[0];
+        this.onEmployeeSelect(data, true);
+      }
+     }
+   );
   }
 
   renderEmployeeSearch() {
@@ -276,8 +283,10 @@ class AttendanceIn extends Component {
 
 
   renderImage() {
-    const { inSide } = this.state.selectedEmployeeData || false;
-    if(!inSide && this.state.showLiveCameraFeed) {
+    console.log(this.state.selectedEmployeeData);
+    const  inSide  = this.state.selectedEmployeeData.inSide || false;
+    if(!inSide) {
+      console.log('#########call to render camera')
       return (
         <Webcam
           audio={false}
@@ -289,6 +298,7 @@ class AttendanceIn extends Component {
         />
       );
     }
+    console.log('@@@@@@@@@ call to render image')
     return (
       <Image src={inSide ? this.state.selectedEmployeeData.inwardPhoto : this.state.screenshot} height={300}/>
     );
