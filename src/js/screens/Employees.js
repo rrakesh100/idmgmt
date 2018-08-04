@@ -208,10 +208,6 @@ class Employees extends Component {
             <Tab title='REPORTS'>
             <EmployeeReports />
             </Tab>
-            <Tab title='WORK MANAGER'>
-            { this.renderEmployeeSearch() }
-            { this.renderSearchedEmployee() }
-            </Tab>
             </Tabs>
         </Split>
       </Article>

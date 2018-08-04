@@ -168,7 +168,7 @@ export default class WorkManagerComponent extends Component {
        allottedMaleCount = workplaces[selectedZone]['allocation'] && workplaces[selectedZone]['allocation']['DAY']
                           ? workplaces[selectedZone]['allocation']['DAY']['male'] : 0;
        allottedFemaleCount = workplaces[selectedZone]['allocation'] && workplaces[selectedZone]['allocation']['DAY']
-                            ? workplaces['allocation']['DAY']['female'] : 0;
+                            ? workplaces[selectedZone]['allocation']['DAY']['female'] : 0;
     } else if(workplaces[selectedZone]){
        allottedMaleCount = workplaces[selectedZone]['allocation'] &&
           workplaces[selectedZone]['allocation']['NIGHT'] ? workplaces[selectedZone]['allocation']['NIGHT']['male'] : 0;
@@ -176,8 +176,8 @@ export default class WorkManagerComponent extends Component {
       workplaces[selectedZone]['allocation']['NIGHT']? workplaces[selectedZone]['allocation']['NIGHT']['female'] : 0;
     }
 
-    const fCount = countData.Female ? Object.keys(countData.Female).length : 0;
-    const mCount = countData.Male ? Object.keys(countData.Male).length : 0;
+    const fCount = countData && countData.Female ? Object.keys(countData.Female).length : 0;
+    const mCount = countData && countData.Male ? Object.keys(countData.Male).length : 0;
     const dateStr = moment(date).format('DD/M/YYYY');
 
     if(selectedEmployeeData) {
@@ -223,10 +223,10 @@ export default class WorkManagerComponent extends Component {
         </Row>
         <Row>
         <div style={{height: '60px', marginLeft: '35px', marginTop: '20px'}}>
-        Allotted Count : <span>Male - {allottedMaleCount}</span><span style={{marginLeft: '10px'}}>Female - {allottedFemaleCount} </span>
+        <span style={{color: 'red'}}>Allotted Count</span> : <span>Male - {allottedMaleCount}</span><span style={{marginLeft: '10px'}}>Female - {allottedFemaleCount} </span>
         </div>
-        <div style={{height: '60px', marginLeft: '120px', marginTop: '20px'}}>
-        Running Count : <span>Male - {mCount}</span><span style={{marginLeft: '10px'}}>Female - {fCount}</span>
+        <div style={{height: '60px', marginLeft: '80px', marginTop: '20px'}}>
+        <span style={{color: 'green'}}>Running Count </span>: <span>Male - {mCount}</span><span style={{marginLeft: '10px'}}>Female - {fCount}</span>
         </div>
         </Row>
         </Col>

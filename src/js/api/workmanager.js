@@ -14,6 +14,11 @@ export function getWorkPlaces() {
   return dbRef.once('value');
 }
 
+export function getWorkPlace(id) {
+  const dbRef = firebase.database().ref(`workplaces/${id}`);
+  return dbRef.once('value');
+}
+
 export function getCount(selectedZone) {
   const dbRef = firebase.database().ref(`operations/${selectedZone}`);
   return dbRef.once('value');
@@ -22,8 +27,8 @@ export function getCount(selectedZone) {
 export function saveEditedWorkPlace(data) {
   const dbRef = firebase.database().ref();
   const updates = {};
-  updates[`workplaces/${data.editWorkPlaceId}/allocation/${data.shift}/male`] = data.numOfMale;
-  updates[`workplaces/${data.editWorkPlaceId}/allocation/${data.shift}/female`] = data.numOfFemale;
+  updates[`workplaces/${data.editWorkPlaceId}/allocation/${data.shift}/male`] = data.male;
+  updates[`workplaces/${data.editWorkPlaceId}/allocation/${data.shift}/female`] = data.female;
   return dbRef.update(updates);
 }
 

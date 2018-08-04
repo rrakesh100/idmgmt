@@ -44,7 +44,7 @@ class AttendanceIn extends Component {
       showLiveCameraFeed : true,
       msg : '',
       employeeSearchString : '',
-      selectedEmployeeData : null,
+      selectedEmployeeData : {},
       showLiveCameraFeed: true,
       Date: '',
       shift: '',
@@ -226,7 +226,8 @@ class AttendanceIn extends Component {
       this.setState({
         msg:'Attendance data saved',
         shift: '',
-        numberOfPersons: ''
+        numberOfPersons: '',
+        showLiveCameraFeed: true
       })
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);
@@ -238,6 +239,21 @@ class AttendanceIn extends Component {
     this.webcam = webcam;
   }
 
+  oneClickCapture() {
+    if (this.state.showLiveCameraFeed) {
+      const screenshot = this.webcam.getScreenshot();
+      this.setState({
+        screenshot,
+        showLiveCameraFeed: false,
+        validationMsg: ''
+      }, this.onSaveButtonClick.bind(this));
+    } else {
+      this.setState({
+        showLiveCameraFeed: true,
+        screenshot: ''
+      }, this.onSaveButtonClick.bind(this));
+    }
+  }
 
   capture() {
     if (this.state.showLiveCameraFeed) {
@@ -257,7 +273,8 @@ class AttendanceIn extends Component {
 
 
   renderImage() {
-    if(this.state.showLiveCameraFeed) {
+    const { inSide } = this.state.selectedEmployeeData || false;
+    if(!inSide && this.state.showLiveCameraFeed) {
       return (
         <Webcam
           audio={false}
@@ -270,7 +287,7 @@ class AttendanceIn extends Component {
       );
     }
     return (
-      <Image src={this.state.screenshot} height={300}/>
+      <Image src={inSide ? this.state.selectedEmployeeData.inwardPhoto : this.state.screenshot} height={300}/>
     );
   }
 
@@ -288,6 +305,8 @@ class AttendanceIn extends Component {
 
   onFieldChange(fieldName, e) {
     if(fieldName == 'shift' || fieldName == 'timeslot') {
+      window.localStorage[fieldName] = e.option;
+
     this.setState({
       [fieldName]: e.option,
       validationMsg: ''
@@ -304,8 +323,11 @@ renderSearchedEmployee() {
   const date = new Date();
   const dateStr = moment(date).format('DD/M/YYYY');
 
-  if(selectedEmployeeData) {
-    const { screenshot, name, employeeId, paymentType } = selectedEmployeeData;
+  let shift = window.localStorage.shift || this.state.shift;
+  let timeslot = window.localStorage.timeslot || this.state.timeslot;
+
+  if(Object.keys(selectedEmployeeData).length > 0) {
+    const { screenshot, name, employeeId, paymentType, inTime, inSide } = selectedEmployeeData;
 
 
   return (
@@ -333,7 +355,7 @@ renderSearchedEmployee() {
               <Select
                 placeHolder='Shift'
                 options={shiftOpt}
-                value={this.state.shift}
+                value={shift}
                 onChange={this.onFieldChange.bind(this, 'shift')}
               />
               </FormField>
@@ -374,7 +396,7 @@ renderSearchedEmployee() {
               pad='medium'
               margin='medium'
               colorIndex='light-2'>
-              <span>In Time : <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /></span>
+              <span>In Time : {inSide ? inTime : <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} />}</span>
               </Box>
               </Col>
               </Row>
@@ -385,7 +407,7 @@ renderSearchedEmployee() {
             <Select
               placeHolder='Time Slot'
               options={timeslotOpt}
-              value={this.state.timeslot}
+              value={timeslot}
               onChange={this.onFieldChange.bind(this, 'timeslot')}
             />
             </FormField>
@@ -472,7 +494,7 @@ renderSearchedEmployee() {
     this.setState({
       msg:'',
       employeeSearchString:'',
-      selectedEmployeeData:null
+      selectedEmployeeData:{}
     })
   }
 
@@ -487,7 +509,10 @@ renderSearchedEmployee() {
   }
 
   onSaveButtonClick() {
-    const { shift, timeslot, screenshot } = this.state;
+    const shift = window.localStorage.shift || this.state.shift;
+    const timeslot = window.localStorage.timeslot || this.state.timeslot;
+
+    const { screenshot } = this.state;
 
     if(!shift) {
       this.setState({
@@ -515,13 +540,13 @@ renderSearchedEmployee() {
 
   renderSaveButton() {
     const { selectedEmployeeData } = this.state;
-    if(selectedEmployeeData) {
+    if(Object.keys(selectedEmployeeData).length > 0) {
       let inSide = selectedEmployeeData.inSide;
       return (
         !inSide ?
           <Button
           label='Save'
-          onClick={this.onSaveButtonClick.bind(this)}
+          onClick={this.oneClickCapture.bind(this)}
           href='#' style={{marginLeft: '80px'}}
           primary={true} /> : null
       );

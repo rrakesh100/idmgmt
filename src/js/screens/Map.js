@@ -95,6 +95,9 @@ class Map extends Component {
 
     return (
       <div>
+      <div style={{marginLeft: '40px', marginBottom: '20px'}}>
+      {assignButton}
+      </div>
         <div className='zonePicker'>
           {selectedZoneText}
           <ImageMapper
@@ -109,7 +112,6 @@ class Map extends Component {
             onClick={this.onZoneSelect.bind(this)}
           />
           <p className='hoveredZone'>{hoveredZone ? `highlighted area is ${hoveredZone.name}` : null}</p>
-          {assignButton}
         </div>
       </div>
     );
