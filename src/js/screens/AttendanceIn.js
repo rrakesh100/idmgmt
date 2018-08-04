@@ -56,9 +56,9 @@ class AttendanceIn extends Component {
   }
 
   componentDidMount() {
-    { this.getEmployeeDetails() }
-    { this.getShiftOptions() }
-    { this.getTimeslotOptions() }
+     this.getEmployeeDetails() ;
+     this.getShiftOptions();
+     this.getTimeslotOptions() ;
   }
 
   getTimeslotOptions() {
@@ -139,6 +139,9 @@ class AttendanceIn extends Component {
     this.setState({selectedEmployeeData: ''})
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
+
+    if(!options)
+      return ;
 
     if(e.target.value == '')
       filtered = options
