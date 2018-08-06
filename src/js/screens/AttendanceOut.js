@@ -34,10 +34,10 @@ class AttendanceOut extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      selectedEmployeeData : {},
       showLiveCameraFeed : true,
       msg : '',
       employeeSearchString : '',
-      selectedEmployeeData : null,
       showLiveCameraFeed: true
     };
   }
@@ -112,12 +112,17 @@ class AttendanceOut extends Component {
     this.setState({
       employeeSearchString: e.target.value,
       filteredSuggestions: filtered
-    });
+    }, () => {
+      if(filtered.length == 1) {
+        let data = {};
+        data.suggestion = filtered[0];
+        this.onEmployeeSelect(data, true);
+      }
+     });
   }
 
   renderEmployeeSearch() {
     return (
-      <div style={{marginTop : '10px', marginLeft :'30px'}}>
       <Search placeHolder='Search manpower By Name or Barcode' style={{width:'800px'}}
         inline={true}
         iconAlign='start'
@@ -127,14 +132,6 @@ class AttendanceOut extends Component {
         onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)}
         />
-
-        {this.state.selectedEmployeeData  && <Button
-          label='SAVE'
-          onClick={this.onSaveButtonClick.bind(this)}
-          href='#' style={{marginTop:'15px', marginLeft:'80px'}}
-          primary={true} /> }
-
-    </div>
     )
   }
 
@@ -178,6 +175,21 @@ class AttendanceOut extends Component {
   }
 
 
+  oneClickCapture() {
+    if (this.state.showLiveCameraFeed) {
+      const screenshot = this.webcam.getScreenshot();
+      this.setState({
+        screenshot,
+        showLiveCameraFeed: false
+      }, this.onSaveButtonClick.bind(this));
+    } else {
+      this.setState({
+        showLiveCameraFeed: true,
+        screenshot: ''
+      }, this.onSaveButtonClick.bind(this));
+    }
+  }
+
   capture() {
     if (this.state.showLiveCameraFeed) {
       const screenshot = this.webcam.getScreenshot();
@@ -218,6 +230,22 @@ class AttendanceOut extends Component {
         { this.renderImage() }
       </Box>
     );
+  }
+
+  renderSaveButton() {
+    const { selectedEmployeeData } = this.state;
+    console.log(selectedEmployeeData)
+    if(Object.keys(selectedEmployeeData).length > 0) {
+      let inSide = selectedEmployeeData.inSide;
+      return (
+        inSide ?
+          <Button
+          label='Save'
+          onClick={this.oneClickCapture.bind(this)}
+          href='#' style={{marginLeft: '80px'}}
+          primary={true} /> : null
+      );
+    }
   }
 
   renderValidationMsg() {
@@ -275,7 +303,7 @@ class AttendanceOut extends Component {
 
 renderSearchedEmployee() {
   const { selectedEmployeeData } = this.state;
-  if(selectedEmployeeData) {
+  if(Object.keys(selectedEmployeeData).length > 0) {
     const { screenshot, name, employeeId } = selectedEmployeeData;
     console.log(selectedEmployeeData);
     let inSide = selectedEmployeeData.inSide;
@@ -334,7 +362,7 @@ renderSearchedEmployee() {
         pad='small'
         margin='small'
         colorIndex='light-2'>
-        <span>Out Time : {outTime ||<Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /> }</span>
+        <span>Out Time : {inSide ? <Clock className='employeeClock' format={'hh:mm:ss A'} ticking={true} /> : outTime }</span>
         </Box>
         </Col>
         </Row>
@@ -446,7 +474,7 @@ onOkButtonClick() {
   this.setState({
     msg:'',
     employeeSearchString:'',
-    selectedEmployeeData:null
+    selectedEmployeeData:{}
   })
 }
 
@@ -487,8 +515,11 @@ onOkButtonClick() {
     }
     return (
       <Article primary={true} className='employees'>
+      <div style={{marginTop : '10px', marginLeft :'30px'}}>
       { this.renderEmployeeSearch() }
+      { this.renderSaveButton() }
       { this.renderValidationMsg() }
+      </div>
       { this.renderSearchedEmployee() }
         </Article>
       );

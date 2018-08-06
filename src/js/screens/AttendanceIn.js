@@ -136,7 +136,7 @@ class AttendanceIn extends Component {
   }
 
   onSearchEntry(e) {
-    this.setState({selectedEmployeeData: ''})
+    this.setState({selectedEmployeeData: {}})
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
 
