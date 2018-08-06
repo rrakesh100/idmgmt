@@ -98,22 +98,26 @@ class AttendanceOut extends Component {
     this.setState({selectedEmployeeData: ''})
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
+    let exactMatch = false;
 
     if(e.target.value == '')
       filtered = options
     else {
       options.forEach((opt) => {
         if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
-          filtered.push(opt)
-        else if(opt.employeeId === e.target.value.toUpperCase())
-            filtered.push(opt)
+          filtered.push(opt);
+        else if(opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
+          filtered.push(opt);
+          if(opt.employeeId.toUpperCase() == e.target.value.toUpperCase())
+            exactMatch = true;
+        }
       })
     }
     this.setState({
       employeeSearchString: e.target.value,
       filteredSuggestions: filtered
     }, () => {
-      if(filtered.length == 1) {
+      if(filtered.length == 1 && exactMatch) {
         let data = {};
         data.suggestion = filtered[0];
         this.onEmployeeSelect(data, true);
