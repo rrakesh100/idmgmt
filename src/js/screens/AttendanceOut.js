@@ -34,6 +34,7 @@ class AttendanceOut extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      selectedEmployeeId : '',
       selectedEmployeeData : {},
       showLiveCameraFeed : true,
       msg : '',
@@ -50,16 +51,19 @@ class AttendanceOut extends Component {
         return;
       }
       let suggests = [];
+      let empId = [];
       Object.keys(data).forEach((employee) => {
         if(employee != 'count')
         suggests.push({
            label : data[employee].name,
            employeeId : employee
         })
+        empId.push(employee)
       })
       this.setState({
         employeeSuggestions: suggests,
-        filteredSuggestions: suggests
+        filteredSuggestions: suggests,
+        empId
       });
     })
     .catch((err) => {
@@ -125,9 +129,44 @@ class AttendanceOut extends Component {
      });
   }
 
+  onEntrySearch(e) {
+    let options = this.state.empId;
+    let filtered = [];
+    let exactMatch = false;
+
+    if(!options)
+    return ;
+
+    if(e.target.value == '')
+    filtered = options;
+    else {
+      options.forEach((opt) => {
+        if(opt.toUpperCase().startsWith(e.target.value.toUpperCase()))
+        filtered.push(opt)
+      })
+    }
+
+    this.setState({
+      selectedEmployeeId : e.target.value,
+      filteredOptions : filtered
+    })
+  }
+
+  onSelectEmployee(data, isSuggestionSelected) {
+    if(isSuggestionSelected) {
+      this.setState({
+        selectedEmployeeId: data.suggestion
+      }, this.fetchSearchedEmployee.bind(this));
+    } else {
+       this.setState({
+         selectedEmployeeId: data.target.value
+       })
+    }
+  }
+
   renderEmployeeSearch() {
     return (
-      <Search placeHolder='Search manpower By Name or Barcode' style={{width:'800px'}}
+      <Search placeHolder='Search manpower By Name or Barcode' style={{width:'400px'}}
         inline={true}
         iconAlign='start'
         size='small'
@@ -135,6 +174,21 @@ class AttendanceOut extends Component {
         value={this.state.employeeSearchString}
         onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)}
+        />
+    )
+  }
+
+  renderEmployeeSearchByBarcode() {
+    const { empId } = this.state;
+    return (
+      <Search placeHolder='Search manpower By Barcode' style={{width:'400px', marginLeft: '20px'}}
+        inline={true}
+        iconAlign='end'
+        size='small'
+        suggestions={this.state.filteredOptions}
+        value={this.state.selectedEmployeeId}
+        onSelect={this.onSelectEmployee.bind(this)}
+        onDOMChange={this.onEntrySearch.bind(this)}
         />
     )
   }
@@ -521,6 +575,7 @@ onOkButtonClick() {
       <Article primary={true} className='employees'>
       <div style={{marginTop : '10px', marginLeft :'30px'}}>
       { this.renderEmployeeSearch() }
+      { this.renderEmployeeSearchByBarcode() }
       { this.renderSaveButton() }
       { this.renderValidationMsg() }
       </div>

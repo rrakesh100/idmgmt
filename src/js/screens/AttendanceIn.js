@@ -44,6 +44,7 @@ class AttendanceIn extends Component {
       showLiveCameraFeed : true,
       msg : '',
       employeeSearchString : '',
+      selectedEmployeeId : '',
       selectedEmployeeData : {},
       showLiveCameraFeed: true,
       Date: '',
@@ -90,17 +91,20 @@ class AttendanceIn extends Component {
         return;
       }
       let suggests = [];
+      let empId = [];
       Object.keys(data).forEach((employee) => {
         if(employee != 'count')
         suggests.push({
            label : data[employee].name,
            employeeId : employee
         })
+        empId.push(employee)
       })
       this.setState({
         employeeSuggestions: suggests,
-        filteredSuggestions: suggests
-      });
+        filteredSuggestions: suggests,
+        empId
+      })
     })
     .catch((err) => {
       console.error('VISITOR FETCH FAILED', err);
@@ -122,6 +126,7 @@ class AttendanceIn extends Component {
   }
 
   onEmployeeSelect(data, isSuggestionSelected) {
+
     if(isSuggestionSelected) {
       this.setState({
         selectedEmployeeId: data.suggestion.employeeId,
@@ -133,6 +138,41 @@ class AttendanceIn extends Component {
         employeeSearchString: data.suggestion
       }, this.fetchSearchedEmployee.bind(this));
     }
+  }
+
+  onSelectEmployee(data, isSuggestionSelected) {
+    if(isSuggestionSelected) {
+      this.setState({
+        selectedEmployeeId: data.suggestion
+      }, this.fetchSearchedEmployee.bind(this));
+    } else {
+       this.setState({
+         selectedEmployeeId: data.target.value
+       })
+    }
+  }
+
+  onEntrySearch(e) {
+    let options = this.state.empId;
+    let filtered = [];
+    let exactMatch = false;
+
+    if(!options)
+    return ;
+
+    if(e.target.value == '')
+    filtered = options;
+    else {
+      options.forEach((opt) => {
+        if(opt.toUpperCase().startsWith(e.target.value.toUpperCase()))
+        filtered.push(opt)
+      })
+    }
+
+    this.setState({
+      selectedEmployeeId : e.target.value,
+      filteredOptions : filtered
+    })
   }
 
   onSearchEntry(e) {
@@ -173,14 +213,29 @@ class AttendanceIn extends Component {
   renderEmployeeSearch() {
 
     return (
-      <Search placeHolder='Search manpower By Name or Barcode' style={{width:'800px'}}
+      <Search placeHolder='Search manpower By Name or Barcode' style={{width:'400px'}}
         inline={true}
-        iconAlign='start'
+        iconAlign='end'
         size='small'
         suggestions={this.state.filteredSuggestions}
         value={this.state.employeeSearchString}
         onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)}
+        />
+    )
+  }
+
+  renderEmployeeSearchByBarcode() {
+    const { empId } = this.state;
+    return (
+      <Search placeHolder='Search manpower By Barcode' style={{width:'400px', marginLeft: '20px'}}
+        inline={true}
+        iconAlign='end'
+        size='small'
+        suggestions={this.state.filteredOptions}
+        value={this.state.selectedEmployeeId}
+        onSelect={this.onSelectEmployee.bind(this)}
+        onDOMChange={this.onEntrySearch.bind(this)}
         />
     )
   }
@@ -606,6 +661,7 @@ renderSearchedEmployee() {
       <Article primary={true} className='employees'>
       <div style={{marginTop : '10px', marginLeft :'30px'}}>
       { this.renderEmployeeSearch() }
+      { this.renderEmployeeSearchByBarcode() }
       { this.renderSaveButton() }
       { this.renderValidationMsg() }
       </div>
