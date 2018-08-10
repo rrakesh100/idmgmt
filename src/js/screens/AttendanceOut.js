@@ -268,7 +268,8 @@ class AttendanceOut extends Component {
 
 
   renderImage() {
-    if(this.state.showLiveCameraFeed) {
+    const  inSide  = this.state.selectedEmployeeData.inSide || false;
+    if(inSide) {
       return (
         <Webcam
           audio={false}
@@ -281,7 +282,7 @@ class AttendanceOut extends Component {
       );
     }
     return (
-      <Image src={this.state.screenshot} height={300}/>
+      <Image src={inSide ? this.state.selectedEmployeeData.outwardPhoto : this.state.screenshot} height={300}/>
     );
   }
 
@@ -449,8 +450,7 @@ renderSearchedEmployee() {
       </Col>
       <Col>
       {inSide ?
-      <div onClick={this.capture.bind(this)}
-        style={{marginTop: '20px', marginBottom:'30px', width:'300px', height: '300px'}}>
+      <div style={{marginTop: '20px', marginBottom:'30px', width:'300px', height: '300px'}}>
       { this.renderCamera() }
       </div> :
       <Image src={selectedEmployeeData.outwardPhoto} style={{marginTop:'15px', height:'300px'}}/> }
