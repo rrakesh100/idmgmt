@@ -140,39 +140,37 @@ class AttendanceIn extends Component {
     }
   }
 
-  onSelectEmployee(data, isSuggestionSelected) {
-    if(isSuggestionSelected) {
-      this.setState({
-        selectedEmployeeId: data.suggestion
-      }, this.fetchSearchedEmployee.bind(this));
-    } else {
+  onBarCodeSelectEmployee(data) {
        this.setState({
-         selectedEmployeeId: data.target.value
-       })
-    }
+         selectedEmployeeId: data.suggestion.employeeId
+       },this.fetchSearchedEmployee.bind(this))
   }
 
-  onEntrySearch(e) {
-    let options = this.state.empId;
+  onBarCodeSearch(e) {
+    this.setState({selectedEmployeeData: {}})
+    let options = this.state.employeeSuggestions;
     let filtered = [];
-    let exactMatch = false;
 
     if(!options)
     return ;
 
-    if(e.target.value == '')
-    filtered = options;
-    else {
       options.forEach((opt) => {
-        if(opt.toUpperCase().startsWith(e.target.value.toUpperCase()))
-        filtered.push(opt)
+       if(opt.employeeId.toUpperCase() === (e.target.value.toUpperCase())) {
+          filtered.push(opt);
+        }
       })
-    }
+
 
     this.setState({
       selectedEmployeeId : e.target.value,
-      filteredOptions : filtered
-    })
+      filteredSuggestions : filtered
+    }, () => {
+      if(filtered.length == 1) {
+        let data = {};
+        data.suggestion = filtered[0];
+        this.onEmployeeSelect(data, true);
+      }
+     })
   }
 
   onSearchEntry(e) {
@@ -232,10 +230,8 @@ class AttendanceIn extends Component {
         inline={true}
         iconAlign='end'
         size='small'
-        suggestions={this.state.filteredOptions}
         value={this.state.selectedEmployeeId}
-        onSelect={this.onSelectEmployee.bind(this)}
-        onDOMChange={this.onEntrySearch.bind(this)}
+        onDOMChange={this.onBarCodeSearch.bind(this)}
         />
     )
   }
@@ -296,6 +292,7 @@ class AttendanceIn extends Component {
         msg:'Attendance data saved',
         shift: '',
         numberOfPersons: '',
+        selectedEmployeeId : '',
         showLiveCameraFeed: true
       })
     }).catch((err) => {
