@@ -140,11 +140,6 @@ class AttendanceIn extends Component {
     }
   }
 
-  onBarCodeSelectEmployee(data) {
-       this.setState({
-         selectedEmployeeId: data.suggestion.employeeId
-       },this.fetchSearchedEmployee.bind(this))
-  }
 
   onBarCodeSearch(e) {
     this.setState({selectedEmployeeData: {}})

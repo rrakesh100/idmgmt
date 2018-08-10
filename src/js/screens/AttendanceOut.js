@@ -129,28 +129,33 @@ class AttendanceOut extends Component {
      });
   }
 
-  onEntrySearch(e) {
-    let options = this.state.empId;
+  onBarCodeSearch(e) {
+    this.setState({selectedEmployeeData: {}})
+    let options = this.state.employeeSuggestions;
     let filtered = [];
-    let exactMatch = false;
 
     if(!options)
     return ;
 
-    if(e.target.value == '')
-    filtered = options;
-    else {
       options.forEach((opt) => {
-        if(opt.toUpperCase().startsWith(e.target.value.toUpperCase()))
-        filtered.push(opt)
+       if(opt.employeeId.toUpperCase() === (e.target.value.toUpperCase())) {
+          filtered.push(opt);
+        }
       })
-    }
+
 
     this.setState({
       selectedEmployeeId : e.target.value,
-      filteredOptions : filtered
-    })
+      filteredSuggestions : filtered
+    }, () => {
+      if(filtered.length == 1) {
+        let data = {};
+        data.suggestion = filtered[0];
+        this.onEmployeeSelect(data, true);
+      }
+     })
   }
+
 
   onSelectEmployee(data, isSuggestionSelected) {
     if(isSuggestionSelected) {
@@ -185,10 +190,8 @@ class AttendanceOut extends Component {
         inline={true}
         iconAlign='end'
         size='small'
-        suggestions={this.state.filteredOptions}
         value={this.state.selectedEmployeeId}
-        onSelect={this.onSelectEmployee.bind(this)}
-        onDOMChange={this.onEntrySearch.bind(this)}
+        onDOMChange={this.onBarCodeSearch.bind(this)}
         />
     )
   }
@@ -351,7 +354,8 @@ class AttendanceOut extends Component {
       this.setState({
         msg:'Attendance out data saved',
         shift: '',
-        numberOfPersons: ''
+        numberOfPersons: '',
+        selectedEmployeeId : ''
       })
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);
