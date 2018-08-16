@@ -46,7 +46,6 @@ class AttendanceOut extends Component {
   componentDidMount() {
     getEmployees().then((snap) => {
       const data = snap.val();
-      console.log(data);
       if (!data) {
         return;
       }
@@ -71,15 +70,23 @@ class AttendanceOut extends Component {
     });
   }
 
+  autoSave() {
+    const { selectedEmployeeData } = this.state;
+    if(selectedEmployeeData && selectedEmployeeData.inSide) {
+      setTimeout(this.oneClickCapture(), 3000)
+    } else {
+      return
+    }
+  }
+
   fetchSearchedEmployee() {
     const { selectedEmployeeId } = this.state;
     if(selectedEmployeeId) {
     getEmployee(selectedEmployeeId).then((snap) => {
       const selectedEmployeeData = snap.val();
-      console.log(selectedEmployeeData)
       this.setState({
         selectedEmployeeData
-      })
+      }, this.autoSave.bind(this))
     }).catch((e) => console.log(e))
   }
   }
@@ -269,7 +276,6 @@ class AttendanceOut extends Component {
 
   renderImage() {
     const  inSide  = this.state.selectedEmployeeData.inSide || false;
-    if(inSide) {
       return (
         <Webcam
           audio={false}
@@ -277,10 +283,9 @@ class AttendanceOut extends Component {
           ref={this.setRef.bind(this)}
           screenshotFormat='image/jpeg'
           width={300}
-          onClick={this.capture.bind(this)}
+          onClick={this.oneClickCapture.bind(this)}
         />
       );
-    }
     return (
       <Image src={inSide ? this.state.selectedEmployeeData.outwardPhoto : this.state.screenshot} height={300}/>
     );
@@ -296,7 +301,6 @@ class AttendanceOut extends Component {
 
   renderSaveButton() {
     const { selectedEmployeeData } = this.state;
-    console.log(selectedEmployeeData)
     if(Object.keys(selectedEmployeeData).length > 0) {
       let inSide = selectedEmployeeData.inSide;
       return (
@@ -322,7 +326,6 @@ class AttendanceOut extends Component {
 
   onSaveButtonClick() {
     const { screenshot } = this.state;
-    console.log(screenshot)
     if(!screenshot) {
       this.setState({
         validationMsg: 'SCREENSHOT is missing'
@@ -368,7 +371,6 @@ renderSearchedEmployee() {
   const { selectedEmployeeData } = this.state;
   if(Object.keys(selectedEmployeeData).length > 0) {
     const { screenshot, name, employeeId } = selectedEmployeeData;
-    console.log(selectedEmployeeData);
     let inSide = selectedEmployeeData.inSide;
     let inTime = selectedEmployeeData.inTime;
     let outTime = selectedEmployeeData.outTime;
@@ -449,10 +451,7 @@ renderSearchedEmployee() {
         </Row>
       </Col>
       <Col>
-      {inSide ?
-      <div style={{marginTop: '20px', marginBottom:'30px', width:'300px', height: '300px'}}>
-      { this.renderCamera() }
-      </div> :
+      {inSide &&
       <Image src={selectedEmployeeData.outwardPhoto} style={{marginTop:'15px', height:'300px'}}/> }
       </Col>
       </Row>
@@ -543,8 +542,7 @@ onOkButtonClick() {
 
 
   render() {
-    const { msg } = this.state;
-
+    const { msg, selectedEmployeeData } = this.state;
     if(msg) {
       return (
         <Layer
@@ -580,6 +578,10 @@ onOkButtonClick() {
       <div style={{marginTop : '10px', marginLeft :'30px'}}>
       { this.renderEmployeeSearch() }
       { this.renderEmployeeSearchByBarcode() }
+      <div onClick={this.oneClickCapture.bind(this)}
+      style={{marginTop: '20px', marginBottom:'30px', width:'300px', height: '300px'}}>
+      { this.renderCamera() }
+      </div>
       { this.renderSaveButton() }
       { this.renderValidationMsg() }
       </div>

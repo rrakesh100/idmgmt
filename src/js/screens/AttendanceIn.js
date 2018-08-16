@@ -111,6 +111,12 @@ class AttendanceIn extends Component {
     });
   }
 
+  autoSave() {
+    const { selectedEmployeeData } = this.state;
+    if(selectedEmployeeData && !selectedEmployeeData.inSide) 
+    setTimeout(this.oneClickCapture(), 3000)
+  }
+
   fetchSearchedEmployee() {
     const { selectedEmployeeId } = this.state;
     if(selectedEmployeeId) {
@@ -120,7 +126,7 @@ class AttendanceIn extends Component {
         selectedEmployeeData,
         shift: '',
         timeslot: ''
-      })
+      }, this.autoSave.bind(this))
     }).catch((e) => console.log(e))
   }
   }
@@ -334,10 +340,8 @@ class AttendanceIn extends Component {
 
 
   renderImage() {
-    console.log(this.state.selectedEmployeeData);
     const  inSide  = this.state.selectedEmployeeData.inSide || false;
     if(!inSide) {
-      console.log('#########call to render camera')
       return (
         <Webcam
           audio={false}
@@ -349,7 +353,6 @@ class AttendanceIn extends Component {
         />
       );
     }
-    console.log('@@@@@@@@@ call to render image')
     return (
       <Image src={inSide ? this.state.selectedEmployeeData.inwardPhoto : this.state.screenshot} height={300}/>
     );
@@ -481,10 +484,6 @@ renderSearchedEmployee() {
 
       </Col>
 
-      <div onClick={this.capture.bind(this)}
-        style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
-      { this.renderCamera() }
-      </div>
       </Row>
       <Row>
       <Col>
@@ -654,6 +653,10 @@ renderSearchedEmployee() {
       <div style={{marginTop : '10px', marginLeft :'30px'}}>
       { this.renderEmployeeSearch() }
       { this.renderEmployeeSearchByBarcode() }
+      <div onClick={this.oneClickCapture.bind(this)}
+        style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
+      { this.renderCamera() }
+      </div>
       { this.renderSaveButton() }
       { this.renderValidationMsg() }
       </div>
