@@ -20,35 +20,48 @@ import ImageMapper from 'react-image-mapper';
 const testMap = {
   name: 'my-map',
   areas: [
-    { _id: 'gardenOutside', name: 'Outside Garden', shape: 'poly', coords: [669,72,678,72,769,188,755,187] },
-    { _id: 'gardenInside', name: 'Inside Garden', shape: 'poly', coords: [644,71,662,71,737,175,725,176,727,186,716,186] },
-    { _id: 'office1', name: 'Office 1', shape: 'poly', coords: [679,192,705,190,683,150,659,152] },
-    { _id: 'office2', name: 'Office 2', shape: 'poly', coords: [654,143,675,140,655,108,637,111] },
-    { _id: 'office3', name: 'Office 3', shape: 'poly', coords: [620,75,640,74,653,100,633,102] },
-    { _id: 'godown1', name: 'Godown 1', shape: 'poly', coords: [569,191,558,155,560,148,641,147,654,160,658,184,657,191] },
-    { _id: 'godown2', name: 'Godown 2', shape: 'poly', coords: [554,140,544,115,548,105,620,105,634,114,636,135,633,141] },
-    { _id: 'godown3', name: 'Godown 3', shape: 'poly', coords: [534,79,537,70,605,70,612,77,615,92,614,101,544,105] },
-
-    { _id: 'factory1', name: 'Mill 1', shape: 'poly', coords: [394,250,393,214,396,196,552,198,560,218,563,248,563,255] },
-    { _id: 'factory2', name: 'Mill 2', shape: 'poly', coords: [398,190,398,181,402,144,535,145,544,157,547,183,546,192] },
-    { _id: 'factory3', name: 'Mill 3', shape: 'poly', coords: [406,138,405,125,405,100,525,97,535,127,535,140] },
-    { _id: 'factory4', name: 'Mill 4', shape: 'poly', coords: [406,98,408,74,411,71,518,69,523,79,523,97] },
-
-
-    { _id: 'factory5', name: 'Mill 5', shape: 'poly', coords: [216,251,369,251,375,205,372,198,227,194,212,210,209,241] },
-    { _id: 'factory6', name: 'Mill 6', shape: 'poly', coords: [236,187,235,178,250,142,385,145,374,182,374,192] },
-    { _id: 'factory7', name: 'Mill 7', shape: 'poly', coords: [258,142,258,133,258,115,271,103,386,104,383,133,383,145] },
-    { _id: 'factory8', name: 'Mill 8', shape: 'poly', coords: [278,103,275,95,277,75,288,71,390,71,387,95,387,102] },
-
-
-    { _id: 'factory9', name: 'Mill 9', shape: 'poly', coords: [187,248,210,203,205,196,136,194,129,190,119,189,109,182,85,183,61,197,52,225,59,233,47,253,53,270,72,271,88,241] },
-    { _id: 'factory10', name: 'Mill 10', shape: 'poly', coords: [216,187,233,151,226,143,76,141,55,153,46,176,61,188] },
-    { _id: 'factory11', name: 'Mill 11', shape: 'poly', coords: [238,138,252,118,248,100,116,102,95,109,90,130,100,141] },
-    { _id: 'factory12', name: 'Mill 12', shape: 'poly', coords: [260,98,269,81,264,71,157,72,149,64,123,70,115,85,125,101] },
-    { _id: 'factory13', name: 'Mill 13', shape: 'poly', coords: [33,271,14,270,1,262,1,245,12,235,3,226,1,194,15,184,52,182,59,188,72,188,49,221,52,243] },
-
-    { _id: 'freespace', name: 'Free Space', shape: 'poly', coords: [210,252,567,258,579,315,199,299] },
-    { _id: 'shed', name: 'Mechanic Shed', shape: 'poly', coords: [604,311,576,205,734,214,786,319] }
+    { _id: 'garden', name: 'Garden', shape: 'poly', coords: [807,90,849,86,958,231,941,233,929,221,906,219,901,224,902,233,890,233] },
+    { _id: 'admin', name: 'Hr & ADMIN', shape: 'poly', coords: [909,236,901,225,904,218,933,218,942,228,937,237] },
+    { _id: 'guestHouse', name: 'Guest House', shape: 'poly', coords: [774,87,805,85,820,118,791,121] },
+    { _id: 'office1', name: 'Office 1', shape: 'poly', coords: [798,140,825,135,847,172,816,172] },
+    { _id: 'office12', name: 'Office 2', shape: 'poly', coords: [827,190,857,190,880,229,845,231] },
+    { _id: 'lorryYard', name: 'Lorry Yard', shape: 'poly', coords: [770,264,915,264,965,352,956,357,977,402,844,401,806,331,791,333] },
+    { _id: 'bunk', name: 'Bunk', shape: 'poly', coords: [787,334,799,363,826,361,812,334] },
+    { _id: 'godown2', name: 'Godown No-2', shape: 'poly', coords: [362,90,491,89,490,99,489,115,349,119] },
+    { _id: 'godown3', name: 'Godown No-3', shape: 'poly', coords: [513,88,651,86,657,94,656,118,510,117] },
+    { _id: 'godown4', name: 'Godown No-4', shape: 'poly', coords: [674,87,755,84,766,96,771,115,683,115] },
+    { _id: 'godown5', name: 'Godown No-5', shape: 'poly', coords: [688,131,773,129,788,139,795,165,697,166] },
+    { _id: 'godown6', name: 'Godown No-6', shape: 'poly', coords: [704,182,712,199,714,227,828,229,821,198,804,181] },
+    { _id: 'godown7', name: 'Godown No-8', shape: 'poly', coords: [499,245,694,248,703,270,708,309,495,303] },
+    { _id: 'parking', name: 'Parking', shape: 'poly', coords: [738,256,756,256,775,312,758,315] },
+    { _id: 'restHall', name: 'Drivers Rest Hall', shape: 'poly', coords: [719,258,736,259,740,270,726,270] },
+    { _id: 'garage', name: 'Garage', shape: 'poly', coords: [725,274,741,272,754,315,737,314] },
+    { _id: 'silos', name: 'Silos', shape: 'poly', coords: [511,122,647,121,659,156,507,157] },
+    { _id: 'thotti', name: 'Thotti', shape: 'poly', coords: [651,122,664,121,673,169,655,169] },
+    { _id: 'ricemill1', name: 'Rice Mill No-1', shape: 'poly', coords: [149,129,127,139,119,161,203,161,207,142,222,129] },
+    { _id: 'ricemill2', name: 'Rice Mill No-2', shape: 'poly', coords: [223,129,210,139,205,162,304,162,309,139,318,127] },
+    { _id: 'ricemill3', name: 'Rice Mill No-3', shape: 'poly', coords: [107,175,80,190,70,217,175,218,182,192,200,177] },
+    { _id: 'ricemill4', name: 'Rice Mill No-4', shape: 'poly', coords: [201,176,181,192,176,218,271,221,279,193,293,177] },
+    { _id: 'ricemill5', name: 'Rice Mill No-5', shape: 'poly', coords: [504,181,595,183,598,228,500,226] },
+    { _id: 'ricemill6', name: 'Rice Mill No-6', shape: 'poly', coords: [159,86,176,80,199,81,205,90,339,88,331,93,325,115,163,119,151,109] },
+    { _id: 'ricemill7', name: 'Rice Mill No-7', shape: 'poly', coords: [354,244,343,266,339,299,460,301,464,267,469,245] },
+    { _id: 'newRavvaPlant', name: 'New Ravva Plant', shape: 'poly', coords: [596,182,676,180,684,196,687,228,599,228] },
+    { _id: 'roads', name: 'Roads', shape: 'poly', coords: [488,131,507,136,486,383,460,382] },
+    { _id: 'balabondulu', name: 'Balabondulu', shape: 'poly', coords: [493,89,511,89,509,116,491,116] },
+    { _id: 'thotti1', name: 'Thotti', shape: 'poly', coords: [466,128,486,130,481,166,460,164] },
+    { _id: 'steamDriers', name: 'Steam Driers A+B', shape: 'poly', coords: [367,129,360,143,355,167,459,166,465,129] },
+    { _id: 'oldRavvaPlant', name: 'Old Ravva Plant', shape: 'poly', coords: [345,131,333,142,326,164,353,167,358,145,366,130] },
+    { _id: 'parboiling', name: 'Parboiling', shape: 'poly', coords: [482,182,397,181,385,224,476,226] },
+    { _id: 'parboilingDriers', name: 'Parboiling Driers A+B', shape: 'poly', coords: [316,181,395,181,383,226,299,222] },
+    { _id: 'automobile', name: 'Automobile Stores', shape: 'poly', coords: [291,242,274,263,341,265,352,244] },
+    { _id: 'tinkering', name: 'Tinkering & Carpenter', shape: 'poly', coords: [276,264,344,265,339,301,268,298] },
+    { _id: 'powerPlant1', name: 'Power Plant - 1', shape: 'poly', coords: [68,287,85,246,105,234,84,231,78,227,35,226,3,244,5,280] },
+    { _id: 'powerPlant2', name: 'Power Plant - 2', shape: 'poly', coords: [116,227,87,244,72,279,145,295,155,264,179,241] },
+    { _id: 'gmOffice', name: 'GM Office', shape: 'poly', coords: [180,242,168,252,196,256,204,243] },
+    { _id: 'roPlant', name: 'R.O.Plant', shape: 'poly', coords: [189,297,199,263,214,245,204,243,193,253,168,251,155,259,144,295] },
+    { _id: 'mainStores', name: 'Main Stores', shape: 'poly', coords: [217,242,199,263,245,263,262,244] },
+    { _id: 'workshop', name: 'Workshop', shape: 'poly', coords: [200,263,245,265,238,301,189,300] },
+    { _id: 'drainage', name: 'Drainage', shape: 'poly', coords: [222,369,427,376,426,384,223,374] }
   ]
 };
 
@@ -101,9 +114,9 @@ class Map extends Component {
         <div className='zonePicker'>
           {selectedZoneText}
           <ImageMapper
-            src='/img/Unit2.jpeg'
+            src='/img/birdview1.png'
             map={testMap}
-            width={800}
+            width={1000}
             fillColor='rgba(155, 89, 182,0.5)'
             strokeColor='rgba(155, 89, 182,1)'
             lineWidth={2}

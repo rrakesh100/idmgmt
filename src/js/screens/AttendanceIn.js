@@ -51,7 +51,8 @@ class AttendanceIn extends Component {
       shift: '',
       numberOfPersons: '',
       manpowerName: '',
-      timeslot: ''
+      timeslot: '',
+      hideOutsideCamera: false
     };
     this.onCompareClick.bind(this);
   }
@@ -111,13 +112,22 @@ class AttendanceIn extends Component {
     });
   }
 
-  autoSave() {
+  autoSaveEmployee() {
     const { selectedEmployeeData } = this.state;
-    if(selectedEmployeeData && !selectedEmployeeData.inSide) 
+    if(selectedEmployeeData && !selectedEmployeeData.inSide) {
     setTimeout(this.oneClickCapture(), 3000)
   }
+  }
 
-  fetchSearchedEmployee() {
+  condition(autoSave) {
+    console.log(autoSave);
+     if(autoSave) {
+       this.autoSaveEmployee()
+     }
+  }
+
+  fetchSearchedEmployee(autoSave) {
+    console.log(autoSave);
     const { selectedEmployeeId } = this.state;
     if(selectedEmployeeId) {
     getEmployee(selectedEmployeeId).then((snap) => {
@@ -126,23 +136,24 @@ class AttendanceIn extends Component {
         selectedEmployeeData,
         shift: '',
         timeslot: ''
-      }, this.autoSave.bind(this))
+      }, this.condition.bind(this, autoSave))
     }).catch((e) => console.log(e))
   }
   }
 
-  onEmployeeSelect(data, isSuggestionSelected) {
-
+  onEmployeeSelect(data, isSuggestionSelected, autoSave) {
+    console.log(autoSave)
     if(isSuggestionSelected) {
       this.setState({
         selectedEmployeeId: data.suggestion.employeeId,
-        employeeSearchString: data.suggestion.label
-      }, this.fetchSearchedEmployee.bind(this));
+        employeeSearchString: data.suggestion.label,
+        hideOutsideCamera: true
+      }, this.fetchSearchedEmployee.bind(this, autoSave));
     } else {
       this.setState({
         selectedEmployeeId: data.target.value,
         employeeSearchString: data.suggestion
-      }, this.fetchSearchedEmployee.bind(this));
+      }, this.fetchSearchedEmployee.bind(this, autoSave));
     }
   }
 
@@ -169,7 +180,7 @@ class AttendanceIn extends Component {
       if(filtered.length == 1) {
         let data = {};
         data.suggestion = filtered[0];
-        this.onEmployeeSelect(data, true);
+        this.onEmployeeSelect(data, true, true);
       }
      })
   }
@@ -203,7 +214,7 @@ class AttendanceIn extends Component {
       if(filtered.length == 1 && exactMatch) {
         let data = {};
         data.suggestion = filtered[0];
-        this.onEmployeeSelect(data, true);
+        this.onEmployeeSelect(data, true, false);
       }
      }
    );
@@ -386,7 +397,7 @@ class AttendanceIn extends Component {
   }
 
 renderSearchedEmployee() {
-  const { selectedEmployeeData, shiftOpt, timeslotOpt } = this.state;
+  const { selectedEmployeeData, shiftOpt, timeslotOpt, hideOutsideCamera } = this.state;
   const date = new Date();
   const dateStr = moment(date).format('DD/M/YYYY');
 
@@ -538,7 +549,7 @@ renderSearchedEmployee() {
       </Col>
       <Col>
       <div style={{marginLeft:'160px'}}>
-      <Image src={screenshot} style={{marginTop:'15px', height:'400px'}}/>
+      <Image src={screenshot} style={{marginTop:'15px', height:'350px'}}/>
       </div>
       </Col>
       </Row>
@@ -617,7 +628,7 @@ renderSearchedEmployee() {
   }
 
   render() {
-    const { msg } = this.state;
+    const { msg, hideOutsideCamera } = this.state;
     if(msg) {
       return (
         <Layer
@@ -653,10 +664,13 @@ renderSearchedEmployee() {
       <div style={{marginTop : '10px', marginLeft :'30px'}}>
       { this.renderEmployeeSearch() }
       { this.renderEmployeeSearchByBarcode() }
-      <div onClick={this.oneClickCapture.bind(this)}
-        style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
-      { this.renderCamera() }
-      </div>
+      {
+        !hideOutsideCamera &&
+        <div onClick={this.oneClickCapture.bind(this)}
+          style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
+        { this.renderCamera() }
+        </div>
+      }
       { this.renderSaveButton() }
       { this.renderValidationMsg() }
       </div>
