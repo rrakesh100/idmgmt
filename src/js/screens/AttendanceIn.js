@@ -136,7 +136,6 @@ class AttendanceIn extends Component {
   }
 
   onEmployeeSelect(data, isSuggestionSelected, autoSave) {
-    console.log(autoSave)
     if(isSuggestionSelected) {
       this.setState({
         selectedEmployeeId: data.suggestion.employeeId,
@@ -383,6 +382,20 @@ class AttendanceIn extends Component {
           />
       </Box>
     );
+  }
+
+  renderSelectedOptions() {
+    const { hideOutsideCamera } = this.state;
+    if(!hideOutsideCamera) {
+      return (
+        <div>
+        <p>Current Time slot : {window.localStorage.timeslot}</p>
+        <p  size="small">Current Shift : {window.localStorage.shift}</p>
+        </div>
+
+      );
+    }
+
   }
 
   renderInsideCamera() {
@@ -668,7 +681,6 @@ renderSearchedEmployee() {
 
   render() {
     const { msg, hideOutsideCamera } = this.state;
-    console.log('@@@@@@@@', hideOutsideCamera);
     if(msg) {
       return (
         <Layer
@@ -709,6 +721,8 @@ renderSearchedEmployee() {
         <div onClick={this.oneClickCapture.bind(this)}
           style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
         { this.renderOutsideCamera() }
+        { this.renderSelectedOptions() }
+
         </div>
       }
       { this.renderSaveButton() }

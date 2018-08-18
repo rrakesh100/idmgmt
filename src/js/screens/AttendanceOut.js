@@ -75,15 +75,12 @@ class AttendanceOut extends Component {
 
   autoSaveEmployee() {
     const { selectedEmployeeData } = this.state;
-    console.log('called autosave with ', selectedEmployeeData);
     if(selectedEmployeeData && selectedEmployeeData.inSide) {
-      console.log('before call time = ', new Date().getTime())
       setTimeout(() => this.oneClickCapture(), 2000)
     }
   }
 
   fetchSearchedEmployee(autoSave) {
-    console.log('####', autoSave);
     const { selectedEmployeeId } = this.state;
     if(selectedEmployeeId) {
     getEmployee(selectedEmployeeId).then((snap) => {
@@ -239,7 +236,6 @@ class AttendanceOut extends Component {
        dataType: 'json',
        data : payload,
        success: (data) => {
-        console.log(data);
         return data;
       },
       error: function (responseData, textStatus, errorThrown) {
@@ -256,7 +252,6 @@ class AttendanceOut extends Component {
 
   oneClickCapture() {
 
-    console.log('after call time = ', new Date().getTime())
 
     const { pickScreenshotFromOutsideCamera, screenshot } = this.state;
 
@@ -328,7 +323,6 @@ class AttendanceOut extends Component {
 
   outsideCameraCapture() {
       const screenshot = this.outsideWebcam.getScreenshot();
-      console.log('captured from outside camera');
       this.setState({
         screenshot,
         hideOutsideCamera : true,
@@ -417,7 +411,6 @@ class AttendanceOut extends Component {
         selectedEmployeeId : '',
         hideOutsideCamera : false
       }, () => {
-        console.log('calling ok button click',new Date().getTime())
           setTimeout( () => { this.onOkButtonClick() }, 2000);
       })
     }).catch((err) => {
@@ -595,7 +588,6 @@ onCloseLayer()  {
 }
 
 onOkButtonClick() {
-  console.log('called ok button..........' , new Date().getTime())
   this.setState({
     msg:'',
     employeeSearchString:'',
