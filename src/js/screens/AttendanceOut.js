@@ -39,7 +39,8 @@ class AttendanceOut extends Component {
       showLiveCameraFeed : true,
       msg : '',
       employeeSearchString : '',
-      showLiveCameraFeed: true
+      showLiveCameraFeed: true,
+      hideOutsideCamera : false
     };
   }
 
@@ -70,38 +71,47 @@ class AttendanceOut extends Component {
     });
   }
 
-  autoSave() {
+
+
+  autoSaveEmployee() {
     const { selectedEmployeeData } = this.state;
+    console.log('called autosave with ', selectedEmployeeData);
     if(selectedEmployeeData && selectedEmployeeData.inSide) {
-      setTimeout(this.oneClickCapture(), 3000)
-    } else {
-      return
+      console.log('before call time = ', new Date().getTime())
+      setTimeout(() => this.oneClickCapture(), 2000)
     }
   }
 
-  fetchSearchedEmployee() {
+  fetchSearchedEmployee(autoSave) {
+    console.log('####', autoSave);
     const { selectedEmployeeId } = this.state;
     if(selectedEmployeeId) {
     getEmployee(selectedEmployeeId).then((snap) => {
       const selectedEmployeeData = snap.val();
       this.setState({
         selectedEmployeeData
-      }, this.autoSave.bind(this))
-    }).catch((e) => console.log(e))
-  }
+      },() => {
+          if(autoSave){
+           this.autoSaveEmployee();
+          }
+        }
+      );
+      }).catch((e) => console.log(e))
+    }
   }
 
-  onEmployeeSelect(data, isSuggestionSelected) {
+  onEmployeeSelect(data, isSuggestionSelected, autoSave) {
     if(isSuggestionSelected) {
       this.setState({
         selectedEmployeeId: data.suggestion.employeeId,
-        employeeSearchString: data.suggestion.label
-      }, this.fetchSearchedEmployee.bind(this));
+        employeeSearchString: data.suggestion.label,
+        hideOutsideCamera: true
+      }, this.fetchSearchedEmployee.bind(this, autoSave));
     } else {
       this.setState({
         selectedEmployeeId: data.target.value,
         employeeSearchString: data.suggestion
-      }, this.fetchSearchedEmployee.bind(this));
+      }, this.fetchSearchedEmployee.bind(this, autoSave));
     }
   }
 
@@ -131,7 +141,7 @@ class AttendanceOut extends Component {
       if(filtered.length == 1 && exactMatch) {
         let data = {};
         data.suggestion = filtered[0];
-        this.onEmployeeSelect(data, true);
+        this.onEmployeeSelect(data, true, false);
       }
      });
   }
@@ -156,9 +166,10 @@ class AttendanceOut extends Component {
       filteredSuggestions : filtered
     }, () => {
       if(filtered.length == 1) {
+        this.outsideCameraCapture();
         let data = {};
         data.suggestion = filtered[0];
-        this.onEmployeeSelect(data, true);
+        this.onEmployeeSelect(data, true, true);
       }
      })
   }
@@ -244,6 +255,18 @@ class AttendanceOut extends Component {
 
 
   oneClickCapture() {
+
+    console.log('after call time = ', new Date().getTime())
+
+    const { pickScreenshotFromOutsideCamera, screenshot } = this.state;
+
+    if(pickScreenshotFromOutsideCamera){
+      this.setState({
+        showLiveCameraFeed: false
+      }, this.onSaveButtonClick.bind(this));
+      return;
+    }
+
     if (this.state.showLiveCameraFeed) {
       const screenshot = this.webcam.getScreenshot();
       this.setState({
@@ -298,6 +321,38 @@ class AttendanceOut extends Component {
       </Box>
     );
   }
+
+  setOutsideRef(webcam) {
+    this.outsideWebcam = webcam;
+  }
+
+  outsideCameraCapture() {
+      const screenshot = this.outsideWebcam.getScreenshot();
+      console.log('captured from outside camera');
+      this.setState({
+        screenshot,
+        hideOutsideCamera : true,
+        pickScreenshotFromOutsideCamera : true,
+        validationMsg: ''
+      });
+  }
+
+  renderOutsideCamera() {
+    return (
+      <Box>
+          <Webcam
+            audio={false}
+            height={400}
+            ref={this.setOutsideRef.bind(this)}
+            screenshotFormat='image/jpeg'
+            width={400}
+            style={{marginLeft : '200', marginTop:'100'}}
+            onClick={this.outsideCameraCapture.bind(this)}
+          />
+      </Box>
+    );
+  }
+
 
   renderSaveButton() {
     const { selectedEmployeeData } = this.state;
@@ -359,7 +414,11 @@ class AttendanceOut extends Component {
         msg:'Attendance out data saved',
         shift: '',
         numberOfPersons: '',
-        selectedEmployeeId : ''
+        selectedEmployeeId : '',
+        hideOutsideCamera : false
+      }, () => {
+        console.log('calling ok button click',new Date().getTime())
+          setTimeout( () => { this.onOkButtonClick() }, 2000);
       })
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);
@@ -368,7 +427,8 @@ class AttendanceOut extends Component {
   }
 
 renderSearchedEmployee() {
-  const { selectedEmployeeData } = this.state;
+  const { selectedEmployeeData, hideOutsideCamera, pickScreenshotFromOutsideCamera } = this.state;
+  const screenShotFromOutsideCamera = this.state.screenshot;
   if(Object.keys(selectedEmployeeData).length > 0) {
     const { screenshot, name, employeeId } = selectedEmployeeData;
     let inSide = selectedEmployeeData.inSide;
@@ -451,8 +511,11 @@ renderSearchedEmployee() {
         </Row>
       </Col>
       <Col>
-      {inSide &&
-      <Image src={selectedEmployeeData.outwardPhoto} style={{marginTop:'15px', height:'300px'}}/> }
+      {
+        inSide && !pickScreenshotFromOutsideCamera ? (<div style={{marginTop: '20px', marginBottom:'30px', width:'300px', height: '300px'}}>
+                 { this.renderCamera() } </div> ) :
+          <Image src={!inSide ? selectedEmployeeData.outwardPhoto : screenShotFromOutsideCamera} style={{marginTop:'15px', height:'300px'}}/>
+       }
       </Col>
       </Row>
 
@@ -510,7 +573,7 @@ renderSearchedEmployee() {
       </Col>
       <Col>
       <div>
-      <Image src={screenshot} style={{marginTop:'15px', height:'350px'}}/>
+        <Image src={screenshot} style={{marginTop:'15px', height:'350px'}}/>
       </div>
       </Col>
       <Col>
@@ -532,6 +595,7 @@ onCloseLayer()  {
 }
 
 onOkButtonClick() {
+  console.log('called ok button..........' , new Date().getTime())
   this.setState({
     msg:'',
     employeeSearchString:'',
@@ -542,7 +606,7 @@ onOkButtonClick() {
 
 
   render() {
-    const { msg, selectedEmployeeData } = this.state;
+    const { msg, selectedEmployeeData, hideOutsideCamera } = this.state;
     if(msg) {
       return (
         <Layer
@@ -578,10 +642,13 @@ onOkButtonClick() {
       <div style={{marginTop : '10px', marginLeft :'30px'}}>
       { this.renderEmployeeSearch() }
       { this.renderEmployeeSearchByBarcode() }
-      <div onClick={this.oneClickCapture.bind(this)}
-      style={{marginTop: '20px', marginBottom:'30px', width:'300px', height: '300px'}}>
-      { this.renderCamera() }
-      </div>
+      {
+        !hideOutsideCamera &&
+        <div onClick={this.oneClickCapture.bind(this)}
+          style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
+        { this.renderOutsideCamera() }
+        </div>
+      }
       { this.renderSaveButton() }
       { this.renderValidationMsg() }
       </div>

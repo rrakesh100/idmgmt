@@ -115,28 +115,22 @@ class AttendanceIn extends Component {
   autoSaveEmployee() {
     const { selectedEmployeeData } = this.state;
     if(selectedEmployeeData && !selectedEmployeeData.inSide) {
-    setTimeout(this.oneClickCapture(), 3000)
-  }
-  }
-
-  condition(autoSave) {
-    console.log(autoSave);
-     if(autoSave) {
-       this.autoSaveEmployee()
-     }
+      setTimeout(() => this.oneClickCapture(), 2000)
+    }
   }
 
   fetchSearchedEmployee(autoSave) {
-    console.log(autoSave);
     const { selectedEmployeeId } = this.state;
     if(selectedEmployeeId) {
     getEmployee(selectedEmployeeId).then((snap) => {
       const selectedEmployeeData = snap.val();
       this.setState({
-        selectedEmployeeData,
-        shift: '',
-        timeslot: ''
-      }, this.condition.bind(this, autoSave))
+        selectedEmployeeData
+      }, () =>{
+        if(autoSave){
+           this.autoSaveEmployee();
+        }
+      })
     }).catch((e) => console.log(e))
   }
   }
@@ -179,6 +173,7 @@ class AttendanceIn extends Component {
     }, () => {
       if(filtered.length == 1) {
         let data = {};
+        this.outsideCameraCapture();
         data.suggestion = filtered[0];
         this.onEmployeeSelect(data, true, true);
       }
@@ -306,6 +301,8 @@ class AttendanceIn extends Component {
         numberOfPersons: '',
         selectedEmployeeId : '',
         showLiveCameraFeed: true
+      },() => {
+          setTimeout( () => { this.onOkButtonClick() }, 2000);
       })
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);
@@ -317,7 +314,20 @@ class AttendanceIn extends Component {
     this.webcam = webcam;
   }
 
+  setOutsideRef(webcam) {
+    this.outsideWebcam = webcam;
+  }
+
   oneClickCapture() {
+    const { pickScreenshotFromOutsideCamera, screenshot } = this.state;
+
+    if(pickScreenshotFromOutsideCamera){
+      this.setState({
+        showLiveCameraFeed: false,
+      }, this.onSaveButtonClick.bind(this));
+      return;
+    }
+
     if (this.state.showLiveCameraFeed) {
       const screenshot = this.webcam.getScreenshot();
       this.setState({
@@ -349,11 +359,38 @@ class AttendanceIn extends Component {
     }
   }
 
+  outsideCameraCapture() {
+      const screenshot = this.outsideWebcam.getScreenshot();
+      this.setState({
+        screenshot,
+        hideOutsideCamera : true,
+        pickScreenshotFromOutsideCamera : true,
+        validationMsg: ''
+      });
+  }
 
-  renderImage() {
+  renderOutsideCamera() {
+    return (
+      <Box>
+          <Webcam
+            audio={false}
+            height={400}
+            ref={this.setOutsideRef.bind(this)}
+            screenshotFormat='image/jpeg'
+            width={400}
+            style={{marginLeft : '200', marginTop:'100'}}
+            onClick={this.outsideCameraCapture.bind(this)}
+          />
+      </Box>
+    );
+  }
+
+  renderInsideCamera() {
     const  inSide  = this.state.selectedEmployeeData.inSide || false;
-    if(!inSide) {
+    const { pickScreenshotFromOutsideCamera=false } = this.state ;
+    if(!inSide && !pickScreenshotFromOutsideCamera) {
       return (
+        <Box>
         <Webcam
           audio={false}
           height={300}
@@ -362,18 +399,14 @@ class AttendanceIn extends Component {
           width={300}
           onClick={this.capture.bind(this)}
         />
+        </Box>
       );
     }
     return (
-      <Image src={inSide ? this.state.selectedEmployeeData.inwardPhoto : this.state.screenshot} height={300}/>
-    );
-  }
-
-  renderCamera() {
-    return (
       <Box>
-        { this.renderImage() }
+      <Image src={inSide ? this.state.selectedEmployeeData.inwardPhoto : this.state.screenshot} height={300}/>
       </Box>
+
     );
   }
 
@@ -494,7 +527,13 @@ renderSearchedEmployee() {
             </Row>
 
       </Col>
-
+      {
+        hideOutsideCamera &&
+        <div onClick={this.oneClickCapture.bind(this)}
+         style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
+          { this.renderInsideCamera() }
+        </div>
+      }
       </Row>
       <Row>
       <Col>
@@ -629,6 +668,7 @@ renderSearchedEmployee() {
 
   render() {
     const { msg, hideOutsideCamera } = this.state;
+    console.log('@@@@@@@@', hideOutsideCamera);
     if(msg) {
       return (
         <Layer
@@ -668,7 +708,7 @@ renderSearchedEmployee() {
         !hideOutsideCamera &&
         <div onClick={this.oneClickCapture.bind(this)}
           style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
-        { this.renderCamera() }
+        { this.renderOutsideCamera() }
         </div>
       }
       { this.renderSaveButton() }
