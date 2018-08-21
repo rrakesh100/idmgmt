@@ -294,15 +294,15 @@ class AttendanceIn extends Component {
       shift,
       inwardPhoto,
       numberOfPersons,
-      paymentType,
-      hideOutsideCamera : false,
+      paymentType
       }).then(() => {
       this.setState({
         msg:'Attendance data saved',
         shift: '',
         numberOfPersons: '',
         selectedEmployeeId : '',
-        showLiveCameraFeed: true
+        showLiveCameraFeed: true,
+        hideOutsideCamera : false
       },() => {
           setTimeout( () => { this.onOkButtonClick() }, 500);
       })
