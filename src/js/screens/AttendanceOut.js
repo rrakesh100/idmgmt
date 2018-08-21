@@ -76,7 +76,7 @@ class AttendanceOut extends Component {
   autoSaveEmployee() {
     const { selectedEmployeeData } = this.state;
     if(selectedEmployeeData && selectedEmployeeData.inSide) {
-      setTimeout(() => this.oneClickCapture(), 2000)
+      setTimeout(() => this.oneClickCapture(), 500)
     }
   }
 
@@ -204,6 +204,7 @@ class AttendanceOut extends Component {
       <Search placeHolder='Search manpower By Barcode' style={{width:'400px', marginLeft: '20px'}}
         inline={true}
         iconAlign='end'
+        ref={(input) => { this.state.barcodeInput = input; }}
         size='small'
         value={this.state.selectedEmployeeId}
         onDOMChange={this.onBarCodeSearch.bind(this)}
@@ -411,7 +412,7 @@ class AttendanceOut extends Component {
         selectedEmployeeId : '',
         hideOutsideCamera : false
       }, () => {
-          setTimeout( () => { this.onOkButtonClick() }, 2000);
+          setTimeout( () => { this.onOkButtonClick() }, 500);
       })
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);
@@ -592,7 +593,8 @@ onOkButtonClick() {
     msg:'',
     employeeSearchString:'',
     selectedEmployeeData:{}
-  })
+  });
+  this.state.barcodeInput.focus()
 }
 
 

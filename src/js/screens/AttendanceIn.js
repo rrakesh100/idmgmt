@@ -52,7 +52,8 @@ class AttendanceIn extends Component {
       numberOfPersons: '',
       manpowerName: '',
       timeslot: '',
-      hideOutsideCamera: false
+      hideOutsideCamera: false,
+      barcodeInput : ''
     };
     this.onCompareClick.bind(this);
   }
@@ -115,7 +116,7 @@ class AttendanceIn extends Component {
   autoSaveEmployee() {
     const { selectedEmployeeData } = this.state;
     if(selectedEmployeeData && !selectedEmployeeData.inSide) {
-      setTimeout(() => this.oneClickCapture(), 2000)
+      setTimeout(() => this.oneClickCapture(), 500)
     }
   }
 
@@ -236,6 +237,7 @@ class AttendanceIn extends Component {
         inline={true}
         iconAlign='end'
         size='small'
+        ref={(input) => { this.state.barcodeInput = input; }}
         value={this.state.selectedEmployeeId}
         onDOMChange={this.onBarCodeSearch.bind(this)}
         />
@@ -292,7 +294,8 @@ class AttendanceIn extends Component {
       shift,
       inwardPhoto,
       numberOfPersons,
-      paymentType
+      paymentType,
+      hideOutsideCamera : false,
       }).then(() => {
       this.setState({
         msg:'Attendance data saved',
@@ -301,7 +304,7 @@ class AttendanceIn extends Component {
         selectedEmployeeId : '',
         showLiveCameraFeed: true
       },() => {
-          setTimeout( () => { this.onOkButtonClick() }, 2000);
+          setTimeout( () => { this.onOkButtonClick() }, 500);
       })
     }).catch((err) => {
       console.error('ATTENDANCE SAVE ERR', err);
@@ -621,7 +624,8 @@ renderSearchedEmployee() {
       msg:'',
       employeeSearchString:'',
       selectedEmployeeData:{}
-    })
+    });
+    this.state.barcodeInput.focus()
   }
 
   renderValidationMsg() {
