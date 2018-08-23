@@ -40,7 +40,8 @@ class AttendanceOut extends Component {
       msg : '',
       employeeSearchString : '',
       showLiveCameraFeed: true,
-      hideOutsideCamera : false
+      hideOutsideCamera : false,
+      scheduled : false
     };
   }
 
@@ -144,31 +145,50 @@ class AttendanceOut extends Component {
   }
 
   onBarCodeSearch(e) {
-    this.setState({selectedEmployeeData: {}})
+    this.setState({
+      selectedEmployeeId:  e.target.value,
+      selectedEmployeeData: {}
+    });
+    const {scheduled} = this.state;
     let options = this.state.employeeSuggestions;
     let filtered = [];
 
-    if(!options)
-    return ;
+    if(!options ){
+      return ;
+    }
 
-      options.forEach((opt) => {
-       if(opt.employeeId.toUpperCase() === (e.target.value.toUpperCase())) {
-          filtered.push(opt);
+    options.forEach((opt) => {
+     if(opt.employeeId.toUpperCase() === (e.target.value.toUpperCase())) {
+        filtered.push(opt);
+      }
+    })
+
+    if(filtered.length > 0) {
+      console.log('filtered = ', filtered);
+      this.setState({
+        selectedEmployeeId : e.target.value,
+        filteredSuggestions : filtered
+      },()=> {
+        const isScheduled = this.state.scheduled;
+        if(!isScheduled) {
+          this.setState({scheduled : true});
+          setTimeout(() => {
+            const fSuggestions = this.state.filteredSuggestions;
+            console.log('###### filtered = ', fSuggestions);
+
+              if(fSuggestions.length == 1) {
+                console.log('filtered = ', fSuggestions);
+                let data = {};
+                this.outsideCameraCapture();
+                data.suggestion = fSuggestions[0];
+                this.onEmployeeSelect(data, true, true);
+              }
+            }, 1000)
         }
       })
+    }
 
 
-    this.setState({
-      selectedEmployeeId : e.target.value,
-      filteredSuggestions : filtered
-    }, () => {
-      if(filtered.length == 1) {
-        this.outsideCameraCapture();
-        let data = {};
-        data.suggestion = filtered[0];
-        this.onEmployeeSelect(data, true, true);
-      }
-     })
   }
 
 
