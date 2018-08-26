@@ -27,7 +27,7 @@ import DateTime from 'grommet/components/DateTime';
 import Label from 'grommet/components/Label';
 import moment from 'moment';
 import Status from 'grommet/components/icons/Status';
-
+import Spinning from 'grommet/components/icons/Spinning';
 
 
 class AttendanceOut extends Component {
@@ -41,7 +41,8 @@ class AttendanceOut extends Component {
       employeeSearchString : '',
       showLiveCameraFeed: true,
       hideOutsideCamera : false,
-      scheduled : false
+      scheduled : false,
+      savingInProgress : false
     };
   }
 
@@ -77,6 +78,9 @@ class AttendanceOut extends Component {
   autoSaveEmployee() {
     const { selectedEmployeeData } = this.state;
     if(selectedEmployeeData && selectedEmployeeData.inSide) {
+      this.setState({
+        savingInProgress : true
+      })
       setTimeout(() => this.oneClickCapture(), 500)
     }
   }
@@ -348,7 +352,8 @@ class AttendanceOut extends Component {
         screenshot,
         hideOutsideCamera : true,
         pickScreenshotFromOutsideCamera : true,
-        validationMsg: ''
+        validationMsg: '',
+        scheduled : false
       });
   }
 
@@ -430,12 +435,16 @@ class AttendanceOut extends Component {
         shift: '',
         numberOfPersons: '',
         selectedEmployeeId : '',
-        hideOutsideCamera : false
+        hideOutsideCamera : false,
+        savingInProgress : false
       }, () => {
           setTimeout( () => { this.onOkButtonClick() }, 500);
       })
     }).catch((err) => {
-      console.error('ATTENDANCE SAVE ERR', err);
+      this.setState({
+        savingInProgress : false
+      })
+      alert('Could not save the data')
     })
     }).catch((e) => console.log(e))
   }
@@ -620,7 +629,7 @@ onOkButtonClick() {
 
 
   render() {
-    const { msg, selectedEmployeeData, hideOutsideCamera } = this.state;
+    const { msg, selectedEmployeeData, hideOutsideCamera, savingInProgress } = this.state;
     if(msg) {
       return (
         <Layer
@@ -654,6 +663,8 @@ onOkButtonClick() {
     return (
       <Article primary={true} className='employees'>
       <div style={{marginTop : '10px', marginLeft :'30px'}}>
+      { savingInProgress ?  (<Layer style={{ background : 'transparent' }}>
+        <Spinning style={{ background : 'transparent' }} size="huge" /></Layer>) : null}
       { this.renderEmployeeSearch() }
       { this.renderEmployeeSearchByBarcode() }
       {

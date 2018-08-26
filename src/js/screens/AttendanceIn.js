@@ -34,6 +34,7 @@ import Label from 'grommet/components/Label';
 import moment from 'moment';
 import Status from 'grommet/components/icons/Status';
 import { getShifts, getTimeslots } from '../api/configuration';
+import Spinning from 'grommet/components/icons/Spinning';
 
 
 class AttendanceIn extends Component {
@@ -54,7 +55,8 @@ class AttendanceIn extends Component {
       timeslot: '',
       hideOutsideCamera: false,
       barcodeInput : '',
-      scheduled : false
+      scheduled : false,
+      savingInProgress : false
     };
     this.onCompareClick.bind(this);
   }
@@ -117,6 +119,9 @@ class AttendanceIn extends Component {
   autoSaveEmployee() {
     const { selectedEmployeeData } = this.state;
     if(selectedEmployeeData && !selectedEmployeeData.inSide) {
+      this.setState({
+        savingInProgress : true
+      })
       setTimeout(() => this.oneClickCapture(), 500)
     }
   }
@@ -321,12 +326,16 @@ class AttendanceIn extends Component {
         numberOfPersons: '',
         selectedEmployeeId : '',
         showLiveCameraFeed: true,
-        hideOutsideCamera : false
+        hideOutsideCamera : false,
+        savingInProgress : false
       },() => {
           setTimeout( () => { this.onOkButtonClick() }, 500);
       })
     }).catch((err) => {
-      console.error('ATTENDANCE SAVE ERR', err);
+      this.setState({
+        savingInProgress : false
+      });
+            alert('Could not save the data')
     })
     }).catch((e) => console.log(e))
   }
@@ -704,7 +713,7 @@ renderSearchedEmployee() {
   }
 
   render() {
-    const { msg, hideOutsideCamera } = this.state;
+    const { msg, hideOutsideCamera , savingInProgress } = this.state;
     if(msg) {
       return (
         <Layer
@@ -738,6 +747,7 @@ renderSearchedEmployee() {
     return (
       <Article primary={true} className='employees'>
       <div style={{marginTop : '10px', marginLeft :'30px'}}>
+      { savingInProgress ?  (<Layer style={{ background : 'transparent' }}><Spinning style={{ background : 'transparent' }} size="huge" /></Layer>) : null}
       { this.renderEmployeeSearch() }
       { this.renderEmployeeSearchByBarcode() }
       {
