@@ -9,11 +9,11 @@ import Tab from 'grommet/components/Tab';
 import Button from 'grommet/components/Button';
 import Layer from 'grommet/components/Layer';
 import Select from 'grommet/components/Select';
-import { saveShift, saveTimeslot, saveVillage } from '../api/configuration';
+import { saveShift, saveTimeslot, saveVillage, saveVehicle, saveDriver, saveOwnPlace, saveMaterial } from '../api/configuration';
 import { Container, Row, Col } from 'react-grid-system';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
-import { getShifts, getTimeslots, getVillages } from '../api/configuration';
+import { getShifts, getTimeslots, getVillages, getVehicles, getDrivers, getOwnPlaces, getMaterials } from '../api/configuration';
 
 
 
@@ -25,16 +25,28 @@ export default class Configuration extends Component {
       shiftBtnClick: false,
       timeslotBtnClick: false,
       villageBtnClick: false,
+      vehicleBtnClick: false,
+      driverBtnClick: false,
+      ownPlaceBtnClick: false,
+      materBtnClick: false,
       timeslot: '',
       shift: '',
-      village: ''
+      village: '',
+      vehicle: '',
+      driverName: '',
+      ownPlace: '',
+      material: ''
     }
   }
 
   componentDidMount() {
-    { this.getShiftDetails() }
-    { this.getTimeslotDetails() }
-    { this.getVillageDetails() }
+     this.getShiftDetails()
+     this.getTimeslotDetails()
+     this.getVillageDetails()
+     this.getVehicleDetails()
+     this.getDriverDetails()
+     this.getOwnPlaceDetails()
+     this.getMaterialDetails()
   }
 
   getShiftDetails() {
@@ -57,6 +69,38 @@ export default class Configuration extends Component {
     getVillages().then((snap) => {
       this.setState({
         villages: snap.val()
+      })
+    })
+  }
+
+  getVehicleDetails() {
+    getVehicles().then((snap) => {
+      this.setState({
+        vehicles: snap.val()
+      })
+    })
+  }
+
+  getDriverDetails() {
+    getDrivers().then((snap) => {
+      this.setState({
+        drivers: snap.val()
+      })
+    })
+  }
+
+  getOwnPlaceDetails() {
+    getOwnPlaces().then((snap) => {
+      this.setState({
+        ownPlaces: snap.val()
+      })
+    })
+  }
+
+  getMaterialDetails() {
+    getMaterials().then((snap) => {
+      this.setState({
+        materials: snap.val()
       })
     })
   }
@@ -86,6 +130,30 @@ export default class Configuration extends Component {
     })
   }
 
+  onVehicleAddBtnClick() {
+    this.setState({
+      vehicleBtnClick: true
+    })
+  }
+
+  onDriverNameAddBtnClick() {
+    this.setState({
+      driverBtnClick: true
+    })
+  }
+
+  onOwnPlacesAddBtnClick() {
+    this.setState({
+      ownPlaceBtnClick: true
+    })
+  }
+
+  onMaterialAddBtnClick() {
+    this.setState({
+      materialBtnClick: true
+    })
+  }
+
   renderShiftTab() {
     return (
       <Button label='ADD'
@@ -110,6 +178,38 @@ export default class Configuration extends Component {
     )
   }
 
+  renderVehicles() {
+    return (
+      <Button label='ADD'
+      href='#' onClick={this.onVehicleAddBtnClick.bind(this)}
+      primary={true} style={{float: 'right', marginRight: '20px'}}/>
+    )
+  }
+
+  renderDriverNames() {
+    return (
+      <Button label='ADD'
+      href='#' onClick={this.onDriverNameAddBtnClick.bind(this)}
+      primary={true} style={{float: 'right', marginRight: '20px'}}/>
+    )
+  }
+
+  renderOwnPlaces() {
+    return (
+      <Button label='ADD'
+      href='#' onClick={this.onOwnPlacesAddBtnClick.bind(this)}
+      primary={true} style={{float: 'right', marginRight: '20px'}}/>
+    )
+  }
+
+  renderMaterial() {
+    return (
+      <Button label='ADD'
+      href='#' onClick={this.onMaterialAddBtnClick.bind(this)}
+      primary={true} style={{float: 'right', marginRight: '20px'}}/>
+    )
+  }
+
   onShiftCloseLayer() {
     this.setState({
       shiftBtnClick: false
@@ -125,6 +225,30 @@ export default class Configuration extends Component {
   onVillageCloseLayer() {
     this.setState({
       villageBtnClick: false
+    })
+  }
+
+  onVehicleCloseLayer() {
+    this.setState({
+      vehicleBtnClick: false
+    })
+  }
+
+  onDriverCloseLayer() {
+    this.setState({
+      driverBtnClick: false
+    })
+  }
+
+  onOwnPlaceCloseLayer() {
+    this.setState({
+      ownPlaceBtnClick: false
+    })
+  }
+
+  onMaterialCloseLayer() {
+    this.setState({
+      materialBtnClick: false
     })
   }
 
@@ -164,6 +288,58 @@ export default class Configuration extends Component {
         villageBtnClick: false,
         village: ''
       }, this.getVillageDetails())
+    }).catch((e) => console.log(e))
+  }
+
+  onSavingVehicle() {
+    const { vehicleNumber } = this.state;
+
+    saveVehicle(vehicleNumber).then(() => {
+      alert('Vehicle successfully saved')
+      this.setState({
+        msg: 'Vehicle successfully saved',
+        vehicleBtnClick: false,
+        vehicleNumber: ''
+      }, this.getVehicleDetails())
+    }).catch((e) => console.log(e))
+  }
+
+  onSavingDriver() {
+    const { driverName } = this.state;
+
+    saveDriver(driverName).then(() => {
+      alert('Driver successfully saved')
+      this.setState({
+        msg: 'Driver successfully saved',
+        driverBtnClick: false,
+        driverName: ''
+      }, this.getDriverDetails())
+    }).catch((e) => console.log(e))
+  }
+
+  onSavingOwnPlace() {
+    const { ownPlace } = this.state;
+
+    saveOwnPlace(ownPlace).then(() => {
+      alert('Own Place successfully saved')
+      this.setState({
+        msg: 'Own Place successfully saved',
+        ownPlaceBtnClick: false,
+        ownPlace: ''
+      }, this.getOwnPlaceDetails())
+    }).catch((e) => console.log(e))
+  }
+
+  onSavingMaterial() {
+    const { material } = this.state;
+
+    saveMaterial(material).then(() => {
+      alert('Material successfully saved')
+      this.setState({
+        msg: 'Material successfully saved',
+        materialBtnClick: false,
+        material: ''
+      }, this.getMaterialDetails())
     }).catch((e) => console.log(e))
   }
 
@@ -245,6 +421,118 @@ export default class Configuration extends Component {
       primary={true} style={{marginTop: '20px', marginLeft: '400px', marginBottom: '10px'}}
       href='#' onClick={this.onSavingVillage.bind(this)}/>
       </Row>
+        </Layer>
+      );
+    }
+  }
+
+  renderVehiclesLayer() {
+
+    if(!this.state.vehicleBtnClick)
+    return null;
+    else {
+      return (
+        <Layer closer={true}
+        flush={false}
+        onClose={this.onVehicleCloseLayer.bind(this)}>
+          <Form>
+          <p>Enter Vehicle Number</p>
+          <FormField  label='Vehicle Number'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Vehicle Number'
+              value={this.state.vehicleNumber}
+              onDOMChange={this.onFieldChange.bind(this, 'vehicleNumber')} />
+          </FormField>
+          </Form>
+        <Row>
+        <Button label='Add'
+        primary={true} style={{marginTop: '20px', marginLeft: '400px', marginBottom: '10px'}}
+        href='#' onClick={this.onSavingVehicle.bind(this)}/>
+        </Row>
+        </Layer>
+      );
+    }
+  }
+
+  renderDriversLayer() {
+
+    if(!this.state.driverBtnClick)
+    return null;
+    else {
+      return (
+        <Layer closer={true}
+        flush={false}
+        onClose={this.onDriverCloseLayer.bind(this)}>
+          <Form>
+          <p>Enter Driver Name</p>
+          <FormField  label='Driver Name'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Driver Name'
+              value={this.state.driverName}
+              onDOMChange={this.onFieldChange.bind(this, 'driverName')} />
+          </FormField>
+          </Form>
+        <Row>
+        <Button label='Add'
+        primary={true} style={{marginTop: '20px', marginLeft: '400px', marginBottom: '10px'}}
+        href='#' onClick={this.onSavingDriver.bind(this)}/>
+        </Row>
+        </Layer>
+      );
+    }
+  }
+
+  renderOwnPlacesLayer() {
+
+    if(!this.state.ownPlaceBtnClick)
+    return null;
+    else {
+      return (
+        <Layer closer={true}
+        flush={false}
+        onClose={this.onOwnPlaceCloseLayer.bind(this)}>
+          <Form>
+          <p>Enter Own Place</p>
+          <FormField  label='Own Place'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Own Place'
+              value={this.state.ownPlace}
+              onDOMChange={this.onFieldChange.bind(this, 'ownPlace')} />
+          </FormField>
+          </Form>
+        <Row>
+        <Button label='Add'
+        primary={true} style={{marginTop: '20px', marginLeft: '400px', marginBottom: '10px'}}
+        href='#' onClick={this.onSavingOwnPlace.bind(this)}/>
+        </Row>
+        </Layer>
+      );
+    }
+  }
+
+  renderMaterialsLayer() {
+
+    if(!this.state.materialBtnClick)
+    return null;
+    else {
+      return (
+        <Layer closer={true}
+        flush={false}
+        onClose={this.onMaterialCloseLayer.bind(this)}>
+          <Form>
+          <p>Enter Material</p>
+          <FormField  label='Material'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Material'
+              value={this.state.material}
+              onDOMChange={this.onFieldChange.bind(this, 'material')} />
+          </FormField>
+          </Form>
+        <Row>
+        <Button label='Add'
+        primary={true} style={{marginTop: '20px', marginLeft: '400px', marginBottom: '10px'}}
+        href='#' onClick={this.onSavingMaterial.bind(this)}/>
+        </Row>
         </Layer>
       );
     }
@@ -333,6 +621,120 @@ export default class Configuration extends Component {
     )
   }
   }
+
+  renderAllVehicles() {
+    const { vehicles } = this.state;
+    if(vehicles) {
+    return (
+      <Table style={{marginLeft: '40px', width: '80%'}}>
+      <thead style={{position:'relative'}}>
+       <tr>
+         <th>S No.</th>
+         <th>Vehicle Number</th>
+       </tr>
+      </thead>
+      <tbody>
+       {
+         Object.keys(vehicles).map((key, index) => {
+           return (
+             <TableRow key={index}>
+              <td>{index+1}</td>
+              <td>{key}</td>
+              </TableRow>
+           )
+         })
+       }
+       </tbody>
+       </Table>
+    )
+  }
+  }
+
+  renderAllDrivers() {
+    const { drivers } = this.state;
+    if(drivers) {
+    return (
+      <Table style={{marginLeft: '40px', width: '80%'}}>
+      <thead style={{position:'relative'}}>
+       <tr>
+         <th>S No.</th>
+         <th>Driver Name</th>
+       </tr>
+      </thead>
+      <tbody>
+       {
+         Object.keys(drivers).map((key, index) => {
+           return (
+             <TableRow key={index}>
+              <td>{index+1}</td>
+              <td>{key}</td>
+              </TableRow>
+           )
+         })
+       }
+       </tbody>
+       </Table>
+    )
+  }
+  }
+
+  renderAllOwnPlaces() {
+    const { ownPlaces } = this.state;
+    if(ownPlaces) {
+    return (
+      <Table style={{marginLeft: '40px', width: '80%'}}>
+      <thead style={{position:'relative'}}>
+       <tr>
+         <th>S No.</th>
+         <th>Own Place</th>
+       </tr>
+      </thead>
+      <tbody>
+       {
+         Object.keys(ownPlaces).map((key, index) => {
+           return (
+             <TableRow key={index}>
+              <td>{index+1}</td>
+              <td>{key}</td>
+              </TableRow>
+           )
+         })
+       }
+       </tbody>
+       </Table>
+    )
+  }
+  }
+
+  renderAllMaterials() {
+    const { materials } = this.state;
+    if(materials) {
+    return (
+      <Table style={{marginLeft: '40px', width: '80%'}}>
+      <thead style={{position:'relative'}}>
+       <tr>
+         <th>S No.</th>
+         <th>Material</th>
+       </tr>
+      </thead>
+      <tbody>
+       {
+         Object.keys(materials).map((key, index) => {
+           return (
+             <TableRow key={index}>
+              <td>{index+1}</td>
+              <td>{key}</td>
+              </TableRow>
+           )
+         })
+       }
+       </tbody>
+       </Table>
+    )
+  }
+  }
+
+
   render() {
     const { shifts, timeslots, villages } = this.state;
 
@@ -365,6 +767,26 @@ export default class Configuration extends Component {
       { this.renderVillage() }
       { this.renderVillageLayer() }
       { this.renderAllVillages() }
+      </Tab>
+      <Tab title='Vehicles'>
+      { this.renderVehicles() }
+      { this.renderVehiclesLayer() }
+      { this.renderAllVehicles() }
+      </Tab>
+      <Tab title='Driver Names'>
+      { this.renderDriverNames() }
+      { this.renderDriversLayer() }
+      { this.renderAllDrivers() }
+      </Tab>
+      <Tab title='Own Places'>
+      { this.renderOwnPlaces() }
+      { this.renderOwnPlacesLayer() }
+      { this.renderAllOwnPlaces() }
+      </Tab>
+      <Tab title='Material'>
+      { this.renderMaterial() }
+      { this.renderMaterialsLayer() }
+      { this.renderAllMaterials() }
       </Tab>
       </Tabs>
       </div>
