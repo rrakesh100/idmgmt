@@ -28,6 +28,15 @@ export function saveEmployee(data) {
   return dbRef.update(updates);
   }
 
+
+
+  export function getTodaysEmployees() {
+    const date = new Date();
+    const dateStr = moment(date).format('DD-MM-YYYY');
+    const dbRef = firebase.database().ref(`attendance/dates/${dateStr}/`);
+    return dbRef.once('value');
+  }
+
   export function saveEditedEmployee(data) {
     console.log(data);
     const dbRef = firebase.database().ref();

@@ -12,6 +12,7 @@ import { navResponsive } from '../actions/nav';
 
 import Login from '../screens/Login';
 import Dashboard from '../screens/Dashboard';
+import NewDashboard from '../screens/NewDashboard';
 import Visitors from '../screens/Tasks';
 import Visitor from '../screens/Visitor';
 import Reports from '../screens/Reports';
@@ -74,7 +75,7 @@ class Main extends Component {
                 {nav}
                 <Switch>
                   <Route exact={true} path='/' component={Login} />
-                  <Route path='/dashboard' component={Dashboard} />
+                  <Route path='/dashboard' component={NewDashboard} />
                   <Route path='/login' component={Login} />
                   <Route path='/visitor/:id' component={Visitor} />
                   <Route path='/visitors' component={Visitors} />
