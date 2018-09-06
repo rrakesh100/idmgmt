@@ -196,18 +196,6 @@ class AttendanceOut extends Component {
   }
 
 
-  onSelectEmployee(data, isSuggestionSelected) {
-    if(isSuggestionSelected) {
-      this.setState({
-        selectedEmployeeId: data.suggestion
-      }, this.fetchSearchedEmployee.bind(this));
-    } else {
-       this.setState({
-         selectedEmployeeId: data.target.value
-       })
-    }
-  }
-
   renderEmployeeSearch() {
     return (
       <Search placeHolder='Search manpower By Name or Barcode' style={{width:'400px'}}
@@ -400,12 +388,19 @@ class AttendanceOut extends Component {
   }
 
   onSaveButtonClick() {
-    const { screenshot } = this.state;
+    const { screenshot , selectedEmployeeId } = this.state;
     if(!screenshot) {
       this.setState({
         validationMsg: 'SCREENSHOT is missing'
       })
-      return
+      return;
+    }
+
+    if(!selectedEmployeeId) {
+      this.setState({
+        validationMsg: 'Cannot SAVE. Please RETRY'
+      })
+      return;
     }
 
     this.setState({
@@ -418,10 +413,15 @@ class AttendanceOut extends Component {
     const { selectedEmployeeId, selectedEmployeeData, screenshot } = this.state;
 
     if(!screenshot) {
-      alert("please click on the camera to take picture")
+      alert("please click on the camera to take picture");
+      return;
     }
 
     let shift = selectedEmployeeData.shift;
+    if(!selectedEmployeeId || selectedEmployeeId === '') {
+      alert("Could not SAVE. Please try again..");
+      return;
+    }
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
          let outwardPhoto = snapshot.downloadURL;

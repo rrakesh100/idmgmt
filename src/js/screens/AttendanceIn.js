@@ -309,6 +309,11 @@ class AttendanceIn extends Component {
     let selectedEmployeeName = selectedEmployeeData.name;
     let paymentType = selectedEmployeeData.paymentType;
 
+    if(!selectedEmployeeId || selectedEmployeeId === '') {
+      alert("Could not SAVE. Please try again..");
+      return;
+    }
+
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
          let inwardPhoto = snapshot.downloadURL;
@@ -671,7 +676,7 @@ renderSearchedEmployee() {
     const shift = window.localStorage.shift || this.state.shift;
     const timeslot = window.localStorage.timeslot || this.state.timeslot;
 
-    const { screenshot } = this.state;
+    const { screenshot, selectedEmployeeId } = this.state;
 
     if(!shift) {
       this.setState({
@@ -680,10 +685,18 @@ renderSearchedEmployee() {
       return
     }
 
+    if(!selectedEmployeeId) {
+      this.setState({
+        validationMsg: 'Cannot SAVE. Please RETRY'
+      })
+      return;
+    }
+
     if(!timeslot) {
       this.setState({
         validationMsg: 'TIMESLOT is missing'
       })
+      return;
     }
 
     if(!screenshot) {

@@ -10,6 +10,11 @@ export function saveAttendanceInData(data) {
   const dbRef = firebase.database().ref();
   const updates = {};
 
+  if(!data.selectedEmployeeId) {
+    alert('Something really went wrong...Please try again..');
+    return;
+  }
+
   updates[`employees/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
   updates[`employees/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
   updates[`employees/${data.selectedEmployeeId}/shift`] = data.shift;
@@ -45,6 +50,10 @@ export function saveAttendanceOutData(data) {
 
   const dbRef = firebase.database().ref();
   const updates = {};
+  if(!data.selectedEmployeeId) {
+    alert('Something really went wrong...Please try again..');
+    return;
+  }
 
   updates[`employees/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
   updates[`employees/${data.selectedEmployeeId}/outDate`] = dateStr;
