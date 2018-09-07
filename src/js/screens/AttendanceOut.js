@@ -63,8 +63,8 @@ class AttendanceOut extends Component {
         empId.push(employee)
       })
       this.setState({
-        employeeSuggestions: suggests,
-        filteredSuggestions: suggests,
+        employeeSuggestions: this.sort(suggests),
+        filteredSuggestions: this.sort(suggests),
         empId
       });
     })
@@ -385,6 +385,21 @@ class AttendanceOut extends Component {
       );
     }
     return null;
+  }
+
+  sort(arr){
+      arr.sort(function(a , b){
+          let A = a.label || "";
+          let B = b.label || "";
+          if(A < B)
+              return -1;
+          else if (A > B)
+              return 1;
+          else {
+              return 0;
+          }
+      })
+      return arr;
   }
 
   onSaveButtonClick() {
