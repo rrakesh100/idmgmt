@@ -22,10 +22,11 @@ import Next from 'grommet/components/icons/base/CaretNext';
 import Down from 'grommet/components/icons/base/CaretDown';
 import { getVehicleNumbers, getMaterials } from '../api/configuration';
 import Save from 'grommet/components/icons/base/Upload';
-import { savingOutwardVehicle, getAllVehicles, getInwardVehicle } from '../api/vehicles';
+import { savingOutwardVehicle, getAllVehicles, getInwardVehicle, uploadVehicleImage } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Image from 'grommet/components/Image';
+import Notification from 'grommet/components/Notification';
 
 
 
@@ -36,6 +37,7 @@ export default class VehicleOut extends Component {
       outwardSNo: '',
       ownOutVehicle: '',
       vehicleNumber: '',
+      selectVehicleNumber: '',
       driverName:'',
       driverNumber: '',
       emptyLoad: '',
@@ -94,16 +96,20 @@ export default class VehicleOut extends Component {
   }
 
   getInwardVehicleDetails() {
-    const { vehicleNumber } = this.state;
-      getInwardVehicle(vehicleNumber).then((snap) => {
+    const { vehicleNumber, selectVehicleNumber } = this.state;
+        let vNo=vehicleNumber;
+        if(selectVehicleNumber)
+         vNo = selectVehicleNumber;
+      getInwardVehicle(vNo).then((snap) => {
         const inwardObj = snap.val();
         console.log(inwardObj);
+        this.setState({inwardObj})
       }).catch((e) => console.log(e));
   }
 
   onFieldChange(fieldName, e) {
 
-    if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material') {
+    if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material' || fieldName == 'selectVehicleNumber') {
       this.setState({
         [fieldName]: e.option
       })
@@ -113,15 +119,11 @@ export default class VehicleOut extends Component {
       })
     }
 
-    if(fieldName == 'vehicleNumber') {
-
-    }
-
     if(fieldName == 'ownOutVehicle' && e.option == 'Own Vehicle') {
       this.setState({
         ourVehicle: true
       })
-    } else {
+    } else if(fieldName == 'ownOutVehicle' && e.option == 'Outside Vehicle') {
       this.setState({
         ourVehicle: false
       })
@@ -139,10 +141,20 @@ export default class VehicleOut extends Component {
 
   }
 
+  renderValidationMsg() {
+    const { validationMsg } = this.state;
+    if (validationMsg) {
+      return (
+        <Notification message={validationMsg} size='small' status='critical' />
+      );
+    }
+    return null;
+  }
+
   onShowingInwardDetails() {
     this.setState({
       showDetails: true
-    })
+    }, this.getInwardVehicleDetails())
   }
 
   onHidingInwardDetails() {
@@ -153,7 +165,7 @@ export default class VehicleOut extends Component {
 
   showInwardDetails() {
     const { ourVehicle, emptyVehicle, showDetails, outwardSNo, inwardObj } = this.state;
-
+    console.log(inwardObj)
     return (
       <div>
       <Button icon={<Down/>}
@@ -168,19 +180,19 @@ export default class VehicleOut extends Component {
 
                 <Form className='newVisitorFields'>
                   <FormField  label='Inward Sno'  strong={true} style={{marginTop : '15px'}}  >
-                  <Label style={{marginLeft:'20px'}}><strong>{outwardSNo}</strong></Label>
+                  <Label style={{marginLeft:'20px'}}><strong></strong></Label>
 
                   </FormField>
-                  <FormField label='Own/Out Vehicle *'  strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Own/Out Vehicle'  strong={true} style={{marginTop : '15px'}}>
                       <Label style={{marginLeft:'20px'}}><strong></strong></Label>
                   </FormField>
-                  <FormField label='Driver Name *' strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Driver Name' strong={true} style={{marginTop : '15px'}}>
                       <Label style={{marginLeft:'20px'}}><strong></strong></Label>
                   </FormField>
-                  <FormField label='Driver Cell No *' strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Driver Cell No' strong={true} style={{marginTop : '15px'}}>
                       <Label style={{marginLeft:'20px'}}><strong></strong></Label>
                   </FormField>
-                  <FormField label='Empty/Load *' strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Empty/Load' strong={true} style={{marginTop : '15px'}}>
                       <Label style={{marginLeft:'20px'}}><strong></strong></Label>
                   </FormField>
                 </Form>
@@ -242,6 +254,67 @@ export default class VehicleOut extends Component {
     }
   }
 
+  onSavingOutwardVehicle() {
+    const {
+      lastCount,
+      outwardSNo,
+      ownOutVehicle,
+      vehicleNumber,
+      selectVehicleNumber,
+      driverName,
+      driverNumber,
+      emptyLoad,
+      partyName,
+      material,
+      numberOfBags,
+      comingFrom,
+      billNumber,
+      remarks,
+      screenshot } = this.state;
+      let vNo=vehicleNumber;
+      if(selectVehicleNumber)
+       vNo = selectVehicleNumber;
+      let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+      uploadVehicleImage(imgFile, vNo, outwardSNo).then((snapshot) => {
+           let inwardPhoto = snapshot.downloadURL;
+      savingOutwardVehicle({
+        lastCount,
+        outwardSNo,
+        ownOutVehicle,
+        vehicleNumber,
+        selectVehicleNumber,
+        driverName,
+        driverNumber,
+        emptyLoad,
+        partyName,
+        material,
+        numberOfBags,
+        comingFrom,
+        billNumber,
+        remarks,
+        inwardPhoto
+      }).then(this.setState({
+        outwardSNo: '',
+        ownOutVehicle: '',
+        vehicleNumber: '',
+        driverName:'',
+        driverNumber: '',
+        emptyLoad: '',
+        partyName: '',
+        material: '',
+        numberOfBags: '',
+        comingFrom: '',
+        billNumber: '',
+        remarks: '',
+        screenshot:'',
+        showLiveCameraFeed: true
+      }, this.getVehicleDetails())).catch((err) => {
+        console.error('Vehicle Outward Save Error', err);
+      })
+    })
+
+  }
+
   onSaveClick() {
     const {
       lastCount,
@@ -256,38 +329,60 @@ export default class VehicleOut extends Component {
       numberOfBags,
       comingFrom,
       billNumber,
-      remarks } = this.state;
+      remarks,
+      screenshot } = this.state;
 
-      savingOutwardVehicle({
-        lastCount,
-        outwardSNo,
-        ownOutVehicle,
-        vehicleNumber,
-        driverName,
-        driverNumber,
-        emptyLoad,
-        partyName,
-        material,
-        numberOfBags,
-        comingFrom,
-        billNumber,
-        remarks
-      }).then(this.setState({
-        outwardSNo: '',
-        ownOutVehicle: '',
-        vehicleNumber: '',
-        driverName:'',
-        driverNumber: '',
-        emptyLoad: '',
-        partyName: '',
-        material: '',
-        numberOfBags: '',
-        comingFrom: '',
-        billNumber: '',
-        remarks: ''
-      }, this.getVehicleDetails())).catch((err) => {
-        console.error('Vehicle Outward Save Error', err);
-      })
+      if(emptyLoad === 'Load') {
+        if(!partyName) {
+          this.setState({
+            validationMsg: 'Party Name is missing'
+          })
+          return
+        }
+        if(!material) {
+          this.setState({
+            validationMsg: 'Material is missing'
+          })
+          return
+        }
+        if(!numberOfBags) {
+          this.setState({
+            validationMsg: 'Number Of Bags is missing'
+          })
+          return
+        }
+        if(!comingFrom) {
+          this.setState({
+            validationMsg: 'Coming From is missing'
+          })
+          return
+        }
+
+        if(!billNumber) {
+          this.setState({
+            validationMsg: 'Bill Number is missing'
+          })
+          return
+        }
+        if(!remarks) {
+          this.setState({
+            validationMsg: 'Remarks is missing'
+          })
+          return
+        }
+      }
+
+      if(!screenshot) {
+        this.setState({
+          validationMsg: 'Screenshot is missing'
+        })
+        return
+      }
+
+      this.setState({
+        validationMsg:''
+      }, this.onSavingOutwardVehicle.bind(this))
+
 
   }
 
@@ -329,6 +424,7 @@ export default class VehicleOut extends Component {
     const { ourVehicle, emptyVehicle, showDetails, vehicleOpt, materialOpt, outwardSNo } = this.state;
     return (
       <div>
+      { this.renderValidationMsg() }
         <h4 style={{marginLeft: 40, textDecoration: 'underline', fontWeight: 'bold'}}>Present Outward Details</h4>
         <Section justify='center'>
           <Split>
@@ -347,11 +443,20 @@ export default class VehicleOut extends Component {
                       />
                   </FormField>
                   <FormField label='Vehicle No *' strong={true} style={{marginTop : '15px'}}>
+                      {
+                      !ourVehicle ?
                       <TextInput
                           placeHolder='Vehicle No'
                           value={this.state.vehicleNumber}
                           onDOMChange={this.onFieldChange.bind(this, 'vehicleNumber')}
+                      /> :
+                      <Select
+                      placeHolder='Vehicle No'
+                      options={vehicleOpt}
+                      value={this.state.selectVehicleNumber}
+                      onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
                       />
+                    }
                   </FormField>
                   <FormField label='Driver Name *' strong={true} style={{marginTop : '15px'}}>
                       <TextInput

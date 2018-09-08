@@ -24,15 +24,6 @@ export function savingInwardVehicle(data) {
   return dbRef.update(updates);
 }
 
-export function uploadVehicleImage(img, vehicleNumber, serialNo) {
-  console.log(vehicleNumber)
-  const storageRef = firebase.storage().ref();
-  let epochTime = new Date().getTime();
-  const path = 'Vehicles/'+vehicleNumber+'/'+serialNo+ '/'+ epochTime+'.jpeg';
-  const imgRef = storageRef.child(path);
-  return  imgRef.putString(img, 'base64')
-}
-
 export function savingOutwardVehicle(data) {
   console.log(data)
   const dbRef = firebase.database().ref();
@@ -41,6 +32,15 @@ export function savingOutwardVehicle(data) {
   updates[`vehicles/U2/count/outCount`] = data.lastCount+1;
   updates[`vehicles/${data.vehicleNumber}/lastOutward/${data.outwardSNo}`] = data;
   return dbRef.update(updates);
+}
+
+export function uploadVehicleImage(img, vehicleNumber, serialNo) {
+  console.log(vehicleNumber)
+  const storageRef = firebase.storage().ref();
+  let epochTime = new Date().getTime();
+  const path = 'Vehicles/'+vehicleNumber+'/'+serialNo+ '/'+ epochTime+'.jpeg';
+  const imgRef = storageRef.child(path);
+  return  imgRef.putString(img, 'base64')
 }
 
 export function getInwardVehicle(vehicleNumber) {

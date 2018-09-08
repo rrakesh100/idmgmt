@@ -37,7 +37,7 @@ export default class VehicleIn extends Component {
       inwardSNo: '',
       ownOutVehicle: '',
       vehicleNumber: '',
-
+      selectVehicleNumber: '',
       driverName:'',
       driverNumber: '',
       emptyLoad: '',
