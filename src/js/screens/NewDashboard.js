@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import Heading from 'grommet/components/Heading';
 import { getVisitors } from '../api/visitors';
 import { getTodaysEmployees } from '../api/employees';
+import Table from 'grommet/components/Table';
+import TableRow from 'grommet/components/TableRow';
 
 
 
@@ -111,21 +113,157 @@ export default class NewDashboard extends Component {
     }
 
       return (<div>
-        <Heading>Total Visitor count = {totalVisitorCount}</Heading>
-        <Heading>Visitor Departed count = {departedCount}</Heading>
-        <Heading>Visitor Entered count = {enteredCount}</Heading>
-        <Heading>Daily labour count = {dailyLabourCount}</Heading>
-        <Heading>Daily labour day shift male count = {dailyDayMaleCount}</Heading>
-        <Heading>Daily labour day shift female count = {dailyDayFemaleCount}</Heading>
-        <Heading>Daily labour night shift male count = {dailyNightMaleCount}</Heading>
-        <Heading>Daily labour night shift female count = {dailyNightFemaleCount}</Heading>
 
-        <Heading>Weekly labour count = {weeklyLabourCount}</Heading>
-        <Heading>Weekly labour day shift male count = {weeklyDayMaleCount}</Heading>
-        <Heading>Weekly labour day shift female count = {weeklyDayFemaleCount}</Heading>
-        <Heading>Weekly labour night shift male count = {weeklyNightMaleCount}</Heading>
-        <Heading>Weekly labour night shift female count = {weeklyNightFemaleCount}</Heading>
+    <Table>
+  <thead>
+    <tr>
+      <th>
+      <Heading>VISITORS</Heading>
+      </th>
+      <th>
+        Count
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <TableRow>
+      <td>
+        Total  count
+      </td>
+      <td>
+        {totalVisitorCount}
+      </td>
+    </TableRow>
+    <TableRow>
+      <td>
+         Inside count
+      </td>
+      <td>
+        {enteredCount}
+      </td>
+    </TableRow>
+    <TableRow>
+      <td>
+         Departed count
+      </td>
+      <td>
+        {departedCount}
+      </td>
+    </TableRow>
+  </tbody>
+</Table>
 
+
+<Table>
+<thead>
+<tr>
+  <th>
+  <Heading>DAILY LABOUR</Heading>
+  </th>
+  <th>
+    Count
+  </th>
+</tr>
+</thead>
+<tbody>
+<TableRow>
+  <td>
+    Total Count
+  </td>
+  <td>
+    {dailyLabourCount}
+  </td>
+</TableRow>
+<TableRow>
+  <td>
+    Day shift MALE count
+  </td>
+  <td>
+    {dailyDayMaleCount}
+  </td>
+</TableRow>
+<TableRow>
+  <td>
+    Day shift FEMALE count
+  </td>
+  <td>
+    {dailyDayFemaleCount}
+  </td>
+</TableRow>
+<TableRow>
+  <td>
+    Night shift MALE count
+  </td>
+  <td>
+    {dailyNightMaleCount}
+  </td>
+</TableRow>
+<TableRow>
+  <td>
+    Night shift FEMALE count
+  </td>
+  <td>
+    {dailyNightFemaleCount}
+  </td>
+</TableRow>
+</tbody>
+</Table>
+
+<Table>
+<thead>
+<tr>
+  <th>
+    <Heading>WEEKLY LABOUR</Heading>
+  </th>
+  <th>
+    Count
+  </th>
+</tr>
+</thead>
+
+  <tbody>
+  <TableRow>
+    <td>
+      Total Count
+    </td>
+    <td>
+      {weeklyLabourCount}
+    </td>
+  </TableRow>
+  <TableRow>
+    <td>
+      DAY shift MALE count
+    </td>
+    <td>
+      {weeklyDayMaleCount}
+    </td>
+  </TableRow>
+  <TableRow>
+    <td>
+    DAY shift FEMALE count
+    </td>
+    <td>
+      {weeklyDayFemaleCount}
+    </td>
+  </TableRow>
+    <TableRow>
+      <td>
+      NIGHT shift MALE count
+      </td>
+      <td>
+        {weeklyNightMaleCount}
+      </td>
+    </TableRow>
+    <TableRow>
+      <td>
+      NIGHT shift FEMALE count
+      </td>
+      <td>
+        {weeklyNightFemaleCount}
+      </td>
+    </TableRow>
+  </tbody>
+  </Table>
 
         </div> )
   }
