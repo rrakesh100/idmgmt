@@ -24,7 +24,7 @@ export function savingInwardVehicle(data) {
   }
   updates[localStorage.unit + '/' +`vehicles/${prefix}/in/${data.inwardSNo}`] = data;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/inCount`] = data.lastCount+1;
-  updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastInward/${data.inwardSNo}`] = data;
+  updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastInward`] = data;
   return dbRef.update(updates);
 }
 
@@ -36,7 +36,7 @@ export function savingOutwardVehicle(data) {
   }
   updates[localStorage.unit + '/' +`vehicles/${prefix}/out/${data.outwardSNo}`] = data;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/outCount`] = data.lastCount+1;
-  updates[localStorage.unit + '/' +`vehicles/${prefix}/${data.vehicleNumber}/lastOutward/${data.outwardSNo}`] = data;
+  updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastOutward`] = data;
   return dbRef.update(updates);
 }
 
@@ -49,16 +49,12 @@ export function uploadVehicleImage(img, vehicleNumber, serialNo) {
 }
 
 export function getInwardVehicle(vehicleNumber) {
-<<<<<<< HEAD
-  const dbRef = firebase.database().ref(`vehicles/${vehicleNumber}/lastInward`);
-=======
   const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicles/${vehicleNumber}/lastInward`);
->>>>>>> 50a97b4... Support for New Unit = U3
   return dbRef.once('value');
 }
 
 export function getOutwardVehicle(vehicleNumber) {
-  const dbRef = firebase.database().ref(`vehicles/${vehicleNumber}/lastOutward`);
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicles/${vehicleNumber}/lastOutward`);
   return dbRef.once('value');
 }
 

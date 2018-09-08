@@ -204,10 +204,13 @@ export default class VehicleIn extends Component {
 
     showOutwardDetails() {
       const { ourVehicle, emptyVehicle, showDetails, outwardObj } = this.state;
-      let outwardObjKey = Object.keys(outwardObj)[0];
-      let outwardObjVal = outwardObj[outwardObjKey];
-      console.log(outwardObjVal);
+      if(!outwardObj)
+        return;
+
       if(showDetails) {
+        let outwardObjKey = outwardObj['outwardSNo'];
+        let outwardObjVal = outwardObj;
+        console.log(outwardObjVal);
         return (
           <div>
           <Button icon={<Down/>}

@@ -90,7 +90,7 @@ export default class VehicleOut extends Component {
       if(window.localStorage.unit === 'UNIT3') {
         prefix = 'U3';
       }
-      const lastCount = vehicleData ? vehicleData[prefix]['count']['inCount'] :  0;
+      const lastCount = vehicleData ? vehicleData[prefix]['count']['outCount'] :  0;
       let outwardSNo = `${prefix}-out-${lastCount}`;
 
       this.setState({
@@ -170,8 +170,8 @@ export default class VehicleOut extends Component {
 
   showInwardDetails() {
     const { ourVehicle, emptyVehicle, showDetails, outwardSNo, inwardObj } = this.state;
-    let inwardObjKey = Object.keys(inwardObj)[0];
-    let inwardObjVal = inwardObj[inwardObjKey];
+    let inwardObjKey = inwardObj['inwardSNo'];
+    let inwardObjVal = inwardObj;
     return (
       <div>
       <Button icon={<Down/>}
@@ -280,9 +280,11 @@ export default class VehicleOut extends Component {
       billNumber,
       remarks,
       screenshot } = this.state;
+
       let vNo=vehicleNumber;
       if(selectVehicleNumber)
        vNo = selectVehicleNumber;
+       console.log('########', vNo);
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
       uploadVehicleImage(imgFile, vNo, outwardSNo).then((snapshot) => {
            let outwardPhoto = snapshot.downloadURL;
@@ -388,10 +390,7 @@ export default class VehicleOut extends Component {
         return
       }
 
-      this.setState({
-        validationMsg:''
-      }, this.onSavingOutwardVehicle.bind(this))
-
+    this.onSavingOutwardVehicle();
 
   }
 
