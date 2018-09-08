@@ -43,6 +43,11 @@ class Login extends Component {
               localStorage.email = payload.email;
               localStorage.name = payload.displayName;
               localStorage.token = payload.uid;
+              if(payload.email === 'unit3@gmail.com') {
+                localStorage.unit="UNIT3"
+              }else {
+                localStorage.unit=""
+              }
             } catch (e) {
               alert(
                 'Unable to preserve session, probably due to being in private ' +

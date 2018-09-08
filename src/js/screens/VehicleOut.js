@@ -86,8 +86,13 @@ export default class VehicleOut extends Component {
   getVehicleDetails() {
     getAllVehicles().then((snap) => {
       const vehicleData = snap.val();
-      const lastCount = vehicleData.U2.count.outCount;
-      let outwardSNo = `U2-out-${lastCount}`;
+      let prefix = 'U2';
+      if(window.localStorage.unit === 'UNIT3') {
+        prefix = 'U3';
+      }
+      const lastCount = vehicleData ? vehicleData[prefix]['count']['inCount'] :  0;
+      let outwardSNo = `${prefix}-out-${lastCount}`;
+
       this.setState({
         vehicleData,
         outwardSNo,
@@ -285,7 +290,7 @@ export default class VehicleOut extends Component {
         lastCount,
         outwardSNo,
         ownOutVehicle,
-        vehicleNumber,
+        vehicleNumber : vNo,
         selectVehicleNumber,
         driverName,
         driverNumber,

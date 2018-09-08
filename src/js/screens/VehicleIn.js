@@ -85,8 +85,12 @@ export default class VehicleIn extends Component {
   getVehicleDetails() {
     getAllVehicles().then((snap) => {
       const data = snap.val();
-      const lastCount = data.U2.count.inCount;
-      let inwardSNo = `U2-in-${lastCount}`;
+      let prefix = 'U2';
+      if(window.localStorage.unit === 'UNIT3') {
+        prefix = 'U3';
+      }
+      const lastCount = data ? data[prefix]['count']['inCount'] :  0;
+      let inwardSNo = `${prefix}-in-${lastCount}`;
       this.setState({ inwardSNo, lastCount })
     }).catch((e) => console.log(e))
   }
@@ -320,7 +324,7 @@ export default class VehicleIn extends Component {
         lastCount,
         inwardSNo,
         ownOutVehicle,
-        vehicleNumber,
+        vehicleNumber : vNo,
         driverName,
         driverNumber,
         emptyLoad,

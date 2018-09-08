@@ -52,7 +52,7 @@ class Reports extends Component {
     console.log(datesArr)
 
     let returnObj = {};
-    const dbRef = firebase.database().ref('daywiseVisitors/');
+    const dbRef = firebase.database().ref(window.localStorage.unit + '/' + 'daywiseVisitors/');
     Promise.all(
       datesArr.map((date) => {
         return dbRef.child(date).once('value').then((snapshot) => {
