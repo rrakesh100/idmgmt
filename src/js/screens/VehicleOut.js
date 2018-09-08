@@ -47,6 +47,7 @@ export default class VehicleOut extends Component {
       comingFrom: '',
       billNumber: '',
       remarks: '',
+      inwardObj: {},
       ourVehicle: false,
       emptyVehicle: false,
       showDetails: false,
@@ -102,7 +103,6 @@ export default class VehicleOut extends Component {
          vNo = selectVehicleNumber;
       getInwardVehicle(vNo).then((snap) => {
         const inwardObj = snap.val();
-        console.log(inwardObj);
         this.setState({inwardObj})
       }).catch((e) => console.log(e));
   }
@@ -165,7 +165,8 @@ export default class VehicleOut extends Component {
 
   showInwardDetails() {
     const { ourVehicle, emptyVehicle, showDetails, outwardSNo, inwardObj } = this.state;
-    console.log(inwardObj)
+    let inwardObjKey = Object.keys(inwardObj)[0];
+    let inwardObjVal = inwardObj[inwardObjKey];
     return (
       <div>
       <Button icon={<Down/>}
@@ -180,48 +181,51 @@ export default class VehicleOut extends Component {
 
                 <Form className='newVisitorFields'>
                   <FormField  label='Inward Sno'  strong={true} style={{marginTop : '15px'}}  >
-                  <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                  <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.inwardSNo}</strong></Label>
 
                   </FormField>
                   <FormField label='Own/Out Vehicle'  strong={true} style={{marginTop : '15px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.ownOutVehicle}</strong></Label>
+                  </FormField>
+                  <FormField label='Vehicle Number'  strong={true} style={{marginTop : '15px'}}>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.vehicleNumber}</strong></Label>
                   </FormField>
                   <FormField label='Driver Name' strong={true} style={{marginTop : '15px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.driverName}</strong></Label>
                   </FormField>
                   <FormField label='Driver Cell No' strong={true} style={{marginTop : '15px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.driverNumber}</strong></Label>
                   </FormField>
                   <FormField label='Empty/Load' strong={true} style={{marginTop : '15px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.emptyLoad}</strong></Label>
                   </FormField>
                 </Form>
             </Box>
             <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
                 <Form className='newVisitorFields'>
                   <FormField label='Party Name' strong={true}  ref='loadVeicleForm' style={{marginTop : '18px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.partyName}</strong></Label>
                   </FormField>
 
                   <FormField label='Material' strong={true} style={{marginTop : '15px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.material}</strong></Label>
                   </FormField>
                   <FormField label='No of Bags' strong={true} style={{marginTop : '15px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.numberOfBags}</strong></Label>
                   </FormField>
                   <FormField label='Coming From' strong={true} style={{marginTop : '15px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.comingFrom}</strong></Label>
                   </FormField>
                   <FormField label='Bill No' strong={true} style={{marginTop : '15px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.billNumber}</strong></Label>
                   </FormField>
                   <FormField label='Remarks' strong={true} style={{marginTop : '15px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardObjVal.remarks}</strong></Label>
                   </FormField>
                 </Form>
               </Box>
               <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
-
+                <Image src={inwardObjVal.inwardPhoto}  height={300} width={400}/>
               </Box>
             </Split>
           </Section>
@@ -276,7 +280,7 @@ export default class VehicleOut extends Component {
        vNo = selectVehicleNumber;
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
       uploadVehicleImage(imgFile, vNo, outwardSNo).then((snapshot) => {
-           let inwardPhoto = snapshot.downloadURL;
+           let outwardPhoto = snapshot.downloadURL;
       savingOutwardVehicle({
         lastCount,
         outwardSNo,
@@ -292,7 +296,7 @@ export default class VehicleOut extends Component {
         comingFrom,
         billNumber,
         remarks,
-        inwardPhoto
+        outwardPhoto
       }).then(this.setState({
         outwardSNo: '',
         ownOutVehicle: '',
@@ -554,19 +558,6 @@ export default class VehicleOut extends Component {
                     </Col>
                     <Col>
                       <span>Presemnt Out Time : <Clock format={'hh:mm:ss A'} ticking={true} /></span>
-                    </Col>
-                    <Col>
-                      <span>Time Taken For In</span>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                      <span style={{marginLeft: 30}}>Last In Date : </span>
-                    </Col>
-                    <Col>
-                      <span>Last In Time : </span>
-                    </Col>
-                    <Col>
                     </Col>
                 </Row>
             </Container>

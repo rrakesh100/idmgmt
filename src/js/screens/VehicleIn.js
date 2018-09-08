@@ -22,7 +22,7 @@ import Next from 'grommet/components/icons/base/CaretNext';
 import Down from 'grommet/components/icons/base/CaretDown';
 import { getVehicleNumbers, getMaterials } from '../api/configuration';
 import Save from 'grommet/components/icons/base/Upload';
-import { savingInwardVehicle, getAllVehicles, uploadVehicleImage } from '../api/vehicles';
+import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Notification from 'grommet/components/Notification';
@@ -89,6 +89,17 @@ export default class VehicleIn extends Component {
       let inwardSNo = `U2-in-${lastCount}`;
       this.setState({ inwardSNo, lastCount })
     }).catch((e) => console.log(e))
+  }
+
+  getOutwardVehicleDetails() {
+    const { vehicleNumber, selectVehicleNumber } = this.state;
+        let vNo=vehicleNumber;
+        if(selectVehicleNumber)
+         vNo = selectVehicleNumber;
+      getOutwardVehicle(vNo).then((snap) => {
+        const outwardObj = snap.val();
+        this.setState({outwardObj})
+      }).catch((e) => console.log(e));
   }
 
     capture() {
@@ -178,7 +189,7 @@ export default class VehicleIn extends Component {
     onShowingOutwardDetails() {
       this.setState({
         showDetails: true
-      })
+      }, this.getOutwardVehicleDetails())
     }
 
     onHidingOutwardDetails() {
@@ -188,7 +199,10 @@ export default class VehicleIn extends Component {
     }
 
     showOutwardDetails() {
-      const { ourVehicle, emptyVehicle, showDetails, outwardSNo } = this.state;
+      const { ourVehicle, emptyVehicle, showDetails, outwardObj } = this.state;
+      let outwardObjKey = Object.keys(outwardObj)[0];
+      let outwardObjVal = outwardObj[outwardObjKey];
+      console.log(outwardObjVal);
       if(showDetails) {
         return (
           <div>
@@ -204,51 +218,51 @@ export default class VehicleIn extends Component {
 
                     <Form className='newVisitorFields'>
                       <FormField  label='Outward Sno'  strong={true} style={{marginTop : '15px'}} >
-                      <Label style={{marginLeft:'20px'}}><strong>{outwardSNo}</strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.outwardSNo}</strong></Label>
 
                       </FormField>
                       <FormField label='Own/Out Vehicle'  strong={true} style={{marginTop : '15px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.ownOutVehicle}</strong></Label>
                       </FormField>
                       <FormField label='Vehicle Number'  strong={true} style={{marginTop : '15px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.vehicleNumber}</strong></Label>
                       </FormField>
                       <FormField label='Driver Name' strong={true} style={{marginTop : '15px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.driverName}</strong></Label>
                       </FormField>
                       <FormField label='Driver Cell No' strong={true} style={{marginTop : '15px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.driverNumber}</strong></Label>
                       </FormField>
                       <FormField label='Empty/Load' strong={true} style={{marginTop : '15px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.emptyLoad}</strong></Label>
                       </FormField>
                     </Form>
                 </Box>
                 <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
                     <Form className='newVisitorFields'>
                       <FormField label='Party Name' strong={true}  ref='loadVeicleForm' style={{marginTop : '18px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.partyName}</strong></Label>
                       </FormField>
 
                       <FormField label='Material' strong={true} style={{marginTop : '15px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.material}</strong></Label>
                       </FormField>
                       <FormField label='No of Bags' strong={true} style={{marginTop : '15px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.numberOfBags}</strong></Label>
                       </FormField>
                       <FormField label='Coming From' strong={true} style={{marginTop : '15px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.comingFrom}</strong></Label>
                       </FormField>
                       <FormField label='Bill No' strong={true} style={{marginTop : '15px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.billNumber}</strong></Label>
                       </FormField>
                       <FormField label='Remarks' strong={true} style={{marginTop : '15px'}}>
-                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                          <Label style={{marginLeft:'20px'}}><strong>{outwardObjVal.remarks}</strong></Label>
                       </FormField>
                     </Form>
                   </Box>
                   <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
-
+                      <Image src={outwardObjVal.outwardPhoto}  height={300} width={400}/>
                   </Box>
                 </Split>
               </Section>
