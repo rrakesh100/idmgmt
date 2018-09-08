@@ -13,7 +13,7 @@ import { saveShift, saveTimeslot, saveVillage, saveVehicle, saveDriver, saveOwnP
 import { Container, Row, Col } from 'react-grid-system';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
-import { getShifts, getTimeslots, getVillages, getVehicles, getDrivers, getOwnPlaces, getMaterials } from '../api/configuration';
+import { getShifts, getTimeslots, getVillages, getVehicleNumbers, getDrivers, getOwnPlaces, getMaterials } from '../api/configuration';
 
 
 
@@ -74,7 +74,7 @@ export default class Configuration extends Component {
   }
 
   getVehicleDetails() {
-    getVehicles().then((snap) => {
+    getVehicleNumbers().then((snap) => {
       this.setState({
         vehicles: snap.val()
       })

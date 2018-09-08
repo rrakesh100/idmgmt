@@ -20,15 +20,33 @@ import Accordion from 'grommet/components/Accordion';
 import AccordionPanel from 'grommet/components/AccordionPanel';
 import Next from 'grommet/components/icons/base/CaretNext';
 import Down from 'grommet/components/icons/base/CaretDown';
-import { getVehicles } from '../api/configuration';
+import { getVehicleNumbers, getMaterials } from '../api/configuration';
+import Save from 'grommet/components/icons/base/Upload';
+import { savingInwardVehicle, getAllVehicles, uploadVehicleImage } from '../api/vehicles';
+import Clock from 'react-live-clock';
+import moment from 'moment';
+import Notification from 'grommet/components/Notification';
+import Image from 'grommet/components/Image';
 
 
-export default class AttendanceOut extends Component {
+
+export default class VehicleIn extends Component {
   constructor(props) {
     super(props);
     this.state={
+      inwardSNo: '',
       ownOutVehicle: '',
+      vehicleNumber: '',
+
+      driverName:'',
+      driverNumber: '',
+      emptyLoad: '',
+      partyName: '',
       material: '',
+      numberOfBags: '',
+      comingFrom: '',
+      billNumber: '',
+      remarks: '',
       ourVehicle: false,
       emptyVehicle: false,
       showDetails: false,
@@ -37,18 +55,39 @@ export default class AttendanceOut extends Component {
   }
 
   componentDidMount() {
-    this.getVehicleNumberDetails()
+    this.getVehicleNumberDetails();
+    this.getMaterialDetails();
+    this.getVehicleDetails();
   }
 
   getVehicleNumberDetails() {
-    getVehicles().then((snap) => {
+    getVehicleNumbers().then((snap) => {
       const options = snap.val();
-      console.log(options)
       let vehicleOpt = [];
       Object.keys(options).forEach((opt) => {
         vehicleOpt.push(opt)
       })
       this.setState({vehicleOpt})
+    }).catch((e) => console.log(e))
+  }
+
+  getMaterialDetails() {
+    getMaterials().then((snap) => {
+      const options = snap.val();
+      let materialOpt = [];
+      Object.keys(options).forEach((opt) => {
+        materialOpt.push(opt)
+      })
+      this.setState({materialOpt})
+    }).catch((e) => console.log(e))
+  }
+
+  getVehicleDetails() {
+    getAllVehicles().then((snap) => {
+      const data = snap.val();
+      const lastCount = data.U2.count.inCount;
+      let inwardSNo = `U2-in-${lastCount}`;
+      this.setState({ inwardSNo, lastCount })
     }).catch((e) => console.log(e))
   }
 
@@ -58,7 +97,6 @@ export default class AttendanceOut extends Component {
         this.setState({
           screenshot,
           showLiveCameraFeed: false,
-          validationMsg: ''
         });
       } else {
         this.setState({
@@ -73,6 +111,7 @@ export default class AttendanceOut extends Component {
     }
 
     renderImage() {
+      if(this.state.showLiveCameraFeed) {
         return (
           <Webcam
             audio={false}
@@ -83,9 +122,11 @@ export default class AttendanceOut extends Component {
             onClick={this.capture.bind(this)}
           />
         );
-      return (
-        <Image src={inSide ? this.state.selectedEmployeeData.inwardPhoto : this.state.screenshot} height={300}/>
-      );
+      } else {
+        return (
+          <Image src={this.state.screenshot} height={300}/>
+        );
+      }
     }
 
     renderCamera() {
@@ -98,7 +139,7 @@ export default class AttendanceOut extends Component {
 
     onFieldChange(fieldName, e) {
 
-      if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material') {
+      if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material' || fieldName == 'selectVehicleNumber') {
         this.setState({
           [fieldName]: e.option
         })
@@ -112,7 +153,7 @@ export default class AttendanceOut extends Component {
         this.setState({
           ourVehicle: true
         })
-      } else {
+      } else if(fieldName == 'ownOutVehicle' && e.option == 'Outside Vehicle') {
         this.setState({
           ourVehicle: false
         })
@@ -147,133 +188,73 @@ export default class AttendanceOut extends Component {
     }
 
     showOutwardDetails() {
-      const { ourVehicle, emptyVehicle, showDetails, vehicleOpt } = this.state;
-      console.log(vehicleOpt)
-      return (
-        <div>
-        <Button icon={<Down/>}
-          primary={true}
-          href='#'
-          label='Hide Last Outward Details'
-          onClick={this.onHidingOutwardDetails.bind(this)}
-          />
-          <Section justify='center'>
-            <Split>
-              <Box direction='column' style={{width:'300px'}} >
+      const { ourVehicle, emptyVehicle, showDetails, outwardSNo } = this.state;
+      if(showDetails) {
+        return (
+          <div>
+          <Button icon={<Down/>}
+            primary={true}
+            href='#'
+            label='Hide Last Outward Details'
+            onClick={this.onHidingOutwardDetails.bind(this)}
+            />
+            <Section justify='center'>
+              <Split>
+                <Box direction='column' style={{width:'300px'}} >
 
-                  <Form className='newVisitorFields'>
-                    <FormField  label='Inward Sno'  strong={true} style={{marginTop : '15px'}}  >
-                      <TextInput
-                        value={this.state.inwardNumber}
-                        onDOMChange={this.onFieldChange.bind(this, 'inwardNumber')}
-                      />
-                    </FormField>
-                    <FormField label='Own/Out Vehicle *'  strong={true} style={{marginTop : '15px'}}>
-                        <Select
-                        options={['Own Vehicle', 'Outside Vehicle']}
-                        placeHolder='Own/Out Vehicle'
-                        value={this.state.ownOutVehicle}
-                        onChange={this.onFieldChange.bind(this, 'ownOutVehicle')}
-                        />
-                    </FormField>
-                    <FormField label='Vehicle No *' strong={true} style={{marginTop : '15px'}}>
-                      {
-                        !ourVehicle ?
-                        <TextInput
-                            placeHolder='Vehicle No'
-                            value={this.state.vehicleNumber}
-                            onDOMChange={this.onFieldChange.bind(this, 'vehicleNumber')}
-                        /> :
-                        <Select
-                        placeHolder='Vehicle No'
-                        options={vehicleOpt}
-                        value={this.state.vehicleNumber}
-                        onChange={this.onFieldChange.bind(this, 'vehicleNumber')}
-                        />
-                      }
+                    <Form className='newVisitorFields'>
+                      <FormField  label='Outward Sno'  strong={true} style={{marginTop : '15px'}} >
+                      <Label style={{marginLeft:'20px'}}><strong>{outwardSNo}</strong></Label>
 
-                    </FormField>
-                    <FormField label='Driver Name *' strong={true} style={{marginTop : '15px'}}>
-                        <TextInput
-                            placeHolder='Driver Name'
-                            value={this.state.driverName}
-                            onDOMChange={this.onFieldChange.bind(this, 'driverName')}
-                        />
-                    </FormField>
-                    <FormField label='Driver Cell No *' strong={true} style={{marginTop : '15px'}}>
-                        <TextInput
-                            placeHolder='Driver Cell No'
-                            value={this.state.driverNumber}
-                            onDOMChange={this.onFieldChange.bind(this, 'driverNumber')}
-                        />
-                    </FormField>
-                    <FormField label='Empty/Load *' strong={true} style={{marginTop : '15px'}}>
-                        <Select
-                          options={['Empty', 'Load']}
-                          placeHolder='Empty/Load'
-                          value={this.state.emptyLoad}
-                          onChange={this.onFieldChange.bind(this, 'emptyLoad')}
-                        />
-                    </FormField>
-                  </Form>
-              </Box>
-              <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
-                  <Form className='newVisitorFields'>
-
-                    <FormField label='Party Name' strong={true}  ref='loadVeicleForm' style={{marginTop : '18px'}}>
-                        <TextInput
-                            placeHolder='Party Name'
-                            value={this.state.partyName}
-                            onDOMChange={this.onFieldChange.bind(this, 'partyName')}
-                        />
-                    </FormField>
-
-                    <FormField label='Material' strong={true} style={{marginTop : '15px'}}>
-                        <Select
-                          options={[]}
-                          placeHolder='Material'
-                          value={this.state.material}
-                          onChange={this.onFieldChange.bind(this, 'material')}
-                        />
-                    </FormField>
-                    <FormField label='No of Bags' strong={true} style={{marginTop : '15px'}}>
-                        <TextInput
-                            placeHolder='No of Bags'
-                            value={this.state.numberOfBags}
-                            onDOMChange={this.onFieldChange.bind(this, 'numberOfBags')}
-                        />
-                    </FormField>
-                    <FormField label='Coming From' strong={true} style={{marginTop : '15px'}}>
-                        <TextInput
-                            placeHolder='Coming From'
-                            value={this.state.comingFrom}
-                            onDOMChange={this.onFieldChange.bind(this, 'comingFrom')}
-                        />
-                    </FormField>
-                    <FormField label='Bill No' strong={true} style={{marginTop : '15px'}}>
-                        <TextInput
-                            placeHolder='Bill No'
-                            value={this.state.billNumber}
-                            onDOMChange={this.onFieldChange.bind(this, 'billNumber')}
-                        />
-                    </FormField>
-                    <FormField label='Remarks' strong={true} style={{marginTop : '15px'}} size='small'>
-                        <TextInput
-                            placeHolder='Remarks'
-                            value={this.state.remarks}
-                            onDOMChange={this.onFieldChange.bind(this, 'remarks')}
-                        />
-                    </FormField>
-                  </Form>
+                      </FormField>
+                      <FormField label='Own/Out Vehicle'  strong={true} style={{marginTop : '15px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
+                      <FormField label='Vehicle Number'  strong={true} style={{marginTop : '15px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
+                      <FormField label='Driver Name' strong={true} style={{marginTop : '15px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
+                      <FormField label='Driver Cell No' strong={true} style={{marginTop : '15px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
+                      <FormField label='Empty/Load' strong={true} style={{marginTop : '15px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
+                    </Form>
                 </Box>
                 <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
+                    <Form className='newVisitorFields'>
+                      <FormField label='Party Name' strong={true}  ref='loadVeicleForm' style={{marginTop : '18px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
 
+                      <FormField label='Material' strong={true} style={{marginTop : '15px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
+                      <FormField label='No of Bags' strong={true} style={{marginTop : '15px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
+                      <FormField label='Coming From' strong={true} style={{marginTop : '15px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
+                      <FormField label='Bill No' strong={true} style={{marginTop : '15px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
+                      <FormField label='Remarks' strong={true} style={{marginTop : '15px'}}>
+                          <Label style={{marginLeft:'20px'}}><strong></strong></Label>
+                      </FormField>
+                    </Form>
+                  </Box>
+                  <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
 
-                </Box>
-              </Split>
-            </Section>
-          </div>
-      )
+                  </Box>
+                </Split>
+              </Section>
+            </div>
+        )
+      }
     }
 
     hideOutwardDetails() {
@@ -286,11 +267,160 @@ export default class AttendanceOut extends Component {
       )
     }
 
-  render() {
-    const { ourVehicle, emptyVehicle, showDetails } = this.state;
+    renderValidationMsg() {
+      const { validationMsg } = this.state;
+      if (validationMsg) {
+        return (
+          <Notification message={validationMsg} size='small' status='critical' />
+        );
+      }
+      return null;
+    }
 
+    onSavingInwardVehicle() {
+
+      const {
+        lastCount,
+        inwardSNo,
+        ownOutVehicle,
+        vehicleNumber,
+        selectVehicleNumber,
+        driverName,
+        driverNumber,
+        emptyLoad,
+        partyName,
+        material,
+        numberOfBags,
+        comingFrom,
+        billNumber,
+        remarks,
+        screenshot } = this.state;
+        let vNo=vehicleNumber;
+        if(selectVehicleNumber)
+         vNo = selectVehicleNumber;
+        let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+        uploadVehicleImage(imgFile, vNo, inwardSNo).then((snapshot) => {
+             let inwardPhoto = snapshot.downloadURL;
+
+      savingInwardVehicle({
+        lastCount,
+        inwardSNo,
+        ownOutVehicle,
+        vehicleNumber,
+        driverName,
+        driverNumber,
+        emptyLoad,
+        partyName,
+        material,
+        numberOfBags,
+        comingFrom,
+        billNumber,
+        remarks,
+        inwardPhoto
+      }).then(this.setState({
+        inwardSNo: '',
+        ownOutVehicle: '',
+        vehicleNumber: '',
+        selectVehicleNumber: '',
+        driverName:'',
+        driverNumber: '',
+        emptyLoad: '',
+        partyName: '',
+        material: '',
+        numberOfBags: '',
+        comingFrom: '',
+        billNumber: '',
+        remarks: '',
+        screenshot: '',
+        showLiveCameraFeed: true
+      }, this.getVehicleDetails())).catch((err) => {
+        console.error('Vehicle Inward Save Error', err);
+      })
+    })
+    }
+
+
+    onSaveClick() {
+      const {
+        lastCount,
+        inwardSNo,
+        ownOutVehicle,
+        vehicleNumber,
+        driverName,
+        driverNumber,
+        emptyLoad,
+        partyName,
+        material,
+        numberOfBags,
+        comingFrom,
+        billNumber,
+        remarks,
+        screenshot } = this.state;
+        console.log(emptyLoad)
+        if(emptyLoad === 'Load') {
+          if(!partyName) {
+            this.setState({
+              validationMsg: 'Party Name is missing'
+            })
+            return
+          }
+          if(!material) {
+            this.setState({
+              validationMsg: 'Material is missing'
+            })
+            return
+          }
+          if(!numberOfBags) {
+            this.setState({
+              validationMsg: 'Number Of Bags is missing'
+            })
+            return
+          }
+          if(!comingFrom) {
+            this.setState({
+              validationMsg: 'Coming From is missing'
+            })
+            return
+          }
+
+          if(!billNumber) {
+            this.setState({
+              validationMsg: 'Bill Number is missing'
+            })
+            return
+          }
+          if(!remarks) {
+            this.setState({
+              validationMsg: 'Remarks is missing'
+            })
+            return
+          }
+        }
+
+        if(!screenshot) {
+          this.setState({
+            validationMsg: 'Screenshot is missing'
+          })
+          return
+        }
+
+        this.setState({
+          validationMsg:''
+        }, this.onSavingInwardVehicle.bind(this))
+
+
+
+    }
+
+  render() {
+    const date = new Date();
+    const dateStr = moment(date).format('DD-MM-YYYY');
+    const { ourVehicle, emptyVehicle, showDetails, vehicleOpt, materialOpt, inwardSNo } = this.state;
+    console.log(ourVehicle);
     return (
       <div>
+      { this.renderValidationMsg() }
+
         <h4 style={{marginLeft: 40, textDecoration: 'underline', fontWeight: 'bold'}}>Present Inward Details</h4>
         <Section justify='center'>
           <Split>
@@ -298,10 +428,7 @@ export default class AttendanceOut extends Component {
 
                 <Form className='newVisitorFields'>
                   <FormField  label='Inward Sno'  strong={true} style={{marginTop : '15px'}}  >
-                    <TextInput
-                      value={this.state.inwardNumber}
-                      onDOMChange={this.onFieldChange.bind(this, 'inwardNumber')}
-                    />
+                  <Label style={{marginLeft:'20px'}}><strong>{inwardSNo}</strong></Label>
                   </FormField>
                   <FormField label='Own/Out Vehicle *'  strong={true} style={{marginTop : '15px'}}>
                       <Select
@@ -312,7 +439,7 @@ export default class AttendanceOut extends Component {
                       />
                   </FormField>
                   <FormField label='Vehicle No *' strong={true} style={{marginTop : '15px'}}>
-                    {
+                      {
                       !ourVehicle ?
                       <TextInput
                           placeHolder='Vehicle No'
@@ -321,12 +448,11 @@ export default class AttendanceOut extends Component {
                       /> :
                       <Select
                       placeHolder='Vehicle No'
-                      options={[]}
-                      value={this.state.vehicleNumber}
-                      onChange={this.onFieldChange.bind(this, 'vehicleNumber')}
+                      options={vehicleOpt}
+                      value={this.state.selectVehicleNumber}
+                      onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
                       />
                     }
-
                   </FormField>
                   <FormField label='Driver Name *' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
@@ -365,7 +491,7 @@ export default class AttendanceOut extends Component {
 
                   <FormField label='Material' strong={true} style={{marginTop : '15px'}}>
                       <Select
-                        options={[]}
+                        options={materialOpt}
                         placeHolder='Material'
                         value={this.state.material}
                         onChange={this.onFieldChange.bind(this, 'material')}
@@ -392,7 +518,7 @@ export default class AttendanceOut extends Component {
                           onDOMChange={this.onFieldChange.bind(this, 'billNumber')}
                       />
                   </FormField>
-                  <FormField label='Remarks' strong={true} style={{marginTop : '15px'}} size='small'>
+                  <FormField label='Remarks' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                           placeHolder='Remarks'
                           value={this.state.remarks}
@@ -401,13 +527,37 @@ export default class AttendanceOut extends Component {
                   </FormField>
                 </Form>
               </Box>
-            <Box onClick={this.capture.bind(this)} direction='column'
+            <Box direction='column'
               style={{marginTop:'25px', marginLeft : '10px', width:'300px'}} align='center'>
+              <div  onClick={this.capture.bind(this)}>
                 {this.renderCamera() }
+              </div>
+                <Section pad='small'
+                  align='center'>
+                  <Button icon={<Save />}
+                    label='SAVE'
+                    onClick={this.onSaveClick.bind(this)}
+                    disabled={true}
+                    href='#'
+                    primary={true} />
+                </Section>
             </Box>
           </Split>
-          <div style={{marginLeft: 40}}>
-          { showDetails ? this.showOutwardDetails() : this.hideOutwardDetails() }
+          <div>
+            <h4 style={{marginLeft: 40, textDecoration: 'underline', fontWeight: 'bold'}}>Date&Time Details</h4>
+            <Container>
+                <Row>
+                    <Col>
+                      <span style={{marginLeft: 30}}>In Date : {dateStr}</span>
+                    </Col>
+                    <Col>
+                      <span>In Time : <Clock format={'hh:mm:ss A'} ticking={true} /></span>
+                    </Col>
+                </Row>
+            </Container>
+          </div>
+          <div style={{marginLeft: 40, marginTop: 40}}>
+            { showDetails ? this.showOutwardDetails() : this.hideOutwardDetails() }
           </div>
         </Section>
       </div>

@@ -65,7 +65,7 @@ export function getVillages() {
   return dbRef.once('value');
 }
 
-export function getVehicles() {
+export function getVehicleNumbers() {
   const dbRef = firebase.database().ref('vehicleNumbers');
   return dbRef.once('value');
 }

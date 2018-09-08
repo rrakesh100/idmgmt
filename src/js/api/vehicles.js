@@ -14,6 +14,41 @@ export function saveVehicle(data) {
   return dbRef.update(updates);
 }
 
+export function savingInwardVehicle(data) {
+  console.log(data)
+  const dbRef = firebase.database().ref();
+  const updates = {};
+  updates[`vehicles/U2/in/${data.inwardSNo}`] = data;
+  updates[`vehicles/U2/count/inCount`] = data.lastCount+1;
+  updates[`vehicles/${data.vehicleNumber}/lastInward/${data.inwardSNo}`] = data;
+  return dbRef.update(updates);
+}
+
+export function uploadVehicleImage(img, vehicleNumber, serialNo) {
+  console.log(vehicleNumber)
+  const storageRef = firebase.storage().ref();
+  let epochTime = new Date().getTime();
+  const path = 'Vehicles/'+vehicleNumber+'/'+serialNo+ '/'+ epochTime+'.jpeg';
+  const imgRef = storageRef.child(path);
+  return  imgRef.putString(img, 'base64')
+}
+
+export function savingOutwardVehicle(data) {
+  console.log(data)
+  const dbRef = firebase.database().ref();
+  const updates = {};
+  updates[`vehicles/U2/out/${data.outwardSNo}`] = data;
+  updates[`vehicles/U2/count/outCount`] = data.lastCount+1;
+  updates[`vehicles/${data.vehicleNumber}/lastOutward/${data.outwardSNo}`] = data;
+  return dbRef.update(updates);
+}
+
+export function getInwardVehicle(vehicleNumber) {
+  console.log(vehicleNumber);
+  const dbRef = firebase.database().ref(`vehicles/${vehicleNumber}/lastInward`);
+  return dbRef.once('value');
+}
+
 export function getUserInfo(token) {
   const userInfoPath=`userInfo/${token}`;
   const dbRef = firebase.database().ref(userInfoPath);
@@ -34,7 +69,7 @@ export function getVehicles() {
 }
 
 export function getAllVehicles() {
-  const dbRef = firebase.database().ref().child('vehicles');
+  const dbRef = firebase.database().ref('vehicles');
   return dbRef.once('value');
 }
 
@@ -61,12 +96,4 @@ export function updateVehicleStatus(data) {
     updates[`insideVehicles/${unitId}/${vehicleId}`] = data;
   }
   return dbRef.update(updates);
-}
-
-export function uploadVehicleImage(file, vehicleId) {
-  const storageRef = firebase.storage().ref();
-  let epochTime = new Date().getTime();
-  const path = 'Vehicles/'+vehicleId+'/'+epochTime+'.jpeg';
-  const imgRef = storageRef.child(path);
-  return  imgRef.putString(file, 'base64')
 }

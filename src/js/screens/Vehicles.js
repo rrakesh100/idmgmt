@@ -246,17 +246,13 @@ class Vehicles extends Component {
         {errorNode}
         <Article>
             <Tabs justify='start' style={{marginLeft:'40px'}}>
-            <Tab title='HOME'>
-            { this.showVehiclesTable() }
-            </Tab>
-            <Tab title='ADD VEHICLE'>
-            <NewVehicle />
-            </Tab>
             <Tab title='VEHICLE IN'>
             <VehicleIn />
             </Tab>
             <Tab title='VEHICLE OUT'>
             <VehicleOut />
+            </Tab>
+            <Tab title='REPORTS'>
             </Tab>
             </Tabs>
         </Article>
