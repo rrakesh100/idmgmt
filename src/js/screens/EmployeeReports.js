@@ -331,12 +331,29 @@ renderInputFields() {
 
     let tablesArray = [];
     let reportData = [];
-    Object.keys(response).map((attendance, index) => {
-      const attendanceObj = response[attendance];
+    console.log('EEEEEEW' , response); //resonse is a mapping of dateVsEmployee ; we also want employeeVsDate in a given date range
+
+    let employeeVsDate = {};
+    Object.keys(response).map((date,index) => {
+        let attObj = response[date];
+        Object.keys(attObj).map((empId, k) => {
+          let existingData  = employeeVsDate[empId] || [];
+          let newData = {
+            [date] :  attObj[empId]
+          }
+          existingData.push(newData);
+          employeeVsDate[empId] = existingData;
+        })
+    })
+
+    console.log('hahaha', employeeVsDate);
+    
+    Object.keys(response).map((date, index) => {
+      const attendanceObj = response[date];
       if(attendanceObj ==null)
         return;
       tablesArray.push(<div className='tablesArray' key={index}>
-      <h2 style={{marginLeft : '20px'}}>{attendance}</h2>
+      <h2 style={{marginLeft : '20px'}}>{date}</h2>
       <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>
