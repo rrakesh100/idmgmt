@@ -103,6 +103,12 @@ class Login extends Component {
         </Article>
         <Sidebar justify='between' align='center' pad='none' size='large' full={true}>
           <span />
+          <Select style={{width: 420}}
+          options={['UNIT1', 'UNIT2', 'UNIT3', 'UNIT4']}
+          placeHolder='UNIT'
+          value={this.state.unit}
+          onChange={this.onFieldChange.bind(this, 'unit')}
+          />
           <LoginForm
             align='start'
             title='Sign in'
@@ -110,12 +116,7 @@ class Login extends Component {
             errors={[error]}
             usernameType='email'
           />
-          <Select
-          options={['UNIT1', 'UNIT3', 'UNIT4', 'UNIT4']}
-          placeHolder='UNIT'
-          value={this.state.unit}
-          onChange={this.onFieldChange.bind(this, 'unit')}
-          />
+
           <Footer
             direction='row'
             size='small'
