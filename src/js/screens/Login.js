@@ -10,6 +10,7 @@ import Heading from 'grommet/components/Heading';
 import Paragraph from 'grommet/components/Paragraph';
 import Footer from 'grommet/components/Footer';
 import Logo from 'grommet/components/icons/Grommet';
+import Select from 'grommet/components/Select';
 
 import { loginUser } from '../actions/session';
 import { navEnable } from '../actions/nav';
@@ -20,6 +21,9 @@ import Headline from 'grommet/components/Headline';
 class Login extends Component {
   constructor() {
     super();
+    this.state={
+      unit:''
+    };
     this._onSubmit = this._onSubmit.bind(this);
   }
 
@@ -32,10 +36,20 @@ class Login extends Component {
     this.props.dispatch(navEnable(true));
   }
 
+  onFieldChange(fieldName, e) {
+    console.log(fieldName)
+    console.log(e)
+      this.setState({
+        [fieldName]: e.option
+      })
+  }
+
   _onSubmit(fields) {
     const { dispatch } = this.props;
     const { router } = this.context;
-    loginUser(fields.username, fields.password).then((payload) => {
+    const { unit } = this.state;
+    console.log(unit);
+    loginUser(fields.username, fields.password, unit).then((payload) => {
               console.log(payload);
           if(!payload.errorCode) {
             try {
@@ -43,11 +57,7 @@ class Login extends Component {
               localStorage.email = payload.email;
               localStorage.name = payload.displayName;
               localStorage.token = payload.uid;
-              if(payload.email === 'unit3@gmail.com') {
-                localStorage.unit="UNIT3"
-              }else {
-                localStorage.unit=""
-              }
+              localStorage.unit=unit;
             } catch (e) {
               alert(
                 'Unable to preserve session, probably due to being in private ' +
@@ -66,6 +76,8 @@ class Login extends Component {
   }
 
   render() {
+    const {unit} = this.state;
+    console.log(unit)
     const { session: { error } } = this.props;
 
     return (
@@ -97,6 +109,12 @@ class Login extends Component {
             onSubmit={this._onSubmit}
             errors={[error]}
             usernameType='email'
+          />
+          <Select
+          options={['UNIT1', 'UNIT3', 'UNIT4', 'UNIT4']}
+          placeHolder='UNIT'
+          value={this.state.unit}
+          onChange={this.onFieldChange.bind(this, 'unit')}
           />
           <Footer
             direction='row'

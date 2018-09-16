@@ -6,8 +6,9 @@ const localStorage = window.localStorage;
 
 export function initialize() {
   return (dispatch) => {
-    const { email, name, token } = localStorage;
-    if (email && token) {
+    const { email, name, token, unit } = localStorage;
+    console.log(unit)
+    if (email && token && unit) {
       dispatch({
         type: SESSION_LOAD, payload: { email, name, token }
       });

@@ -474,7 +474,7 @@ renderInputFields() {
   onSearchEntry(e) {
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
-
+    console.log(options);
     if(e.target.value == '')
       filtered = options
     else {
@@ -542,6 +542,9 @@ renderInputFields() {
 
   renderEmployeeAttendanceTable() {
     const { selectedEmployeeData, selectedEmployeeId } = this.state;
+    console.log(selectedEmployeeId);
+    console.log(selectedEmployeeData);
+
     if(selectedEmployeeData) {
       return (
         <div className='employeeTable'>

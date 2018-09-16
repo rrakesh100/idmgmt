@@ -16,6 +16,7 @@ export function saveAttendanceInData(data) {
     return;
   }
 
+  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/savedBy`] = localStorage.email ;
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/shift`] = data.shift;
@@ -24,6 +25,7 @@ export function saveAttendanceInData(data) {
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/inTime`] = timeStr;
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/inSide`] = true;
 
+  updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/savedBy`] = localStorage.email;
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/in`] = timeStr;
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/name`] = data.selectedEmployeeName;
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/shift`] = data.shift;
@@ -31,6 +33,7 @@ export function saveAttendanceInData(data) {
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
 
+  updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/savedBy`] = localStorage.email;
   updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/in`] = timeStr;
   updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/name`] = data.selectedEmployeeName;
   updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/shift`] = data.shift;
