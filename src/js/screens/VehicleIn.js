@@ -48,7 +48,7 @@ export default class VehicleIn extends Component {
       billNumber: '',
       remarks: '',
       ourVehicle: false,
-      emptyVehicle: false,
+      emptyVehicle: true,
       showDetails: false,
       showLiveCameraFeed: true,
     };
@@ -437,7 +437,7 @@ export default class VehicleIn extends Component {
     const date = new Date();
     const dateStr = moment(date).format('DD-MM-YYYY');
     const { ourVehicle, emptyVehicle, showDetails, vehicleOpt, materialOpt, inwardSNo } = this.state;
-    console.log(ourVehicle);
+    console.log(emptyVehicle);
     return (
       <div>
       { this.renderValidationMsg() }
@@ -451,7 +451,8 @@ export default class VehicleIn extends Component {
                   <FormField  label='Inward Sno'  strong={true} style={{marginTop : '15px'}}  >
                   <Label style={{marginLeft:'20px'}}><strong>{inwardSNo}</strong></Label>
                   </FormField>
-                  <FormField label='Own/Out Vehicle *'  strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Own/Out Vehicle *</Label>
                       <Select
                       options={['Own Vehicle', 'Outside Vehicle']}
                       placeHolder='Own/Out Vehicle'
@@ -459,7 +460,8 @@ export default class VehicleIn extends Component {
                       onChange={this.onFieldChange.bind(this, 'ownOutVehicle')}
                       />
                   </FormField>
-                  <FormField label='Vehicle No *' strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '15px', color: 'red'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle No *</Label>
                       {
                       !ourVehicle ?
                       <TextInput
@@ -475,21 +477,23 @@ export default class VehicleIn extends Component {
                       />
                     }
                   </FormField>
-                  <FormField label='Driver Name *' strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Driver Name *</Label>
                       <TextInput
                           placeHolder='Driver Name'
                           value={this.state.driverName}
                           onDOMChange={this.onFieldChange.bind(this, 'driverName')}
                       />
                   </FormField>
-                  <FormField label='Driver Cell No *' strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Driver Cell No' strong={true} style={{marginTop : '15px'}}>
                       <TextInput
                           placeHolder='Driver Cell No'
                           value={this.state.driverNumber}
                           onDOMChange={this.onFieldChange.bind(this, 'driverNumber')}
                       />
                   </FormField>
-                  <FormField label='Empty/Load *' strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Empty/Load *</Label>
                       <Select
                         options={['Empty', 'Load']}
                         placeHolder='Empty/Load'
@@ -502,7 +506,17 @@ export default class VehicleIn extends Component {
             <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
                 <Form className='newVisitorFields'>
 
-                  <FormField label='Party Name' strong={true}  ref='loadVeicleForm' style={{marginTop : '18px'}}>
+                  <FormField strong={true}  ref='loadVeicleForm' style={{marginTop : '18px'}}>
+                  <Label style={!emptyVehicle ?
+                          {
+                            fontSize:14,
+                            marginLeft: 20,
+                            color: 'red'
+                          }: {
+                            fontSize:14,
+                            marginLeft: 20,
+                            color: 'black'
+                          }}>Party Name</Label>
                       <TextInput
                           placeHolder='Party Name'
                           value={this.state.partyName}
@@ -510,7 +524,17 @@ export default class VehicleIn extends Component {
                       />
                   </FormField>
 
-                  <FormField label='Material' strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <Label style={!emptyVehicle ?
+                          {
+                            fontSize:14,
+                            marginLeft: 20,
+                            color: 'red'
+                          }: {
+                            fontSize:14,
+                            marginLeft: 20,
+                            color: 'black'
+                          }}>Material</Label>
                       <Select
                         options={materialOpt}
                         placeHolder='Material'
@@ -518,14 +542,34 @@ export default class VehicleIn extends Component {
                         onChange={this.onFieldChange.bind(this, 'material')}
                       />
                   </FormField>
-                  <FormField label='No of Bags' strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <Label style={!emptyVehicle ?
+                          {
+                            fontSize:14,
+                            marginLeft: 20,
+                            color: 'red'
+                          }: {
+                            fontSize:14,
+                            marginLeft: 20,
+                            color: 'black'
+                          }}>No of Bags</Label>
                       <TextInput
                           placeHolder='No of Bags'
                           value={this.state.numberOfBags}
                           onDOMChange={this.onFieldChange.bind(this, 'numberOfBags')}
                       />
                   </FormField>
-                  <FormField label='Coming From' strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <Label style={!emptyVehicle ?
+                          {
+                            fontSize:14,
+                            marginLeft: 20,
+                            color: 'red'
+                          }: {
+                            fontSize:14,
+                            marginLeft: 20,
+                            color: 'black'
+                          }}>Coming From</Label>
                       <TextInput
                           placeHolder='Coming From'
                           value={this.state.comingFrom}
