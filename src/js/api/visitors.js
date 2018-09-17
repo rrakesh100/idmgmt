@@ -7,6 +7,8 @@ export function saveVisitor(data) {
   const dateStr = moment(date).format('DD-MM-YYYY');
   const dbRef = firebase.database().ref();
 
+  const email = localStorage.email;
+  data.savedBy = email;
   const updates = {};
   updates[localStorage.unit + '/' +`visitors/${data.visitorId}`] = data;
   updates[localStorage.unit + '/' + `daywiseVisitors/${dateStr}/${data.visitorId}`] = data;

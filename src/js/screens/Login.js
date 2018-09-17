@@ -11,6 +11,7 @@ import Paragraph from 'grommet/components/Paragraph';
 import Footer from 'grommet/components/Footer';
 import Logo from 'grommet/components/icons/Grommet';
 import Select from 'grommet/components/Select';
+import Layer from 'grommet/components/Layer';
 
 import { loginUser } from '../actions/session';
 import { navEnable } from '../actions/nav';
@@ -36,12 +37,29 @@ class Login extends Component {
     this.props.dispatch(navEnable(true));
   }
 
+  onCloseLayer() {
+    this.setState({
+      unit: ''
+    })
+  }
+
+  confirmDialog() {
+    const { unit } = this.state;
+    if(unit) {
+      return (
+          <Layer onClose={this.onCloseLayer.bind(this)}>
+          </Layer>
+      )
+    } else {
+      return
+    }
+  }
+
   onFieldChange(fieldName, e) {
-    console.log(fieldName)
-    console.log(e)
+
       this.setState({
         [fieldName]: e.option
-      })
+      }, this.confirmDialog.bind(this))
   }
 
   _onSubmit(fields) {
@@ -57,7 +75,11 @@ class Login extends Component {
               localStorage.email = payload.email;
               localStorage.name = payload.displayName;
               localStorage.token = payload.uid;
-              localStorage.unit=unit;
+              if(unit == 'UNIT2') {
+                localStorage.unit='';
+              } else {
+                localStorage.unit=unit;
+              }
             } catch (e) {
               alert(
                 'Unable to preserve session, probably due to being in private ' +

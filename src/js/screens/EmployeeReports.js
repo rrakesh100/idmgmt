@@ -24,6 +24,7 @@ import PrintIcon from 'grommet/components/icons/base/Print';
 import Button from 'grommet/components/Button';
 import { getShifts } from '../api/configuration';
 import { Print } from 'react-easy-print';
+import { Document, Page } from 'react-pdf';
 
 
 class Reports extends Component {
@@ -34,7 +35,9 @@ class Reports extends Component {
       endDate:'',
       paymentType: '',
       shift: '',
-      printTableSelected: false
+      printTableSelected: false,
+      numPages: null,
+      pageNumber: 1,
     }
   }
 
@@ -311,8 +314,26 @@ renderInputFields() {
         </Print>
       );
     }
+  }
+
+  onDocumentLoadSuccess() {
+    console.log('Girish kumar')
+  }
 
 
+
+  onGeneratingPdf() {
+    const { pageNumber, numPages } = this.state;
+    console.log(pageNumber);
+    console.log(numPages);
+    return (
+        <Document
+          file="somefile.pdf"
+          onLoadSuccess={this.onDocumentLoadSuccess.bind(this)}
+        >
+          <Page pageNumber={pageNumber} />
+        </Document>
+    );
   }
 
   showEmployeeReportsTable() {
@@ -347,7 +368,7 @@ renderInputFields() {
     })
 
     console.log('hahaha', employeeVsDate);
-    
+
     Object.keys(response).map((date, index) => {
       const attendanceObj = response[date];
       if(attendanceObj ==null)
@@ -378,7 +399,6 @@ renderInputFields() {
 
                   if(employeeAttendaceObj.shift === 'Night Shift' ) {
                     let inT = moment(key)
-                    console.log(inT)
                   }
 
                   if(outTime && inTime) {
@@ -444,7 +464,12 @@ renderInputFields() {
     }]
     return (
       <div className='table'>
+
       <div style={{float : 'right'}}>
+      <Button label='pdf' fill={true}
+      onClick={this.onGeneratingPdf.bind(this)}
+      primary={true} style={{marginRight: '13px'}}
+      href='#'/>
         <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
           <Workbook.Sheet data={reportData} name="Sheet 1">
               <Workbook.Column label="Serial No" value="serialNo"/>
@@ -474,7 +499,6 @@ renderInputFields() {
   onSearchEntry(e) {
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
-    console.log(options);
     if(e.target.value == '')
       filtered = options
     else {
@@ -542,8 +566,6 @@ renderInputFields() {
 
   renderEmployeeAttendanceTable() {
     const { selectedEmployeeData, selectedEmployeeId } = this.state;
-    console.log(selectedEmployeeId);
-    console.log(selectedEmployeeData);
 
     if(selectedEmployeeData) {
       return (
