@@ -1,9 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Moment from 'moment';
 import Clock from 'react-live-clock';
 import Webcam from 'react-webcam';
-
+import PropTypes from 'prop-types';
 
 
 import Anchor from 'grommet/components/Anchor';
