@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Split from 'grommet/components/Split';
+import Button from 'grommet/components/Button';
 import Sidebar from 'grommet/components/Sidebar';
 import LoginForm from 'grommet/components/LoginForm';
 import Article from 'grommet/components/Article';
@@ -12,18 +13,21 @@ import Footer from 'grommet/components/Footer';
 import Logo from 'grommet/components/icons/Grommet';
 import Select from 'grommet/components/Select';
 import Layer from 'grommet/components/Layer';
-
+import { Container, Row, Col } from 'react-grid-system';
 import { loginUser } from '../actions/session';
 import { navEnable } from '../actions/nav';
 import { pageLoaded } from './utils';
 import Headline from 'grommet/components/Headline';
+import Status from 'grommet/components/icons/Status';
+import Label from 'grommet/components/Label';
 
 
 class Login extends Component {
   constructor() {
     super();
     this.state={
-      unit:''
+      fUnit:'',
+      sUnit: ''
     };
     this._onSubmit = this._onSubmit.bind(this);
   }
@@ -39,15 +43,44 @@ class Login extends Component {
 
   onCloseLayer() {
     this.setState({
-      unit: ''
+      fUnit: '',
+      sUnit: ''
+    })
+  }
+
+  onOkButtonClick() {
+    this.setState({
+      fUnit: '',
+      sUnit: ''
     })
   }
 
   confirmDialog() {
-    const { unit } = this.state;
-    if(unit) {
+    const { fUnit, sUnit } = this.state;
+
+    if(fUnit && sUnit && fUnit!== sUnit) {
       return (
           <Layer onClose={this.onCloseLayer.bind(this)}>
+          <Heading strong={true}
+            uppercase={false}
+            truncate={false}
+            margin='small'
+            align='center'>
+          <Status value='critical'
+          size='medium'
+          style={{marginRight:'10px'}} />
+          Mismatch!
+          </Heading>
+           <hr />
+           <h3>Please Select Again</h3>
+
+           <Row>
+           <Button
+             label='OK'
+             onClick={this.onOkButtonClick.bind(this)}
+             href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
+             primary={true} />
+           </Row>
           </Layer>
       )
     } else {
@@ -59,15 +92,15 @@ class Login extends Component {
 
       this.setState({
         [fieldName]: e.option
-      }, this.confirmDialog.bind(this))
+      })
   }
 
   _onSubmit(fields) {
     const { dispatch } = this.props;
     const { router } = this.context;
-    const { unit } = this.state;
-    console.log(unit);
-    loginUser(fields.username, fields.password, unit).then((payload) => {
+    const { fUnit, sUnit } = this.state;
+
+    loginUser(fields.username, fields.password, fUnit).then((payload) => {
               console.log(payload);
           if(!payload.errorCode) {
             try {
@@ -75,10 +108,10 @@ class Login extends Component {
               localStorage.email = payload.email;
               localStorage.name = payload.displayName;
               localStorage.token = payload.uid;
-              if(unit == 'UNIT2') {
+              if(fUnit == 'UNIT2' && sUnit == 'UNIT2') {
                 localStorage.unit='';
               } else {
-                localStorage.unit=unit;
+                localStorage.unit=fUnit;
               }
             } catch (e) {
               alert(
@@ -98,8 +131,6 @@ class Login extends Component {
   }
 
   render() {
-    const {unit} = this.state;
-    console.log(unit)
     const { session: { error } } = this.props;
 
     return (
@@ -128,8 +159,14 @@ class Login extends Component {
           <Select style={{width: 420}}
           options={['UNIT1', 'UNIT2', 'UNIT3', 'UNIT4']}
           placeHolder='UNIT'
-          value={this.state.unit}
-          onChange={this.onFieldChange.bind(this, 'unit')}
+          value={this.state.fUnit}
+          onChange={this.onFieldChange.bind(this, 'fUnit')}
+          />
+          <Select style={{width: 420}}
+          options={['UNIT1', 'UNIT2', 'UNIT3', 'UNIT4']}
+          placeHolder='UNIT'
+          value={this.state.sUnit}
+          onChange={this.onFieldChange.bind(this, 'sUnit')}
           />
           <LoginForm
             align='start'
@@ -146,6 +183,7 @@ class Login extends Component {
           >
             <span className='secondary'>&copy; 2017 MRP Solutions</span>
           </Footer>
+          { this.confirmDialog() }
         </Sidebar>
       </Split>
     );
