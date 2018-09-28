@@ -24,7 +24,8 @@ import PrintIcon from 'grommet/components/icons/base/Print';
 import Button from 'grommet/components/Button';
 import { getShifts } from '../api/configuration';
 import { Print } from 'react-easy-print';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, PDFDownloadLink, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import axios from 'axios';
 
 
 class Reports extends Component {
@@ -316,23 +317,89 @@ renderInputFields() {
     }
   }
 
-  generatePDF() {
-    return (<Document>
-       <Page size="A4" >
-         <View >
-           <Text>Section #1</Text>
-         </View>
-         <View >
-           <Text>Section #2</Text>
-         </View>
-       </Page>
-       </Document>
-      )
+
+  renderPDFDoc(reportData){
+
+    let employeeVsDate = {};
+    Object.keys(reportData).map((date,index) => {
+        let attObj = reportData[date];
+        Object.keys(attObj).map((empId, k) => {
+          let existingData  = employeeVsDate[empId] || [];
+          let newData = {
+            [date] :  attObj[empId]
+          }
+          existingData.push(newData);
+          employeeVsDate[empId] = existingData;
+        })
+    })
+
+    let id = 0;
+    console.log('uuuuu', employeeVsDate);let attendanceDataForAllEmployee = [];        let attendanceDataForEachEmployee = [];
+    Object.keys(employeeVsDate).map(empId => {
+        let allDates = employeeVsDate[empId];id=0;
+        attendanceDataForEachEmployee = [];
+        console.log('kkkkkk', allDates);
+        attendanceDataForEachEmployee.push(
+          <View break key={empId}>
+          <Text break>Employee ID = {empId}</Text>
+          <Text>Date         In Time        Out Time</Text>
+          </View>
+        )
+        allDates.map(eachDateObject => {
+          id=id+1;
+          Object.keys(eachDateObject).map(date => {
+              let   dataForThatDate = eachDateObject[date];
+          attendanceDataForEachEmployee.push(
+            <Text key= { empId + date }>{date || 'NONE'}        {dataForThatDate['in'] || 'NONE'}       {dataForThatDate['out'] || 'NONE'}</Text>
+          )
+          })
+        })
+        // attendanceDataForAllEmployee.push(<View break>)
+        attendanceDataForAllEmployee.push(attendanceDataForEachEmployee);
+        // attendanceDataForAllEmployee.push(</View>)
+
+    });
+
+    return (
+                <Document shallow >
+                  <Page wrap>
+                    <View>
+                      {attendanceDataForAllEmployee}
+                    </View>
+                  </Page>
+                </Document>
+              );
+  }
+
+  makecall()  {
+    axios.post(
+    'http://sakshi.myofficestation.com/user_register/user/register',
+    {
+      name: "gnm123",
+      mail: "gnm@gmail.com",
+      pass: {
+        pass1: "123456",
+        pass2: "123456"
+      },
+      address: {
+        first_name: "test",
+        last_name: "123",
+        city: "delhi",
+        street1: "abc",
+        zone: "east",
+        postal_code: "123456"
+      }
+    }, {
+        headers: { 'crossDomain': true }
+      }
+  ).then( r => console.log(r)).catch(e => console.log(e))
   }
 
 
-
   showEmployeeReportsTable() {
+
+
+
     const { response,
             startDate,
             endDate,
@@ -344,26 +411,14 @@ renderInputFields() {
 
     if(!response)
     return null;
-    let i = 0;
+
+    //const pdfDoc = this.renderPDFDoc(response);
+
 
     let tablesArray = [];
     let reportData = [];
-    console.log('EEEEEEW' , response); //resonse is a mapping of dateVsEmployee ; we also want employeeVsDate in a given date range
 
-    let employeeVsDate = {};
-    Object.keys(response).map((date,index) => {
-        let attObj = response[date];
-        Object.keys(attObj).map((empId, k) => {
-          let existingData  = employeeVsDate[empId] || [];
-          let newData = {
-            [date] :  attObj[empId]
-          }
-          existingData.push(newData);
-          employeeVsDate[empId] = existingData;
-        })
-    })
 
-    console.log('hahaha', employeeVsDate);
 
     Object.keys(response).map((date, index) => {
       const attendanceObj = response[date];
@@ -482,8 +537,13 @@ renderInputFields() {
         onClick={this.printTableData.bind(this)}
         primary={true} style={{marginRight: '13px'}}
         href='#'/>
+        <Button icon={<PrintIcon />} label='testing' fill={true}
+        onClick={this.makecall.bind(this)}
+        primary={true} style={{marginRight: '13px'}}
+        href='#'/>
+        <div>
 
-        {this.generatePDF()}
+        </div>
       </div>
       {tablesArray}
       </div>

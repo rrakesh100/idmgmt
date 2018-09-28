@@ -233,6 +233,7 @@ class AttendanceIn extends Component {
       filtered = options
     else {
       options.forEach((opt) => {
+        console.log(opt);
         if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
         else if(opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
