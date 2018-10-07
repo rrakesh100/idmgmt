@@ -74,6 +74,10 @@ class NewVisitor extends Component {
     }
   }
 
+  printNewVisitor() {
+    setTimeout(() => window.print(), 4000);
+  }
+
   saveAndPrint() {
     const { visitorId, name, remarks, screenshot, timestamp,
       whomToMeet, department, purpose, company, mobile, comingFrom , serialNo } = this.state;
@@ -109,7 +113,7 @@ class NewVisitor extends Component {
       .then(()=> {
         this.setState({
           toastMsg: `User ${name} is saved `,
-        }, () => { window.print(); window.reload()})
+        }, this.printNewVisitor() )
       }
 
       )

@@ -156,11 +156,13 @@ export default class VehicleIn extends Component {
 
       if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material' || fieldName == 'selectVehicleNumber') {
         this.setState({
-          [fieldName]: e.option
+          [fieldName]: e.option,
+          validationMsg:''
         })
       } else {
         this.setState({
-          [fieldName]: e.target.value
+          [fieldName]: e.target.value,
+          validationMsg: ''
         })
       }
 
@@ -377,7 +379,43 @@ export default class VehicleIn extends Component {
         billNumber,
         remarks,
         screenshot } = this.state;
-        console.log(emptyLoad)
+        console.log(emptyLoad);
+
+        if(!ownOutVehicle) {
+          this.setState({
+            validationMsg: 'Own/Out Vehicle is missing'
+          })
+          return
+        }
+
+        if(!vehicleNumber) {
+          this.setState({
+            validationMsg: 'Vehicle Number is missing'
+          })
+          return
+        }
+
+        if(!driverName) {
+          this.setState({
+            validationMsg: 'Driver Name is missing'
+          })
+          return
+        }
+
+        if(!emptyLoad) {
+          this.setState({
+            validationMsg: 'Empty/Load is missing'
+          })
+          return
+        }
+
+        if(!screenshot) {
+          this.setState({
+            validationMsg: 'Screenshot is missing'
+          })
+          return
+        }
+
         if(emptyLoad === 'Load') {
           if(!partyName) {
             this.setState({
@@ -403,26 +441,6 @@ export default class VehicleIn extends Component {
             })
             return
           }
-
-          if(!billNumber) {
-            this.setState({
-              validationMsg: 'Bill Number is missing'
-            })
-            return
-          }
-          if(!remarks) {
-            this.setState({
-              validationMsg: 'Remarks is missing'
-            })
-            return
-          }
-        }
-
-        if(!screenshot) {
-          this.setState({
-            validationMsg: 'Screenshot is missing'
-          })
-          return
         }
 
         this.setState({

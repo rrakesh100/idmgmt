@@ -228,9 +228,14 @@ class Tasks extends Component {
       );
   }
 
+  printVis() {
+    setTimeout(() => window.print(), 4000);
+  }
+
   print() {
+    console.log(this.state.printVisitorId);
     if(this.state.printVisitorId)
-     this.setState({printVisitorId : null},  setTimeout(() => window.print(), 4000) );
+     this.setState({printVisitorId : null},  this.printVis() );
   }
 
   renderSearchedVisitor() {
@@ -310,7 +315,7 @@ class Tasks extends Component {
       if(index !== 0)
         Object.keys(visitorObj).forEach((ob, ind) => {
         a.push( <TableRow key={index}>
-        <td>{visitorObj[ob].serialNo}</td>
+        <td>{index}</td>
         <td>{visitorObj[ob].name}</td>
         <td>{visitorObj[ob].mobile}</td>
         <td>{visitorObj[ob].status}</td>

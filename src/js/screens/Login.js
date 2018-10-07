@@ -130,7 +130,31 @@ class Login extends Component {
         console.log("error occured while logging in")
       });
     } else {
-      alert('please select unit')
+      alert('Please select unit');
+      return (
+          <Layer>
+          <Heading strong={true}
+            uppercase={false}
+            truncate={false}
+            margin='small'
+            align='center'>
+          <Status value='critical'
+          size='medium'
+          style={{marginRight:'10px'}} />
+          Alert!
+          </Heading>
+           <hr />
+           <h3>Please Select Unit</h3>
+
+           <Row>
+           <Button
+             label='OK'
+             onClick={this.onOkButtonClick.bind(this)}
+             href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
+             primary={true} />
+           </Row>
+          </Layer>
+      )
     }
   }
 

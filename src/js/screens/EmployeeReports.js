@@ -24,7 +24,6 @@ import PrintIcon from 'grommet/components/icons/base/Print';
 import Button from 'grommet/components/Button';
 import { getShifts } from '../api/configuration';
 import { Print } from 'react-easy-print';
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import axios from 'axios';
 
 
