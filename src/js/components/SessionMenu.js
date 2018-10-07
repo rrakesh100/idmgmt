@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-<<<<<<< HEAD
 import PropTypes from 'prop-types';
-=======
->>>>>>> 4a681b2... changes
 import Menu from 'grommet/components/Menu';
 import Anchor from 'grommet/components/Anchor';
 import Box from 'grommet/components/Box';

@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-<<<<<<< HEAD
 import PropTypes from 'prop-types';
-=======
->>>>>>> 4a681b2... changes
 import Split from 'grommet/components/Split';
 import Button from 'grommet/components/Button';
 import Sidebar from 'grommet/components/Sidebar';
@@ -103,20 +100,6 @@ class Login extends Component {
     const { router } = this.context;
     const { fUnit, sUnit } = this.state;
 
-<<<<<<< HEAD
-    loginUser(fields.username, fields.password, fUnit).then((payload) => {
-              console.log(payload);
-          if(!payload.errorCode) {
-            try {
-              const localStorage = window.localStorage;
-              localStorage.email = payload.email;
-              localStorage.name = payload.displayName;
-              localStorage.token = payload.uid;
-              if(fUnit == 'UNIT2' && sUnit == 'UNIT2') {
-                localStorage.unit='';
-              } else {
-                localStorage.unit=fUnit;
-=======
     if(fUnit && sUnit) {
       loginUser(fields.username, fields.password, fUnit).then((payload) => {
                 console.log(payload);
@@ -136,7 +119,6 @@ class Login extends Component {
                   'Unable to preserve session, probably due to being in private ' +
                   'browsing mode.'
                 );
->>>>>>> 4a681b2... changes
               }
                 router.history.push('/visitors')
             }else {

@@ -24,11 +24,8 @@ import PrintIcon from 'grommet/components/icons/base/Print';
 import Button from 'grommet/components/Button';
 import { getShifts } from '../api/configuration';
 import { Print } from 'react-easy-print';
-<<<<<<< HEAD
-import { Document, Page, PDFDownloadLink, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import axios from 'axios';
-=======
->>>>>>> 4a681b2... changes
 
 
 class Reports extends Component {
