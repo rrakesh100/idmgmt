@@ -27,6 +27,9 @@ class NavSidebar extends Component {
 
   render() {
     const { nav: { items } } = this.props;
+    const localStorage = window.localStorage;
+    const email = localStorage.email;
+    const unit = localStorage.unit || 'UNIT2';
 
     const links = items.map(page => (
       <Anchor key={page.label} path={page.path} label={page.label} />
@@ -49,8 +52,12 @@ class NavSidebar extends Component {
         <Menu fill={true} primary={true}>
           {links}
         </Menu>
+        <span style={{fontSize: 10, marginLeft: 20}}>You Entered into <span style={{fontSize: 16, marginTop:4}}>{unit}</span></span>
+        <span style={{fontSize: 10, marginLeft: 20, marginTop:4}}>Email : <span style={{fontSize: 16, marginTop:4}}>{email}</span></span>
+
         <Footer pad={{ horizontal: 'medium', vertical: 'small' }}>
           <SessionMenu dropAlign={{ bottom: 'bottom' }} />
+
         </Footer>
       </Sidebar>
     );

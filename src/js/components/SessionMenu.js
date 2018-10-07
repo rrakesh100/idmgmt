@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+<<<<<<< HEAD
 import PropTypes from 'prop-types';
+=======
+>>>>>>> 4a681b2... changes
 import Menu from 'grommet/components/Menu';
 import Anchor from 'grommet/components/Anchor';
 import Box from 'grommet/components/Box';
 import Heading from 'grommet/components/Heading';
 import UserIcon from 'grommet/components/icons/base/User';
-
 import { logout } from '../actions/session';
+
 
 class SessionMenu extends Component {
   constructor() {
@@ -23,6 +26,8 @@ class SessionMenu extends Component {
 
   render() {
     const { dropAlign, colorIndex, session: { name: userName } } = this.props;
+    const localStorage = window.localStorage;
+    console.log(localStorage.unit);
     return (
       <Menu
         icon={<UserIcon />}
