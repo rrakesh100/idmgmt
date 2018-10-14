@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { getEmployees, getEmployee } from '../api/employees';
-import { attendanceDatesLoop, getEmployeeAttendanceDates } from '../api/attendance';
+import { attendanceDatesLoop, getEmployeeAttendanceDates, saveEmailReport } from '../api/attendance';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import Select from 'grommet/components/Select';
@@ -18,10 +18,13 @@ import Box from 'grommet/components/Box';
 import Search from 'grommet/components/Search';
 import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
+import TextInput from 'grommet/components/TextInput';
+import Layer from 'grommet/components/Layer';
 import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import Button from 'grommet/components/Button';
+import { Container, Row, Col } from 'react-grid-system';
 import { getShifts } from '../api/configuration';
 import { Print } from 'react-easy-print';
 import axios from 'axios';
@@ -38,6 +41,7 @@ class Reports extends Component {
       printTableSelected: false,
       numPages: null,
       pageNumber: 1,
+      emailReport: false
     }
   }
 
@@ -394,10 +398,83 @@ renderInputFields() {
   ).then( r => console.log(r)).catch(e => console.log(e))
   }
 
+  onEmailReportClick() {
+    this.setState({
+      emailReport: true
+    })
+  }
+
+  onFieldChange(fieldName, e) {
+    this.setState({
+      [fieldName]: e.target.value
+    })
+  }
+
+  onSavingEmailReport() {
+    const { email, startDate, endDate } = this.state;
+    const date = new Date();
+    console.log(date);
+    const epochTime = date.getTime();
+    console.log(epochTime);
+
+    let datesArr=[];
+    let startDateParts = startDate.split("-");
+    let endDateParts = endDate.split("-");
+    let startDateObj = new Date(startDateParts[2], startDateParts[1]-1, startDateParts[0]);
+    let endDateObj = new Date(endDateParts[2], endDateParts[1]-1, endDateParts[0]);
+
+    while (startDateObj <= endDateObj) {
+    datesArr.push(moment(startDateObj).format('DD-MM-YYYY'));
+    startDateObj.setDate(startDateObj.getDate() + 1);
+    }
+
+    saveEmailReport({
+      email,
+      epochTime,
+      datesArr
+    }).then(() => {
+      this.setState({
+        emailReport: false
+      })
+    }).catch((e) => console.log(e));
+  }
+
+  onCloseLayer() {
+    this.setState({
+      emailReport: false
+    })
+  }
+
+  emailReportDialog() {
+    const {emailReport} = this.state;
+    if(emailReport) {
+      return (
+        <Layer closer={true}
+          flush={false}
+          onClose={this.onCloseLayer.bind(this)}>
+          <Form>
+          <p>Enter Email</p>
+          <FormField  label='Email'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Email'
+              value={this.state.email}
+              onDOMChange={this.onFieldChange.bind(this, 'email')} />
+          </FormField>
+          </Form>
+        <Row>
+        <Button label='Add'
+        primary={true} style={{marginTop: '20px', marginLeft: '400px', marginBottom: '10px'}}
+        href='#' onClick={this.onSavingEmailReport.bind(this)}/>
+        </Row>
+        </Layer>
+      )
+    } else {
+      return
+    }
+
+  }
 
   showEmployeeReportsTable() {
-
-
 
     const { response,
             startDate,
@@ -540,6 +617,10 @@ renderInputFields() {
         onClick={this.makecall.bind(this)}
         primary={true} style={{marginRight: '13px'}}
         href='#'/>
+        <Button icon={<PrintIcon />} label='Email Report' fill={true}
+        onClick={this.onEmailReportClick.bind(this)}
+        primary={true} style={{marginRight: '13px'}}
+        href='#'/>
         <div>
 
         </div>
@@ -668,6 +749,8 @@ renderInputFields() {
   }
 
 
+
+
   render() {
       return (
         <Article>
@@ -678,6 +761,7 @@ renderInputFields() {
         { this.showEmployeeReportsTable() }
         { this.printBusinessCard() }
         { this.print() }
+        { this.emailReportDialog() }
         </Tab>
         <Tab title='Employeewise'>
         { this.renderSearchField() }

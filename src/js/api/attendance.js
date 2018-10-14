@@ -3,6 +3,19 @@ import moment from 'moment';
 
 const localStorage = window.localStorage;
 
+export function saveEmailReport(data) {
+  const dbRef = firebase.database().ref();
+  const email = data.email;
+  const epochTime = data.epochTime;
+  const datesArr = data.datesArr;
+
+  const updates = {};
+  updates[localStorage.unit + '/' + `reports/${epochTime}/email`] = email;
+  updates[localStorage.unit + '/' + `reports/${epochTime}/dates`] = datesArr;
+  return dbRef.update(updates);
+
+}
+
 export function saveAttendanceInData(data) {
   const date = new Date();
   const dateStr = moment(date).format('DD-MM-YYYY');
