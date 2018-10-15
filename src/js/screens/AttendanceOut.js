@@ -127,9 +127,9 @@ class AttendanceOut extends Component {
       filtered = options
     else {
       options.forEach((opt) => {
-        if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
+        if(opt.label && opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt);
-        else if(opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
+        else if(opt.label && opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
           filtered.push(opt);
           if(opt.employeeId.toUpperCase() == e.target.value.toUpperCase())
             exactMatch = true;

@@ -229,12 +229,12 @@ renderInputFields() {
       if(this.state.printTableSelected) {
         const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate } = this.state;
 
-        let i = 0;
         let tablesArray = [];
         Object.keys(response).map((attendance, index) => {
           const attendanceObj = response[attendance];
           if(attendanceObj ==null)
             return;
+            let i = 0;
           tablesArray.push(<div className='tablesArray' key={index}>
           <h2 style={{marginLeft : '20px'}}>{attendance}</h2>
           <Table scrollable={true} style={{marginTop : '30px', marginLeft : '20px'}}>
@@ -375,27 +375,21 @@ renderInputFields() {
   }
 
   makecall()  {
-    axios.post(
-    'http://sakshi.myofficestation.com/user_register/user/register',
-    {
-      name: "gnm123",
-      mail: "gnm@gmail.com",
-      pass: {
-        pass1: "123456",
-        pass2: "123456"
-      },
-      address: {
-        first_name: "test",
-        last_name: "123",
-        city: "delhi",
-        street1: "abc",
-        zone: "east",
-        postal_code: "123456"
+
+    let headers = {
+                  'Content-Type': 'application/json',
+                  'crossDomain' : true,
+                  'withCredentials' : true
+              };
+
+    let data = {
+          "username":"admin",
+          "password":"viperv"
       }
-    }, {
-        headers: { 'crossDomain': true }
-      }
-  ).then( r => console.log(r)).catch(e => console.log(e))
+
+    axios.post('http://sakshi.myofficestation.com/user_login/user/login', data, { headers: headers }).
+      then( r => console.log(r)).
+      catch(e => console.log(e))
   }
 
   onEmailReportClick() {
@@ -500,6 +494,7 @@ renderInputFields() {
       const attendanceObj = response[date];
       if(attendanceObj ==null)
         return;
+        let i = 0;
       tablesArray.push(<div className='tablesArray' key={index}>
       <h2 style={{marginLeft : '20px'}}>{date}</h2>
       <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>

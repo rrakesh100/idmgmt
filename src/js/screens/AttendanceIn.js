@@ -234,9 +234,9 @@ class AttendanceIn extends Component {
     else {
       options.forEach((opt) => {
         console.log(opt);
-        if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
+        if(opt.label && opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
-        else if(opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
+        else if(opt.employeeId && opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
           filtered.push(opt);
           if(opt.employeeId.toUpperCase() == e.target.value.toUpperCase())
             exactMatch = true;
@@ -321,8 +321,8 @@ class AttendanceIn extends Component {
   }
 
   onMarkButtonClick() {
-    const { selectedEmployeeId, selectedEmployeeData, shift, screenshot, numberOfPersons, Date } = this.state;
-
+    const { selectedEmployeeId, selectedEmployeeData , screenshot, numberOfPersons, Date } = this.state;
+    const shift = window.localStorage.shift || this.state.shift;
     let selectedEmployeeName = selectedEmployeeData.name;
     let paymentType = selectedEmployeeData.paymentType;
 
