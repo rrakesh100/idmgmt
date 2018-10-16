@@ -80,7 +80,8 @@ class Reports extends Component {
         })
         this.setState({
           employeeSuggestions: suggests,
-          filteredSuggestions: suggests
+          filteredSuggestions: suggests,
+          allEmployees : data
         });
       })
       .catch((err) => {
@@ -115,7 +116,23 @@ class Reports extends Component {
         })
       })
     ).then(() => {
-      this.setState({response: returnObj})
+      let employeeVsDate = {};
+      Object.keys(returnObj).map((date,index) => {
+            let attObj = returnObj[date];
+            Object.keys(attObj).map((empId, k) => {
+              let existingData  = employeeVsDate[empId] || [];
+              let newData = {
+                date : date,
+                value :  attObj[empId]
+              }
+              existingData.push(newData);
+              employeeVsDate[empId] = existingData;
+            })
+        });
+        this.setState({
+            response: returnObj,
+            employeeVsDate
+           });
     })
 
   }
@@ -468,6 +485,164 @@ renderInputFields() {
 
   }
 
+
+  showOldEmployeeReportsTable() {
+
+   const { response,
+           startDate,
+           endDate,
+           paymentType,
+           shift,
+           shiftSelected,
+           paymentTypeSelected } = this.state;
+
+
+   if(!response)
+   return null;
+
+   //const pdfDoc = this.renderPDFDoc(response);
+
+
+   let tablesArray = [];
+   let reportData = [];
+
+
+
+   Object.keys(response).map((date, index) => {
+     const attendanceObj = response[date];
+     if(attendanceObj ==null)
+       return;
+     tablesArray.push(<div className='tablesArray' key={index}>
+     <h2 style={{marginLeft : '20px'}}>{date}</h2>
+     <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
+         <thead style={{position:'relative'}}>
+          <tr>
+            <th>S No.</th>
+            <th>Manpower Id</th>
+            <th>Name</th>
+            <th>Payment Type</th>
+            <th>Shift</th>
+            <th>In Time</th>
+            <th>Out Time</th>
+            <th>Total Time Spent</th>
+          </tr>
+         </thead>
+         <tbody>
+           {
+               Object.keys(attendanceObj).map((key,index)=> {
+                 const employeeAttendaceObj = attendanceObj[key];
+                 if(employeeAttendaceObj !== null){
+                 let inTime = employeeAttendaceObj.in;
+                 let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
+                 let totalTime = 'N/A';
+
+                 if(employeeAttendaceObj.shift === 'Night Shift' ) {
+                   let inT = moment(key)
+                 }
+
+                 if(outTime && inTime) {
+                   let startTime = moment(inTime, "HH:mm a");
+                   let endTime=moment(outTime, "HH:mm a");
+                   let duration = moment.duration(endTime.diff(startTime));
+                   let hours = parseInt(duration.asHours());
+                   let minutes = parseInt(duration.asMinutes())%60;
+                   totalTime = hours + ' hr ' + minutes + ' min '
+                 }
+
+                 let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
+                 let istOutTime =  '--'
+                 if(outTime !== 'N/A')
+                   istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
+                 let isValid = true;
+
+                 if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
+                   isValid = false;
+                 }
+                   if(shiftSelected && shift !== employeeAttendaceObj.shift) {
+                     isValid = false;
+                   }
+
+                   if(isValid && inTime) {
+                    i++;
+                    reportData.push({
+                      serialNo : index + 1,
+                      manpowerId : key,
+                      name :  employeeAttendaceObj.name,
+                      numberOfPersons : employeeAttendaceObj.numberOfPersons,
+                      shift : employeeAttendaceObj.shift,
+                      inTime : istInTime,
+                      outTime : istOutTime,
+                      totalTime : totalTime
+                    })
+                    return <TableRow key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+                    {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
+                    {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
+                    {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
+
+                    <td>{i}</td>
+                    <td>{key}</td>
+                    <td>{employeeAttendaceObj.name}</td>
+                    <td>{employeeAttendaceObj.paymentType}</td>
+                    <td>{employeeAttendaceObj.shift}</td>
+                    <td>{employeeAttendaceObj.in}</td>
+                    <td>{outTime}</td>
+                    <td>{totalTime}</td>
+                    </TableRow>
+                  }
+             }
+             })
+           }
+         </tbody>
+     </Table>
+
+     </div>)
+   })
+   let ob = [{
+     start : startDate,
+     end : endDate
+   }]
+   return (
+     <div className='table'>
+
+     <div style={{float : 'right'}}>
+       <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
+         <Workbook.Sheet data={reportData} name="Sheet 1">
+             <Workbook.Column label="Serial No" value="serialNo"/>
+             <Workbook.Column label="MPId" value="serialNo"/>
+             <Workbook.Column label="Name" value="name"/>
+             <Workbook.Column label="Number Of Persons" value="numberOfPersons"/>
+             <Workbook.Column label="Shift" value="shift"/>
+             <Workbook.Column label="In Time" value="inTime"/>
+             <Workbook.Column label="Out Time" value="outTime"/>
+             <Workbook.Column label="Total Time" value="totalTime"/>
+         </Workbook.Sheet>
+         <Workbook.Sheet  data={ob} name="Information">
+             <Workbook.Column label="Start Date" value="start"/>
+             <Workbook.Column label="End Date" value="end"/>
+         </Workbook.Sheet>
+       </Workbook>
+       <Button icon={<PrintIcon />} label='Print' fill={true}
+       onClick={this.printTableData.bind(this)}
+       primary={true} style={{marginRight: '13px'}}
+       href='#'/>
+       <Button icon={<PrintIcon />} label='testing' fill={true}
+       onClick={this.makecall.bind(this)}
+       primary={true} style={{marginRight: '13px'}}
+       href='#'/>
+       <Button icon={<PrintIcon />} label='Email Report' fill={true}
+       onClick={this.onEmailReportClick.bind(this)}
+       primary={true} style={{marginRight: '13px'}}
+       href='#'/>
+       <div>
+
+       </div>
+     </div>
+     {tablesArray}
+     </div>
+   )
+ }
+
+
   showEmployeeReportsTable() {
 
     const { response,
@@ -476,7 +651,7 @@ renderInputFields() {
             paymentType,
             shift,
             shiftSelected,
-            paymentTypeSelected } = this.state;
+            paymentTypeSelected, employeeVsDate, allEmployees } = this.state;
 
 
     if(!response)
@@ -488,23 +663,19 @@ renderInputFields() {
     let tablesArray = [];
     let reportData = [];
 
-
-
-    Object.keys(response).map((date, index) => {
-      const attendanceObj = response[date];
-      if(attendanceObj ==null)
+    console.log('employee vs date = ', employeeVsDate);
+    Object.keys(employeeVsDate).map((employeeId, index) => {
+      const attendanceObjArray = employeeVsDate[employeeId];
+      if(attendanceObjArray ==null)
         return;
         let i = 0;
       tablesArray.push(<div className='tablesArray' key={index}>
-      <h2 style={{marginLeft : '20px'}}>{date}</h2>
+      <h2 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']}</h2>
       <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
-             <th>Manpower Id</th>
-             <th>Name</th>
-             <th>Payment Type</th>
-             <th>Shift</th>
+             <th>Date</th>
              <th>In Time</th>
              <th>Out Time</th>
              <th>Total Time Spent</th>
@@ -512,15 +683,16 @@ renderInputFields() {
           </thead>
           <tbody>
             {
-                Object.keys(attendanceObj).map((key,index)=> {
-                  const employeeAttendaceObj = attendanceObj[key];
+                attendanceObjArray.map((dateObject,index)=> {
+                  const dateVal = dateObject['date']
+                  const employeeAttendaceObj = dateObject['value'];
                   if(employeeAttendaceObj !== null){
                   let inTime = employeeAttendaceObj.in;
                   let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
                   let totalTime = 'N/A';
 
                   if(employeeAttendaceObj.shift === 'Night Shift' ) {
-                    let inT = moment(key)
+                    let inT = moment(dateVal)
                   }
 
                   if(outTime && inTime) {
@@ -549,7 +721,7 @@ renderInputFields() {
                      i++;
                      reportData.push({
                        serialNo : index + 1,
-                       manpowerId : key,
+                       manpowerId : employeeId,
                        name :  employeeAttendaceObj.name,
                        numberOfPersons : employeeAttendaceObj.numberOfPersons,
                        shift : employeeAttendaceObj.shift,
@@ -557,16 +729,13 @@ renderInputFields() {
                        outTime : istOutTime,
                        totalTime : totalTime
                      })
-                     return <TableRow key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+                     return <TableRow key={employeeId} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
                      {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                      {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
                      {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
 
                      <td>{i}</td>
-                     <td>{key}</td>
-                     <td>{employeeAttendaceObj.name}</td>
-                     <td>{employeeAttendaceObj.paymentType}</td>
-                     <td>{employeeAttendaceObj.shift}</td>
+                     <td>{dateVal}</td>
                      <td>{employeeAttendaceObj.in}</td>
                      <td>{outTime}</td>
                      <td>{totalTime}</td>
