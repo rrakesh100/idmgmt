@@ -242,101 +242,6 @@ renderInputFields() {
     }
   }
 
-  printBusinessCard() {
-      if(this.state.printTableSelected) {
-        const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate } = this.state;
-
-        let tablesArray = [];
-        Object.keys(response).map((attendance, index) => {
-          const attendanceObj = response[attendance];
-          if(attendanceObj ==null)
-            return;
-            let i = 0;
-          tablesArray.push(<div className='tablesArray' key={index}>
-          <h2 style={{marginLeft : '20px'}}>{attendance}</h2>
-          <Table scrollable={true} style={{marginTop : '30px', marginLeft : '20px'}}>
-              <thead style={{position:'relative'}}>
-               <tr>
-                 <th>S No.</th>
-                 <th>Manpower Id</th>
-                 <th>Name</th>
-                 <th>Payment Type</th>
-                 <th>Shift</th>
-                 <th>In Time</th>
-                 <th>Out Time</th>
-                 <th>Total Time Spent</th>
-               </tr>
-              </thead>
-              <tbody>
-                {
-                    Object.keys(attendanceObj).map((key,index)=> {
-                      const employeeAttendaceObj = attendanceObj[key];
-                      if(employeeAttendaceObj !== null){
-                      let inTime = employeeAttendaceObj.in;
-                      let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
-                      let totalTime = 'N/A';
-                      if(outTime && inTime) {
-                        let startTime = moment(inTime, "HH:mm a");
-                        let endTime=moment(outTime, "HH:mm a");
-                        let duration = moment.duration(endTime.diff(startTime));
-                        let hours = parseInt(duration.asHours());
-                        let minutes = parseInt(duration.asMinutes())%60;
-                        totalTime = hours + ' hr ' + minutes + ' min '
-                      }
-
-                      let isValid = true;
-
-                      if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
-                        isValid = false;
-                      }
-                        if(shiftSelected && shift !== employeeAttendaceObj.shift) {
-                          isValid = false;
-                        }
-
-                        if(isValid && inTime) {
-                         i++;
-                         return <TableRow key={key}>
-
-                         <td>{i}</td>
-                         <td>{key}</td>
-                         <td>{employeeAttendaceObj.name}</td>
-                         <td>{employeeAttendaceObj.paymentType}</td>
-                         <td>{employeeAttendaceObj.shift}</td>
-                         <td>{employeeAttendaceObj.in}</td>
-                         <td>{outTime}</td>
-                         <td>{totalTime}</td>
-                         </TableRow>
-                       }
-                  }
-                  })
-                }
-              </tbody>
-          </Table>
-
-          </div>)
-        })
-      return(
-        <Print name='bizCard' exclusive>
-         <div className='eCard' style={{width:'100%', height:'100%'}}>
-           <div>
-             <div style={{marginLeft: '320px'}}>
-               <h5 style={{fontWeight: 'bold'}}>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
-               <h5 style={{marginLeft:'30px'}}>Unit-2, Valuthimmapuram Road, Peddapuram</h5>
-             </div>
-             <div style={{marginLeft: '250px'}}>
-             <h3>Man power report from {startDate} to {endDate}</h3>
-             <h3 style={{fontWeight:'bold', marginLeft: '100px'}}>{paymentType}, {shift}</h3>
-             </div>
-             <div>
-             {tablesArray}
-             </div>
-           </div>
-          </div>
-        </Print>
-      );
-    }
-  }
-
 
   renderPDFDoc(reportData){
 
@@ -640,6 +545,120 @@ renderInputFields() {
      {tablesArray}
      </div>
    )
+ }
+
+ printBusinessCard() {
+     if(this.state.printTableSelected) {
+       const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate, employeeVsDate, allEmployees } = this.state;
+
+       let tablesArray = [];
+       let reportData = [];
+       
+       Object.keys(employeeVsDate).map((employeeId, index) => {
+         const attendanceObjArray = employeeVsDate[employeeId];
+         if(attendanceObjArray ==null)
+           return;
+           let i = 0;
+         tablesArray.push(<div className='tablesArray' key={index}>
+         <h2 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']}</h2>
+         <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
+             <thead style={{position:'relative'}}>
+              <tr>
+                <th>S No.</th>
+                <th>Date</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>Total Time Spent</th>
+              </tr>
+             </thead>
+             <tbody>
+               {
+                   attendanceObjArray.map((dateObject,index)=> {
+                     const dateVal = dateObject['date']
+                     const employeeAttendaceObj = dateObject['value'];
+                     if(employeeAttendaceObj !== null){
+                     let inTime = employeeAttendaceObj.in;
+                     let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
+                     let totalTime = 'N/A';
+
+                     if(employeeAttendaceObj.shift === 'Night Shift' ) {
+                       let inT = moment(dateVal)
+                     }
+
+                     if(outTime && inTime) {
+                       let startTime = moment(inTime, "HH:mm a");
+                       let endTime=moment(outTime, "HH:mm a");
+                       let duration = moment.duration(endTime.diff(startTime));
+                       let hours = parseInt(duration.asHours());
+                       let minutes = parseInt(duration.asMinutes())%60;
+                       totalTime = hours + ' hr ' + minutes + ' min '
+                     }
+
+                     let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
+                     let istOutTime =  '--'
+                     if(outTime !== 'N/A')
+                       istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
+                     let isValid = true;
+
+                     if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
+                       isValid = false;
+                     }
+                       if(shiftSelected && shift !== employeeAttendaceObj.shift) {
+                         isValid = false;
+                       }
+
+                       if(isValid && inTime) {
+                        i++;
+                        reportData.push({
+                          serialNo : index + 1,
+                          manpowerId : employeeId,
+                          name :  employeeAttendaceObj.name,
+                          numberOfPersons : employeeAttendaceObj.numberOfPersons,
+                          shift : employeeAttendaceObj.shift,
+                          inTime : istInTime,
+                          outTime : istOutTime,
+                          totalTime : totalTime
+                        })
+                        return <TableRow key={employeeId} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+                        {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
+                        {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
+                        {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
+
+                        <td>{i}</td>
+                        <td>{dateVal}</td>
+                        <td>{employeeAttendaceObj.in}</td>
+                        <td>{outTime}</td>
+                        <td>{totalTime}</td>
+                        </TableRow>
+                      }
+                 }
+                 })
+               }
+             </tbody>
+         </Table>
+
+         </div>)
+       })
+     return(
+       <Print name='bizCard' exclusive>
+        <div className='eCard' style={{width:'100%', height:'100%'}}>
+          <div>
+            <div style={{marginLeft: '320px'}}>
+              <h5 style={{fontWeight: 'bold'}}>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
+              <h5 style={{marginLeft:'30px'}}>Unit-2, Valuthimmapuram Road, Peddapuram</h5>
+            </div>
+            <div style={{marginLeft: '250px'}}>
+            <h3>Man power report from {startDate} to {endDate}</h3>
+            <h3 style={{fontWeight:'bold', marginLeft: '100px'}}>{paymentType}, {shift}</h3>
+            </div>
+            <div>
+            {tablesArray}
+            </div>
+          </div>
+         </div>
+       </Print>
+     );
+   }
  }
 
 
