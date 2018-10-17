@@ -463,9 +463,6 @@ renderInputFields() {
                  if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
                    isValid = false;
                  }
-                   if(shiftSelected && shift !== employeeAttendaceObj.shift) {
-                     isValid = false;
-                   }
 
                    if(isValid && inTime) {
                     i++;
@@ -553,19 +550,21 @@ renderInputFields() {
 
        let tablesArray = [];
        let reportData = [];
-       
+
        Object.keys(employeeVsDate).map((employeeId, index) => {
          const attendanceObjArray = employeeVsDate[employeeId];
          if(attendanceObjArray ==null)
            return;
            let i = 0;
-         tablesArray.push(<div className='tablesArray' key={index}>
-         <h2 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']}</h2>
+         tablesArray.push(<div className='tablesArray' style={{height : '1100px'}} key={index}>
+         <h3 style={{marginLeft : '20px'}}>Name : {allEmployees[employeeId]['name']} ; ID : {employeeId}}</h3>
+         <h5 style={{marginLeft : '20px'}}>Gender : {allEmployees[employeeId]['gender']} ; Village : {allEmployees[employeeId]['village']}</h5>
          <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
              <thead style={{position:'relative'}}>
               <tr>
                 <th>S No.</th>
                 <th>Date</th>
+                <th>Shift</th>
                 <th>In Time</th>
                 <th>Out Time</th>
                 <th>Total Time Spent</th>
@@ -603,22 +602,10 @@ renderInputFields() {
                      if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
                        isValid = false;
                      }
-                       if(shiftSelected && shift !== employeeAttendaceObj.shift) {
-                         isValid = false;
-                       }
+
 
                        if(isValid && inTime) {
                         i++;
-                        reportData.push({
-                          serialNo : index + 1,
-                          manpowerId : employeeId,
-                          name :  employeeAttendaceObj.name,
-                          numberOfPersons : employeeAttendaceObj.numberOfPersons,
-                          shift : employeeAttendaceObj.shift,
-                          inTime : istInTime,
-                          outTime : istOutTime,
-                          totalTime : totalTime
-                        })
                         return <TableRow key={employeeId} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
                         {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                         {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
@@ -626,12 +613,13 @@ renderInputFields() {
 
                         <td>{i}</td>
                         <td>{dateVal}</td>
+                        <td>{employeeAttendaceObj.shift}</td>
                         <td>{employeeAttendaceObj.in}</td>
                         <td>{outTime}</td>
                         <td>{totalTime}</td>
                         </TableRow>
                       }
-                 }
+                    }
                  })
                }
              </tbody>
@@ -643,13 +631,11 @@ renderInputFields() {
        <Print name='bizCard' exclusive>
         <div className='eCard' style={{width:'100%', height:'100%'}}>
           <div>
-            <div style={{marginLeft: '320px'}}>
-              <h5 style={{fontWeight: 'bold'}}>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
-              <h5 style={{marginLeft:'30px'}}>Unit-2, Valuthimmapuram Road, Peddapuram</h5>
-            </div>
-            <div style={{marginLeft: '250px'}}>
-            <h3>Man power report from {startDate} to {endDate}</h3>
-            <h3 style={{fontWeight:'bold', marginLeft: '100px'}}>{paymentType}, {shift}</h3>
+            <div style={{height:'1200px'}}>
+              <h2 style={{fontWeight: 'bold', marginLeft: '150px'}}>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h2>
+              <h3 style={{marginLeft: '180px'}}>Unit-2, Valuthimmapuram Road, Peddapuram</h3>
+              <h3>Man power report from {startDate} to {endDate}</h3>
+              <h3 style={{fontWeight:'bold'}}>{paymentType}, {shift}</h3>
             </div>
             <div>
             {tablesArray}
@@ -695,6 +681,7 @@ renderInputFields() {
            <tr>
              <th>S No.</th>
              <th>Date</th>
+             <th>Shift</th>
              <th>In Time</th>
              <th>Out Time</th>
              <th>Total Time Spent</th>
@@ -732,9 +719,7 @@ renderInputFields() {
                   if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
                     isValid = false;
                   }
-                    if(shiftSelected && shift !== employeeAttendaceObj.shift) {
-                      isValid = false;
-                    }
+                  console.log(paymentTypeSelected , employeeAttendaceObj.paymentType)
 
                     if(isValid && inTime) {
                      i++;
@@ -755,6 +740,7 @@ renderInputFields() {
 
                      <td>{i}</td>
                      <td>{dateVal}</td>
+                     <td>{employeeAttendaceObj.shift}</td>
                      <td>{employeeAttendaceObj.in}</td>
                      <td>{outTime}</td>
                      <td>{totalTime}</td>
@@ -794,10 +780,6 @@ renderInputFields() {
         </Workbook>
         <Button icon={<PrintIcon />} label='Print' fill={true}
         onClick={this.printTableData.bind(this)}
-        primary={true} style={{marginRight: '13px'}}
-        href='#'/>
-        <Button icon={<PrintIcon />} label='testing' fill={true}
-        onClick={this.makecall.bind(this)}
         primary={true} style={{marginRight: '13px'}}
         href='#'/>
         <Button icon={<PrintIcon />} label='Email Report' fill={true}
