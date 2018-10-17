@@ -566,9 +566,9 @@ renderInputFields() {
      return(
        <Print name='bizCard' exclusive>
           <div>
-            <div style={{height:'1200px'}}>
-              <h2 style={{fontWeight: 'bold', marginLeft: '150px'}}>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h2>
-              <h3 style={{marginLeft: '180px'}}>Unit-2, Valuthimmapuram Road, Peddapuram</h3>
+            <div style={{height:'1120px'}}>
+              <h2 style={{fontWeight: 'bold', marginLeft: '100px'}}>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h2>
+              <h3 style={{marginLeft: '100px'}}>Unit-2, Valuthimmapuram Road, Peddapuram</h3>
               <h3>Man power report from {startDate} to {endDate}</h3>
               <h3 style={{fontWeight:'bold'}}>{paymentType}, {shift}</h3>
             </div>
@@ -646,10 +646,14 @@ renderInputFields() {
          return;
 
        let uniqId = uniqid();
+<<<<<<< HEAD
      tablesArray.push(<div className='tablesArray' key={uniqId} style={isPrint ? {height: 1100} : {}}>
+=======
+     tablesArray.push(<div className='' key={uniqId} style={isPrint ? {height: '1050px'} : {}}>
+>>>>>>> b4c6968... fine tuning height
      <h3 style={{marginLeft : '20px'}}>Name : {allEmployees[employeeId]['name']} ; ID : {employeeId}</h3>
          <h5 style={{marginLeft : '20px'}}>Gender : {allEmployees[employeeId]['gender']} ; Village : {allEmployees[employeeId]['village']}</h5>
-     <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
+     <Table scrollable={true} style={isPrint ? {} :  { marginTop : '30px', marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
           <tr>
             <th>S No.</th>
