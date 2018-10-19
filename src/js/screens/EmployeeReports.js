@@ -47,8 +47,8 @@ class Reports extends Component {
   }
 
   componentDidMount() {
-    { this.getEmployees() }
-    { this.getShifts() }
+     this.getEmployees()
+     this.getShifts()
   }
 
   getShifts() {
@@ -92,8 +92,8 @@ class Reports extends Component {
 
 
   attendanceDatesLoop(endDate) {
+    const { startDate, unit } = this.state;
 
-    const {startDate} = this.state;
 
     let datesArr=[];
     let startDateParts = startDate.split("-");
@@ -107,7 +107,15 @@ class Reports extends Component {
     }
 
     let returnObj = {};
-    const dbRef = firebase.database().ref('attendance/');
+    let unitVal;
+    if(unit == 'UNIT2') {
+      unitVal= ''
+    } else {
+      unitVal = unit;
+    }
+    console.log(unitVal);
+    const dbRef = firebase.database().ref(`${unitVal}/attendance/`);
+    console.log(dbRef);
     Promise.all(
       datesArr.map((date) => {
         return dbRef.child('dates').child(date).once('value').then((snapshot) => {
@@ -136,6 +144,12 @@ class Reports extends Component {
            });
     })
 
+  }
+
+  onUnitFieldChange(fieldName, e) {
+    this.setState({
+      [fieldName] : e.option
+    })
   }
 
   onStartDateChange(e) {
@@ -180,7 +194,7 @@ class Reports extends Component {
 
 renderInputFields() {
 
-  const {shiftOpt} = this.state;
+  const { shiftOpt } = this.state;
 
   return (
     <div style={{marginLeft:'20px'}}>
@@ -192,6 +206,13 @@ renderInputFields() {
       margin='small'
       colorIndex='light-2'
     >
+    <p style={{marginLeft : '40px'}}>Select Unit</p>
+      <Select
+        placeHolder='Payment Type'
+        options={['UNIT1','UNIT2','UNIT3','UNIT4', ]}
+        value={this.state.unit}
+        onChange={this.onUnitFieldChange.bind(this, 'unit')}
+      />
     <p style={{marginLeft : '40px'}}>Select Start Date</p>
     <DateTime id='id' style={{marginLeft : '20px'}}
     format='D/M/YYYY'
@@ -260,11 +281,10 @@ renderInputFields() {
     })
 
     let id = 0;
-    console.log('uuuuu', employeeVsDate);let attendanceDataForAllEmployee = [];        let attendanceDataForEachEmployee = [];
+    let attendanceDataForAllEmployee = [];        let attendanceDataForEachEmployee = [];
     Object.keys(employeeVsDate).map(empId => {
         let allDates = employeeVsDate[empId];id=0;
         attendanceDataForEachEmployee = [];
-        console.log('kkkkkk', allDates);
         attendanceDataForEachEmployee.push(
           <View break key={empId}>
           <Text break>Employee ID = {empId}</Text>
@@ -330,9 +350,7 @@ renderInputFields() {
   onSavingEmailReport() {
     const { email, startDate, endDate } = this.state;
     const date = new Date();
-    console.log(date);
     const epochTime = date.getTime();
-    console.log(epochTime);
 
     let datesArr=[];
     let startDateParts = startDate.split("-");
@@ -525,10 +543,6 @@ renderInputFields() {
        onClick={this.printTableData.bind(this)}
        primary={true} style={{marginRight: '13px'}}
        href='#'/>
-       <Button icon={<PrintIcon />} label='testing' fill={true}
-       onClick={this.makecall.bind(this)}
-       primary={true} style={{marginRight: '13px'}}
-       href='#'/>
        <Button icon={<PrintIcon />} label='Email Report' fill={true}
        onClick={this.onEmailReportClick.bind(this)}
        primary={true} style={{marginRight: '13px'}}
@@ -547,7 +561,6 @@ renderInputFields() {
        const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate, employeeVsDate, allEmployees } = this.state;
 
        let tablesObj = this.getTablesArray(true);
-       console.log(tablesObj);
        if(!tablesObj)
        return null;
      return(
@@ -569,7 +582,6 @@ renderInputFields() {
  }
 
  getTablesArray(isPrint) {
-   console.log(isPrint);
    const { response,
            startDate,
            endDate,
@@ -615,7 +627,6 @@ renderInputFields() {
 
      const attendanceObjArray = employeeVsDate[employeeId];
      let empAttObj = allEmployees[employeeId];
-     console.log(empAttObj);
      if(attendanceObjArray ==null)
        return;
        let i = 0;
@@ -635,7 +646,7 @@ renderInputFields() {
          return;
 
        let uniqId = uniqid();
-     tablesArray.push(<div className='tablesArray' key={uniqId} style={isPrint ? {width: '21cm',height: '29.7cm'} : {}}>
+     tablesArray.push(<div className='tablesArray' key={uniqId} style={isPrint ? {height: 1100} : {}}>
      <h3 style={{marginLeft : '20px'}}>Name : {allEmployees[employeeId]['name']} ; ID : {employeeId}</h3>
          <h5 style={{marginLeft : '20px'}}>Gender : {allEmployees[employeeId]['gender']} ; Village : {allEmployees[employeeId]['village']}</h5>
      <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
@@ -902,6 +913,13 @@ renderInputFields() {
         <Tab title='Datewise'>
         { this.renderInputFields() }
         { this.showEmployeeReportsTable() }
+        { this.printPdf() }
+        { this.print() }
+        { this.emailReportDialog() }
+        </Tab>
+        <Tab title='Attendance Slip'>
+        { this.renderInputFields() }
+        { this.showOldEmployeeReportsTable() }
         { this.printPdf() }
         { this.print() }
         { this.emailReportDialog() }
