@@ -646,11 +646,8 @@ renderInputFields() {
          return;
 
        let uniqId = uniqid();
-<<<<<<< HEAD
-     tablesArray.push(<div className='tablesArray' key={uniqId} style={isPrint ? {height: 1100} : {}}>
-=======
+
      tablesArray.push(<div className='' key={uniqId} style={isPrint ? {height: '1050px'} : {}}>
->>>>>>> b4c6968... fine tuning height
      <h3 style={{marginLeft : '20px'}}>Name : {allEmployees[employeeId]['name']} ; ID : {employeeId}</h3>
          <h5 style={{marginLeft : '20px'}}>Gender : {allEmployees[employeeId]['gender']} ; Village : {allEmployees[employeeId]['village']}</h5>
      <Table scrollable={true} style={isPrint ? {} :  { marginTop : '30px', marginLeft : '30px'}}>
