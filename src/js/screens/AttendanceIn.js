@@ -323,7 +323,10 @@ class AttendanceIn extends Component {
   onMarkButtonClick() {
     const { selectedEmployeeId, selectedEmployeeData , screenshot, numberOfPersons, Date } = this.state;
     const shift = window.localStorage.shift || this.state.shift;
+    console.log(selectedEmployeeData);
     let selectedEmployeeName = selectedEmployeeData.name;
+    let selectedEmployeeVillage = selectedEmployeeData.village;
+    console.log(selectedEmployeeVillage);
     let paymentType = selectedEmployeeData.paymentType;
 
     if(!selectedEmployeeId || selectedEmployeeId === '') {

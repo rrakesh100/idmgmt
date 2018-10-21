@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { getEmployees, getEmployee } from '../api/employees';
 import { attendanceDatesLoop, getEmployeeAttendanceDates, saveEmailReport } from '../api/attendance';
+import { getVillages } from '../api/configuration';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import Select from 'grommet/components/Select';
@@ -20,6 +21,8 @@ import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
 import TextInput from 'grommet/components/TextInput';
 import Layer from 'grommet/components/Layer';
+import Split from 'grommet/components/Split';
+import Section from 'grommet/components/Section';
 import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
 import PrintIcon from 'grommet/components/icons/base/Print';
@@ -49,6 +52,20 @@ class Reports extends Component {
   componentDidMount() {
      this.getEmployees()
      this.getShifts()
+     this.getVillageDetails()
+  }
+
+  getVillageDetails() {
+    getVillages().then((snap) => {
+      const villageOptions = snap.val();
+      let villageOpt = ['-EMPTY-'];
+      Object.keys(villageOptions).forEach((opt) => {
+        villageOpt.push(opt)
+      })
+      this.setState({
+        villageOpt
+      })
+    }).catch((e) => console.log(e))
   }
 
   getShifts() {
@@ -113,9 +130,7 @@ class Reports extends Component {
     } else {
       unitVal = unit;
     }
-    console.log(unitVal);
     const dbRef = firebase.database().ref(`${unitVal}/attendance/`);
-    console.log(dbRef);
     Promise.all(
       datesArr.map((date) => {
         return dbRef.child('dates').child(date).once('value').then((snapshot) => {
@@ -192,56 +207,108 @@ class Reports extends Component {
   }
 }
 
+onGenderFieldChange(fieldName, e) {
+  this.setState({
+    [fieldName] : e.option,
+    genderSelected : true
+  })
+}
+
+onVillageFieldChange(fieldName, e) {
+  this.setState({
+    [fieldName] : e.option,
+    villageSelected : true
+  })
+}
+
 renderInputFields() {
 
-  const { shiftOpt } = this.state;
-
+  const { shiftOpt, villageOpt } = this.state;
+  console.log(villageOpt);
   return (
-    <div style={{marginLeft:'20px'}}>
-    <Box direction='row'
-      justify='start'
-      align='center'
-      wrap={true}
-      pad='medium'
-      margin='small'
-      colorIndex='light-2'
-    >
-    <p style={{marginLeft : '40px'}}>Select Unit</p>
+    <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 380}}>
+    <Split>
+    <div style={{flexDirection: 'column', marginLeft: 20}}>
+    <div style={{width: 300}}>
+    <FormField label='Select Unit' style={{marginTop:20}}>
       <Select
-        placeHolder='Payment Type'
+        placeHolder='Unit'
         options={['UNIT1','UNIT2','UNIT3','UNIT4', ]}
         value={this.state.unit}
         onChange={this.onUnitFieldChange.bind(this, 'unit')}
       />
-    <p style={{marginLeft : '40px'}}>Select Start Date</p>
-    <DateTime id='id' style={{marginLeft : '20px'}}
+    </FormField>
+    </div>
+
+    <div style={{width: 300}}>
+    <FormField label='From Date' style={{marginTop:15}}>
+
+    <DateTime id='id'
     format='D/M/YYYY'
     name='name'
     onChange={this.onStartDateChange.bind(this)}
     value={this.state.startDate}
     />
-    <p style={{marginLeft : '40px'}}>Select End Date</p>
-    <DateTime id='id' style={{marginLeft : '20px'}}
+    </FormField>
+    </div>
+
+    <div style={{width: 300}}>
+    <FormField label='To Date' style={{marginTop:15}}>
+
+    <DateTime id='id'
     format='D/M/YYYY'
     name='name'
     onChange={this.onEndDateChange.bind(this)}
     value={this.state.endDate}
     />
-    <p style={{marginLeft : '40px'}}>Select Payment Type</p>
-      <Select
-        placeHolder='Payment Type'
-        options={['-EMPTY-', 'Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
-        value={this.state.paymentType}
-        onChange={this.onPaymentFieldChange.bind(this, 'paymentType')}
-      />
-      <p style={{marginLeft : '40px', marginRight: '50px'}}>Select Shift</p>
-        <Select
-          placeHolder='Shift'
-          options={shiftOpt}
-          value={this.state.shift}
-          onChange={this.onShiftFieldChange.bind(this, 'shift')}
-        />
-    </Box>
+    </FormField>
+    </div>
+    </div>
+
+        <div style={{flexDirection: 'column'}}>
+        <div style={{width: 300}}>
+        <FormField label='Select Payment Type' style={{marginTop:15}}>
+
+          <Select
+            placeHolder='Payment Type'
+            options={['-EMPTY-', 'Daily payment', 'Weekly payment', 'Jattu-Daily payment']}
+            value={this.state.paymentType}
+            onChange={this.onPaymentFieldChange.bind(this, 'paymentType')}
+          />
+        </FormField>
+        </div>
+        <div style={{width: 300}}>
+        <FormField label='Select Shift' style={{marginTop:15}}>
+            <Select
+              placeHolder='Shift'
+              options={shiftOpt}
+              value={this.state.shift}
+              onChange={this.onShiftFieldChange.bind(this, 'shift')}
+            />
+        </FormField>
+        </div>
+        <div style={{width: 300}}>
+        <FormField label='Select Gender' style={{marginTop:15}}>
+            <Select
+              placeHolder='Gender'
+              options={['Male', 'Female']}
+              value={this.state.gender}
+              onChange={this.onGenderFieldChange.bind(this, 'gender')}
+            />
+        </FormField>
+        </div>
+        <div style={{width: 300}}>
+        <FormField label='Select Village' style={{marginTop:15}}>
+            <Select
+              placeHolder='Village'
+              options={villageOpt}
+              value={this.state.village}
+              onChange={this.onVillageFieldChange.bind(this, 'village')}
+            />
+        </FormField>
+        </div>
+        </div>
+        </Split>
     </div>
   )
 }
@@ -452,6 +519,7 @@ renderInputFields() {
            {
                Object.keys(attendanceObj).map((key,index)=> {
                  const employeeAttendaceObj = attendanceObj[key];
+                 console.log(employeeAttendaceObj);
                  if(employeeAttendaceObj !== null){
                  let inTime = employeeAttendaceObj.in;
                  let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
@@ -908,7 +976,7 @@ renderInputFields() {
 
   render() {
       return (
-        <Article>
+        <div>
 
         <Tabs>
         <Tab title='Datewise'>
@@ -930,7 +998,7 @@ renderInputFields() {
         { this.renderEmployeeAttendanceTable() }
         </Tab>
         </Tabs>
-        </Article>
+        </div>
       )
     }
 }
