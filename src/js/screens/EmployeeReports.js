@@ -81,10 +81,26 @@ class Reports extends Component {
     }).catch((e) => console.log(e))
   }
 
+  sort(arr){
+      arr.sort(function(a , b){
+          let A = a.label || "";
+          let B = b.label || "";
+          if(A < B)
+              return -1;
+          else if (A > B)
+              return 1;
+          else {
+              return 0;
+          }
+      })
+      return arr;
+  }
+
   getEmployees() {
     getEmployees()
       .then((snap) => {
         const data = snap.val();
+        console.log(data);
         if (!data) {
           return;
         }
@@ -97,8 +113,8 @@ class Reports extends Component {
           })
         })
         this.setState({
-          employeeSuggestions: suggests,
-          filteredSuggestions: suggests,
+          employeeSuggestions: this.sort(suggests),
+          filteredSuggestions: this.sort(suggests),
           allEmployees : data
         });
       })
@@ -109,9 +125,9 @@ class Reports extends Component {
 
 
   attendanceDatesLoop(endDate) {
-    const { startDate, unit } = this.state;
+    const { startDate, unit, allEmployees } = this.state;
 
-
+    console.log(allEmployees);
     let datesArr=[];
     let startDateParts = startDate.split("-");
     let endDateParts = endDate.split("-");
@@ -147,7 +163,7 @@ class Reports extends Component {
               let existingData  = employeeVsDate[empId] || [];
               let newData = {
                 date : date,
-                value :  attObj[empId]
+                value : attObj[empId]
               }
               existingData.push(newData);
               employeeVsDate[empId] = existingData;
@@ -208,23 +224,36 @@ class Reports extends Component {
 }
 
 onGenderFieldChange(fieldName, e) {
-  this.setState({
-    [fieldName] : e.option,
-    genderSelected : true
-  })
+    if(e.option == '-EMPTY-') {
+      this.setState({
+        [fieldName] : e.option,
+        genderSelected: false
+      })
+    } else {
+    this.setState({
+      [fieldName]: e.option,
+      genderSelected: true
+    })
+  }
 }
 
 onVillageFieldChange(fieldName, e) {
-  this.setState({
-    [fieldName] : e.option,
-    villageSelected : true
-  })
+    if(e.option == '-EMPTY-') {
+      this.setState({
+        [fieldName] : e.option,
+        villageSelected: false
+      })
+    } else {
+    this.setState({
+      [fieldName]: e.option,
+      villageSelected: true
+    })
+  }
 }
 
 renderInputFields() {
 
   const { shiftOpt, villageOpt } = this.state;
-  console.log(villageOpt);
   return (
     <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 380}}>
     <Split>
@@ -267,7 +296,7 @@ renderInputFields() {
 
         <div style={{flexDirection: 'column'}}>
         <div style={{width: 300}}>
-        <FormField label='Select Payment Type' style={{marginTop:15}}>
+        <FormField label='Select Payment Type' style={{marginTop:20}}>
 
           <Select
             placeHolder='Payment Type'
@@ -291,7 +320,7 @@ renderInputFields() {
         <FormField label='Select Gender' style={{marginTop:15}}>
             <Select
               placeHolder='Gender'
-              options={['Male', 'Female']}
+              options={['-EMPTY-', 'Male', 'Female']}
               value={this.state.gender}
               onChange={this.onGenderFieldChange.bind(this, 'gender')}
             />
@@ -307,6 +336,9 @@ renderInputFields() {
             />
         </FormField>
         </div>
+        </div>
+        <div style={{marginTop: 20}}>
+        { this.searchField() }
         </div>
         </Split>
     </div>
@@ -485,8 +517,16 @@ renderInputFields() {
            paymentType,
            shift,
            shiftSelected,
-           paymentTypeSelected } = this.state;
+           paymentTypeSelected,
+           allEmployees,
+           gender,
+           village,
+           genderSelected,
+           villageSelected,
+           employeeSelected,
+           selectedEmployeeId } = this.state;
 
+   console.log(allEmployees);
 
    if(!response)
    return null;
@@ -495,6 +535,7 @@ renderInputFields() {
 
    let tablesArray = [];
    let reportData = [];
+   let i = 0;
 
    Object.keys(response).map((date, index) => {
      const attendanceObj = response[date];
@@ -519,7 +560,6 @@ renderInputFields() {
            {
                Object.keys(attendanceObj).map((key,index)=> {
                  const employeeAttendaceObj = attendanceObj[key];
-                 console.log(employeeAttendaceObj);
                  if(employeeAttendaceObj !== null){
                  let inTime = employeeAttendaceObj.in;
                  let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
@@ -545,6 +585,22 @@ renderInputFields() {
                  let isValid = true;
 
                  if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
+                   isValid = false;
+                 }
+
+                 if(shiftSelected && shift !== employeeAttendaceObj.shift) {
+                   isValid = false;
+                 }
+
+                 if(genderSelected && gender !== allEmployees[key]['gender'] ) {
+                   isValid = false;
+                 }
+
+                 if(villageSelected && village !== allEmployees[key]['village'] ) {
+                   isValid = false;
+                 }
+
+                 if(employeeSelected && selectedEmployeeId !== key ) {
                    isValid = false;
                  }
 
@@ -635,8 +691,6 @@ renderInputFields() {
        <Print name='bizCard' exclusive>
           <div>
             <div style={{height:'1120px'}}>
-              <h2 style={{fontWeight: 'bold', marginLeft: '100px'}}>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h2>
-              <h3 style={{marginLeft: '100px'}}>Unit-2, Valuthimmapuram Road, Peddapuram</h3>
               <h3>Man power report from {startDate} to {endDate}</h3>
               <h3 style={{fontWeight:'bold'}}>{paymentType}, {shift}</h3>
             </div>
@@ -649,14 +703,45 @@ renderInputFields() {
    }
  }
 
+ printAttendanceSlipPdf() {
+   if(this.state.printTableSelected) {
+     const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate, employeeVsDate, allEmployees } = this.state;
+     let tablesArr = this.showOldEmployeeReportsTable();
+     console.log(tablesObj);
+
+   return(
+     <Print name='bizCard' exclusive>
+        <div>
+          <div style={{height:'1120px'}}>
+            <h3>Man power report from {startDate} to {endDate}</h3>
+            <h3 style={{fontWeight:'bold'}}>{paymentType}, {shift}</h3>
+          </div>
+          <div>
+          {tablesArr}
+          </div>
+        </div>
+     </Print>
+   );
+ }
+ }
+
  getTablesArray(isPrint) {
    const { response,
            startDate,
            endDate,
            paymentType,
            shift,
+           gender,
+           village,
            shiftSelected,
-           paymentTypeSelected, employeeVsDate, allEmployees } = this.state;
+           paymentTypeSelected,
+           genderSelected,
+           villageSelected,
+           employeeVsDate,
+           allEmployees,
+           employeeSelected,
+           selectedEmployeeId } = this.state;
+
 
    if(!response)
    return null;
@@ -687,9 +772,6 @@ renderInputFields() {
      }
    })
 
-
-
-
    idVsName.map((idNameObj, index) => {
      let employeeId = idNameObj['id'];
 
@@ -707,6 +789,18 @@ renderInputFields() {
        }
 
        if(shiftSelected && shift !== empAttObj.shift) {
+         isValid = false;
+       }
+
+       if(genderSelected && gender !== allEmployees[employeeId]['gender'] ) {
+         isValid = false;
+       }
+
+       if(villageSelected && village !== allEmployees[employeeId]['village'] ) {
+         isValid = false;
+       }
+
+       if(employeeSelected && selectedEmployeeId !== employeeId ) {
          isValid = false;
        }
 
@@ -854,22 +948,39 @@ renderInputFields() {
   }
 
   onSearchEntry(e) {
+    this.setState({selectedEmployeeData: {}})
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
+    let exactMatch = false;
+
+    if(!options)
+      return ;
+
     if(e.target.value == '')
       filtered = options
     else {
       options.forEach((opt) => {
-        if(opt.label.startsWith(e.target.value))
+        console.log(opt);
+        if(opt.label && opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
-        if(opt.employeeId.startsWith(e.target.value))
-          filtered.push(opt)
+        else if(opt.employeeId && opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
+          filtered.push(opt);
+          if(opt.employeeId.toUpperCase() == e.target.value.toUpperCase())
+            exactMatch = true;
+        }
       })
     }
     this.setState({
       employeeSearchString: e.target.value,
       filteredSuggestions: filtered
-    });
+    }, () => {
+      if(filtered.length == 1 && exactMatch) {
+        let data = {};
+        data.suggestion = filtered[0];
+        this.onEmployeeSelect(data, true, false);
+      }
+     }
+   );
   }
 
   fetchSearchedEmployee() {
@@ -886,14 +997,29 @@ renderInputFields() {
     if(isSuggestionSelected) {
       this.setState({
         selectedEmployeeId: data.suggestion.employeeId,
-        employeeSearchString: data.suggestion.label
+        employeeSearchString: data.suggestion.label,
+        employeeSelected: true
       }, this.fetchSearchedEmployee.bind(this));
     } else {
       this.setState({
         selectedEmployeeId: data.target.value,
-        employeeSearchString: data.suggestion
+        employeeSearchString: data.suggestion,
+        employeeSelected: true
       }, this.fetchSearchedEmployee.bind(this));
     }
+  }
+
+  searchField() {
+    return (
+      <Search placeHolder='Search By Name or Barcode' style={{width:'300px'}}
+        inline={true}
+        iconAlign='start'
+        size='small'
+        suggestions={this.state.filteredSuggestions}
+        value={this.state.employeeSearchString}
+        onSelect={this.onEmployeeSelect.bind(this)}
+        onDOMChange={this.onSearchEntry.bind(this)} />
+    )
   }
 
   renderSearchField() {
@@ -908,14 +1034,7 @@ renderInputFields() {
         colorIndex='light-2'
       >
       <p style={{margin : '20px'}}>Select Employee</p>
-      <Search placeHolder='Search employee By Name or Barcode' style={{width:'600px'}}
-        inline={true}
-        iconAlign='start'
-        size='small'
-        suggestions={this.state.filteredSuggestions}
-        value={this.state.employeeSearchString}
-        onSelect={this.onEmployeeSelect.bind(this)}
-        onDOMChange={this.onSearchEntry.bind(this)} />
+      { this.searchField() }
       </Box>
       </div>
     );
@@ -989,7 +1108,7 @@ renderInputFields() {
         <Tab title='Attendance Slip'>
         { this.renderInputFields() }
         { this.showOldEmployeeReportsTable() }
-        { this.printPdf() }
+        { this.printAttendanceSlipPdf() }
         { this.print() }
         { this.emailReportDialog() }
         </Tab>

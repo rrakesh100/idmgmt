@@ -199,7 +199,7 @@ class Employees extends Component {
       </Header>
         {errorNode}
         <Split>
-            <Tabs justify='start' style={{marginLeft:'40px', width: 900}}>
+            <Tabs justify='start' style={{marginLeft:'40px', width: 1000}}>
             <Tab title='ATTENDANCE IN'>
             <AttendanceIn />
             </Tab>
