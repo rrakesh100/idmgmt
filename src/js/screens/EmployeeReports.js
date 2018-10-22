@@ -261,7 +261,11 @@ renderInputFields() {
     <div style={{width: 300}}>
     <FormField label='Select Unit' style={{marginTop:20}}>
       <Select
+<<<<<<< Updated upstream
         placeHolder='Unit'
+=======
+        placeHolder='Select UNIT'
+>>>>>>> Stashed changes
         options={['UNIT1','UNIT2','UNIT3','UNIT4', ]}
         value={this.state.unit}
         onChange={this.onUnitFieldChange.bind(this, 'unit')}
@@ -1098,14 +1102,14 @@ renderInputFields() {
         <div>
 
         <Tabs>
-        <Tab title='Datewise'>
+        <Tab title='Attendance Slip'>
         { this.renderInputFields() }
         { this.showEmployeeReportsTable() }
         { this.printPdf() }
         { this.print() }
         { this.emailReportDialog() }
         </Tab>
-        <Tab title='Attendance Slip'>
+        <Tab title='Datewise'>
         { this.renderInputFields() }
         { this.showOldEmployeeReportsTable() }
         { this.printAttendanceSlipPdf() }
