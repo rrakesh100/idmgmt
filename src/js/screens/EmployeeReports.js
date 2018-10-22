@@ -707,7 +707,7 @@ renderInputFields() {
    if(this.state.printTableSelected) {
      const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate, employeeVsDate, allEmployees } = this.state;
      let tablesArr = this.showOldEmployeeReportsTable();
-     console.log(tablesObj);
+     console.log(tablesArr);
 
    return(
      <Print name='bizCard' exclusive>
