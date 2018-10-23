@@ -255,17 +255,12 @@ renderInputFields() {
 
   const { shiftOpt, villageOpt } = this.state;
   return (
-    <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 380}}>
-    <Split>
-    <div style={{flexDirection: 'column', marginLeft: 20}}>
+    <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
+    <div style={{display : 'flex', flexDirection : 'column'}} >
     <div style={{width: 300}}>
     <FormField label='Select Unit' style={{marginTop:20}}>
       <Select
-<<<<<<< Updated upstream
-        placeHolder='Unit'
-=======
         placeHolder='Select UNIT'
->>>>>>> Stashed changes
         options={['UNIT1','UNIT2','UNIT3','UNIT4', ]}
         value={this.state.unit}
         onChange={this.onUnitFieldChange.bind(this, 'unit')}
@@ -298,7 +293,7 @@ renderInputFields() {
     </div>
     </div>
 
-        <div style={{flexDirection: 'column'}}>
+    <div style={{display : 'flex', flexDirection : 'column'}} >
         <div style={{width: 300}}>
         <FormField label='Select Payment Type' style={{marginTop:20}}>
 
@@ -330,21 +325,10 @@ renderInputFields() {
             />
         </FormField>
         </div>
-        <div style={{width: 300}}>
-        <FormField label='Select Village' style={{marginTop:15}}>
-            <Select
-              placeHolder='Village'
-              options={villageOpt}
-              value={this.state.village}
-              onChange={this.onVillageFieldChange.bind(this, 'village')}
-            />
-        </FormField>
         </div>
-        </div>
-        <div style={{marginTop: 20}}>
+        <div style={{display : 'flex', flexDirection : 'column', marginTop: 20}} >
         { this.searchField() }
         </div>
-        </Split>
     </div>
   )
 }
@@ -651,7 +635,7 @@ renderInputFields() {
      <div className='table'>
 
      <div style={{float : 'right'}}>
-       <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
+       <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px', marginTop : '20px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
          <Workbook.Sheet data={reportData} name="Sheet 1">
              <Workbook.Column label="Serial No" value="serialNo"/>
              <Workbook.Column label="MPId" value="serialNo"/>
