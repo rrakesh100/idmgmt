@@ -333,9 +333,15 @@ renderInputFields() {
   )
 }
 
-  printTableData() {
+  attendancePrintTableData() {
     this.setState({
-      printTableSelected: true
+      attendancePrintSelected: true
+    })
+  }
+
+  datewisePrintTableData() {
+    this.setState({
+      datewisePrintSelected: true
     })
   }
 
@@ -343,10 +349,19 @@ renderInputFields() {
     setTimeout(() => window.print(), 4000)
   }
 
-  print() {
-    if(this.state.printTableSelected) {
+  attendancePrint() {
+    console.log(this.state.attendancePrintSelected);
+    if(this.state.attendancePrintSelected) {
       this.setState({
-        printTableSelected: false
+        attendancePrintSelected: false
+      }, this.setTimeoutFunc())
+    }
+  }
+
+  datewisePrint() {
+    if(this.state.datewisePrintSelected) {
+      this.setState({
+        datewisePrintSelected: false
       }, this.setTimeoutFunc())
     }
   }
@@ -651,14 +666,6 @@ renderInputFields() {
              <Workbook.Column label="End Date" value="end"/>
          </Workbook.Sheet>
        </Workbook>
-       <Button icon={<PrintIcon />} label='Print' fill={true}
-       onClick={this.printTableData.bind(this)}
-       primary={true} style={{marginRight: '13px'}}
-       href='#'/>
-       <Button icon={<PrintIcon />} label='Email Report' fill={true}
-       onClick={this.onEmailReportClick.bind(this)}
-       primary={true} style={{marginRight: '13px'}}
-       href='#'/>
        <div>
 
        </div>
@@ -669,7 +676,7 @@ renderInputFields() {
  }
 
  printPdf() {
-     if(this.state.printTableSelected) {
+     if(this.state.attendancePrintSelected) {
        const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate, employeeVsDate, allEmployees } = this.state;
 
        let tablesObj = this.getTablesArray(true);
@@ -679,8 +686,7 @@ renderInputFields() {
        <Print name='bizCard' exclusive>
           <div>
             <div style={{height:'1120px'}}>
-              <h3>Man power report from {startDate} to {endDate}</h3>
-              <h3 style={{fontWeight:'bold'}}>{paymentType}, {shift}</h3>
+              <h3 style={{marginLeft: 'auto', marginRight: 'auto'}}>Man power report from {startDate} to {endDate}</h3>
             </div>
             <div>
             {tablesObj['tablesArray']}
@@ -918,13 +924,10 @@ renderInputFields() {
           </Workbook.Sheet>
         </Workbook>
         <Button icon={<PrintIcon />} label='Print' fill={true}
-        onClick={this.printTableData.bind(this)}
+        onClick={this.attendancePrintTableData.bind(this)}
         primary={true} style={{marginRight: '13px'}}
         href='#'/>
-        <Button icon={<PrintIcon />} label='Email Report' fill={true}
-        onClick={this.onEmailReportClick.bind(this)}
-        primary={true} style={{marginRight: '13px'}}
-        href='#'/>
+
         <div>
 
         </div>
@@ -1090,14 +1093,12 @@ renderInputFields() {
         { this.renderInputFields() }
         { this.showEmployeeReportsTable() }
         { this.printPdf() }
-        { this.print() }
+        { this.attendancePrint() }
         { this.emailReportDialog() }
         </Tab>
         <Tab title='Datewise'>
         { this.renderInputFields() }
         { this.showOldEmployeeReportsTable() }
-        { this.printAttendanceSlipPdf() }
-        { this.print() }
         { this.emailReportDialog() }
         </Tab>
         <Tab title='Employeewise'>
