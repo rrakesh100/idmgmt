@@ -25,6 +25,8 @@ export default class NewDashboard extends Component {
         console.log('####333##', data);
         snap.forEach(function(child){
           let a = {};
+          if(child.key === 'serialNo')
+            return;
             a[child.key] = child.val()
           visitors.push(a);
         })
