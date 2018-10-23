@@ -23,9 +23,11 @@ import TextInput from 'grommet/components/TextInput';
 import Layer from 'grommet/components/Layer';
 import Split from 'grommet/components/Split';
 import Section from 'grommet/components/Section';
+import Label from 'grommet/components/Label';
 import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
 import PrintIcon from 'grommet/components/icons/base/Print';
+import BookIcon from 'grommet/components/icons/base/Book';
 import Button from 'grommet/components/Button';
 import { Container, Row, Col } from 'react-grid-system';
 import { getShifts } from '../api/configuration';
@@ -33,6 +35,24 @@ import { Print } from 'react-easy-print';
 import axios from 'axios';
 
 const uniqid = require('uniqid');
+
+const UnitText = () => {
+  return (
+    <Label style={{color:'red'}}>Select Unit</Label>
+  )
+}
+
+const FromDate = () => {
+  return (
+    <Label style={{color:'red'}}>From Date</Label>
+  )
+}
+
+const ToDate = () => {
+  return (
+    <Label style={{color:'red'}}>To Date</Label>
+  )
+}
 
 class Reports extends Component {
   constructor(props) {
@@ -251,14 +271,16 @@ onVillageFieldChange(fieldName, e) {
   }
 }
 
+
+
 renderInputFields() {
 
   const { shiftOpt, villageOpt } = this.state;
   return (
-    <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
+    <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 380, display : 'flex', flexDirection : 'row'}}>
     <div style={{display : 'flex', flexDirection : 'column'}} >
     <div style={{width: 300}}>
-    <FormField label='Select Unit' style={{marginTop:20}}>
+    <FormField label={<UnitText/>} style={{marginTop:20}}>
       <Select
         placeHolder='Select UNIT'
         options={['UNIT1','UNIT2','UNIT3','UNIT4', ]}
@@ -269,7 +291,7 @@ renderInputFields() {
     </div>
 
     <div style={{width: 300}}>
-    <FormField label='From Date' style={{marginTop:15}}>
+    <FormField label={<FromDate />} style={{marginTop:15}}>
 
     <DateTime id='id'
     format='D/M/YYYY'
@@ -281,7 +303,7 @@ renderInputFields() {
     </div>
 
     <div style={{width: 300}}>
-    <FormField label='To Date' style={{marginTop:15}}>
+    <FormField label={<ToDate/>} style={{marginTop:15}}>
 
     <DateTime id='id'
     format='D/M/YYYY'
@@ -322,6 +344,16 @@ renderInputFields() {
               options={['-EMPTY-', 'Male', 'Female']}
               value={this.state.gender}
               onChange={this.onGenderFieldChange.bind(this, 'gender')}
+            />
+        </FormField>
+        </div>
+        <div style={{width: 300}}>
+        <FormField label='Select Village' style={{marginTop:15}}>
+            <Select
+              placeHolder='Village'
+              options={villageOpt}
+              value={this.state.village}
+              onChange={this.onVillageFieldChange.bind(this, 'village')}
             />
         </FormField>
         </div>
@@ -443,6 +475,21 @@ renderInputFields() {
     })
   }
 
+  onAbstractClick(data) {
+    this.setState({
+      showAbstractTable: true,
+      dailyMaleDayShift: data.dailyMaleDayShift || 0,
+      dailyMaleNightShift: data.dailyMaleNightShift || 0,
+      dailyFemaleDayShift: data.dailyFemaleDayShift || 0,
+      dailyFemaleNightShift: data.dailyFemaleNightShift || 0,
+      weeklyMaleDayShift: data.weeklyMaleDayShift || 0,
+      weeklyMaleNightShift: data.weeklyMaleNightShift || 0,
+      weeklyFemaleDayShift: data.weeklyFemaleDayShift || 0,
+      weeklyFemaleNightShift: data.weeklyFemaleNightShift || 0
+    })
+  }
+
+
   onFieldChange(fieldName, e) {
     this.setState({
       [fieldName]: e.target.value
@@ -478,8 +525,97 @@ renderInputFields() {
 
   onCloseLayer() {
     this.setState({
-      emailReport: false
+      showAbstractTable: false
     })
+  }
+
+  renderAbstractTable() {
+    const { showAbstractTable,
+            dailyMaleDayShift,
+            dailyMaleNightShift,
+            dailyFemaleDayShift,
+            dailyFemaleNightShift,
+            weeklyMaleDayShift,
+            weeklyMaleNightShift,
+            weeklyFemaleDayShift,
+            weeklyFemaleNightShift } = this.state;
+
+
+    let weeklyMaleTotal = weeklyMaleDayShift + weeklyMaleNightShift;
+    let weeklyFemaleTotal = weeklyFemaleDayShift + weeklyFemaleNightShift;
+    let dailyMaleTotal = dailyMaleDayShift + dailyMaleNightShift;
+    let dailyFemaleTotal = dailyFemaleDayShift + dailyFemaleNightShift;
+
+    let weeklyDaySubTotal = weeklyMaleDayShift + weeklyFemaleDayShift;
+    let weeklyNightSubTotal = weeklyMaleNightShift + weeklyFemaleNightShift;
+    let weeklySubTotal = weeklyDaySubTotal + weeklyNightSubTotal;
+
+    let dailyDaySubTotal = dailyMaleDayShift + dailyFemaleDayShift;
+    let dailyNightSubTotal = dailyMaleNightShift + dailyFemaleNightShift;
+    let dailySubTotal = dailyDaySubTotal + dailyNightSubTotal;
+
+
+    if(showAbstractTable) {
+      return (
+        <Layer closer={true}
+          flush={false}
+          onClose={this.onCloseLayer.bind(this)}>
+          <div style={{width:1000, marginTop: 20, marginLeft: 'auto', marginRight: 'auto'}}>
+          <Table scrollable={true}>
+              <thead>
+               <tr>
+                 <th></th>
+                 <th>Day Shift</th>
+                 <th>Night Shift</th>
+                 <th>Day Total</th>
+
+               </tr>
+              </thead>
+              <tbody>
+                <TableRow>
+                    <td>Weekly Male</td>
+                    <td>{weeklyMaleDayShift}</td>
+                    <td>{weeklyMaleNightShift}</td>
+                    <td>{weeklyMaleTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Weekly Female</td>
+                    <td>{weeklyFemaleDayShift}</td>
+                    <td>{weeklyFemaleNightShift}</td>
+                    <td>{weeklyFemaleTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Sub Total</td>
+                    <td>{weeklyDaySubTotal}</td>
+                    <td>{weeklyNightSubTotal}</td>
+                    <td>{weeklySubTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Daily Male</td>
+                    <td>{dailyMaleDayShift}</td>
+                    <td>{dailyMaleNightShift}</td>
+                    <td>{dailyMaleTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Daily Female</td>
+                    <td>{dailyFemaleDayShift}</td>
+                    <td>{dailyFemaleNightShift}</td>
+                    <td>{dailyFemaleTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Sub Total</td>
+                    <td>{dailyDaySubTotal}</td>
+                    <td>{dailyNightSubTotal}</td>
+                    <td>{dailySubTotal}</td>
+                </TableRow>
+              </tbody>
+          </Table>
+          </div>
+        </Layer>
+      )
+    } else {
+      return
+    }
   }
 
   emailReportDialog() {
@@ -647,7 +783,7 @@ renderInputFields() {
      end : endDate
    }]
    return (
-     <div className='table'>
+     <div className='table' style={{marginTop: 40}}z>
 
      <div style={{float : 'right'}}>
        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px', marginTop : '20px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
@@ -766,6 +902,16 @@ renderInputFields() {
      }
    })
 
+   let dailyMaleDayShift = 0;
+   let dailyMaleNightShift = 0;
+   let dailyFemaleDayShift = 0;
+   let dailyFemaleNightShift = 0;
+   let weeklyMaleDayShift = 0;
+   let weeklyMaleNightShift = 0;
+   let weeklyFemaleDayShift = 0;
+   let weeklyFemaleNightShift = 0;
+
+
    idVsName.map((idNameObj, index) => {
      let employeeId = idNameObj['id'];
 
@@ -800,6 +946,36 @@ renderInputFields() {
 
        if(!isValid)
          return;
+
+         if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+           dailyMaleDayShift += 1
+        }
+
+        if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+          dailyMaleNightShift += 1
+       }
+
+       if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+         dailyFemaleDayShift += 1
+      }
+
+      if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+        dailyFemaleNightShift += 1
+     }
+
+     if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+       weeklyMaleDayShift += 1
+    }
+    if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+      weeklyMaleNightShift += 1
+   }
+   if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+     weeklyFemaleDayShift += 1
+  }
+  if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+    weeklyFemaleNightShift += 1
+ }
+
 
        let uniqId = uniqid();
 
@@ -882,6 +1058,16 @@ renderInputFields() {
    })
    returnObj['tablesArray'] = tablesArray;
    returnObj['reportData'] = reportData;
+   returnObj['summary'] = {
+     dailyMaleDayShift,
+     dailyMaleNightShift,
+     dailyFemaleDayShift,
+     dailyFemaleNightShift,
+     weeklyMaleDayShift,
+     weeklyMaleNightShift,
+     weeklyFemaleDayShift,
+     weeklyFemaleDayShift
+   };
    return returnObj;
  }
 
@@ -904,7 +1090,7 @@ renderInputFields() {
     }]
 
     return (
-      <div className='table'>
+      <div className='table' style={{marginTop: 40}}>
 
       <div style={{float : 'right'}}>
         <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
@@ -927,7 +1113,10 @@ renderInputFields() {
         onClick={this.attendancePrintTableData.bind(this)}
         primary={true} style={{marginRight: '13px'}}
         href='#'/>
-
+        <Button icon={<BookIcon />} label='Abstract Table' fill={true}
+        onClick={this.onAbstractClick.bind(this, tablesObj['summary'])}
+        primary={true} style={{marginRight: '13px'}}
+        href='#'/>
         <div>
 
         </div>
@@ -1085,6 +1274,8 @@ renderInputFields() {
 
 
   render() {
+    const { dailyMaleDayShift } = this.state;
+    console.log(dailyMaleDayShift);
       return (
         <div>
 
@@ -1094,7 +1285,7 @@ renderInputFields() {
         { this.showEmployeeReportsTable() }
         { this.printPdf() }
         { this.attendancePrint() }
-        { this.emailReportDialog() }
+        { this.renderAbstractTable() }
         </Tab>
         <Tab title='Datewise'>
         { this.renderInputFields() }
