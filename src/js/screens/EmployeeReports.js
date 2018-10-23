@@ -120,7 +120,6 @@ class Reports extends Component {
     getEmployees()
       .then((snap) => {
         const data = snap.val();
-        console.log(data);
         if (!data) {
           return;
         }
@@ -147,7 +146,6 @@ class Reports extends Component {
   attendanceDatesLoop(endDate) {
     const { startDate, unit, allEmployees } = this.state;
 
-    console.log(allEmployees);
     let datesArr=[];
     let startDateParts = startDate.split("-");
     let endDateParts = endDate.split("-");
@@ -382,7 +380,6 @@ renderInputFields() {
   }
 
   attendancePrint() {
-    console.log(this.state.attendancePrintSelected);
     if(this.state.attendancePrintSelected) {
       this.setState({
         attendancePrintSelected: false
@@ -554,6 +551,9 @@ renderInputFields() {
     let dailyNightSubTotal = dailyMaleNightShift + dailyFemaleNightShift;
     let dailySubTotal = dailyDaySubTotal + dailyNightSubTotal;
 
+    let dayGrandTotal = weeklyDaySubTotal + dailyDaySubTotal;
+    let nightGrandTotal = weeklyNightSubTotal + dailyNightSubTotal;
+    let grandTotal = dayGrandTotal + nightGrandTotal;
 
     if(showAbstractTable) {
       return (
@@ -607,6 +607,12 @@ renderInputFields() {
                     <td>{dailyDaySubTotal}</td>
                     <td>{dailyNightSubTotal}</td>
                     <td>{dailySubTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Grand Total</td>
+                    <td>{dayGrandTotal}</td>
+                    <td>{nightGrandTotal}</td>
+                    <td>{grandTotal}</td>
                 </TableRow>
               </tbody>
           </Table>
@@ -665,7 +671,6 @@ renderInputFields() {
            employeeSelected,
            selectedEmployeeId } = this.state;
 
-   console.log(allEmployees);
 
    if(!response)
    return null;
@@ -837,7 +842,6 @@ renderInputFields() {
    if(this.state.printTableSelected) {
      const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate, employeeVsDate, allEmployees } = this.state;
      let tablesArr = this.showOldEmployeeReportsTable();
-     console.log(tablesArr);
 
    return(
      <Print name='bizCard' exclusive>
@@ -1140,7 +1144,6 @@ renderInputFields() {
       filtered = options
     else {
       options.forEach((opt) => {
-        console.log(opt);
         if(opt.label && opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
         else if(opt.employeeId && opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
@@ -1274,8 +1277,6 @@ renderInputFields() {
 
 
   render() {
-    const { dailyMaleDayShift } = this.state;
-    console.log(dailyMaleDayShift);
       return (
         <div>
 
