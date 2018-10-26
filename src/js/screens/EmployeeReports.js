@@ -23,9 +23,11 @@ import TextInput from 'grommet/components/TextInput';
 import Layer from 'grommet/components/Layer';
 import Split from 'grommet/components/Split';
 import Section from 'grommet/components/Section';
+import Label from 'grommet/components/Label';
 import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
 import PrintIcon from 'grommet/components/icons/base/Print';
+import BookIcon from 'grommet/components/icons/base/Book';
 import Button from 'grommet/components/Button';
 import { Container, Row, Col } from 'react-grid-system';
 import { getShifts } from '../api/configuration';
@@ -33,6 +35,24 @@ import { Print } from 'react-easy-print';
 import axios from 'axios';
 
 const uniqid = require('uniqid');
+
+const UnitText = () => {
+  return (
+    <Label style={{color:'red'}}>Select Unit</Label>
+  )
+}
+
+const FromDate = () => {
+  return (
+    <Label style={{color:'red'}}>From Date</Label>
+  )
+}
+
+const ToDate = () => {
+  return (
+    <Label style={{color:'red'}}>To Date</Label>
+  )
+}
 
 class Reports extends Component {
   constructor(props) {
@@ -100,7 +120,6 @@ class Reports extends Component {
     getEmployees()
       .then((snap) => {
         const data = snap.val();
-        console.log(data);
         if (!data) {
           return;
         }
@@ -123,42 +142,10 @@ class Reports extends Component {
       });
   }
 
-  clearSelection(e) {
-    e.preventDefault();
-    this.setState({
-      endDate : '',
-      startDate : '',
-      paymentTypeSelected : false,
-      villageSelected : false,
-      genderSelected : false,
-      gender: '-EMPTY-',
-      shift : '-EMPTY-',
-      paymentType : '-EMPTY-',
-      response : null
 
-    })
-  }
+  attendanceDatesLoop(endDate) {
+    const { startDate, unit, allEmployees } = this.state;
 
-  attendanceDatesLoop() {
-    console.log(this.state);
-    const { startDate,endDate, unit, allEmployees } = this.state;
-
-    if(!unit) {
-      alert('PLEASE SELECT UNIT')
-      return;
-    }
-
-    if(!startDate) {
-      alert('PLEASE SELECT START DATE')
-      return;
-    }
-
-    if(!endDate) {
-      alert('PLEASE SELECT END DATE')
-      return;
-    }
-
-    console.log(allEmployees);
     let datesArr=[];
     let startDateParts = startDate.split("-");
     let endDateParts = endDate.split("-");
@@ -221,8 +208,7 @@ class Reports extends Component {
 
   onEndDateChange(e) {
     let endDate = e.replace(/\//g, '-');
-
-    this.setState({endDate})
+    this.setState({endDate},this.attendanceDatesLoop(endDate))
   }
 
   onPaymentFieldChange(fieldName, e) {
@@ -283,14 +269,16 @@ onVillageFieldChange(fieldName, e) {
   }
 }
 
+
+
 renderInputFields() {
 
   const { shiftOpt, villageOpt } = this.state;
   return (
-    <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
-    <div style={{display : 'flex', flexDirection : 'column',marginLeft: '10px'}} >
+    <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 380, display : 'flex', flexDirection : 'row'}}>
+    <div style={{display : 'flex', flexDirection : 'column'}} >
     <div style={{width: 300}}>
-    <FormField label='Select Unit' style={{marginTop:20}}>
+    <FormField label={<UnitText/>} style={{marginTop:20}}>
       <Select
         placeHolder='Select UNIT'
         options={['UNIT1','UNIT2','UNIT3','UNIT4', ]}
@@ -301,7 +289,7 @@ renderInputFields() {
     </div>
 
     <div style={{width: 300}}>
-    <FormField label='From Date' style={{marginTop:15}}>
+    <FormField label={<FromDate />} style={{marginTop:15}}>
 
     <DateTime id='id'
     format='D/M/YYYY'
@@ -313,7 +301,7 @@ renderInputFields() {
     </div>
 
     <div style={{width: 300}}>
-    <FormField label='To Date' style={{marginTop:15}}>
+    <FormField label={<ToDate/>} style={{marginTop:15}}>
 
     <DateTime id='id'
     format='D/M/YYYY'
@@ -325,7 +313,7 @@ renderInputFields() {
     </div>
     </div>
 
-    <div style={{display : 'flex', flexDirection : 'column',marginLeft: '20px'}} >
+    <div style={{display : 'flex', flexDirection : 'column'}} >
         <div style={{width: 300}}>
         <FormField label='Select Payment Type' style={{marginTop:20}}>
 
@@ -357,17 +345,19 @@ renderInputFields() {
             />
         </FormField>
         </div>
+        <div style={{width: 300}}>
+        <FormField label='Select Village' style={{marginTop:15}}>
+            <Select
+              placeHolder='Village'
+              options={villageOpt}
+              value={this.state.village}
+              onChange={this.onVillageFieldChange.bind(this, 'village')}
+            />
+        </FormField>
         </div>
-        <div style={{display : 'flex', flexDirection : 'column', marginTop: 20, marginLeft: '20px'}} >
+        </div>
+        <div style={{display : 'flex', flexDirection : 'column', marginTop: 20}} >
         { this.searchField() }
-        <Button  label='SHOW REPORT'
-        onClick={this.attendanceDatesLoop.bind(this)}
-        primary={true} style={{marginLeft: '20px', marginTop : '40px'}}
-        href='#'/>
-        <Button  label='CLEAR SELECTION'
-        onClick={this.clearSelection.bind(this)}
-         style={{marginLeft: '20px', marginTop : '40px'}}
-        href='#'/>
         </div>
     </div>
   )
@@ -390,7 +380,6 @@ renderInputFields() {
   }
 
   attendancePrint() {
-    console.log(this.state.attendancePrintSelected);
     if(this.state.attendancePrintSelected) {
       this.setState({
         attendancePrintSelected: false
@@ -483,6 +472,21 @@ renderInputFields() {
     })
   }
 
+  onAbstractClick(data) {
+    this.setState({
+      showAbstractTable: true,
+      dailyMaleDayShift: data.dailyMaleDayShift || 0,
+      dailyMaleNightShift: data.dailyMaleNightShift || 0,
+      dailyFemaleDayShift: data.dailyFemaleDayShift || 0,
+      dailyFemaleNightShift: data.dailyFemaleNightShift || 0,
+      weeklyMaleDayShift: data.weeklyMaleDayShift || 0,
+      weeklyMaleNightShift: data.weeklyMaleNightShift || 0,
+      weeklyFemaleDayShift: data.weeklyFemaleDayShift || 0,
+      weeklyFemaleNightShift: data.weeklyFemaleNightShift || 0
+    })
+  }
+
+
   onFieldChange(fieldName, e) {
     this.setState({
       [fieldName]: e.target.value
@@ -518,8 +522,106 @@ renderInputFields() {
 
   onCloseLayer() {
     this.setState({
-      emailReport: false
+      showAbstractTable: false
     })
+  }
+
+  renderAbstractTable() {
+    const { showAbstractTable,
+            dailyMaleDayShift,
+            dailyMaleNightShift,
+            dailyFemaleDayShift,
+            dailyFemaleNightShift,
+            weeklyMaleDayShift,
+            weeklyMaleNightShift,
+            weeklyFemaleDayShift,
+            weeklyFemaleNightShift } = this.state;
+
+
+    let weeklyMaleTotal = weeklyMaleDayShift + weeklyMaleNightShift;
+    let weeklyFemaleTotal = weeklyFemaleDayShift + weeklyFemaleNightShift;
+    let dailyMaleTotal = dailyMaleDayShift + dailyMaleNightShift;
+    let dailyFemaleTotal = dailyFemaleDayShift + dailyFemaleNightShift;
+
+    let weeklyDaySubTotal = weeklyMaleDayShift + weeklyFemaleDayShift;
+    let weeklyNightSubTotal = weeklyMaleNightShift + weeklyFemaleNightShift;
+    let weeklySubTotal = weeklyDaySubTotal + weeklyNightSubTotal;
+
+    let dailyDaySubTotal = dailyMaleDayShift + dailyFemaleDayShift;
+    let dailyNightSubTotal = dailyMaleNightShift + dailyFemaleNightShift;
+    let dailySubTotal = dailyDaySubTotal + dailyNightSubTotal;
+
+    let dayGrandTotal = weeklyDaySubTotal + dailyDaySubTotal;
+    let nightGrandTotal = weeklyNightSubTotal + dailyNightSubTotal;
+    let grandTotal = dayGrandTotal + nightGrandTotal;
+
+    if(showAbstractTable) {
+      return (
+        <Layer closer={true}
+          flush={false}
+          onClose={this.onCloseLayer.bind(this)}>
+          <div style={{width:1000, marginTop: 20, marginLeft: 'auto', marginRight: 'auto'}}>
+          <Table scrollable={true}>
+              <thead>
+               <tr>
+                 <th></th>
+                 <th>Day Shift</th>
+                 <th>Night Shift</th>
+                 <th>Day Total</th>
+
+               </tr>
+              </thead>
+              <tbody>
+                <TableRow>
+                    <td>Weekly Male</td>
+                    <td>{weeklyMaleDayShift}</td>
+                    <td>{weeklyMaleNightShift}</td>
+                    <td>{weeklyMaleTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Weekly Female</td>
+                    <td>{weeklyFemaleDayShift}</td>
+                    <td>{weeklyFemaleNightShift}</td>
+                    <td>{weeklyFemaleTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Sub Total</td>
+                    <td>{weeklyDaySubTotal}</td>
+                    <td>{weeklyNightSubTotal}</td>
+                    <td>{weeklySubTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Daily Male</td>
+                    <td>{dailyMaleDayShift}</td>
+                    <td>{dailyMaleNightShift}</td>
+                    <td>{dailyMaleTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Daily Female</td>
+                    <td>{dailyFemaleDayShift}</td>
+                    <td>{dailyFemaleNightShift}</td>
+                    <td>{dailyFemaleTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Sub Total</td>
+                    <td>{dailyDaySubTotal}</td>
+                    <td>{dailyNightSubTotal}</td>
+                    <td>{dailySubTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>Grand Total</td>
+                    <td>{dayGrandTotal}</td>
+                    <td>{nightGrandTotal}</td>
+                    <td>{grandTotal}</td>
+                </TableRow>
+              </tbody>
+          </Table>
+          </div>
+        </Layer>
+      )
+    } else {
+      return
+    }
   }
 
   emailReportDialog() {
@@ -578,9 +680,6 @@ renderInputFields() {
    let tablesArray = [];
    let reportData = [];
    let i = 0;
-
-   if(!response)
-    return;
 
    Object.keys(response).map((date, index) => {
      const attendanceObj = response[date];
@@ -689,7 +788,7 @@ renderInputFields() {
      end : endDate
    }]
    return (
-     <div className='table'>
+     <div className='table' style={{marginTop: 40}}z>
 
      <div style={{float : 'right'}}>
        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px', marginTop : '20px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
@@ -723,20 +822,19 @@ renderInputFields() {
 
        let tablesObj = this.getTablesArray(true);
        if(!tablesObj)
-         return (<h2 style={{marginTop : '20px', marginLeft : '20px'}}>No data to show</h2>);
-       else
-         return(
-           <Print name='bizCard' exclusive>
-              <div>
-                <div style={{height:'1120px'}}>
-                  <h3 style={{marginLeft: 'auto', marginRight: 'auto'}}>Man power report from {startDate} to {endDate}</h3>
-                </div>
-                <div>
-                {tablesObj['tablesArray']}
-                </div>
-              </div>
-           </Print>
-         );
+       return null;
+     return(
+       <Print name='bizCard' exclusive>
+          <div>
+            <div style={{height:'1120px'}}>
+              <h3 style={{marginLeft: 'auto', marginRight: 'auto'}}>Man power report from {startDate} to {endDate}</h3>
+            </div>
+            <div>
+            {tablesObj['tablesArray']}
+            </div>
+          </div>
+       </Print>
+     );
    }
  }
 
@@ -744,7 +842,6 @@ renderInputFields() {
    if(this.state.printTableSelected) {
      const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate, employeeVsDate, allEmployees } = this.state;
      let tablesArr = this.showOldEmployeeReportsTable();
-     console.log(tablesArr);
 
    return(
      <Print name='bizCard' exclusive>
@@ -809,6 +906,16 @@ renderInputFields() {
      }
    })
 
+   let dailyMaleDayShift = 0;
+   let dailyMaleNightShift = 0;
+   let dailyFemaleDayShift = 0;
+   let dailyFemaleNightShift = 0;
+   let weeklyMaleDayShift = 0;
+   let weeklyMaleNightShift = 0;
+   let weeklyFemaleDayShift = 0;
+   let weeklyFemaleNightShift = 0;
+
+
    idVsName.map((idNameObj, index) => {
      let employeeId = idNameObj['id'];
 
@@ -841,14 +948,44 @@ renderInputFields() {
          isValid = false;
        }
 
-
        if(!isValid)
          return;
+
+         if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+           dailyMaleDayShift += 1
+        }
+
+        if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+          dailyMaleNightShift += 1
+       }
+
+       if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+         dailyFemaleDayShift += 1
+      }
+
+      if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+        dailyFemaleNightShift += 1
+     }
+
+     if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+       weeklyMaleDayShift += 1
+    }
+    if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+      weeklyMaleNightShift += 1
+   }
+   if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+     weeklyFemaleDayShift += 1
+  }
+  if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+    weeklyFemaleNightShift += 1
+ }
+
 
        let uniqId = uniqid();
 
      tablesArray.push(<div className='' key={uniqId} style={isPrint ? {height: '1050px'} : {}}>
-     <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['gender']} ; {allEmployees[employeeId]['paymentType']} </h3>
+     <h3 style={{marginLeft : '20px'}}>Name : {allEmployees[employeeId]['name']} ; ID : {employeeId}</h3>
+         <h5 style={{marginLeft : '20px'}}>Gender : {allEmployees[employeeId]['gender']} ; Village : {allEmployees[employeeId]['village']}</h5>
      <Table scrollable={true} style={isPrint ? {} :  { marginTop : '30px', marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
           <tr>
@@ -925,6 +1062,16 @@ renderInputFields() {
    })
    returnObj['tablesArray'] = tablesArray;
    returnObj['reportData'] = reportData;
+   returnObj['summary'] = {
+     dailyMaleDayShift,
+     dailyMaleNightShift,
+     dailyFemaleDayShift,
+     dailyFemaleNightShift,
+     weeklyMaleDayShift,
+     weeklyMaleNightShift,
+     weeklyFemaleDayShift,
+     weeklyFemaleDayShift
+   };
    return returnObj;
  }
 
@@ -939,46 +1086,48 @@ renderInputFields() {
             paymentTypeSelected, employeeVsDate, allEmployees } = this.state;
 
     let tablesObj = this.getTablesArray(false);
-
+    if(!tablesObj)
+    return null;
     let ob = [{
       start : startDate,
       end : endDate
     }]
 
-    if(!response)
-      return (<h2 style={{marginTop : '20px', marginLeft : '20px'}}>No data to show</h2>);
-    else
-      return (
-      <div className='table'>
-        <div style={{float : 'right'}}>
-          <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Excel Report" />}>
-            <Workbook.Sheet data={tablesObj['reportData']} name="Sheet 1">
-                <Workbook.Column label="Serial No" value="serialNo"/>
-                <Workbook.Column label="MPId" value="serialNo"/>
-                <Workbook.Column label="Name" value="name"/>
-                <Workbook.Column label="Number Of Persons" value="numberOfPersons"/>
-                <Workbook.Column label="Shift" value="shift"/>
-                <Workbook.Column label="In Time" value="inTime"/>
-                <Workbook.Column label="Out Time" value="outTime"/>
-                <Workbook.Column label="Total Time" value="totalTime"/>
-            </Workbook.Sheet>
-            <Workbook.Sheet  data={ob} name="Information">
-                <Workbook.Column label="Start Date" value="start"/>
-                <Workbook.Column label="End Date" value="end"/>
-            </Workbook.Sheet>
-          </Workbook>
-          <Button icon={<PrintIcon />} label='Print' fill={true}
-          onClick={this.attendancePrintTableData.bind(this)}
-          primary={true} style={{marginRight: '13px'}}
-          href='#'/>
+    return (
+      <div className='table' style={{marginTop: 40}}>
 
-          <div>
+      <div style={{float : 'right'}}>
+        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
+          <Workbook.Sheet data={tablesObj['reportData']} name="Sheet 1">
+              <Workbook.Column label="Serial No" value="serialNo"/>
+              <Workbook.Column label="MPId" value="serialNo"/>
+              <Workbook.Column label="Name" value="name"/>
+              <Workbook.Column label="Number Of Persons" value="numberOfPersons"/>
+              <Workbook.Column label="Shift" value="shift"/>
+              <Workbook.Column label="In Time" value="inTime"/>
+              <Workbook.Column label="Out Time" value="outTime"/>
+              <Workbook.Column label="Total Time" value="totalTime"/>
+          </Workbook.Sheet>
+          <Workbook.Sheet  data={ob} name="Information">
+              <Workbook.Column label="Start Date" value="start"/>
+              <Workbook.Column label="End Date" value="end"/>
+          </Workbook.Sheet>
+        </Workbook>
+        <Button icon={<PrintIcon />} label='Print' fill={true}
+        onClick={this.attendancePrintTableData.bind(this)}
+        primary={true} style={{marginRight: '13px'}}
+        href='#'/>
+        <Button icon={<BookIcon />} label='Abstract Table' fill={true}
+        onClick={this.onAbstractClick.bind(this, tablesObj['summary'])}
+        primary={true} style={{marginRight: '13px'}}
+        href='#'/>
+        <div>
 
-          </div>
         </div>
-        {tablesObj['tablesArray']}
-        </div>
-      )
+      </div>
+      {tablesObj['tablesArray']}
+      </div>
+    )
 
   }
 
@@ -995,7 +1144,6 @@ renderInputFields() {
       filtered = options
     else {
       options.forEach((opt) => {
-        console.log(opt);
         if(opt.label && opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
         else if(opt.employeeId && opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
@@ -1138,7 +1286,7 @@ renderInputFields() {
         { this.showEmployeeReportsTable() }
         { this.printPdf() }
         { this.attendancePrint() }
-        { this.emailReportDialog() }
+        { this.renderAbstractTable() }
         </Tab>
         <Tab title='Datewise'>
         { this.renderInputFields() }
