@@ -143,8 +143,8 @@ class Reports extends Component {
   }
 
 
-  attendanceDatesLoop(endDate) {
-    const { startDate, unit, allEmployees } = this.state;
+  attendanceDatesLoop() {
+    const { startDate, endDate, unit, allEmployees } = this.state;
 
     let datesArr=[];
     let startDateParts = startDate.split("-");
@@ -197,18 +197,26 @@ class Reports extends Component {
 
   onUnitFieldChange(fieldName, e) {
     this.setState({
-      [fieldName] : e.option
+      [fieldName] : e.option,
+      startDate: '',
+      endDate: '',
+      response: null
     })
   }
 
   onStartDateChange(e) {
+
     let startDate = e.replace(/\//g, '-');
-    this.setState({startDate})
+    this.setState({
+      startDate,
+      endDate: '',
+      response : null
+    })
   }
 
   onEndDateChange(e) {
     let endDate = e.replace(/\//g, '-');
-    this.setState({endDate},this.attendanceDatesLoop(endDate))
+    this.setState({endDate})
   }
 
   onPaymentFieldChange(fieldName, e) {
@@ -269,7 +277,20 @@ onVillageFieldChange(fieldName, e) {
   }
 }
 
-
+clearSelection(e) {
+    e.preventDefault();
+    this.setState({
+      endDate : '',
+      startDate : '',
+      paymentTypeSelected : false,
+      villageSelected : false,
+      genderSelected : false,
+      gender: '-EMPTY-',
+      shift : '-EMPTY-',
+      paymentType : '-EMPTY-',
+      response : null
+     })
+  }
 
 renderInputFields() {
 
@@ -358,6 +379,14 @@ renderInputFields() {
         </div>
         <div style={{display : 'flex', flexDirection : 'column', marginTop: 20}} >
         { this.searchField() }
+        <Button  label='SHOW REPORT'
+        onClick={this.attendanceDatesLoop.bind(this)}
+        primary={true} style={{marginLeft: '20px', marginTop : '40px'}}
+        href='#'/>
+        <Button  label='CLEAR SELECTION'
+        onClick={this.clearSelection.bind(this)}
+         style={{marginLeft: '20px', marginTop : '40px'}}
+        href='#'/>
         </div>
     </div>
   )
@@ -948,6 +977,7 @@ renderInputFields() {
          isValid = false;
        }
 
+
        if(!isValid)
          return;
 
@@ -1075,6 +1105,12 @@ renderInputFields() {
    return returnObj;
  }
 
+ renderNoDataText() {
+   return (
+     <h1 style={{marginTop:40, marginLeft: 'auto', marginRight: 'auto'}}>No data to show !</h1>
+   )
+ }
+
   showEmployeeReportsTable() {
 
     const { response,
@@ -1092,10 +1128,12 @@ renderInputFields() {
       start : startDate,
       end : endDate
     }]
-
     return (
-      <div className='table' style={{marginTop: 40}}>
 
+      <div className='table' style={{marginTop: 40}}>
+      <div>
+        <h2 style={{marginLeft: 20,marginBottom: 20, color: '#865CD6'}}>Number of Employees : { tablesObj['tablesArray'].length }</h2>
+      </div>
       <div style={{float : 'right'}}>
         <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
           <Workbook.Sheet data={tablesObj['reportData']} name="Sheet 1">
@@ -1125,7 +1163,9 @@ renderInputFields() {
 
         </div>
       </div>
-      {tablesObj['tablesArray']}
+      <div>
+      {tablesObj['tablesArray'].length == 0 ? this.renderNoDataText() : tablesObj['tablesArray']}
+      </div>
       </div>
     )
 
