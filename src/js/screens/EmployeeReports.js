@@ -334,7 +334,7 @@ renderInputFields() {
     </div>
     </div>
 
-    <div style={{display : 'flex', flexDirection : 'column'}} >
+    <div style={{display : 'flex', flexDirection : 'column',marginLeft: '20px'}} >
         <div style={{width: 300}}>
         <FormField label='Select Payment Type' style={{marginTop:20}}>
 
@@ -714,9 +714,9 @@ renderInputFields() {
      const attendanceObj = response[date];
      if(attendanceObj ==null)
        return;
+    
      tablesArray.push(<div className='tablesArray' key={index}>
-     <h2 style={{marginLeft : '20px'}}>{date}</h2>
-     <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
+          <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
           <tr>
             <th>S No.</th>
@@ -851,19 +851,20 @@ renderInputFields() {
 
        let tablesObj = this.getTablesArray(true);
        if(!tablesObj)
-       return null;
-     return(
-       <Print name='bizCard' exclusive>
-          <div>
-            <div style={{height:'1120px'}}>
-              <h3 style={{marginLeft: 'auto', marginRight: 'auto'}}>Man power report from {startDate} to {endDate}</h3>
-            </div>
-            <div>
-            {tablesObj['tablesArray']}
-            </div>
-          </div>
-       </Print>
-     );
+        return (<h2 style={{marginTop : '20px', marginLeft : '20px'}}>No data to show</h2>);
+       else
+         return(
+           <Print name='bizCard' exclusive>
+              <div>
+                <div style={{height:'1120px'}}>
+                  <h3 style={{marginLeft: 'auto', marginRight: 'auto'}}>Man power report from {startDate} to {endDate}</h3>
+                </div>
+                <div>
+                {tablesObj['tablesArray']}
+                </div>
+              </div>
+           </Print>
+         );
    }
  }
 
@@ -1012,10 +1013,21 @@ renderInputFields() {
 
 
        let uniqId = uniqid();
+       let totalNumberOfdays = 0;
+       attendanceObjArray.map((dateObject,index)=> {
+         const employeeAttendaceObj = dateObject['value'];
+         if(employeeAttendaceObj !== null){
+         let inTime = employeeAttendaceObj.in;
+         let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
+         if(inTime && outTime)
+          totalNumberOfdays++;
+       }
+       });
+
 
      tablesArray.push(<div className='' key={uniqId} style={isPrint ? {height: '1050px'} : {}}>
-     <h3 style={{marginLeft : '20px'}}>Name : {allEmployees[employeeId]['name']} ; ID : {employeeId}</h3>
-         <h5 style={{marginLeft : '20px'}}>Gender : {allEmployees[employeeId]['gender']} ; Village : {allEmployees[employeeId]['village']}</h5>
+     <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['gender']} ; {allEmployees[employeeId]['paymentType']} </h3>
+     <h5 style={{marginLeft : '20px'}}>Total no of days = {totalNumberOfdays} </h5>
      <Table scrollable={true} style={isPrint ? {} :  { marginTop : '30px', marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
           <tr>
@@ -1029,6 +1041,7 @@ renderInputFields() {
          </thead>
          <tbody>
            {
+
                attendanceObjArray.map((dateObject,index)=> {
                  const dateVal = dateObject['date']
                  const employeeAttendaceObj = dateObject['value'];
@@ -1043,6 +1056,7 @@ renderInputFields() {
              //    }
 
                if(outTime && inTime) {
+                 totalNumberOfdays++;
                  let startTime = moment(inTime, "HH:mm a");
                  let endTime=moment(outTime, "HH:mm a");
                  let duration = moment.duration(endTime.diff(startTime));
