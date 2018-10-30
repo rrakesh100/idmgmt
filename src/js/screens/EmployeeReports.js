@@ -44,13 +44,13 @@ const UnitText = () => {
 
 const FromDate = () => {
   return (
-    <Label style={{color:'red'}}>From Date</Label>
+    <Label style={{color:'red'}}>START Date</Label>
   )
 }
 
 const ToDate = () => {
   return (
-    <Label style={{color:'red'}}>To Date</Label>
+    <Label style={{color:'red'}}>END Date</Label>
   )
 }
 
@@ -58,8 +58,8 @@ class Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      startDate:'',
-      endDate:'',
+      startDate : null,
+      endDate: null,
       paymentType: '',
       shift: '',
       printTableSelected: false,
@@ -198,8 +198,6 @@ class Reports extends Component {
   onUnitFieldChange(fieldName, e) {
     this.setState({
       [fieldName] : e.option,
-      startDate: '',
-      endDate: '',
       response: null
     })
   }
@@ -209,14 +207,27 @@ class Reports extends Component {
     let startDate = e.replace(/\//g, '-');
     this.setState({
       startDate,
-      endDate: '',
+      startDateWithSlash : e,
       response : null
     })
   }
 
   onEndDateChange(e) {
     let endDate = e.replace(/\//g, '-');
-    this.setState({endDate})
+    let {startDate} = this.state ;
+    console.log('start  end date = ', startDate , endDate);
+    let strt = moment(startDate , 'DD-MM-YYYY');
+    let end = moment(endDate, 'DD-MM-YYYY');
+
+    let isBefore = strt.valueOf() === end.valueOf() ?  true : moment(strt).isBefore(end) ;
+    console.log(isBefore);
+    if(!isBefore) {
+      alert('End Date should be greater than Start Date');
+      return;
+    }
+
+
+    this.setState({endDate, response : null})
   }
 
   onPaymentFieldChange(fieldName, e) {
@@ -280,8 +291,9 @@ onVillageFieldChange(fieldName, e) {
 clearSelection(e) {
     e.preventDefault();
     this.setState({
-      endDate : '',
-      startDate : '',
+      unit : null,
+      endDate : null ,
+      startDate : null,
       paymentTypeSelected : false,
       villageSelected : false,
       genderSelected : false,
@@ -294,7 +306,12 @@ clearSelection(e) {
 
 renderInputFields() {
 
-  const { shiftOpt, villageOpt } = this.state;
+  const { shiftOpt, villageOpt, unit, startDate, endDate, response } = this.state;
+  let showClearButton = ((unit || startDate || endDate ) && (response !=null ))|| false;
+  let showReportButton = false ;
+  if(unit && startDate && endDate)
+    showReportButton = true;
+
   return (
     <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 380, display : 'flex', flexDirection : 'row'}}>
     <div style={{display : 'flex', flexDirection : 'column'}} >
@@ -381,11 +398,12 @@ renderInputFields() {
         { this.searchField() }
         <Button  label='SHOW REPORT'
         onClick={this.attendanceDatesLoop.bind(this)}
-        primary={true} style={{marginLeft: '20px', marginTop : '40px'}}
+        style={ showReportButton ?  { display : 'inline-block' , marginLeft: '20px', marginTop : '40px'}: { display :  'none' }}
+        primary={true}
         href='#'/>
         <Button  label='CLEAR SELECTION'
         onClick={this.clearSelection.bind(this)}
-         style={{marginLeft: '20px', marginTop : '40px'}}
+         style={ showClearButton ?  { display : 'inline-block' , marginLeft: '20px', marginTop : '40px'}: { display :  'none' }}
         href='#'/>
         </div>
     </div>
@@ -714,7 +732,7 @@ renderInputFields() {
      const attendanceObj = response[date];
      if(attendanceObj ==null)
        return;
-    
+
      tablesArray.push(<div className='tablesArray' key={index}>
           <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
@@ -746,9 +764,22 @@ renderInputFields() {
                    let startTime = moment(inTime, "HH:mm a");
                    let endTime=moment(outTime, "HH:mm a");
                    let duration = moment.duration(endTime.diff(startTime));
-                   let hours = parseInt(duration.asHours());
-                   let minutes = parseInt(duration.asMinutes())%60;
-                   totalTime = hours + ' hr ' + minutes + ' min '
+                   console.log('duration = ' ,duration);
+
+                   let hours = 0, minutes =0;
+                   if(duration.asMilliseconds() < 0) {
+                    let dMillis = duration.asMilliseconds();
+                    let bufferedMillis = dMillis + (24 * 60 * 60 * 1000);
+                    let bufferedSeconds = bufferedMillis / 1000;
+                     hours = Math.floor(bufferedSeconds / 3600);
+                    let remainingSeconds = bufferedSeconds % 3600 ;
+                     minutes = remainingSeconds / 60;
+                    }else {
+                     hours = parseInt(duration.asHours());
+                     minutes = parseInt(duration.asMinutes())%60;
+                    }
+
+                    totalTime = hours + ' hr ' + minutes + ' min '
                  }
 
                  let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
@@ -820,7 +851,7 @@ renderInputFields() {
      <div className='table' style={{marginTop: 40}}z>
 
      <div style={{float : 'right'}}>
-       <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px', marginTop : '20px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
+       <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px', marginTop : '20px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Excel Report" />}>
          <Workbook.Sheet data={reportData} name="Sheet 1">
              <Workbook.Column label="Serial No" value="serialNo"/>
              <Workbook.Column label="MPId" value="serialNo"/>
@@ -904,7 +935,7 @@ renderInputFields() {
            employeeVsDate,
            allEmployees,
            employeeSelected,
-           selectedEmployeeId } = this.state;
+           selectedEmployeeId, unit } = this.state;
 
 
    if(!response)
@@ -979,9 +1010,13 @@ renderInputFields() {
        }
 
 
-       if(!isValid)
+       if(!isValid) {
+      //   console.log(paymentType, empAttObj.shift, gender);
          return;
 
+       }
+
+       console.log(empAttObj.paymentType, empAttObj.gender, empAttObj.shift);
          if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
            dailyMaleDayShift += 1
         }
@@ -1026,7 +1061,7 @@ renderInputFields() {
 
 
      tablesArray.push(<div className='' key={uniqId} style={isPrint ? {height: '1050px'} : {}}>
-     <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['gender']} ; {allEmployees[employeeId]['paymentType']} </h3>
+     <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['paymentType']} ; {allEmployees[employeeId]['gender']} ; {allEmployees[employeeId]['village']} ; {unit} </h3>
      <h5 style={{marginLeft : '20px'}}>Total no of days = {totalNumberOfdays} </h5>
      <Table scrollable={true} style={isPrint ? {} :  { marginTop : '30px', marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
@@ -1060,9 +1095,21 @@ renderInputFields() {
                  let startTime = moment(inTime, "HH:mm a");
                  let endTime=moment(outTime, "HH:mm a");
                  let duration = moment.duration(endTime.diff(startTime));
-                 let hours = parseInt(duration.asHours());
-                 let minutes = parseInt(duration.asMinutes())%60;
-                 totalTime = hours + ' hr ' + minutes + ' min '
+
+                 let hours = 0, minutes =0;
+                 if(duration.asMilliseconds() < 0) {
+                  let dMillis = duration.asMilliseconds();
+                  let bufferedMillis = dMillis + (24 * 60 * 60 * 1000);
+                  let bufferedSeconds = bufferedMillis / 1000;
+                   hours = Math.floor(bufferedSeconds / 3600);
+                  let remainingSeconds = bufferedSeconds % 3600 ;
+                   minutes = remainingSeconds / 60;
+                  }else {
+                   hours = parseInt(duration.asHours());
+                   minutes = parseInt(duration.asMinutes())%60;
+                  }
+
+                  totalTime = hours + ' hr ' + minutes + ' min '
                }
 
                let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
@@ -1114,7 +1161,7 @@ renderInputFields() {
      weeklyMaleDayShift,
      weeklyMaleNightShift,
      weeklyFemaleDayShift,
-     weeklyFemaleDayShift
+     weeklyFemaleNightShift
    };
    return returnObj;
  }
@@ -1146,10 +1193,10 @@ renderInputFields() {
 
       <div className='table' style={{marginTop: 40}}>
       <div>
-        <h2 style={{marginLeft: 20,marginBottom: 20, color: '#865CD6'}}>Number of Employees : { tablesObj['tablesArray'].length }</h2>
+        <h3 style={{marginLeft: 20,marginBottom: 20, color: '#865CD6'}}>Number of Employees : { tablesObj['tablesArray'].length }</h3>
       </div>
       <div style={{float : 'right'}}>
-        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
+        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Excel Report" />}>
           <Workbook.Sheet data={tablesObj['reportData']} name="Sheet 1">
               <Workbook.Column label="Serial No" value="serialNo"/>
               <Workbook.Column label="MPId" value="serialNo"/>
@@ -1165,7 +1212,7 @@ renderInputFields() {
               <Workbook.Column label="End Date" value="end"/>
           </Workbook.Sheet>
         </Workbook>
-        <Button icon={<PrintIcon />} label='Print' fill={true}
+        <Button icon={<PrintIcon />} label='Print PDF' fill={true}
         onClick={this.attendancePrintTableData.bind(this)}
         primary={true} style={{marginRight: '13px'}}
         href='#'/>
@@ -1177,7 +1224,7 @@ renderInputFields() {
 
         </div>
       </div>
-      <div>
+      <div style={{marginTop : 80}}>
       {tablesObj['tablesArray'].length == 0 ? this.renderNoDataText() : tablesObj['tablesArray']}
       </div>
       </div>
@@ -1302,13 +1349,27 @@ renderInputFields() {
                   let inTime = employeeAttendaceObj.in;
                   let outTime = employeeAttendaceObj.out;
                   let totalTime = 'N/A';
+
                   if(outTime && inTime) {
-                    let startTime=moment(inTime, "HH:mm a");
+                    totalNumberOfdays++;
+                    let startTime = moment(inTime, "HH:mm a");
                     let endTime=moment(outTime, "HH:mm a");
                     let duration = moment.duration(endTime.diff(startTime));
-                    let hours = parseInt(duration.asHours());
-                    let minutes = parseInt(duration.asMinutes())%60;
-                    totalTime = hours + ' hr ' + minutes + ' min ';
+
+                    let hours = 0, minutes =0;
+                    if(duration.asMilliseconds() < 0) {
+                     let dMillis = duration.asMilliseconds();
+                     let bufferedMillis = dMillis + (24 * 60 * 60 * 1000);
+                     let bufferedSeconds = bufferedMillis / 1000;
+                      hours = Math.floor(bufferedSeconds / 3600);
+                     let remainingSeconds = bufferedSeconds % 3600 ;
+                      minutes = remainingSeconds / 60;
+                     }else {
+                      hours = parseInt(duration.asHours());
+                      minutes = parseInt(duration.asMinutes())%60;
+                     }
+
+                     totalTime = hours + ' hr ' + minutes + ' min '
                   }
                   return <TableRow key={index}>
                   <td>{index+1}</td>
