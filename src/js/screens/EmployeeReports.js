@@ -1134,6 +1134,7 @@ renderInputFields() {
            {
 
                attendanceObjArray.map((dateObject,index)=> {
+                 let totalNumberOfdays = 0;
                  const dateVal = dateObject['date']
                  const employeeAttendaceObj = dateObject['value'];
                  if(employeeAttendaceObj !== null){
@@ -1395,6 +1396,7 @@ renderInputFields() {
             <tbody>
               {
                 Object.keys(selectedEmployeeData).map((key, index) => {
+                  let totalNumberOfdays = 0;
                   const employeeAttendaceObj = selectedEmployeeData[key];
                   if(employeeAttendaceObj !== null)
                   {
