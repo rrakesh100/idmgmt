@@ -394,7 +394,7 @@ renderInputFields() {
         </FormField>
         </div>
         </div>
-        <div style={{display : 'flex', flexDirection : 'column', marginTop: 20}} >
+        <div style={{display : 'flex', flexDirection : 'column', marginTop: 20, marginLeft: '20px'}} >
         { this.searchField() }
         <Button  label='SHOW REPORT'
         onClick={this.attendanceDatesLoop.bind(this)}
@@ -776,7 +776,6 @@ renderInputFields() {
                    let startTime = moment(inTime, "HH:mm a");
                    let endTime=moment(outTime, "HH:mm a");
                    let duration = moment.duration(endTime.diff(startTime));
-                   console.log('duration = ' ,duration);
 
                    let hours = 0, minutes =0;
                    if(duration.asMilliseconds() < 0) {
@@ -1286,7 +1285,9 @@ renderInputFields() {
   }
 
   onSearchEntry(e) {
-    this.setState({selectedEmployeeData: {}})
+    console.log(e.target.value);
+  //  this.setState({selectedEmployeeData: {}})
+
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
     let exactMatch = false;
@@ -1294,8 +1295,14 @@ renderInputFields() {
     if(!options)
       return ;
 
-    if(e.target.value == '')
+    if(e.target.value == '') {
       filtered = options
+      this.setState({response : null,
+      selectedEmployeeId : null,
+      employeeSelected : false,
+      selectedEmployeeData : null
+    })
+    }
     else {
       options.forEach((opt) => {
         if(opt.label && opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
