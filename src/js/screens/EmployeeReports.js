@@ -726,7 +726,18 @@ renderInputFields() {
 
    let tablesArray = [];
    let reportData = [];
+   let returnObj = {};
+
    let i = 0;
+
+   let dailyMaleDayShift = 0;
+   let dailyMaleNightShift = 0;
+   let dailyFemaleDayShift = 0;
+   let dailyFemaleNightShift = 0;
+   let weeklyMaleDayShift = 0;
+   let weeklyMaleNightShift = 0;
+   let weeklyFemaleDayShift = 0;
+   let weeklyFemaleNightShift = 0;
 
    Object.keys(response).map((date, index) => {
      const attendanceObj = response[date];
@@ -750,6 +761,7 @@ renderInputFields() {
          <tbody>
            {
                Object.keys(attendanceObj).map((key,index)=> {
+                 let empAttObj = allEmployees[key];
                  const employeeAttendaceObj = attendanceObj[key];
                  if(employeeAttendaceObj !== null){
                  let inTime = employeeAttendaceObj.in;
@@ -808,7 +820,38 @@ renderInputFields() {
                    isValid = false;
                  }
 
+                 if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+                   dailyMaleDayShift += 1
+                }
+
+                if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+                  dailyMaleNightShift += 1
+               }
+
+               if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+                 dailyFemaleDayShift += 1
+              }
+
+              if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+                dailyFemaleNightShift += 1
+             }
+
+             if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+               weeklyMaleDayShift += 1
+            }
+            if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+              weeklyMaleNightShift += 1
+           }
+           if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+             weeklyFemaleDayShift += 1
+          }
+          if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+            weeklyFemaleNightShift += 1
+         }
+
+
                    if(isValid && inTime) {
+
                     i++;
                     reportData.push({
                       serialNo : index + 1,
@@ -867,6 +910,19 @@ renderInputFields() {
              <Workbook.Column label="End Date" value="end"/>
          </Workbook.Sheet>
        </Workbook>
+       <Button icon={<BookIcon />} label='Abstract Table' fill={true}
+       onClick={this.onAbstractClick.bind(this, {
+         dailyMaleDayShift,
+         dailyMaleNightShift,
+         dailyFemaleDayShift,
+         dailyFemaleNightShift,
+         weeklyMaleDayShift,
+         weeklyMaleNightShift,
+         weeklyFemaleDayShift,
+         weeklyFemaleDayShift
+       })}
+       primary={true} style={{marginRight: '13px'}}
+       href='#'/>
        <div>
 
        </div>
@@ -1216,10 +1272,6 @@ renderInputFields() {
         onClick={this.attendancePrintTableData.bind(this)}
         primary={true} style={{marginRight: '13px'}}
         href='#'/>
-        <Button icon={<BookIcon />} label='Abstract Table' fill={true}
-        onClick={this.onAbstractClick.bind(this, tablesObj['summary'])}
-        primary={true} style={{marginRight: '13px'}}
-        href='#'/>
         <div>
 
         </div>
@@ -1401,12 +1453,13 @@ renderInputFields() {
         { this.showEmployeeReportsTable() }
         { this.printPdf() }
         { this.attendancePrint() }
-        { this.renderAbstractTable() }
         </Tab>
         <Tab title='Datewise'>
         { this.renderInputFields() }
         { this.showOldEmployeeReportsTable() }
         { this.emailReportDialog() }
+        { this.renderAbstractTable() }
+
         </Tab>
         <Tab title='Employeewise'>
         { this.renderSearchField() }
