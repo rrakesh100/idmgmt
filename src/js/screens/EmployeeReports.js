@@ -17,6 +17,7 @@ import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
 import Box from 'grommet/components/Box';
 import Search from 'grommet/components/Search';
+import Notification from 'grommet/components/Notification';
 import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
 import TextInput from 'grommet/components/TextInput';
@@ -44,13 +45,13 @@ const UnitText = () => {
 
 const FromDate = () => {
   return (
-    <Label style={{color:'red'}}>START Date</Label>
+    <Label style={{color:'red'}}>From Date</Label>
   )
 }
 
 const ToDate = () => {
   return (
-    <Label style={{color:'red'}}>END Date</Label>
+    <Label style={{color:'red'}}>To Date</Label>
   )
 }
 
@@ -65,7 +66,7 @@ class Reports extends Component {
       printTableSelected: false,
       numPages: null,
       pageNumber: 1,
-      emailReport: false
+      emailReport: false,
     }
   }
 
@@ -143,6 +144,47 @@ class Reports extends Component {
   }
 
 
+
+  renderValidationMsg() {
+    const { validationMsg } = this.state;
+    if (validationMsg) {
+      return (
+        <Notification message={validationMsg} size='small' status='critical' />
+      );
+    }
+    return null;
+  }
+
+  onValidatingInputs() {
+    const { startDate, endDate, unit } = this.state;
+
+    if(!unit) {
+      this.setState({
+        validationMsg: 'UNIT is Missing'
+      })
+      return
+    }
+
+    if(!startDate) {
+      this.setState({
+        validationMsg: 'From Date is Missing'
+      })
+      return
+    }
+
+    if(!endDate) {
+      this.setState({
+        validationMsg: 'To Date is Missing'
+      })
+      return
+    }
+
+    this.setState({
+      validationMsg:''
+    }, this.attendanceDatesLoop.bind(this))
+  }
+
+
   attendanceDatesLoop() {
     const { startDate, endDate, unit, allEmployees } = this.state;
 
@@ -177,6 +219,7 @@ class Reports extends Component {
       let employeeVsDate = {};
       Object.keys(returnObj).map((date,index) => {
             let attObj = returnObj[date];
+            if(attObj) {
             Object.keys(attObj).map((empId, k) => {
               let existingData  = employeeVsDate[empId] || [];
               let newData = {
@@ -186,6 +229,11 @@ class Reports extends Component {
               existingData.push(newData);
               employeeVsDate[empId] = existingData;
             })
+          } else {
+            this.setState({
+              noDataMsg : 'No Data Existed'
+            })
+          }
         });
         this.setState({
             response: returnObj,
@@ -215,12 +263,10 @@ class Reports extends Component {
   onEndDateChange(e) {
     let endDate = e.replace(/\//g, '-');
     let {startDate} = this.state ;
-    console.log('start  end date = ', startDate , endDate);
     let strt = moment(startDate , 'DD-MM-YYYY');
     let end = moment(endDate, 'DD-MM-YYYY');
 
     let isBefore = strt.valueOf() === end.valueOf() ?  true : moment(strt).isBefore(end) ;
-    console.log(isBefore);
     if(!isBefore) {
       alert('End Date should be greater than Start Date');
       return;
@@ -383,28 +429,15 @@ renderInputFields() {
             />
         </FormField>
         </div>
-        <div style={{width: 300}}>
-        <FormField label='Select Village' style={{marginTop:15}}>
-            <Select
-              placeHolder='Village'
-              options={villageOpt}
-              value={this.state.village}
-              onChange={this.onVillageFieldChange.bind(this, 'village')}
-            />
-        </FormField>
-        </div>
         </div>
         <div style={{display : 'flex', flexDirection : 'column', marginTop: 20, marginLeft: '20px'}} >
         { this.searchField() }
         <Button  label='SHOW REPORT'
-        onClick={this.attendanceDatesLoop.bind(this)}
-        style={ showReportButton ?  { display : 'inline-block' , marginLeft: '20px', marginTop : '40px'}: { display :  'none' }}
+        onClick={this.onValidatingInputs.bind(this)}
+        style={{ display : 'inline-block' , marginLeft: '20px', marginTop : '40px'}}
         primary={true}
         href='#'/>
-        <Button  label='CLEAR SELECTION'
-        onClick={this.clearSelection.bind(this)}
-         style={ showClearButton ?  { display : 'inline-block' , marginLeft: '20px', marginTop : '40px'}: { display :  'none' }}
-        href='#'/>
+
         </div>
     </div>
   )
@@ -890,9 +923,9 @@ renderInputFields() {
      end : endDate
    }]
    return (
-     <div className='table' style={{marginTop: 40}}z>
+     <div className='table' style={{marginBottom: 40}}>
 
-     <div style={{float : 'right'}}>
+     <div style={{marginTop:30, marginLeft: 580}}>
        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px', marginTop : '20px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Excel Report" />}>
          <Workbook.Sheet data={reportData} name="Sheet 1">
              <Workbook.Column label="Serial No" value="serialNo"/>
@@ -922,11 +955,8 @@ renderInputFields() {
        })}
        primary={true} style={{marginRight: '13px'}}
        href='#'/>
-       <div>
-
-       </div>
      </div>
-     {tablesArray}
+     {tablesArray}>
      </div>
    )
  }
@@ -1071,7 +1101,6 @@ renderInputFields() {
 
        }
 
-       console.log(empAttObj.paymentType, empAttObj.gender, empAttObj.shift);
          if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
            dailyMaleDayShift += 1
         }
@@ -1224,7 +1253,7 @@ renderInputFields() {
 
  renderNoDataText() {
    return (
-     <h1 style={{marginTop:40, marginLeft: 'auto', marginRight: 'auto'}}>No data to show !</h1>
+     <h1 style={{marginTop:40, marginLeft: 400}}>No data Existed!</h1>
    )
  }
 
@@ -1248,34 +1277,36 @@ renderInputFields() {
     return (
 
       <div className='table' style={{marginTop: 40}}>
-      <div>
-        <h3 style={{marginLeft: 20,marginBottom: 20, color: '#865CD6'}}>Number of Employees : { tablesObj['tablesArray'].length }</h3>
-      </div>
-      <div style={{float : 'right'}}>
-        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Excel Report" />}>
-          <Workbook.Sheet data={tablesObj['reportData']} name="Sheet 1">
-              <Workbook.Column label="Serial No" value="serialNo"/>
-              <Workbook.Column label="MPId" value="serialNo"/>
-              <Workbook.Column label="Name" value="name"/>
-              <Workbook.Column label="Number Of Persons" value="numberOfPersons"/>
-              <Workbook.Column label="Shift" value="shift"/>
-              <Workbook.Column label="In Time" value="inTime"/>
-              <Workbook.Column label="Out Time" value="outTime"/>
-              <Workbook.Column label="Total Time" value="totalTime"/>
-          </Workbook.Sheet>
-          <Workbook.Sheet  data={ob} name="Information">
-              <Workbook.Column label="Start Date" value="start"/>
-              <Workbook.Column label="End Date" value="end"/>
-          </Workbook.Sheet>
-        </Workbook>
-        <Button icon={<PrintIcon />} label='Print PDF' fill={true}
-        onClick={this.attendancePrintTableData.bind(this)}
-        primary={true} style={{marginRight: '13px'}}
-        href='#'/>
+      {
+        tablesObj['tablesArray'].length == 0 ? null :
         <div>
-
+        <div>
+          <h3 style={{marginLeft: 20,marginBottom: 20, color: '#865CD6'}}>Number of Employees : { tablesObj['tablesArray'].length }</h3>
         </div>
-      </div>
+        <div style={{float : 'right'}}>
+          <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Excel Report" />}>
+            <Workbook.Sheet data={tablesObj['reportData']} name="Sheet 1">
+                <Workbook.Column label="Serial No" value="serialNo"/>
+                <Workbook.Column label="MPId" value="serialNo"/>
+                <Workbook.Column label="Name" value="name"/>
+                <Workbook.Column label="Number Of Persons" value="numberOfPersons"/>
+                <Workbook.Column label="Shift" value="shift"/>
+                <Workbook.Column label="In Time" value="inTime"/>
+                <Workbook.Column label="Out Time" value="outTime"/>
+                <Workbook.Column label="Total Time" value="totalTime"/>
+            </Workbook.Sheet>
+            <Workbook.Sheet  data={ob} name="Information">
+                <Workbook.Column label="Start Date" value="start"/>
+                <Workbook.Column label="End Date" value="end"/>
+            </Workbook.Sheet>
+          </Workbook>
+          <Button icon={<PrintIcon />} label='Print' fill={true}
+          onClick={this.attendancePrintTableData.bind(this)}
+          primary={true} style={{marginRight: '13px'}}
+          href='#'/>
+          </div>
+        </div>
+      }
       <div style={{marginTop : 80}}>
       {tablesObj['tablesArray'].length == 0 ? this.renderNoDataText() : tablesObj['tablesArray']}
       </div>
@@ -1354,7 +1385,20 @@ renderInputFields() {
   }
 
   searchField() {
+    const { villageOpt } = this.state;
     return (
+      <div>
+      <div style={{width: 300}}>
+      <FormField label='Select Village' style={{marginLeft:20}}>
+          <Select
+            placeHolder='Village'
+            options={villageOpt}
+            value={this.state.village}
+            onChange={this.onVillageFieldChange.bind(this, 'village')}
+          />
+      </FormField>
+      </div>
+      <div style={{marginLeft: 20, marginTop: 15}}>
       <Search placeHolder='Search By Name or Barcode' style={{width:'300px'}}
         inline={true}
         iconAlign='start'
@@ -1363,6 +1407,8 @@ renderInputFields() {
         value={this.state.employeeSearchString}
         onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)} />
+      </div>
+      </div>
     )
   }
 
@@ -1458,12 +1504,14 @@ renderInputFields() {
 
         <Tabs>
         <Tab title='Attendance Slip'>
+        { this.renderValidationMsg() }
         { this.renderInputFields() }
         { this.showEmployeeReportsTable() }
         { this.printPdf() }
         { this.attendancePrint() }
         </Tab>
         <Tab title='Datewise'>
+        { this.renderValidationMsg() }
         { this.renderInputFields() }
         { this.showOldEmployeeReportsTable() }
         { this.emailReportDialog() }
