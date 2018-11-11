@@ -359,7 +359,7 @@ renderInputFields() {
     showReportButton = true;
 
   return (
-    <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 380, display : 'flex', flexDirection : 'row'}}>
+    <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
     <div style={{display : 'flex', flexDirection : 'column'}} >
     <div style={{width: 300}}>
     <FormField label={<UnitText/>} style={{marginTop:20}}>
@@ -778,7 +778,7 @@ renderInputFields() {
        return;
 
      tablesArray.push(<div className='tablesArray' key={index}>
-          <Table scrollable={true} style={{marginTop : '30px', marginLeft : '30px'}}>
+          <Table scrollable={true} style={{marginTop : '80px', marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
           <tr>
             <th>S No.</th>
@@ -923,9 +923,10 @@ renderInputFields() {
      end : endDate
    }]
    return (
-     <div className='table' style={{marginBottom: 40}}>
-
-     <div style={{marginTop:30, marginLeft: 580}}>
+    <div>
+     <div style={{marginTop:'40px', marginLeft:'40px'}}>
+      {
+        /*
        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px', marginTop : '20px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Excel Report" />}>
          <Workbook.Sheet data={reportData} name="Sheet 1">
              <Workbook.Column label="Serial No" value="serialNo"/>
@@ -942,6 +943,8 @@ renderInputFields() {
              <Workbook.Column label="End Date" value="end"/>
          </Workbook.Sheet>
        </Workbook>
+       */
+      }
        <Button icon={<BookIcon />} label='Abstract Table' fill={true}
        onClick={this.onAbstractClick.bind(this, {
          dailyMaleDayShift,
@@ -951,12 +954,14 @@ renderInputFields() {
          weeklyMaleDayShift,
          weeklyMaleNightShift,
          weeklyFemaleDayShift,
-         weeklyFemaleDayShift
+         weeklyFemaleNightShift
        })}
        primary={true} style={{marginRight: '13px'}}
        href='#'/>
      </div>
-     {tablesArray}>
+     <div  style={{marginBottom: 40}}>
+      {tablesArray}
+     </div>
      </div>
    )
  }
@@ -972,9 +977,6 @@ renderInputFields() {
          return(
            <Print name='bizCard' exclusive>
               <div>
-                <div style={{height:'1120px'}}>
-                  <h3 style={{marginLeft: 'auto', marginRight: 'auto'}}>Man power report from {startDate} to {endDate}</h3>
-                </div>
                 <div>
                 {tablesObj['tablesArray']}
                 </div>
@@ -1060,6 +1062,7 @@ renderInputFields() {
    let weeklyMaleNightShift = 0;
    let weeklyFemaleDayShift = 0;
    let weeklyFemaleNightShift = 0;
+   let iterator = 0;
 
 
    idVsName.map((idNameObj, index) => {
@@ -1117,34 +1120,41 @@ renderInputFields() {
         dailyFemaleNightShift += 1
      }
 
-     if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
-       weeklyMaleDayShift += 1
+       if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+         weeklyMaleDayShift += 1
+      }
+      if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+        weeklyMaleNightShift += 1
+     }
+     if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+       weeklyFemaleDayShift += 1
     }
-    if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
-      weeklyMaleNightShift += 1
+    if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+      weeklyFemaleNightShift += 1
    }
-   if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
-     weeklyFemaleDayShift += 1
-  }
-  if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
-    weeklyFemaleNightShift += 1
- }
 
 
-       let uniqId = uniqid();
-       let totalNumberOfdays = 0;
-       attendanceObjArray.map((dateObject,index)=> {
-         const employeeAttendaceObj = dateObject['value'];
-         if(employeeAttendaceObj !== null){
-         let inTime = employeeAttendaceObj.in;
-         let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
-         if(inTime && outTime)
-          totalNumberOfdays++;
-       }
-       });
+     let uniqId = uniqid();
+     let totalNumberOfdays = 0;
+     attendanceObjArray.map((dateObject,index)=> {
+       const employeeAttendaceObj = dateObject['value'];
+       if(employeeAttendaceObj !== null){
+       let inTime = employeeAttendaceObj.in;
+       let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
+       if(inTime && outTime)
+        totalNumberOfdays++;
+     }
+     });
+
+     let top = iterator * 8.2;
+     let topStr = top + 'in'
+     iterator++;
 
 
-     tablesArray.push(<div className='' key={uniqId} style={isPrint ? {height: '1050px'} : {}}>
+     console.log(topStr);
+
+
+     tablesArray.push(<div className='' key={uniqId} style={isPrint ? {position: 'absolute' , top: topStr , width: '11.0in'} : {}}>
      <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['paymentType']} ; {allEmployees[employeeId]['gender']} ; {allEmployees[employeeId]['village']} ; {unit} </h3>
      <h5 style={{marginLeft : '20px'}}>Total no of days = {totalNumberOfdays} </h5>
      <Table scrollable={true} style={isPrint ? {} :  { marginTop : '30px', marginLeft : '30px'}}>
@@ -1284,6 +1294,8 @@ renderInputFields() {
           <h3 style={{marginLeft: 20,marginBottom: 20, color: '#865CD6'}}>Number of Employees : { tablesObj['tablesArray'].length }</h3>
         </div>
         <div style={{float : 'right'}}>
+        {
+          /*
           <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '10px', marginRight: '15px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Excel Report" />}>
             <Workbook.Sheet data={tablesObj['reportData']} name="Sheet 1">
                 <Workbook.Column label="Serial No" value="serialNo"/>
@@ -1300,6 +1312,8 @@ renderInputFields() {
                 <Workbook.Column label="End Date" value="end"/>
             </Workbook.Sheet>
           </Workbook>
+          */
+        }
           <Button icon={<PrintIcon />} label='Print' fill={true}
           onClick={this.attendancePrintTableData.bind(this)}
           primary={true} style={{marginRight: '13px'}}
