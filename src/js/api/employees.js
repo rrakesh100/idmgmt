@@ -74,7 +74,7 @@ export function getEmployee(employeeId) {
 
 export function getEmployees() {
   const date = new Date();
-  const dbRef = firebase.database().ref(localStorage.unit + '/' +'employees');
+  const dbRef = firebase.database().ref('employees');
   return dbRef.once('value');
 }
 
