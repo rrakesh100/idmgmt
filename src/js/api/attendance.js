@@ -99,6 +99,24 @@ export function getEmployeeAttendanceDates(employeeId) {
   return dbRef.once('value');
 }
 
+export function savePrintCopiesData(dateRange, printData) {
+  console.log(printData);
+  const dbRef = firebase.database().ref();
+  const updates = {};
+  if(printData) {
+    updates[localStorage.unit + '/' +`printCopies/${dateRange}`] = printData + 1;
+  } else {
+    updates[localStorage.unit + '/' +`printCopies/${dateRange}`] = 1;
+  }
+
+  return dbRef.update(updates);
+}
+
+export function fetchPrintCopiesData(dateRange) {
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +`printCopies/${dateRange}`);
+  return dbRef.once('value');
+}
+
 export function uploadAttendanceEmployeeImage(file, employeeId) {
   const storageRef = firebase.storage().ref();
   let epochTime = new Date().getTime();

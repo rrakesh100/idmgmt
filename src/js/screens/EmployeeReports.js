@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { getEmployees, getEmployee } from '../api/employees';
-import { attendanceDatesLoop, getEmployeeAttendanceDates, saveEmailReport } from '../api/attendance';
+import { attendanceDatesLoop, getEmployeeAttendanceDates, saveEmailReport, savePrintCopiesData, fetchPrintCopiesData } from '../api/attendance';
 import { getVillages } from '../api/configuration';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
@@ -34,6 +34,7 @@ import { Container, Row, Col } from 'react-grid-system';
 import { getShifts } from '../api/configuration';
 import { Print } from 'react-easy-print';
 import axios from 'axios';
+import { RingLoader } from 'react-spinners';
 
 const uniqid = require('uniqid');
 
@@ -61,12 +62,14 @@ class Reports extends Component {
     this.state = {
       startDate : null,
       endDate: null,
+      unit: null,
       paymentType: '',
       shift: '',
       printTableSelected: false,
       numPages: null,
       pageNumber: 1,
       emailReport: false,
+      loading: false
     }
   }
 
@@ -74,6 +77,15 @@ class Reports extends Component {
      this.getEmployees()
      this.getShifts()
      this.getVillageDetails()
+  }
+
+  getPrintCopiesData() {
+    const { dateRange } = this.state;
+    fetchPrintCopiesData(dateRange).then((snap) => {
+      let printData = snap.val();
+      console.log(printData);
+      this.setState({printData})
+    }).catch((err) => console.log(err))
   }
 
   getVillageDetails() {
@@ -155,6 +167,12 @@ class Reports extends Component {
     return null;
   }
 
+  onShowingReport() {
+    this.setState({
+      loading: true
+    }, this.onValidatingInputs.bind(this))
+  }
+
   onValidatingInputs() {
     const { startDate, endDate, unit } = this.state;
 
@@ -231,14 +249,16 @@ class Reports extends Component {
             })
           } else {
             this.setState({
-              noDataMsg : 'No Data Existed'
+              noDataMsg : 'No Data Existed',
+              loading: false
             })
           }
         });
         this.setState({
             response: returnObj,
-            employeeVsDate
-           });
+            employeeVsDate,
+            loading: false
+          });
     })
 
   }
@@ -251,18 +271,35 @@ class Reports extends Component {
   }
 
   onStartDateChange(e) {
-
+    const { endDate, unit } = this.state;
     let startDate = e.replace(/\//g, '-');
-    this.setState({
-      startDate,
-      startDateWithSlash : e,
-      response : null
-    })
+    if(endDate) {
+      let strt = moment(startDate , 'DD-MM-YYYY');
+      let end = moment(endDate, 'DD-MM-YYYY');
+
+      let isBefore = strt.valueOf() === end.valueOf() ?  true : moment(strt).isBefore(end) ;
+      if(!isBefore) {
+        alert('End Date should be greater than Start Date');
+        return;
+      }
+      this.setState({
+        response: null
+      })
+    } else {
+      this.setState({
+        startDate,
+        startDateWithSlash : e,
+        response : null
+      })
+    }
+
   }
 
   onEndDateChange(e) {
     let endDate = e.replace(/\//g, '-');
     let {startDate} = this.state ;
+    let dateRange = startDate + '_' + endDate;
+
     let strt = moment(startDate , 'DD-MM-YYYY');
     let end = moment(endDate, 'DD-MM-YYYY');
 
@@ -273,7 +310,7 @@ class Reports extends Component {
     }
 
 
-    this.setState({endDate, response : null})
+    this.setState({endDate, response : null, dateRange}, this.getPrintCopiesData.bind(this))
   }
 
   onPaymentFieldChange(fieldName, e) {
@@ -433,7 +470,7 @@ renderInputFields() {
         <div style={{display : 'flex', flexDirection : 'column', marginTop: 20, marginLeft: '20px'}} >
         { this.searchField() }
         <Button  label='SHOW REPORT'
-        onClick={this.onValidatingInputs.bind(this)}
+        onClick={this.onShowingReport.bind(this)}
         style={{ display : 'inline-block' , marginLeft: '20px', marginTop : '40px'}}
         primary={true}
         href='#'/>
@@ -444,9 +481,12 @@ renderInputFields() {
 }
 
   attendancePrintTableData() {
-    this.setState({
-      attendancePrintSelected: true
-    })
+    const { dateRange, printData } = this.state;
+    savePrintCopiesData(dateRange, printData).then(() => {
+      this.setState({
+        attendancePrintSelected: true
+      })
+    }).catch((e) => console.log(e));
   }
 
   datewisePrintTableData() {
@@ -456,7 +496,7 @@ renderInputFields() {
   }
 
   setTimeoutFunc() {
-    setTimeout(() => window.print(), 4000)
+    setTimeout(() => window.print(), 5000)
   }
 
   attendancePrint() {
@@ -968,21 +1008,39 @@ renderInputFields() {
 
  printPdf() {
      if(this.state.attendancePrintSelected) {
-       const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate, employeeVsDate, allEmployees } = this.state;
+       const { response,
+               paymentTypeSelected,
+               shiftSelected,
+               paymentType,
+               shift,
+               startDate,
+               endDate,
+               unit,
+               employeeVsDate,
+               allEmployees,
+               printData } = this.state;
 
        let tablesObj = this.getTablesArray(true);
+       console.log(tablesObj['tablesArray'].length);
        if(!tablesObj)
         return (<h2 style={{marginTop : '20px', marginLeft : '20px'}}>No data to show</h2>);
-       else
+       else {
          return(
            <Print name='bizCard' exclusive>
               <div>
+                <div style={{display: 'flex', justifyContent: 'center', marginBottom:20}}>
+                  <h4>Copy: </h4><strong>{printData ? <h4>Duplicate</h4> : <h4>Original</h4>}</strong>
+                </div>
+                <div style={{display: 'flex', justifyContent: 'center'}}>
+                  <h4><strong>Attendance Slip From : {startDate} To: {endDate}, Unit: {unit}</strong></h4>
+                </div>
                 <div>
                 {tablesObj['tablesArray']}
                 </div>
               </div>
            </Print>
          );
+       }
    }
  }
 
@@ -1146,12 +1204,11 @@ renderInputFields() {
      }
      });
 
-     let top = iterator * 8.2;
+     let top = iterator * 16.4;
      let topStr = top + 'in'
      iterator++;
 
 
-     console.log(topStr);
 
 
      tablesArray.push(<div className='' key={uniqId} style={isPrint ? {position: 'absolute' , top: topStr , width: '11.0in'} : {}}>
@@ -1398,6 +1455,23 @@ renderInputFields() {
     }
   }
 
+  employeewiseSearchField() {
+    const { villageOpt } = this.state;
+    return (
+      <div style={{marginLeft: 20, marginTop: 15}}>
+      <Search placeHolder='Search By Name or Barcode' style={{width:'300px'}}
+        inline={true}
+        iconAlign='start'
+        size='small'
+        suggestions={this.state.filteredSuggestions}
+        value={this.state.employeeSearchString}
+        onSelect={this.onEmployeeSelect.bind(this)}
+        onDOMChange={this.onSearchEntry.bind(this)} />
+      </div>
+    )
+  }
+
+
   searchField() {
     const { villageOpt } = this.state;
     return (
@@ -1438,7 +1512,7 @@ renderInputFields() {
         colorIndex='light-2'
       >
       <p style={{margin : '20px'}}>Select Employee</p>
-      { this.searchField() }
+      { this.employeewiseSearchField() }
       </Box>
       </div>
     );
@@ -1510,16 +1584,27 @@ renderInputFields() {
   }
 
 
-
+renderActivityIndicator() {
+  return (
+    <div style={{display: 'flex', justifyContent: 'center', marginTop:30}}>
+    <RingLoader
+          sizeUnit={"px"}
+          size={70}
+          color={'#865CD6'}
+          loading={this.state.loading}
+        />
+    </div>
+  )
+}
 
   render() {
       return (
         <div>
-
         <Tabs>
         <Tab title='Attendance Slip'>
         { this.renderValidationMsg() }
         { this.renderInputFields() }
+        { this.renderActivityIndicator() }
         { this.showEmployeeReportsTable() }
         { this.printPdf() }
         { this.attendancePrint() }
@@ -1530,7 +1615,6 @@ renderInputFields() {
         { this.showOldEmployeeReportsTable() }
         { this.emailReportDialog() }
         { this.renderAbstractTable() }
-
         </Tab>
         <Tab title='Employeewise'>
         { this.renderSearchField() }
