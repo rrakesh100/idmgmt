@@ -70,6 +70,7 @@ class Reports extends Component {
       pageNumber: 1,
       emailReport: false,
       loading: false,
+      printFucker : false
     }
   }
 
@@ -279,7 +280,10 @@ class Reports extends Component {
         return;
       }
       this.setState({
-        response: null
+        startDate,
+        startDateWithSlash : e,
+        response : null,
+        validationMsg: ''
       })
     } else {
       this.setState({
@@ -479,9 +483,16 @@ renderInputFields() {
 
   attendancePrintTableData() {
     const { dateRange, printCopies } = this.state;
-    window.print();
+    window.onafterprint = () => {
+      console.log('end')
+    }
+    window.onbeforeprint = () => {
+      console.log('beginning')
+    }
+    setTimeout(() => window.print(), 1)
     savePrintCopiesData(dateRange, printCopies);
   }
+
 
   renderPDFDoc(reportData){
 
@@ -660,73 +671,64 @@ renderInputFields() {
                </tr>
               </thead>
               <tbody>
-                <TableRow>
+                <TableRow style={{color : 'green'}}>
                     <td>Weekly Male</td>
                     <td>{weeklyMaleDayShift}</td>
                     <td>{weeklyMaleNightShift}</td>
                     <td>{weeklyMaleTotal}</td>
                 </TableRow>
-                <TableRow>
+                <TableRow style={{color : 'green'}}>
                     <td>Weekly Female</td>
                     <td>{weeklyFemaleDayShift}</td>
                     <td>{weeklyFemaleNightShift}</td>
                     <td>{weeklyFemaleTotal}</td>
                 </TableRow>
-                <TableRow>
-                    <td>-------------------------</td>
-                    <td>-------------------------</td>
-                    <td>-------------------------</td>
-                    <td>-------------------------</td>
-                </TableRow>
-                <TableRow>
+
+                <TableRow style={{color : 'red'}}>
                     <td>Sub Total</td>
                     <td>{weeklyDaySubTotal}</td>
                     <td>{weeklyNightSubTotal}</td>
                     <td>{weeklySubTotal}</td>
                 </TableRow>
                 <TableRow>
-                    <td>*********************</td>
-                    <td>*********************</td>
-                    <td>*********************</td>
-                    <td>*********************</td>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
                 </TableRow>
-                <TableRow>
+                <TableRow style={{color : 'blue'}}>
                     <td>Daily Male</td>
                     <td>{dailyMaleDayShift}</td>
                     <td>{dailyMaleNightShift}</td>
                     <td>{dailyMaleTotal}</td>
                 </TableRow>
-                <TableRow>
+                <TableRow style={{color : 'blue'}}>
                     <td>Daily Female</td>
                     <td>{dailyFemaleDayShift}</td>
                     <td>{dailyFemaleNightShift}</td>
                     <td>{dailyFemaleTotal}</td>
                 </TableRow>
-                <TableRow>
-                    <td>-------------------------</td>
-                    <td>-------------------------</td>
-                    <td>-------------------------</td>
-                    <td>-------------------------</td>
-                </TableRow>
-                <TableRow>
+
+                <TableRow style={{color : 'red'}}>
                     <td>Sub Total</td>
                     <td>{dailyDaySubTotal}</td>
                     <td>{dailyNightSubTotal}</td>
                     <td>{dailySubTotal}</td>
                 </TableRow>
                 <TableRow>
-                    <td>*********************</td>
-                    <td>*********************</td>
-                    <td>*********************</td>
-                    <td>*********************</td>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
                 </TableRow>
+
                 <TableRow>
                     <td>Jattu</td>
                     <td>{jattuPayment}</td>
                     <td>0</td>
                     <td>{jattuPayment}</td>
                 </TableRow>
-                <TableRow>
+                <TableRow style={{color : 'red'}}>
                     <td>Grand Total</td>
                     <td>{dayGrandTotal}</td>
                     <td>{nightGrandTotal}</td>
@@ -1022,6 +1024,7 @@ renderInputFields() {
                allEmployees,
                printCopies } = this.state;
 
+
        let tablesObj = this.getTablesArray(true);
        if(tablesObj) {
          return(
@@ -1177,7 +1180,7 @@ renderInputFields() {
        return
      }
 
-     let top = iterator * 17.425;
+     let top = iterator * 16.4;
      let topStr = top + 'in'
      iterator++;
 
@@ -1186,11 +1189,11 @@ renderInputFields() {
      const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
 
      tablesArray.push(<div className='' key={uniqId} style={isPrint ? {position: 'absolute' , top: topStr , width: '11.0in'} : {}}>
-     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong><span style={{marginLeft : 340}}>Date : {timestampStr}</span></h4>
-     <h4 style={!isPrint ? {display:'none'}: {marginLeft : '20px'}}>Attendance Slip From : {startDate} To: {endDate}<span style={{marginLeft : 80}}>Unit: {unit}</span></h4>
-     <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']} ; {unit} ; No of days = <span>{totalNumberOfdays}</span></h3>
-     <Table scrollable={true} style={isPrint ? {} :  { marginTop : '30px', marginLeft : '30px'}}>
-         <thead>
+     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong><span style={{position: 'absolute', right : 0, marginRight : 20}}>Date : {timestampStr}</span></h4>
+     <h4 style={!isPrint ? {display:'none'}: {marginLeft : '20px'}}>Attendance Slip From : {startDate} To: {endDate}<span style={{position: 'absolute', right : 0, marginRight : 20}}>Unit: {unit}</span></h4>
+     <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 0, marginRight : 20}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
+     <Table scrollable={true} style={isPrint ? {} :  { marginTop : '10px', marginLeft : '30px'}}>
+         <thead style={{position:'relative'}}>
           <tr>
             <th>S No.</th>
             <th>Date</th>
@@ -1291,6 +1294,7 @@ renderInputFields() {
      weeklyFemaleNightShift,
      jattuPayment
    };
+   console.log(returnObj);
    return returnObj;
  }
 
@@ -1354,7 +1358,7 @@ renderInputFields() {
           </div>
         </div>
       }
-      <div style={{marginTop : 80}}>
+      <div style={{marginTop : 20}}>
       {tablesObj['tablesArray'].length == 0 ? this.renderNoDataText() : tablesObj['tablesArray']}
       </div>
       </div>
