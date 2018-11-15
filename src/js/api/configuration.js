@@ -52,17 +52,17 @@ export function saveMaterial(material) {
 }
 
 export function getShifts() {
-  const dbRef = firebase.database().ref(localStorage.unit + '/' +'shifts');
+  const dbRef = firebase.database().ref('shifts');
   return dbRef.once('value');
 }
 
 export function getTimeslots() {
-  const dbRef = firebase.database().ref(localStorage.unit + '/' +'timeslot');
+  const dbRef = firebase.database().ref('timeslot');
   return dbRef.once('value');
 }
 
 export function getVillages() {
-  const dbRef = firebase.database().ref(localStorage.unit + '/' +'villages');
+  const dbRef = firebase.database().ref('villages');
   return dbRef.once('value');
 }
 

@@ -102,7 +102,6 @@ class Login extends Component {
 
     if(fUnit && sUnit) {
       loginUser(fields.username, fields.password, fUnit).then((payload) => {
-                console.log(payload);
             if(!payload.errorCode) {
               try {
                 const localStorage = window.localStorage;

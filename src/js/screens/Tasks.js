@@ -57,13 +57,11 @@ class Tasks extends Component {
           return;
         }
         let visitors = [];
-        console.log('####333##', data);
         snap.forEach(function(child){
           let a = {};
             a[child.key] = child.val()
           visitors.push(a);
         })
-        console.log('#####', visitors);
 
         this.setState({
           visitorSuggestions: [...Object.keys(data)],
@@ -140,7 +138,6 @@ class Tasks extends Component {
 
       const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', info=''
       , timestampStr,screenshot, visitorId, department, inTime, company='', serialNo='' } = this.state.printVisitorObj;
-      console.log(this.state.printVisitorObj);
       const timestamp = new Date();
       let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
       const timestampString = Moment(timestamp).format('DD/MM/YYYY hh:mm:ss A');
@@ -233,7 +230,6 @@ class Tasks extends Component {
   }
 
   print() {
-    console.log(this.state.printVisitorId);
     if(this.state.printVisitorId)
      this.setState({printVisitorId : null},  this.printVis() );
   }

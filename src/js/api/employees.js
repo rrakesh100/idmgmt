@@ -67,7 +67,7 @@ export function saveEmployee(data) {
   }
 
 export function getEmployee(employeeId) {
-  const employeePath = localStorage.unit + '/' +`employees/${employeeId}`;
+  const employeePath = `employees/${employeeId}`;
   const dbRef = firebase.database().ref(employeePath);
   return dbRef.once('value');
 }

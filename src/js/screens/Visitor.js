@@ -45,7 +45,6 @@ class Visitor extends Component {
 
   componentDidMount() {
     const { visitorData, visitorId } = this.props;
-    console.log(visitorData);
     this.setState({
       visitorData,
       visitorId
@@ -144,7 +143,6 @@ class Visitor extends Component {
 
 
 onRadioChange(button, e) {
-  console.log(e);
   if(button === 'yes'){
     this.setState({
       radioSelectValue : 'yes'
@@ -257,7 +255,6 @@ onRadioChange(button, e) {
 
   render() {
 
-    console.log(this.props)
     if (this.state.isLoading) {
       return (
         <Spinning className='spinner' size='xlarge' />

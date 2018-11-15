@@ -100,7 +100,6 @@ export function getEmployeeAttendanceDates(employeeId) {
 }
 
 export function savePrintCopiesData(dateRange, printData) {
-  console.log(printData);
   const dbRef = firebase.database().ref();
   const updates = {};
   if(printData) {

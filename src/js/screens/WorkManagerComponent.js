@@ -159,7 +159,6 @@ export default class WorkManagerComponent extends Component {
 
   renderSearchedEmployee() {
     const { selectedEmployeeData, workplacesArr, workplaces, selectedZone, countData } = this.state;
-    console.log(workplaces);
     let date = new Date();
     let hours = date.getHours();
     let allottedMaleCount = 0;

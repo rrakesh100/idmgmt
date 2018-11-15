@@ -47,7 +47,6 @@ class VisitorOutComponent extends Component {
 
   componentDidMount() {
     const { visitorData, visitorId } = this.props;
-    console.log(visitorData);
     this.setState({
       visitorData,
       visitorId
@@ -77,7 +76,6 @@ class VisitorOutComponent extends Component {
     if (this.props.visitorData) {
       const { visitorData } = this.props;
       const { name, info, timestamp, screenshot, status, statusTimestamp } = this.props.visitorData;
-      console.log(timestamp)
       const m = moment(timestamp);
       const timestampStr = m.format('DD/MM/YYYY hh:mm:ss A');
       const timeRelativeStr = m.fromNow();
@@ -131,7 +129,6 @@ class VisitorOutComponent extends Component {
 
 
 onRadioChange(button, e) {
-  console.log(e);
   if(button === 'yes'){
     this.setState({
       radioSelectValue : 'yes'
@@ -149,8 +146,6 @@ onRadioChange(button, e) {
       return null;
     }
     let { status, inTime } = this.props.visitorData;
-    console.log('#####', this.props.visitorData);
-    console.log('@@@@@', this.state.visitorData);
 
     if(status == null) {
       status  = this.state.visitorData.status;
@@ -189,7 +184,6 @@ onRadioChange(button, e) {
       );
     }else{
       let ot = this.state.visitorData.outTime;
-      console.log(ot)
       if(!ot)
         return
       let splitOT = ot.split("T");
@@ -231,7 +225,6 @@ onRadioChange(button, e) {
 
 
   onDepartedClick() {
-    console.log('clicked ! ! ! ! !')
     let updateData = {};
 
     const { visitorData, visitorId, radioSelectValue} = this.state;
@@ -241,7 +234,6 @@ onRadioChange(button, e) {
     }, () => {
       const timestamp = new Date();
       updateData.metRequiredPerson = radioSelectValue;
-      console.log(updateData);
       updateVisitor({ ...updateData, timestamp,
         entryTimestamp: visitorData.timestamp,
         outTime : timestamp,
@@ -249,7 +241,6 @@ onRadioChange(button, e) {
         enteredBy: window.localStorage.email,
         visitorId })
         .then(() => {
-          console.log('success')
           this.setState({
             toastMsg: `Successfully updated the status of ${this.state.visitorId}`
           }, this.getVisitorData.bind(this));
@@ -271,7 +262,6 @@ onRadioChange(button, e) {
 
 
   render() {
-    console.log(this.props)
     if (this.state.isLoading) {
       return (
         <Spinning className='spinner' size='xlarge' />

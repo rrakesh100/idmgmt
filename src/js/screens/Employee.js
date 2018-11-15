@@ -54,7 +54,7 @@ class Employee extends Component {
         this.setState({
           employeeData,
           isLoading: false
-        }, console.log(this.state));
+        });
       })
       .catch((err) => {
         console.error(`Unable to fetch data for ${employeeId}`, err);
@@ -137,8 +137,6 @@ class Employee extends Component {
 
   updateAssignedZone() {
     const { selectedZone, employeeId, employeeData } = this.state;
-    console.log(employeeId)
-    console.log(employeeData)
     const timestamp = new Date();
     const zoneData = {
       employeeId,

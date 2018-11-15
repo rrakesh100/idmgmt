@@ -284,7 +284,6 @@ export default class VehicleOut extends Component {
       let vNo=vehicleNumber;
       if(selectVehicleNumber)
        vNo = selectVehicleNumber;
-       console.log('########', vNo);
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
       uploadVehicleImage(imgFile, vNo, outwardSNo).then((snapshot) => {
            let outwardPhoto = snapshot.downloadURL;

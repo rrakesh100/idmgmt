@@ -43,7 +43,6 @@ export default class WorkManager extends Component {
   getWorkPlaces() {
     getWorkPlaces().then((snap) => {
       const data = snap.val();
-      console.log(data)
       this.setState({
         workplaces: data
       })

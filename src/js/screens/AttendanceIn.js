@@ -195,7 +195,6 @@ class AttendanceIn extends Component {
     })
 
     if(filtered.length > 0) {
-      console.log('filtered = ', filtered);
       this.setState({
         selectedEmployeeId : e.target.value,
         filteredSuggestions : filtered
@@ -205,10 +204,8 @@ class AttendanceIn extends Component {
           this.setState({scheduled : true});
           setTimeout(() => {
             const fSuggestions = this.state.filteredSuggestions;
-            console.log('###### filtered = ', fSuggestions);
 
               if(fSuggestions.length == 1) {
-                console.log('filtered = ', fSuggestions);
                 let data = {};
                 this.outsideCameraCapture();
                 data.suggestion = fSuggestions[0];
@@ -233,7 +230,6 @@ class AttendanceIn extends Component {
       filtered = options
     else {
       options.forEach((opt) => {
-        console.log(opt);
         if(opt.label && opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
         else if(opt.employeeId && opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
@@ -323,10 +319,8 @@ class AttendanceIn extends Component {
   onMarkButtonClick() {
     const { selectedEmployeeId, selectedEmployeeData , screenshot, numberOfPersons, Date } = this.state;
     const shift = window.localStorage.shift || this.state.shift;
-    console.log(selectedEmployeeData);
     let selectedEmployeeName = selectedEmployeeData.name;
     let selectedEmployeeVillage = selectedEmployeeData.village;
-    console.log(selectedEmployeeVillage);
     let paymentType = selectedEmployeeData.paymentType;
 
     if(!selectedEmployeeId || selectedEmployeeId === '') {

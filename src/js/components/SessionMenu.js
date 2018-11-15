@@ -24,7 +24,6 @@ class SessionMenu extends Component {
   render() {
     const { dropAlign, colorIndex, session: { name: userName } } = this.props;
     const localStorage = window.localStorage;
-    console.log(localStorage.unit);
     return (
       <Menu
         icon={<UserIcon />}

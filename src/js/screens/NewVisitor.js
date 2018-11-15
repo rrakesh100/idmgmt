@@ -34,7 +34,6 @@ import { saveVisitor, uploadVisitorImage } from '../api/visitors';
 class NewVisitor extends Component {
   constructor(props) {
     super(props);
-    console.log('*****', props);
     this.state = {
       showLiveCameraFeed: true,
       visitorId: Rand.generateBase30(8),
@@ -173,7 +172,6 @@ class NewVisitor extends Component {
     }
     const timestamp = new Date();
     const timestampStr = Moment(timestamp).format('DD/MM/YYYY hh:mm:ss A');
-    console.log(timestampStr);
     this.setState({
       timestamp,
       timestampStr,
@@ -212,7 +210,6 @@ class NewVisitor extends Component {
   renderBusinessCardForPrint() {
     const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', remarks=''
     , timestampStr, department,company='', screenshot, serialNo='' } = this.state;
-    console.log(timestampStr);
 
     if(!screenshot)
       return null

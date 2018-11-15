@@ -87,7 +87,6 @@ class VisitorOut extends Component {
       filtered = options
     else {
       options.forEach((opt) => {
-        console.log('$$$', opt)
         if(opt.serialNo==(e.target.value))
             filtered.push(opt)
         else if(opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))

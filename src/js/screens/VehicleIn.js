@@ -212,7 +212,6 @@ export default class VehicleIn extends Component {
       if(showDetails) {
         let outwardObjKey = outwardObj['outwardSNo'];
         let outwardObjVal = outwardObj;
-        console.log(outwardObjVal);
         return (
           <div>
           <Button icon={<Down/>}
@@ -379,7 +378,6 @@ export default class VehicleIn extends Component {
         billNumber,
         remarks,
         screenshot } = this.state;
-        console.log(emptyLoad);
 
         if(!ownOutVehicle) {
           this.setState({
@@ -455,7 +453,6 @@ export default class VehicleIn extends Component {
     const date = new Date();
     const dateStr = moment(date).format('DD-MM-YYYY');
     const { ourVehicle, emptyVehicle, showDetails, vehicleOpt, materialOpt, inwardSNo } = this.state;
-    console.log(emptyVehicle);
     return (
       <div>
       { this.renderValidationMsg() }

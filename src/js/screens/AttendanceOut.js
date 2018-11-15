@@ -168,7 +168,6 @@ class AttendanceOut extends Component {
     })
 
     if(filtered.length > 0) {
-      console.log('filtered = ', filtered);
       this.setState({
         selectedEmployeeId : e.target.value,
         filteredSuggestions : filtered
@@ -178,10 +177,8 @@ class AttendanceOut extends Component {
           this.setState({scheduled : true});
           setTimeout(() => {
             const fSuggestions = this.state.filteredSuggestions;
-            console.log('###### filtered = ', fSuggestions);
 
               if(fSuggestions.length == 1) {
-                console.log('filtered = ', fSuggestions);
                 let data = {};
                 this.outsideCameraCapture();
                 data.suggestion = fSuggestions[0];

@@ -49,7 +49,6 @@ class Reports extends Component {
     datesArr.push(moment(startDateObj).format('DD-MM-YYYY'));
     startDateObj.setDate(startDateObj.getDate() + 1);
     }
-    console.log(datesArr)
 
     let returnObj = {};
     const dbRef = firebase.database().ref(window.localStorage.unit + '/' + 'daywiseVisitors/');
@@ -94,7 +93,6 @@ class Reports extends Component {
 
     Object.keys(response).map((date, index) => {
       const attendanceObj = response[date];
-      console.log(attendanceObj)
       if(attendanceObj == null)
         return;
       let i = 0;

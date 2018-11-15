@@ -69,7 +69,7 @@ class Reports extends Component {
       numPages: null,
       pageNumber: 1,
       emailReport: false,
-      loading: false
+      loading: false,
     }
   }
 
@@ -83,7 +83,6 @@ class Reports extends Component {
     const { dateRange } = this.state;
     fetchPrintCopiesData(dateRange).then((snap) => {
       let printData = snap.val();
-      console.log(printData);
       this.setState({printData})
     }).catch((err) => console.log(err))
   }
@@ -167,11 +166,6 @@ class Reports extends Component {
     return null;
   }
 
-  onShowingReport() {
-    this.setState({
-      loading: true
-    }, this.onValidatingInputs.bind(this))
-  }
 
   onValidatingInputs() {
     const { startDate, endDate, unit } = this.state;
@@ -198,7 +192,8 @@ class Reports extends Component {
     }
 
     this.setState({
-      validationMsg:''
+      validationMsg:'',
+      loading: true
     }, this.attendanceDatesLoop.bind(this))
   }
 
@@ -266,7 +261,8 @@ class Reports extends Component {
   onUnitFieldChange(fieldName, e) {
     this.setState({
       [fieldName] : e.option,
-      response: null
+      response: null,
+      validationMsg: ''
     })
   }
 
@@ -289,7 +285,8 @@ class Reports extends Component {
       this.setState({
         startDate,
         startDateWithSlash : e,
-        response : null
+        response : null,
+        validationMsg: ''
       })
     }
 
@@ -310,7 +307,7 @@ class Reports extends Component {
     }
 
 
-    this.setState({endDate, response : null, dateRange}, this.getPrintCopiesData.bind(this))
+    this.setState({endDate, response : null, dateRange, validationMsg: ''}, this.getPrintCopiesData.bind(this))
   }
 
   onPaymentFieldChange(fieldName, e) {
@@ -470,7 +467,7 @@ renderInputFields() {
         <div style={{display : 'flex', flexDirection : 'column', marginTop: 20, marginLeft: '20px'}} >
         { this.searchField() }
         <Button  label='SHOW REPORT'
-        onClick={this.onShowingReport.bind(this)}
+        onClick={this.onValidatingInputs.bind(this)}
         style={{ display : 'inline-block' , marginLeft: '20px', marginTop : '40px'}}
         primary={true}
         href='#'/>
@@ -816,9 +813,9 @@ renderInputFields() {
      const attendanceObj = response[date];
      if(attendanceObj ==null)
        return;
-
      tablesArray.push(<div className='tablesArray' key={index}>
-          <Table scrollable={true} style={{marginTop : '80px', marginLeft : '30px'}}>
+          <h1 style={{marginLeft: 30, marginTop:40}}>{date}</h1>
+          <Table scrollable={true} style={{ marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
           <tr>
             <th>S No.</th>
@@ -1021,7 +1018,6 @@ renderInputFields() {
                printData } = this.state;
 
        let tablesObj = this.getTablesArray(true);
-       console.log(tablesObj['tablesArray'].length);
        if(!tablesObj)
         return (<h2 style={{marginTop : '20px', marginLeft : '20px'}}>No data to show</h2>);
        else {
@@ -1035,7 +1031,7 @@ renderInputFields() {
                   <h4><strong>Attendance Slip From : {startDate} To: {endDate}, Unit: {unit}</strong></h4>
                 </div>
                 <div>
-                {tablesObj['tablesArray']}
+                  {tablesObj['tablesArray']}
                 </div>
               </div>
            </Print>
@@ -1082,7 +1078,6 @@ renderInputFields() {
            employeeSelected,
            selectedEmployeeId, unit } = this.state;
 
-
    if(!response)
    return null;
 
@@ -1091,7 +1086,7 @@ renderInputFields() {
    let tablesArray = [];
    let reportData = [];
    let returnObj = {};
-   let idVsName= [];
+   let idVsName = [];
 
    Object.keys(employeeVsDate).map((empId) => {
      idVsName.push({'id' : empId,
@@ -1135,61 +1130,6 @@ renderInputFields() {
 
        let isValid = true;
 
-       if(paymentTypeSelected && paymentType !== empAttObj.paymentType) {
-         isValid = false;
-       }
-
-       if(shiftSelected && shift !== empAttObj.shift) {
-         isValid = false;
-       }
-
-       if(genderSelected && gender !== allEmployees[employeeId]['gender'] ) {
-         isValid = false;
-       }
-
-       if(villageSelected && village !== allEmployees[employeeId]['village'] ) {
-         isValid = false;
-       }
-
-       if(employeeSelected && selectedEmployeeId !== employeeId ) {
-         isValid = false;
-       }
-
-
-       if(!isValid) {
-      //   console.log(paymentType, empAttObj.shift, gender);
-         return;
-
-       }
-
-         if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
-           dailyMaleDayShift += 1
-        }
-
-        if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
-          dailyMaleNightShift += 1
-       }
-
-       if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
-         dailyFemaleDayShift += 1
-      }
-
-      if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
-        dailyFemaleNightShift += 1
-     }
-
-       if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
-         weeklyMaleDayShift += 1
-      }
-      if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
-        weeklyMaleNightShift += 1
-     }
-     if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
-       weeklyFemaleDayShift += 1
-    }
-    if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
-      weeklyFemaleNightShift += 1
-   }
 
 
      let uniqId = uniqid();
@@ -1202,7 +1142,61 @@ renderInputFields() {
        if(inTime && outTime)
         totalNumberOfdays++;
      }
+
+     if(paymentTypeSelected && paymentType !== empAttObj.paymentType) {
+       isValid = false;
+     }
+
+     if(shiftSelected && shift !== employeeAttendaceObj.shift) {
+       isValid = false;
+     }
+
+         if(genderSelected && gender !== allEmployees[employeeId]['gender'] ) {
+           isValid = false;
+         }
+
+         if(villageSelected && village !== allEmployees[employeeId]['village'] ) {
+           isValid = false;
+         }
+
+         if(employeeSelected && selectedEmployeeId !== employeeId ) {
+           isValid = false;
+         }
+
+         if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && employeeAttendaceObj.shift === 'Day Shift') {
+           dailyMaleDayShift += 1
+        }
+
+        if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && employeeAttendaceObj.shift === 'Night Shift') {
+          dailyMaleNightShift += 1
+       }
+
+       if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && employeeAttendaceObj.shift === 'Day Shift') {
+         dailyFemaleDayShift += 1
+      }
+
+      if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && employeeAttendaceObj.shift === 'Night Shift') {
+        dailyFemaleNightShift += 1
+     }
+
+       if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && employeeAttendaceObj.shift === 'Day Shift') {
+         weeklyMaleDayShift += 1
+      }
+      if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && employeeAttendaceObj.shift === 'Night Shift') {
+        weeklyMaleNightShift += 1
+     }
+     if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && employeeAttendaceObj.shift === 'Day Shift') {
+       weeklyFemaleDayShift += 1
+    }
+    if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && employeeAttendaceObj.shift === 'Night Shift') {
+      weeklyFemaleNightShift += 1
+    }
+
      });
+
+     if(!isValid) {
+       return
+     }
 
      let top = iterator * 16.4;
      let topStr = top + 'in'
@@ -1387,7 +1381,6 @@ renderInputFields() {
   }
 
   onSearchEntry(e) {
-    console.log(e.target.value);
   //  this.setState({selectedEmployeeData: {}})
 
     let filtered = [];
@@ -1612,6 +1605,7 @@ renderActivityIndicator() {
         <Tab title='Datewise'>
         { this.renderValidationMsg() }
         { this.renderInputFields() }
+        { this.renderActivityIndicator() }
         { this.showOldEmployeeReportsTable() }
         { this.emailReportDialog() }
         { this.renderAbstractTable() }
