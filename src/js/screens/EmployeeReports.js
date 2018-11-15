@@ -1023,7 +1023,7 @@ renderInputFields() {
                printCopies } = this.state;
 
        let tablesObj = this.getTablesArray(true);
-
+       if(tablesObj) {
          return(
            <Print name="hihi" exclusive>
               <div>
@@ -1031,6 +1031,9 @@ renderInputFields() {
               </div>
            </Print>
          );
+       } else {
+         return
+       }
  }
 
  getTablesArray(isPrint) {
