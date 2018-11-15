@@ -82,8 +82,8 @@ class Reports extends Component {
   getPrintCopiesData() {
     const { dateRange } = this.state;
     fetchPrintCopiesData(dateRange).then((snap) => {
-      let printData = snap.val();
-      this.setState({printData})
+      let printCopies = snap.val();
+      this.setState({printCopies})
     }).catch((err) => console.log(err))
   }
 
@@ -478,40 +478,10 @@ renderInputFields() {
 }
 
   attendancePrintTableData() {
-    const { dateRange, printData } = this.state;
-    savePrintCopiesData(dateRange, printData).then(() => {
-      this.setState({
-        attendancePrintSelected: true
-      })
-    }).catch((e) => console.log(e));
+    const { dateRange, printCopies } = this.state;
+    window.print();
+    savePrintCopiesData(dateRange, printCopies);
   }
-
-  datewisePrintTableData() {
-    this.setState({
-      datewisePrintSelected: true
-    })
-  }
-
-  setTimeoutFunc() {
-    setTimeout(() => window.print(), 5000)
-  }
-
-  attendancePrint() {
-    if(this.state.attendancePrintSelected) {
-      this.setState({
-        attendancePrintSelected: false
-      }, this.setTimeoutFunc())
-    }
-  }
-
-  datewisePrint() {
-    if(this.state.datewisePrintSelected) {
-      this.setState({
-        datewisePrintSelected: false
-      }, this.setTimeoutFunc())
-    }
-  }
-
 
   renderPDFDoc(reportData){
 
@@ -599,7 +569,8 @@ renderInputFields() {
       weeklyMaleDayShift: data.weeklyMaleDayShift || 0,
       weeklyMaleNightShift: data.weeklyMaleNightShift || 0,
       weeklyFemaleDayShift: data.weeklyFemaleDayShift || 0,
-      weeklyFemaleNightShift: data.weeklyFemaleNightShift || 0
+      weeklyFemaleNightShift: data.weeklyFemaleNightShift || 0,
+      jattuPayment : data.jattuPayment || 0
     })
   }
 
@@ -652,7 +623,7 @@ renderInputFields() {
             weeklyMaleDayShift,
             weeklyMaleNightShift,
             weeklyFemaleDayShift,
-            weeklyFemaleNightShift } = this.state;
+            weeklyFemaleNightShift , jattuPayment} = this.state;
 
 
     let weeklyMaleTotal = weeklyMaleDayShift + weeklyMaleNightShift;
@@ -670,7 +641,7 @@ renderInputFields() {
 
     let dayGrandTotal = weeklyDaySubTotal + dailyDaySubTotal;
     let nightGrandTotal = weeklyNightSubTotal + dailyNightSubTotal;
-    let grandTotal = dayGrandTotal + nightGrandTotal;
+    let grandTotal = dayGrandTotal + nightGrandTotal + jattuPayment;
 
     if(showAbstractTable) {
       return (
@@ -702,10 +673,22 @@ renderInputFields() {
                     <td>{weeklyFemaleTotal}</td>
                 </TableRow>
                 <TableRow>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
+                </TableRow>
+                <TableRow>
                     <td>Sub Total</td>
                     <td>{weeklyDaySubTotal}</td>
                     <td>{weeklyNightSubTotal}</td>
                     <td>{weeklySubTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>*********************</td>
+                    <td>*********************</td>
+                    <td>*********************</td>
+                    <td>*********************</td>
                 </TableRow>
                 <TableRow>
                     <td>Daily Male</td>
@@ -720,10 +703,28 @@ renderInputFields() {
                     <td>{dailyFemaleTotal}</td>
                 </TableRow>
                 <TableRow>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
+                    <td>-------------------------</td>
+                </TableRow>
+                <TableRow>
                     <td>Sub Total</td>
                     <td>{dailyDaySubTotal}</td>
                     <td>{dailyNightSubTotal}</td>
                     <td>{dailySubTotal}</td>
+                </TableRow>
+                <TableRow>
+                    <td>*********************</td>
+                    <td>*********************</td>
+                    <td>*********************</td>
+                    <td>*********************</td>
+                </TableRow>
+                <TableRow>
+                    <td>Jattu</td>
+                    <td>{jattuPayment}</td>
+                    <td>0</td>
+                    <td>{jattuPayment}</td>
                 </TableRow>
                 <TableRow>
                     <td>Grand Total</td>
@@ -808,6 +809,7 @@ renderInputFields() {
    let weeklyMaleNightShift = 0;
    let weeklyFemaleDayShift = 0;
    let weeklyFemaleNightShift = 0;
+   let jattuPayment = 0;
 
    Object.keys(response).map((date, index) => {
      const attendanceObj = response[date];
@@ -917,6 +919,9 @@ renderInputFields() {
           if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
             weeklyFemaleNightShift += 1
          }
+         if(empAttObj.paymentType === 'Jattu-Daily payment') {
+           jattuPayment += 1
+         }
 
 
                    if(isValid && inTime) {
@@ -991,7 +996,8 @@ renderInputFields() {
          weeklyMaleDayShift,
          weeklyMaleNightShift,
          weeklyFemaleDayShift,
-         weeklyFemaleNightShift
+         weeklyFemaleNightShift,
+         jattuPayment
        })}
        primary={true} style={{marginRight: '13px'}}
        href='#'/>
@@ -1004,7 +1010,6 @@ renderInputFields() {
  }
 
  printPdf() {
-     if(this.state.attendancePrintSelected) {
        const { response,
                paymentTypeSelected,
                shiftSelected,
@@ -1015,50 +1020,20 @@ renderInputFields() {
                unit,
                employeeVsDate,
                allEmployees,
-               printData } = this.state;
+               printCopies } = this.state;
 
        let tablesObj = this.getTablesArray(true);
        if(!tablesObj)
         return (<h2 style={{marginTop : '20px', marginLeft : '20px'}}>No data to show</h2>);
        else {
          return(
-           <Print name='bizCard' exclusive>
+           <Print name="hihi" exclusive>
               <div>
-                <div style={{display: 'flex', justifyContent: 'center', marginBottom:20}}>
-                  <h4>Copy: </h4><strong>{printData ? <h4>Duplicate</h4> : <h4>Original</h4>}</strong>
-                </div>
-                <div style={{display: 'flex', justifyContent: 'center'}}>
-                  <h4><strong>Attendance Slip From : {startDate} To: {endDate}, Unit: {unit}</strong></h4>
-                </div>
-                <div>
-                  {tablesObj['tablesArray']}
-                </div>
+                {tablesObj['tablesArray']}
               </div>
            </Print>
          );
        }
-   }
- }
-
- printAttendanceSlipPdf() {
-   if(this.state.printTableSelected) {
-     const { response, paymentTypeSelected, shiftSelected, paymentType, shift, startDate, endDate, employeeVsDate, allEmployees } = this.state;
-     let tablesArr = this.showOldEmployeeReportsTable();
-
-   return(
-     <Print name='bizCard' exclusive>
-        <div>
-          <div style={{height:'1120px'}}>
-            <h3>Man power report from {startDate} to {endDate}</h3>
-            <h3 style={{fontWeight:'bold'}}>{paymentType}, {shift}</h3>
-          </div>
-          <div>
-          {tablesArr}
-          </div>
-        </div>
-     </Print>
-   );
- }
  }
 
  getTablesArray(isPrint) {
@@ -1076,7 +1051,7 @@ renderInputFields() {
            employeeVsDate,
            allEmployees,
            employeeSelected,
-           selectedEmployeeId, unit } = this.state;
+           selectedEmployeeId, unit, printCopies } = this.state;
 
    if(!response)
    return null;
@@ -1115,6 +1090,7 @@ renderInputFields() {
    let weeklyMaleNightShift = 0;
    let weeklyFemaleDayShift = 0;
    let weeklyFemaleNightShift = 0;
+   let jattuPayment = 0;
    let iterator = 0;
 
 
@@ -1190,7 +1166,10 @@ renderInputFields() {
     }
     if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && employeeAttendaceObj.shift === 'Night Shift') {
       weeklyFemaleNightShift += 1
-    }
+   }
+   if(empAttObj.paymentType === 'Jattu-Daily payment') {
+     jattuPayment += 1
+   }
 
      });
 
@@ -1198,18 +1177,20 @@ renderInputFields() {
        return
      }
 
-     let top = iterator * 16.4;
+     let top = iterator * 17.425;
      let topStr = top + 'in'
      iterator++;
 
 
-
+     let  now = new Date();
+     const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
 
      tablesArray.push(<div className='' key={uniqId} style={isPrint ? {position: 'absolute' , top: topStr , width: '11.0in'} : {}}>
-     <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['paymentType']} ; {allEmployees[employeeId]['gender']} ; {allEmployees[employeeId]['village']} ; {unit} </h3>
-     <h5 style={{marginLeft : '20px'}}>Total no of days = {totalNumberOfdays} </h5>
+     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong><span style={{marginLeft : 340}}>Date : {timestampStr}</span></h4>
+     <h4 style={!isPrint ? {display:'none'}: {marginLeft : '20px'}}>Attendance Slip From : {startDate} To: {endDate}<span style={{marginLeft : 80}}>Unit: {unit}</span></h4>
+     <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']} ; {unit} ; No of days = <span>{totalNumberOfdays}</span></h3>
      <Table scrollable={true} style={isPrint ? {} :  { marginTop : '30px', marginLeft : '30px'}}>
-         <thead style={{position:'relative'}}>
+         <thead>
           <tr>
             <th>S No.</th>
             <th>Date</th>
@@ -1307,7 +1288,8 @@ renderInputFields() {
      weeklyMaleDayShift,
      weeklyMaleNightShift,
      weeklyFemaleDayShift,
-     weeklyFemaleNightShift
+     weeklyFemaleNightShift,
+     jattuPayment
    };
    return returnObj;
  }
@@ -1602,7 +1584,6 @@ renderActivityIndicator() {
         { this.renderActivityIndicator() }
         { this.showEmployeeReportsTable() }
         { this.printPdf() }
-        { this.attendancePrint() }
         </Tab>
         <Tab title='Datewise'>
         { this.renderValidationMsg() }

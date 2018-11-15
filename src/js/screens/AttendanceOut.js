@@ -358,6 +358,20 @@ class AttendanceOut extends Component {
     );
   }
 
+  renderSelectedOptions() {
+    const { hideOutsideCamera } = this.state;
+    if(!hideOutsideCamera) {
+      return (
+        <div>
+        <p>Current Time slot : {window.localStorage.timeslot}</p>
+        <p  size="small">Current Shift : {window.localStorage.shift}</p>
+        </div>
+
+      );
+    }
+
+  }
+
 
   renderSaveButton() {
     const { selectedEmployeeData } = this.state;
@@ -684,6 +698,7 @@ onOkButtonClick() {
         <div onClick={this.oneClickCapture.bind(this)}
           style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
         { this.renderOutsideCamera() }
+        { this.renderSelectedOptions() }
         </div>
       }
       { this.renderSaveButton() }
