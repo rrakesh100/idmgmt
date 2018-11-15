@@ -1578,16 +1578,18 @@ renderInputFields() {
 
 
 renderActivityIndicator() {
-  return (
-    <div style={{display: 'flex', justifyContent: 'center', marginTop:30}}>
-    <RingLoader
-          sizeUnit={"px"}
-          size={70}
-          color={'#865CD6'}
-          loading={this.state.loading}
-        />
-    </div>
-  )
+  const { loading } = this.state;
+    return (
+
+      <div style={{display: 'flex', justifyContent: 'center', marginTop:10}}>
+      <RingLoader
+            sizeUnit={"px"}
+            size={100}
+            color={'#865CD6'}
+            loading={this.state.loading}
+          />
+      </div>
+    )
 }
 
   render() {
