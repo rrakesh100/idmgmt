@@ -253,7 +253,6 @@ class AttendanceIn extends Component {
   }
 
   renderEmployeeSearch() {
-
     return (
       <Search placeHolder='Search manpower By Name or Barcode' style={{width:'400px'}}
         inline={true}
@@ -498,12 +497,20 @@ renderSearchedEmployee() {
   const date = new Date();
   const dateStr = moment(date).format('DD/M/YYYY');
 
-  let shift = window.localStorage.shift || this.state.shift;
+  const hours = date.getHours();
+  let shiftVar;
+  if( hours > 14) {
+    shiftVar = 'Night Shift'
+  } else {
+    shiftVar = 'Day Shift'
+  }
+  let shift = shiftVar || this.state.shift;
   let timeslot = window.localStorage.timeslot || this.state.timeslot;
 
   if(Object.keys(selectedEmployeeData).length > 0) {
     const { screenshot, name, employeeId, paymentType, inTime, inSide } = selectedEmployeeData;
-
+    console.log(selectedEmployeeData);
+    console.log(inSide);
 
   return (
 
@@ -673,7 +680,7 @@ renderSearchedEmployee() {
       employeeSearchString:'',
       selectedEmployeeData:{}
     });
-    this.state.barcodeInput.focus()
+    console.log(this.state.barcodeInput.focus());
   }
 
   renderValidationMsg() {

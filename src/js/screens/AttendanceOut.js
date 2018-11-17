@@ -477,6 +477,7 @@ class AttendanceOut extends Component {
 
 renderSearchedEmployee() {
   const { selectedEmployeeData, hideOutsideCamera, pickScreenshotFromOutsideCamera } = this.state;
+  console.log(selectedEmployeeData);
   const screenShotFromOutsideCamera = this.state.screenshot;
   if(Object.keys(selectedEmployeeData).length > 0) {
     const { screenshot, name, employeeId } = selectedEmployeeData;

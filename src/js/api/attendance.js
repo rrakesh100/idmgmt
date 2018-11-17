@@ -29,14 +29,14 @@ export function saveAttendanceInData(data) {
     return;
   }
 
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/savedBy`] = localStorage.email ;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/shift`] = data.shift;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/paymentType`] = data.paymentType;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/inDate`] = dateStr;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/inTime`] = timeStr;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/inSide`] = true;
+  updates[`employees/${data.selectedEmployeeId}/savedBy`] = localStorage.email ;
+  updates[`employees/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
+  updates[`employees/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
+  updates[`employees/${data.selectedEmployeeId}/shift`] = data.shift;
+  updates[`employees/${data.selectedEmployeeId}/paymentType`] = data.paymentType;
+  updates[`employees/${data.selectedEmployeeId}/inDate`] = dateStr;
+  updates[`employees/${data.selectedEmployeeId}/inTime`] = timeStr;
+  updates[`employees/${data.selectedEmployeeId}/inSide`] = true;
 
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/savedBy`] = localStorage.email;
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/in`] = timeStr;
@@ -72,10 +72,10 @@ export function saveAttendanceOutData(data) {
     return;
   }
 
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/outDate`] = dateStr;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/outTime`] = timeStr;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/inSide`] = false;
+  updates[`employees/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
+  updates[`employees/${data.selectedEmployeeId}/outDate`] = dateStr;
+  updates[`employees/${data.selectedEmployeeId}/outTime`] = timeStr;
+  updates[`employees/${data.selectedEmployeeId}/inSide`] = false;
 
   if(data.shift === 'Night Shift') {
   updates[localStorage.unit + '/' +`attendance/dates/${yesterDateStr}/${data.selectedEmployeeId}/tomorrowsOutTime`] = timeStr;
