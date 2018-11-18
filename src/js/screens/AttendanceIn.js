@@ -505,6 +505,7 @@ renderSearchedEmployee() {
     shiftVar = 'Day Shift'
   }
   let shift = shiftVar || this.state.shift;
+  
   let timeslot = window.localStorage.timeslot || this.state.timeslot;
 
   if(Object.keys(selectedEmployeeData).length > 0) {

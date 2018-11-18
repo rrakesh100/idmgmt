@@ -40,7 +40,6 @@ export function saveEmployee(data) {
   }
 
   export function saveEditedEmployee(data) {
-    console.log(data);
     const dbRef = firebase.database().ref();
     const updates = {};
     updates[localStorage.unit + '/' +`employees/${data.employeeId}`] = data;

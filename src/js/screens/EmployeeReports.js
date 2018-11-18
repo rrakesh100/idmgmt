@@ -1,6 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { getEmployees, getEmployee } from '../api/employees';
-import { attendanceDatesLoop, getEmployeeAttendanceDates, saveEmailReport, savePrintCopiesData, fetchPrintCopiesData } from '../api/attendance';
+import { attendanceDatesLoop,
+  getEmployeeAttendanceDates,
+  saveEmailReport,
+  savePrintCopiesData,
+  fetchPrintCopiesData,
+  saveEmployeePrintCopiesData,
+  fetchEmployeePrintCopiesData } from '../api/attendance';
 import { getVillages } from '../api/configuration';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
@@ -81,12 +87,32 @@ class Reports extends Component {
   }
 
   getPrintCopiesData() {
-    const { dateRange } = this.state;
-    fetchPrintCopiesData(dateRange).then((snap) => {
+    const { dateRange, unit } = this.state;
+    fetchPrintCopiesData(dateRange, unit).then((snap) => {
       let printCopies = snap.val();
       this.setState({printCopies})
     }).catch((err) => console.log(err))
   }
+
+  getEmployeePrintCopiesData() {
+    const { startDate, endDate, selectedEmployeeId, unit } = this.state;
+    if(startDate && endDate && selectedEmployeeId && unit) {
+      console.log(startDate);
+      console.log(endDate);
+      console.log(selectedEmployeeId);
+      console.log(unit);
+      let dateEmployeeKey = startDate + '_' + endDate + '_' + selectedEmployeeId;
+      console.log(dateEmployeeKey);
+      fetchEmployeePrintCopiesData(dateEmployeeKey, unit).then((snap) => {
+        let employeePrintCopies = snap.val();
+        this.setState({employeePrintCopies})
+      }).catch((err) => console.log(err))
+    } else {
+      return;
+    }
+
+  }
+
 
   getVillageDetails() {
     getVillages().then((snap) => {
@@ -482,7 +508,9 @@ renderInputFields() {
 }
 
   attendancePrintTableData() {
-    const { dateRange, printCopies } = this.state;
+    const { dateRange, printCopies, employeePrintCopies, employeeSelected, selectedEmployeeId, startDate, endDate, unit } = this.state;
+    console.log(employeePrintCopies);
+    let dateEmployeeKey = startDate + '_' + endDate + '_' + selectedEmployeeId;
     window.onafterprint = () => {
       console.log('end')
     }
@@ -490,7 +518,10 @@ renderInputFields() {
       console.log('beginning')
     }
     setTimeout(() => window.print(), 1)
-    savePrintCopiesData(dateRange, printCopies);
+    savePrintCopiesData(dateRange, printCopies, unit);
+    if(employeeSelected) {
+      saveEmployeePrintCopiesData(dateEmployeeKey, employeePrintCopies, unit);
+    }
   }
 
 
@@ -1026,7 +1057,6 @@ renderInputFields() {
 
 
        let tablesObj = this.getTablesArray(true);
-       console.log(tablesObj);
        if(tablesObj) {
          return(
            <Print name="hihi" exclusive>
@@ -1296,7 +1326,6 @@ renderInputFields() {
      weeklyFemaleNightShift,
      jattuPayment
    };
-   console.log(returnObj);
    return returnObj;
  }
 
@@ -1416,7 +1445,7 @@ renderInputFields() {
       const selectedEmployeeData = snap.val();
       this.setState({
         selectedEmployeeData
-      });
+      }, this.getEmployeePrintCopiesData.bind(this));
     }).catch((e) => console.log(e))
   }
 

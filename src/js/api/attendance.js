@@ -99,20 +99,37 @@ export function getEmployeeAttendanceDates(employeeId) {
   return dbRef.once('value');
 }
 
-export function savePrintCopiesData(dateRange, printData) {
+export function savePrintCopiesData(dateRange, printData, unit) {
   const dbRef = firebase.database().ref();
   const updates = {};
   if(printData) {
-    updates[localStorage.unit + '/' +`printCopies/${dateRange}`] = printData + 1;
+    updates[unit + '/' +`printCopies/${dateRange}`] = printData + 1;
   } else {
-    updates[localStorage.unit + '/' +`printCopies/${dateRange}`] = 1;
+    updates[unit + '/' +`printCopies/${dateRange}`] = 1;
   }
 
   return dbRef.update(updates);
 }
 
-export function fetchPrintCopiesData(dateRange) {
-  const dbRef = firebase.database().ref(localStorage.unit + '/' +`printCopies/${dateRange}`);
+export function saveEmployeePrintCopiesData(dateEmployeeKey, printData, unit) {
+  const dbRef = firebase.database().ref();
+  const updates = {};
+  if(printData) {
+    updates[unit + '/' +`printCopies/${dateEmployeeKey}`] = printData + 1;
+  } else {
+    updates[unit + '/' +`printCopies/${dateEmployeeKey}`] = 1;
+  }
+
+  return dbRef.update(updates);
+}
+
+export function fetchPrintCopiesData(dateRange, unit) {
+  const dbRef = firebase.database().ref(unit + '/' +`printCopies/${dateRange}`);
+  return dbRef.once('value');
+}
+
+export function fetchEmployeePrintCopiesData(dateEmployeeKey, unit) {
+  const dbRef = firebase.database().ref(unit + '/' +`printCopies/${dateEmployeeKey}`);
   return dbRef.once('value');
 }
 
