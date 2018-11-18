@@ -537,7 +537,7 @@ renderSearchedEmployee() {
               <Select
                 placeHolder='Shift'
                 options={shiftOpt}
-                value={shift}
+                value={this.state.shift}
                 onChange={this.onFieldChange.bind(this, 'shift')}
               />
               </FormField>
@@ -589,7 +589,7 @@ renderSearchedEmployee() {
             <Select
               placeHolder='Time Slot'
               options={timeslotOpt}
-              value={timeslot}
+              value={this.state.timeslot}
               onChange={this.onFieldChange.bind(this, 'timeslot')}
             />
             </FormField>
