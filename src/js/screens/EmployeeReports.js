@@ -502,10 +502,8 @@ renderInputFields() {
   attendancePrintTableData() {
     const { dateRange, printCopies, employeePrintCopies, employeeSelected, selectedEmployeeId, startDate, endDate, unit } = this.state;
     let key =  startDate + '_' + endDate  + '_'+unit;
-    let dateEmployeeKey = startDate + '_' + endDate + '_' + selectedEmployeeId;
     let copies = printCopies;
-    let dateEmployeeKey = startDate + '_' + endDate + '_' + selectedEmployeeId;
-
+    
     if(employeeSelected) {
       key = key + '_' + selectedEmployeeId;
       copies = employeePrintCopies;
