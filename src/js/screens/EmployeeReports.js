@@ -4,7 +4,7 @@ import { attendanceDatesLoop,
   getEmployeeAttendanceDates,
   saveEmailReport,
   savePrintCopiesData,
-  fetchPrintCopiesData }
+  fetchPrintCopiesData } from '../api/attendance';
 import { getVillages } from '../api/configuration';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
@@ -503,7 +503,7 @@ renderInputFields() {
     const { dateRange, printCopies, employeePrintCopies, employeeSelected, selectedEmployeeId, startDate, endDate, unit } = this.state;
     let key =  startDate + '_' + endDate  + '_'+unit;
     let copies = printCopies;
-    
+
     if(employeeSelected) {
       key = key + '_' + selectedEmployeeId;
       copies = employeePrintCopies;
@@ -1214,10 +1214,8 @@ renderInputFields() {
      const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
 
      tablesArray.push(<div className='' key={uniqId} style={isPrint ? {position: 'absolute' , top: topStr , width: '11.0in'} : {}}>
-     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{position: 'absolute', right : 0, marginRight : 20}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span></h4>
-     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}><Barcode value={employeeId} height={20}/><span style={{position: 'absolute', right : 0, marginRight : 20}}>''</span></h4>
-     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>''<span style={{position: 'absolute', right : 0, marginRight : 20}}>Date : {timestampStr}</span></h4>
-     <h4 style={!isPrint ? {display:'none'}: {marginLeft : '20px'}}>''<span style={{position: 'absolute', right : 0, marginRight : 20}}>Unit: {unit}</span></h4>
+     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{marginLeft: 120}}>Unit: {unit}</span><span style={{position: 'absolute', right : 0, marginRight : 20}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span></h4>
+     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}><Barcode value={employeeId} height={20}/><span style={{position: 'absolute', right : 0, marginRight : 20}}>Date : {timestampStr}</span></h4>
      <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 0, marginRight : 20}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
      <Table scrollable={true} style={isPrint ? {} :  { marginTop : '10px', marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
