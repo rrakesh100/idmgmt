@@ -5,6 +5,7 @@ import { attendanceDatesLoop,
   saveEmailReport,
   savePrintCopiesData,
   fetchPrintCopiesData,
+  saveEmployeePrintCopiesData,
   fetchEmployeePrintCopiesData } from '../api/attendance';
 import { getVillages } from '../api/configuration';
 import Form from 'grommet/components/Form';
@@ -40,6 +41,8 @@ import { getShifts } from '../api/configuration';
 import { Print } from 'react-easy-print';
 import axios from 'axios';
 import { RingLoader } from 'react-spinners';
+import Rand from 'random-key';
+import Barcode from 'react-barcode';
 
 const uniqid = require('uniqid');
 
@@ -87,7 +90,7 @@ class Reports extends Component {
 
   getPrintCopiesData() {
     const { dateRange, unit } = this.state;
-    fetchPrintCopiesData(dateRange + '_' + unit).then((snap) => {
+    fetchPrintCopiesData(dateRange, unit).then((snap) => {
       let printCopies = snap.val();
       this.setState({printCopies})
     }).catch((err) => console.log(err))
@@ -95,11 +98,14 @@ class Reports extends Component {
 
   getEmployeePrintCopiesData() {
     const { startDate, endDate, selectedEmployeeId, unit } = this.state;
-    if(startDate && endDate && selectedEmployeeId) {
-
-      let dateEmployeeKey = startDate + '_' + endDate + '_' + unit + '_' +  selectedEmployeeId;
+    if(startDate && endDate && selectedEmployeeId && unit) {
+      console.log(startDate);
+      console.log(endDate);
+      console.log(selectedEmployeeId);
+      console.log(unit);
+      let dateEmployeeKey = startDate + '_' + endDate + '_' + selectedEmployeeId;
       console.log(dateEmployeeKey);
-      fetchPrintCopiesData(dateEmployeeKey ).then((snap) => {
+      fetchEmployeePrintCopiesData(dateEmployeeKey, unit).then((snap) => {
         let employeePrintCopies = snap.val();
         this.setState({employeePrintCopies})
       }).catch((err) => console.log(err))
@@ -506,14 +512,18 @@ renderInputFields() {
   attendancePrintTableData() {
     const { dateRange, printCopies, employeePrintCopies, employeeSelected, selectedEmployeeId, startDate, endDate, unit } = this.state;
     console.log(employeePrintCopies);
-    let key =  startDate + '_' + endDate  + '_'+unit;
-    let copies = printCopies;
-    setTimeout(() => window.print(), 1)
-    if(employeeSelected) {
-      key = key + '_' + selectedEmployeeId;
-      copies = employeePrintCopies;
+    let dateEmployeeKey = startDate + '_' + endDate + '_' + selectedEmployeeId;
+    window.onafterprint = () => {
+      console.log('end')
     }
-    savePrintCopiesData(key, copies, unit);
+    window.onbeforeprint = () => {
+      console.log('beginning')
+    }
+    setTimeout(() => window.print(), 1)
+    savePrintCopiesData(dateRange, printCopies, unit);
+    if(employeeSelected) {
+      saveEmployeePrintCopiesData(dateEmployeeKey, employeePrintCopies, unit);
+    }
   }
 
 
@@ -1077,7 +1087,7 @@ renderInputFields() {
            employeeVsDate,
            allEmployees,
            employeeSelected,
-           selectedEmployeeId, unit, printCopies, employeePrintCopies } = this.state;
+           selectedEmployeeId, unit, printCopies } = this.state;
 
    if(!response)
    return null;
@@ -1211,16 +1221,9 @@ renderInputFields() {
      let  now = new Date();
      const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
 
-     console.log('printcopies = ', printCopies);
-     console.log('employeePrintCopies = ', employeePrintCopies);
-
-     let copies = printCopies;
-     if(employeePrintCopies) {
-       copies = employeePrintCopies;
-     }
-
      tablesArray.push(<div className='' key={uniqId} style={isPrint ? {position: 'absolute' , top: topStr , width: '11.0in'} : {}}>
-     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{position: 'absolute', right : 0, marginRight : 20}}>Copy:<strong>{copies ? 'Duplicate ' + '# '+copies : 'Original'}</strong></span></h4>
+     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{position: 'absolute', right : 0, marginRight : 20}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span></h4>
+     <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}><Barcode value={employeeId} height={20}/><span style={{position: 'absolute', right : 0, marginRight : 20}}>''</span></h4>
      <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>''<span style={{position: 'absolute', right : 0, marginRight : 20}}>Date : {timestampStr}</span></h4>
      <h4 style={!isPrint ? {display:'none'}: {marginLeft : '20px'}}>''<span style={{position: 'absolute', right : 0, marginRight : 20}}>Unit: {unit}</span></h4>
      <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 0, marginRight : 20}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
