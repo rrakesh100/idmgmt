@@ -4,9 +4,7 @@ import { attendanceDatesLoop,
   getEmployeeAttendanceDates,
   saveEmailReport,
   savePrintCopiesData,
-  fetchPrintCopiesData,
-  saveEmployeePrintCopiesData,
-  fetchEmployeePrintCopiesData } from '../api/attendance';
+  fetchPrintCopiesData }
 import { getVillages } from '../api/configuration';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
@@ -41,7 +39,6 @@ import { getShifts } from '../api/configuration';
 import { Print } from 'react-easy-print';
 import axios from 'axios';
 import { RingLoader } from 'react-spinners';
-import Rand from 'random-key';
 import Barcode from 'react-barcode';
 
 const uniqid = require('uniqid');
@@ -90,7 +87,7 @@ class Reports extends Component {
 
   getPrintCopiesData() {
     const { dateRange, unit } = this.state;
-    fetchPrintCopiesData(dateRange, unit).then((snap) => {
+    fetchPrintCopiesData(dateRange + '_' + unit).then((snap) => {
       let printCopies = snap.val();
       this.setState({printCopies})
     }).catch((err) => console.log(err))
@@ -98,19 +95,12 @@ class Reports extends Component {
 
   getEmployeePrintCopiesData() {
     const { startDate, endDate, selectedEmployeeId, unit } = this.state;
-    if(startDate && endDate && selectedEmployeeId && unit) {
-      console.log(startDate);
-      console.log(endDate);
-      console.log(selectedEmployeeId);
-      console.log(unit);
-      let dateEmployeeKey = startDate + '_' + endDate + '_' + selectedEmployeeId;
-      console.log(dateEmployeeKey);
-      fetchEmployeePrintCopiesData(dateEmployeeKey, unit).then((snap) => {
+    if(startDate && endDate && selectedEmployeeId) {
+      let dateEmployeeKey = startDate + '_' + endDate + '_' + unit + '_' +  selectedEmployeeId;
+       fetchPrintCopiesData(dateEmployeeKey).then((snap) => {
         let employeePrintCopies = snap.val();
         this.setState({employeePrintCopies})
       }).catch((err) => console.log(err))
-    } else {
-      return;
     }
 
   }
@@ -511,8 +501,15 @@ renderInputFields() {
 
   attendancePrintTableData() {
     const { dateRange, printCopies, employeePrintCopies, employeeSelected, selectedEmployeeId, startDate, endDate, unit } = this.state;
-    console.log(employeePrintCopies);
+    let key =  startDate + '_' + endDate  + '_'+unit;
     let dateEmployeeKey = startDate + '_' + endDate + '_' + selectedEmployeeId;
+    let copies = printCopies;
+    let dateEmployeeKey = startDate + '_' + endDate + '_' + selectedEmployeeId;
+
+    if(employeeSelected) {
+      key = key + '_' + selectedEmployeeId;
+      copies = employeePrintCopies;
+    }
     window.onafterprint = () => {
       console.log('end')
     }
@@ -520,10 +517,7 @@ renderInputFields() {
       console.log('beginning')
     }
     setTimeout(() => window.print(), 1)
-    savePrintCopiesData(dateRange, printCopies, unit);
-    if(employeeSelected) {
-      saveEmployeePrintCopiesData(dateEmployeeKey, employeePrintCopies, unit);
-    }
+    savePrintCopiesData(key, copies, unit);
   }
 
 
