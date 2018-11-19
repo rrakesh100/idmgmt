@@ -99,39 +99,24 @@ export function getEmployeeAttendanceDates(employeeId) {
   return dbRef.once('value');
 }
 
-export function savePrintCopiesData(dateRange, printData, unit) {
+export function savePrintCopiesData(dateRange, printData) {
   const dbRef = firebase.database().ref();
   const updates = {};
   if(printData) {
-    updates[unit + '/' +`printCopies/${dateRange}`] = printData + 1;
+    updates[`printCopies/${dateRange}`] = printData + 1;
   } else {
-    updates[unit + '/' +`printCopies/${dateRange}`] = 1;
+    updates[`printCopies/${dateRange}`] = 1;
   }
 
   return dbRef.update(updates);
 }
 
-export function saveEmployeePrintCopiesData(dateEmployeeKey, printData, unit) {
-  const dbRef = firebase.database().ref();
-  const updates = {};
-  if(printData) {
-    updates[unit + '/' +`printCopies/${dateEmployeeKey}`] = printData + 1;
-  } else {
-    updates[unit + '/' +`printCopies/${dateEmployeeKey}`] = 1;
-  }
 
-  return dbRef.update(updates);
-}
-
-export function fetchPrintCopiesData(dateRange, unit) {
-  const dbRef = firebase.database().ref(unit + '/' +`printCopies/${dateRange}`);
+export function fetchPrintCopiesData(dateRange) {
+  const dbRef = firebase.database().ref(`printCopies/${dateRange}`);
   return dbRef.once('value');
 }
 
-export function fetchEmployeePrintCopiesData(dateEmployeeKey, unit) {
-  const dbRef = firebase.database().ref(unit + '/' +`printCopies/${dateEmployeeKey}`);
-  return dbRef.once('value');
-}
 
 export function uploadAttendanceEmployeeImage(file, employeeId) {
   const storageRef = firebase.storage().ref();
