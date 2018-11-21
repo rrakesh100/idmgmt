@@ -406,6 +406,20 @@ clearSelection(e) {
      })
   }
 
+  renderAbstractButton() {
+    const { selectedIndex } = this.state;
+    if(selectedIndex == 1) {
+      return (
+        <Button label='Show Abstract Report'
+        onClick={this.onAbstractClick.bind(this)}
+        primary={true} style={{ display : 'inline-block' , marginLeft: '20px', marginTop : '20px'}}
+        href='#'/>
+      )
+    } else {
+      return null;
+    }
+  }
+
 renderInputFields() {
 
   const { shiftOpt, villageOpt, unit, startDate, endDate, response } = this.state;
@@ -488,12 +502,12 @@ renderInputFields() {
         </div>
         <div style={{display : 'flex', flexDirection : 'column', marginTop: 20, marginLeft: '20px'}} >
         { this.searchField() }
-        <Button  label='SHOW REPORT'
+        <Button  label='Show Detailed Report'
         onClick={this.onValidatingInputs.bind(this)}
-        style={{ display : 'inline-block' , marginLeft: '20px', marginTop : '40px'}}
+        style={{ display : 'inline-block' , marginLeft: '20px', marginTop : '20px'}}
         primary={true}
         href='#'/>
-
+        { this.renderAbstractButton() }
         </div>
     </div>
   )
@@ -516,6 +530,16 @@ renderInputFields() {
     }
     setTimeout(() => window.print(), 1)
     savePrintCopiesData(key, copies, unit);
+  }
+
+  datewisePrintTableData() {
+    window.onafterprint = () => {
+      console.log('end')
+    }
+    window.onbeforeprint = () => {
+      console.log('beginning')
+    }
+    setTimeout(() => window.print(), 1000)
   }
 
 
@@ -595,7 +619,40 @@ renderInputFields() {
     })
   }
 
-  onAbstractClick(data) {
+  onAbstractClick() {
+    const { unit, startDate, endDate } = this.state;
+
+    if(!unit) {
+      this.setState({
+        validationMsg: 'UNIT is Missing'
+      })
+      return
+    }
+
+    if(!startDate) {
+      this.setState({
+        validationMsg: 'From Date is Missing'
+      })
+      return
+    }
+
+    if(!endDate) {
+      this.setState({
+        validationMsg: 'To Date is Missing'
+      })
+      return
+    }
+
+    this.setState({
+      validationMsg:'',
+    }, this.getAbstractSummary.bind(this))
+  }
+
+  getAbstractSummary() {
+    let tablesObj = this.getOldTablesArray();
+    if(!tablesObj)
+    return null;
+    let data = tablesObj['summary'];
     this.setState({
       showAbstractTable: true,
       dailyMaleDayShift: data.dailyMaleDayShift || 0,
@@ -609,7 +666,6 @@ renderInputFields() {
       jattuPayment : data.jattuPayment || 0
     })
   }
-
 
   onFieldChange(fieldName, e) {
     this.setState({
@@ -685,6 +741,9 @@ renderInputFields() {
           flush={false}
           onClose={this.onCloseLayer.bind(this)}>
           <div style={{width:1000, marginTop: 20, marginLeft: 'auto', marginRight: 'auto'}}>
+          <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+            <a onClick={() => this.setState({abstractPrint: true})}>Print</a>
+          </div>
           <Table scrollable={true}>
               <thead>
                <tr>
@@ -692,7 +751,6 @@ renderInputFields() {
                  <th>Day Shift</th>
                  <th>Night Shift</th>
                  <th>Day Total</th>
-
                </tr>
               </thead>
               <tbody>
@@ -798,195 +856,221 @@ renderInputFields() {
 
   }
 
+  getOldTablesArray() {
+    const { response,
+            startDate,
+            endDate,
+            paymentType,
+            shift,
+            shiftSelected,
+            paymentTypeSelected,
+            allEmployees,
+            gender,
+            village,
+            genderSelected,
+            villageSelected,
+            employeeSelected,
+            selectedEmployeeId } = this.state;
 
-  showOldEmployeeReportsTable() {
+    if(!response)
+    return null;
 
-   const { response,
-           startDate,
-           endDate,
-           paymentType,
-           shift,
-           shiftSelected,
-           paymentTypeSelected,
-           allEmployees,
-           gender,
-           village,
-           genderSelected,
-           villageSelected,
-           employeeSelected,
-           selectedEmployeeId } = this.state;
+    //const pdfDoc = this.renderPDFDoc(response);
+
+    let tablesArray = [];
+    let reportData = [];
+    let returnObj = {};
+
+    let i = 0;
+
+    let dailyMaleDayShift = 0;
+    let dailyMaleNightShift = 0;
+    let dailyFemaleDayShift = 0;
+    let dailyFemaleNightShift = 0;
+    let weeklyMaleDayShift = 0;
+    let weeklyMaleNightShift = 0;
+    let weeklyFemaleDayShift = 0;
+    let weeklyFemaleNightShift = 0;
+    let jattuPayment = 0;
 
 
-   if(!response)
-   return null;
 
-   //const pdfDoc = this.renderPDFDoc(response);
+    Object.keys(response).map((date, index) => {
+      const attendanceObj = response[date];
+      const numOfEmployees = Object.keys(attendanceObj).length;
+      if(attendanceObj ==null)
+        return;
+      tablesArray.push(<div className='tablesArray' key={index}>
+          <div style={{display:'flex', flexDirection: 'column'}}>
+           <h2 style={{marginLeft: 30}}>{date}</h2>
+           <h2 style={{marginLeft: 30}}>Number of Employees: {numOfEmployees}</h2>
+           </div>
+           <Table scrollable={true} style={{ marginLeft : '30px'}}>
+          <thead style={{position:'relative'}}>
+           <tr>
+             <th>S No.</th>
+             <th>Manpower Id</th>
+             <th>Name</th>
+             <th>Payment Type</th>
+             <th>Shift</th>
+             <th>In Time</th>
+             <th>Out Time</th>
+             <th>Total Time Spent</th>
+           </tr>
+          </thead>
+          <tbody>
+            {
+                Object.keys(attendanceObj).map((key,index)=> {
+                  let empAttObj = allEmployees[key];
+                  const employeeAttendaceObj = attendanceObj[key];
+                  if(employeeAttendaceObj !== null){
+                  let inTime = employeeAttendaceObj.in;
+                  let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
+                  let totalTime = 'N/A';
 
-   let tablesArray = [];
-   let reportData = [];
-   let returnObj = {};
+                  if(employeeAttendaceObj.shift === 'Night Shift' ) {
+                    let inT = moment(key)
+                  }
 
-   let i = 0;
+                  if(outTime && inTime) {
+                    let startTime = moment(inTime, "HH:mm a");
+                    let endTime=moment(outTime, "HH:mm a");
+                    let duration = moment.duration(endTime.diff(startTime));
 
-   let dailyMaleDayShift = 0;
-   let dailyMaleNightShift = 0;
-   let dailyFemaleDayShift = 0;
-   let dailyFemaleNightShift = 0;
-   let weeklyMaleDayShift = 0;
-   let weeklyMaleNightShift = 0;
-   let weeklyFemaleDayShift = 0;
-   let weeklyFemaleNightShift = 0;
-   let jattuPayment = 0;
+                    let hours = 0, minutes =0;
+                    if(duration.asMilliseconds() < 0) {
+                     let dMillis = duration.asMilliseconds();
+                     let bufferedMillis = dMillis + (24 * 60 * 60 * 1000);
+                     let bufferedSeconds = bufferedMillis / 1000;
+                      hours = Math.floor(bufferedSeconds / 3600);
+                     let remainingSeconds = bufferedSeconds % 3600 ;
+                      minutes = remainingSeconds / 60;
+                     }else {
+                      hours = parseInt(duration.asHours());
+                      minutes = parseInt(duration.asMinutes())%60;
+                     }
 
-   Object.keys(response).map((date, index) => {
-     const attendanceObj = response[date];
-     if(attendanceObj ==null)
-       return;
-     tablesArray.push(<div className='tablesArray' key={index}>
-          <h1 style={{marginLeft: 30, marginTop:40}}>{date}</h1>
-          <Table scrollable={true} style={{ marginLeft : '30px'}}>
-         <thead style={{position:'relative'}}>
-          <tr>
-            <th>S No.</th>
-            <th>Manpower Id</th>
-            <th>Name</th>
-            <th>Payment Type</th>
-            <th>Shift</th>
-            <th>In Time</th>
-            <th>Out Time</th>
-            <th>Total Time Spent</th>
-          </tr>
-         </thead>
-         <tbody>
-           {
-               Object.keys(attendanceObj).map((key,index)=> {
-                 let empAttObj = allEmployees[key];
-                 const employeeAttendaceObj = attendanceObj[key];
-                 if(employeeAttendaceObj !== null){
-                 let inTime = employeeAttendaceObj.in;
-                 let outTime = employeeAttendaceObj.shift == 'Night Shift' ? employeeAttendaceObj.tomorrowsOutTime : employeeAttendaceObj.out;
-                 let totalTime = 'N/A';
+                     totalTime = hours + ' hr ' + minutes + ' min '
+                  }
 
-                 if(employeeAttendaceObj.shift === 'Night Shift' ) {
-                   let inT = moment(key)
+                  let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
+                  let istOutTime =  '--'
+                  if(outTime !== 'N/A')
+                    istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
+                  let isValid = true;
+
+                  if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
+                    isValid = false;
+                  }
+
+                  if(shiftSelected && shift !== employeeAttendaceObj.shift) {
+                    isValid = false;
+                  }
+
+                  if(genderSelected && gender !== allEmployees[key]['gender'] ) {
+                    isValid = false;
+                  }
+
+                  if(villageSelected && village !== allEmployees[key]['village'] ) {
+                    isValid = false;
+                  }
+
+                  if(employeeSelected && selectedEmployeeId !== key ) {
+                    isValid = false;
+                  }
+
+                  if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+                    dailyMaleDayShift += 1
                  }
 
-                 if(outTime && inTime) {
-                   let startTime = moment(inTime, "HH:mm a");
-                   let endTime=moment(outTime, "HH:mm a");
-                   let duration = moment.duration(endTime.diff(startTime));
-
-                   let hours = 0, minutes =0;
-                   if(duration.asMilliseconds() < 0) {
-                    let dMillis = duration.asMilliseconds();
-                    let bufferedMillis = dMillis + (24 * 60 * 60 * 1000);
-                    let bufferedSeconds = bufferedMillis / 1000;
-                     hours = Math.floor(bufferedSeconds / 3600);
-                    let remainingSeconds = bufferedSeconds % 3600 ;
-                     minutes = remainingSeconds / 60;
-                    }else {
-                     hours = parseInt(duration.asHours());
-                     minutes = parseInt(duration.asMinutes())%60;
-                    }
-
-                    totalTime = hours + ' hr ' + minutes + ' min '
-                 }
-
-                 let istInTime =  moment.utc(inTime).local().format('YYYY-MM-DD HH:mm:ss');
-                 let istOutTime =  '--'
-                 if(outTime !== 'N/A')
-                   istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
-                 let isValid = true;
-
-                 if(paymentTypeSelected && paymentType !== employeeAttendaceObj.paymentType) {
-                   isValid = false;
-                 }
-
-                 if(shiftSelected && shift !== employeeAttendaceObj.shift) {
-                   isValid = false;
-                 }
-
-                 if(genderSelected && gender !== allEmployees[key]['gender'] ) {
-                   isValid = false;
-                 }
-
-                 if(villageSelected && village !== allEmployees[key]['village'] ) {
-                   isValid = false;
-                 }
-
-                 if(employeeSelected && selectedEmployeeId !== key ) {
-                   isValid = false;
-                 }
-
-                 if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
-                   dailyMaleDayShift += 1
+                 if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+                   dailyMaleNightShift += 1
                 }
 
-                if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
-                  dailyMaleNightShift += 1
+                if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+                  dailyFemaleDayShift += 1
                }
 
-               if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
-                 dailyFemaleDayShift += 1
+               if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+                 dailyFemaleNightShift += 1
               }
 
-              if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
-                dailyFemaleNightShift += 1
+              if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+                weeklyMaleDayShift += 1
              }
-
-             if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
-               weeklyMaleDayShift += 1
+             if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+               weeklyMaleNightShift += 1
             }
-            if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
-              weeklyMaleNightShift += 1
+            if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+              weeklyFemaleDayShift += 1
            }
-           if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
-             weeklyFemaleDayShift += 1
+           if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+             weeklyFemaleNightShift += 1
           }
-          if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
-            weeklyFemaleNightShift += 1
-         }
-         if(empAttObj.paymentType === 'Jattu-Daily payment') {
-           jattuPayment += 1
-         }
+          if(empAttObj.paymentType === 'Jattu-Daily payment') {
+            jattuPayment += 1
+          }
 
 
-                   if(isValid && inTime) {
+                    if(isValid && inTime) {
 
-                    i++;
-                    reportData.push({
-                      serialNo : index + 1,
-                      manpowerId : key,
-                      name :  employeeAttendaceObj.name,
-                      numberOfPersons : employeeAttendaceObj.numberOfPersons,
-                      shift : employeeAttendaceObj.shift,
-                      inTime : istInTime,
-                      outTime : istOutTime,
-                      totalTime : totalTime
-                    })
-                    return <TableRow key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
-                    {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
-                    {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
-                    {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
+                     i++;
+                     reportData.push({
+                       serialNo : index + 1,
+                       manpowerId : key,
+                       name :  employeeAttendaceObj.name,
+                       numberOfPersons : employeeAttendaceObj.numberOfPersons,
+                       shift : employeeAttendaceObj.shift,
+                       inTime : istInTime,
+                       outTime : istOutTime,
+                       totalTime : totalTime
+                     })
+                     return <TableRow key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+                     {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
+                     {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
+                     {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
 
-                    <td>{i}</td>
-                    <td>{key}</td>
-                    <td>{employeeAttendaceObj.name}</td>
-                    <td>{employeeAttendaceObj.paymentType}</td>
-                    <td>{employeeAttendaceObj.shift}</td>
-                    <td>{employeeAttendaceObj.in}</td>
-                    <td>{outTime}</td>
-                    <td>{totalTime}</td>
-                    </TableRow>
-                  }
-             }
-             })
-           }
-         </tbody>
-     </Table>
+                     <td>{i}</td>
+                     <td>{key}</td>
+                     <td>{employeeAttendaceObj.name}</td>
+                     <td>{employeeAttendaceObj.paymentType}</td>
+                     <td>{employeeAttendaceObj.shift}</td>
+                     <td>{employeeAttendaceObj.in}</td>
+                     <td>{outTime}</td>
+                     <td>{totalTime}</td>
+                     </TableRow>
+                   }
+              }
+              })
+            }
+          </tbody>
+      </Table>
 
-     </div>)
-   })
+      </div>)
+    })
+    returnObj['tablesArray'] = tablesArray;
+    returnObj['summary'] = {
+      dailyMaleDayShift,
+      dailyMaleNightShift,
+      dailyFemaleDayShift,
+      dailyFemaleNightShift,
+      weeklyMaleDayShift,
+      weeklyMaleNightShift,
+      weeklyFemaleDayShift,
+      weeklyFemaleNightShift,
+      jattuPayment
+    };
+    return returnObj;
+  }
+
+
+  showOldEmployeeReportsTable() {
+    const { startDate, endDate } = this.state;
+
+      let tablesObj = this.getOldTablesArray();
+      if(!tablesObj)
+      return null;
+
    let ob = [{
      start : startDate,
      end : endDate
@@ -1014,43 +1098,29 @@ renderInputFields() {
        </Workbook>
        */
       }
-       <Button icon={<BookIcon />} label='Abstract Table' fill={true}
-       onClick={this.onAbstractClick.bind(this, {
-         dailyMaleDayShift,
-         dailyMaleNightShift,
-         dailyFemaleDayShift,
-         dailyFemaleNightShift,
-         weeklyMaleDayShift,
-         weeklyMaleNightShift,
-         weeklyFemaleDayShift,
-         weeklyFemaleNightShift,
-         jattuPayment
-       })}
-       primary={true} style={{marginRight: '13px'}}
+
+     </div>
+     <div style={{position: 'absolute', right: 40}}>
+       <Button icon={<PrintIcon />} label='Print' fill={true}
+       onClick={this.datewisePrintTableData.bind(this)}
+       primary={true} style={{}}
        href='#'/>
      </div>
      <div  style={{marginBottom: 40}}>
-      {tablesArray}
+      {tablesObj['tablesArray']}
      </div>
      </div>
    )
  }
 
  printPdf() {
-       const { response,
-               paymentTypeSelected,
-               shiftSelected,
-               paymentType,
-               shift,
-               startDate,
-               endDate,
-               unit,
-               employeeVsDate,
-               allEmployees,
-               printCopies } = this.state;
-
-
-       let tablesObj = this.getTablesArray(true);
+      const { selectedIndex } = this.state;
+      let tablesObj;
+      if(selectedIndex == 0) {
+        tablesObj = this.getTablesArray(true);
+      } else if(selectedIndex == 1) {
+        tablesObj = this.getOldTablesArray();
+      }
        if(tablesObj) {
          return(
            <Print name="hihi" exclusive>
@@ -1062,6 +1132,23 @@ renderInputFields() {
        } else {
          return
        }
+ }
+
+ abstractPrintPdf() {
+   const { abstractPrint } = this.state;
+   if(abstractPrint) {
+     let abstractTableCopy = this.renderAbstractTable();
+     console.log(abstractTableCopy)
+     return(
+       <Print name="hihi" exclusive>
+          <div>
+            {abstractTableCopy}
+          </div>
+       </Print>
+     );
+   } else {
+     return null;
+   }
  }
 
  getTablesArray(isPrint) {
@@ -1217,6 +1304,7 @@ renderInputFields() {
      <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{marginLeft: 120}}>Unit: {unit}</span><span style={{position: 'absolute', right : 0, marginRight : 20}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span></h4>
      <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}><Barcode value={employeeId} height={20}/><span style={{position: 'absolute', right : 0, marginRight : 20}}>Date : {timestampStr}</span></h4>
      <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 0, marginRight : 20}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
+     <h3 style={!isPrint ? {display: 'none'} : {marginLeft: 20}}>{paymentType}, {shift}, {gender}, {village}</h3>
      <Table scrollable={true} style={isPrint ? {} :  { marginTop : '10px', marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
           <tr>
@@ -1228,7 +1316,7 @@ renderInputFields() {
             <th>Total Time Spent</th>
           </tr>
          </thead>
-         <tbody>
+         <tbody style={{}}>
            {
 
                attendanceObjArray.map((dateObject,index)=> {
@@ -1605,7 +1693,7 @@ renderActivityIndicator() {
   render() {
       return (
         <div>
-        <Tabs>
+        <Tabs  onActive={ (index) => this.setState({selectedIndex: index}) }>
         <Tab title='Attendance Slip'>
         { this.renderValidationMsg() }
         { this.renderInputFields() }
@@ -1620,6 +1708,7 @@ renderActivityIndicator() {
         { this.showOldEmployeeReportsTable() }
         { this.emailReportDialog() }
         { this.renderAbstractTable() }
+        { this.abstractPrintPdf() }
         </Tab>
         <Tab title='Employeewise'>
         { this.renderSearchField() }
