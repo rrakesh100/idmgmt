@@ -539,7 +539,7 @@ renderInputFields() {
     window.onbeforeprint = () => {
       console.log('beginning')
     }
-    setTimeout(() => window.print(), 1000)
+    setTimeout(() => window.print(), 1)
   }
 
 
@@ -742,7 +742,7 @@ renderInputFields() {
           onClose={this.onCloseLayer.bind(this)}>
           <div style={{width:1000, marginTop: 20, marginLeft: 'auto', marginRight: 'auto'}}>
           <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-            <a onClick={() => this.setState({abstractPrint: true})}>Print</a>
+            <a onClick={() => setTimeout(() => window.print(), 1)}>Print</a>
           </div>
           <Table scrollable={true}>
               <thead>
@@ -1103,7 +1103,7 @@ renderInputFields() {
      <div style={{position: 'absolute', right: 40}}>
        <Button icon={<PrintIcon />} label='Print' fill={true}
        onClick={this.datewisePrintTableData.bind(this)}
-       primary={true} style={{}}
+       primary={true}
        href='#'/>
      </div>
      <div  style={{marginBottom: 40}}>
@@ -1113,14 +1113,24 @@ renderInputFields() {
    )
  }
 
- printPdf() {
-      const { selectedIndex } = this.state;
-      let tablesObj;
-      if(selectedIndex == 0) {
-        tablesObj = this.getTablesArray(true);
-      } else if(selectedIndex == 1) {
-        tablesObj = this.getOldTablesArray();
-      }
+ attendancePrintPdf() {
+      let tablesObj = this.getTablesArray(true);
+       if(tablesObj) {
+         return(
+           <Print name="hihi" exclusive>
+              <div>
+                {tablesObj['tablesArray']}
+              </div>
+           </Print>
+         );
+       } else {
+         return
+       }
+ }
+
+ datewisePrintPdf() {
+      let tablesObj = this.getOldTablesArray();
+      console.log(tablesObj);
        if(tablesObj) {
          return(
            <Print name="hihi" exclusive>
@@ -1135,8 +1145,8 @@ renderInputFields() {
  }
 
  abstractPrintPdf() {
-   const { abstractPrint } = this.state;
-   if(abstractPrint) {
+   const { showAbstractTable } = this.state;
+   if(showAbstractTable) {
      let abstractTableCopy = this.renderAbstractTable();
      console.log(abstractTableCopy)
      return(
@@ -1304,7 +1314,7 @@ renderInputFields() {
      <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{marginLeft: 120}}>Unit: {unit}</span><span style={{position: 'absolute', right : 0, marginRight : 20}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span></h4>
      <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}><Barcode value={employeeId} height={20}/><span style={{position: 'absolute', right : 0, marginRight : 20}}>Date : {timestampStr}</span></h4>
      <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 0, marginRight : 20}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
-     <h3 style={!isPrint ? {display: 'none'} : {marginLeft: 20}}>{paymentType}, {shift}, {gender}, {village}</h3>
+     <h3 style={!isPrint ? {display:'none'} : {marginLeft: 20}}>{paymentType}, {shift}, {gender}, {village}</h3>
      <Table scrollable={true} style={isPrint ? {} :  { marginTop : '10px', marginLeft : '30px'}}>
          <thead style={{position:'relative'}}>
           <tr>
@@ -1699,7 +1709,7 @@ renderActivityIndicator() {
         { this.renderInputFields() }
         { this.renderActivityIndicator() }
         { this.showEmployeeReportsTable() }
-        { this.printPdf() }
+        { this.attendancePrintPdf() }
         </Tab>
         <Tab title='Datewise'>
         { this.renderValidationMsg() }
@@ -1708,6 +1718,7 @@ renderActivityIndicator() {
         { this.showOldEmployeeReportsTable() }
         { this.emailReportDialog() }
         { this.renderAbstractTable() }
+        { this.datewisePrintPdf() }
         { this.abstractPrintPdf() }
         </Tab>
         <Tab title='Employeewise'>
