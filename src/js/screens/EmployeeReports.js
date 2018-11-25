@@ -1130,10 +1130,9 @@ renderInputFields() {
 
  datewisePrintPdf() {
       let tablesObj = this.getOldTablesArray();
-      console.log(tablesObj);
        if(tablesObj) {
          return(
-           <Print name="hihi" exclusive>
+           <Print name="datewisePrint" exclusive>
               <div>
                 {tablesObj['tablesArray']}
               </div>

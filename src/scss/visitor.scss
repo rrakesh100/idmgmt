@@ -228,3 +228,17 @@ span.grommetux-form-field__contents {
 .loginHeading {
   color:#bbb8b3;
 }
+
+@page {
+        size: A4;
+        margin: 0;
+}
+
+
+
+@media print {
+        html, body {
+            width: 210mm;
+            height: 297mm;
+        }
+}

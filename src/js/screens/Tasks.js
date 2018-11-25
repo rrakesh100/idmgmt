@@ -143,8 +143,8 @@ class Tasks extends Component {
       const timestampString = Moment(timestamp).format('DD/MM/YYYY hh:mm:ss A');
 
     return(
+      <div className='printVisitor'>
       <Print name='bizCard' exclusive>
-       <div className='card' style={{width:'100%', height:'30%'}}>
          <div className='card-body' style={{}}>
            <div className='box header'>
              <h5>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
@@ -220,8 +220,8 @@ class Tasks extends Component {
                height={20} />
            </div>
          </div>
-       </div>
         </Print>
+        </div>
       );
   }
 
