@@ -36,7 +36,7 @@ export function saveAttendanceInData(data) {
   updates[`employees/${data.selectedEmployeeId}/paymentType`] = data.paymentType;
   updates[`employees/${data.selectedEmployeeId}/inDate`] = dateStr;
   updates[`employees/${data.selectedEmployeeId}/inTime`] = timeStr;
-  updates[`employees/${data.selectedEmployeeId}/inSide`] = true;
+  updates[`employees/${data.selectedEmployeeId}/${localStorage.unit}/inSide`] = true;
 
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/savedBy`] = localStorage.email;
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/in`] = timeStr;
@@ -75,7 +75,7 @@ export function saveAttendanceOutData(data) {
   updates[`employees/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
   updates[`employees/${data.selectedEmployeeId}/outDate`] = dateStr;
   updates[`employees/${data.selectedEmployeeId}/outTime`] = timeStr;
-  updates[`employees/${data.selectedEmployeeId}/inSide`] = false;
+  updates[`employees/${data.selectedEmployeeId}/${localStorage.unit}/inSide`] = false;
 
   if(data.shift === 'Night Shift') {
   updates[localStorage.unit + '/' +`attendance/dates/${yesterDateStr}/${data.selectedEmployeeId}/tomorrowsOutTime`] = timeStr;

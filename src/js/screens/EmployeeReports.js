@@ -244,7 +244,6 @@ class Reports extends Component {
         return dbRef.child('dates').child(date).once('value').then((snapshot) => {
           let response = snapshot.val();
           returnObj[date] = response;
-
         })
       })
     ).then(() => {
@@ -896,7 +895,10 @@ renderInputFields() {
 
 
     Object.keys(response).map((date, index) => {
+      console.log(response);
+      console.log(date);
       const attendanceObj = response[date];
+      console.log(attendanceObj);
       const numOfEmployees = Object.keys(attendanceObj).length;
       if(attendanceObj ==null)
         return;
@@ -1186,10 +1188,11 @@ renderInputFields() {
    let reportData = [];
    let returnObj = {};
    let idVsName = [];
-
+   console.log(employeeVsDate);
    Object.keys(employeeVsDate).map((empId) => {
+     let empName =  allEmployees[empId]['name'] || "";
      idVsName.push({'id' : empId,
-             'name' : allEmployees[empId]['name']
+             'name' : empName
            });
    })
 

@@ -77,7 +77,13 @@ class AttendanceOut extends Component {
 
   autoSaveEmployee() {
     const { selectedEmployeeData } = this.state;
-    if(selectedEmployeeData && selectedEmployeeData.inSide) {
+    let inSide;
+    if(localStorage.unit == '') {
+      inSide = selectedEmployeeData.inSide || false;
+    } else {
+      inSide  = selectedEmployeeData[localStorage.unit] ? selectedEmployeeData[localStorage.unit].inSide : false;
+    }
+    if(selectedEmployeeData && inSide) {
       this.setState({
         savingInProgress : true
       })
@@ -303,7 +309,13 @@ class AttendanceOut extends Component {
 
 
   renderImage() {
-    const  inSide  = this.state.selectedEmployeeData.inSide || false;
+    const { selectedEmployeeData } = this.state;
+    let inSide;
+    if(localStorage.unit == '') {
+      inSide = selectedEmployeeData.inSide || false;
+    } else {
+      inSide  = selectedEmployeeData[localStorage.unit] ? selectedEmployeeData[localStorage.unit].inSide : false;
+    }
       return (
         <Webcam
           audio={false}
@@ -376,7 +388,12 @@ class AttendanceOut extends Component {
   renderSaveButton() {
     const { selectedEmployeeData } = this.state;
     if(Object.keys(selectedEmployeeData).length > 0) {
-      let inSide = selectedEmployeeData.inSide;
+      let inSide;
+      if(localStorage.unit == '') {
+        inSide = selectedEmployeeData.inSide || false;
+      } else {
+        inSide  = selectedEmployeeData[localStorage.unit] ? selectedEmployeeData[localStorage.unit].inSide : false;
+      }
       return (
         inSide ?
           <Button
@@ -477,11 +494,16 @@ class AttendanceOut extends Component {
 
 renderSearchedEmployee() {
   const { selectedEmployeeData, hideOutsideCamera, pickScreenshotFromOutsideCamera } = this.state;
+  let inSide;
   console.log(selectedEmployeeData);
   const screenShotFromOutsideCamera = this.state.screenshot;
   if(Object.keys(selectedEmployeeData).length > 0) {
     const { screenshot, name, employeeId } = selectedEmployeeData;
-    let inSide = selectedEmployeeData.inSide;
+    if(localStorage.unit == '') {
+      inSide = selectedEmployeeData.inSide || false;
+    } else {
+      inSide  = selectedEmployeeData[localStorage.unit] ? selectedEmployeeData[localStorage.unit].inSide : false;
+    }
     let inTime = selectedEmployeeData.inTime;
     let outTime = selectedEmployeeData.outTime;
 

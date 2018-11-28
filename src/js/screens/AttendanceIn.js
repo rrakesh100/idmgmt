@@ -36,6 +36,7 @@ import Status from 'grommet/components/icons/Status';
 import { getShifts, getTimeslots } from '../api/configuration';
 import Spinning from 'grommet/components/icons/Spinning';
 
+const localStorage = window.localStorage;
 
 class AttendanceIn extends Component {
   constructor(props) {
@@ -134,7 +135,13 @@ class AttendanceIn extends Component {
 
   autoSaveEmployee() {
     const { selectedEmployeeData } = this.state;
-    if(selectedEmployeeData && !selectedEmployeeData.inSide) {
+    let inSide;
+    if(localStorage.unit == '') {
+      inSide = selectedEmployeeData.inSide || false;
+    } else {
+      inSide  = selectedEmployeeData[localStorage.unit] ? selectedEmployeeData[localStorage.unit].inSide : false;
+    }
+    if(selectedEmployeeData && !inSide) {
       this.setState({
         savingInProgress : true
       })
@@ -147,6 +154,7 @@ class AttendanceIn extends Component {
     if(selectedEmployeeId) {
     getEmployee(selectedEmployeeId).then((snap) => {
       const selectedEmployeeData = snap.val();
+      console.log(selectedEmployeeData);
       this.setState({
         selectedEmployeeData
       }, () =>{
@@ -449,7 +457,13 @@ class AttendanceIn extends Component {
   }
 
   renderInsideCamera() {
-    const  inSide  = this.state.selectedEmployeeData.inSide || false;
+    const { selectedEmployeeData } = this.state;
+    let inSide;
+    if(localStorage.unit == '') {
+      inSide = selectedEmployeeData.inSide || false;
+    } else {
+      inSide  = selectedEmployeeData[localStorage.unit] ? selectedEmployeeData[localStorage.unit].inSide : false;
+    }
     const { pickScreenshotFromOutsideCamera=false } = this.state ;
     if(!inSide && !pickScreenshotFromOutsideCamera) {
       return (
@@ -505,11 +519,17 @@ renderSearchedEmployee() {
     shiftVar = 'Day Shift'
   }
   let shift = shiftVar || this.state.shift;
-  
+
   let timeslot = window.localStorage.timeslot || this.state.timeslot;
 
   if(Object.keys(selectedEmployeeData).length > 0) {
-    const { screenshot, name, employeeId, paymentType, inTime, inSide } = selectedEmployeeData;
+    const { screenshot, name, employeeId, paymentType, inTime } = selectedEmployeeData;
+    let inSide;
+    if(localStorage.unit == '') {
+      inSide = selectedEmployeeData.inSide || false;
+    } else {
+      inSide  = selectedEmployeeData[localStorage.unit] ? selectedEmployeeData[localStorage.unit].inSide : false;
+    }
     console.log(selectedEmployeeData);
     console.log(inSide);
 
@@ -538,7 +558,7 @@ renderSearchedEmployee() {
               <Select
                 placeHolder='Shift'
                 options={shiftOpt}
-                value={this.state.shift}
+                value={shift}
                 onChange={this.onFieldChange.bind(this, 'shift')}
               />
               </FormField>
@@ -735,7 +755,14 @@ renderSearchedEmployee() {
   renderSaveButton() {
     const { selectedEmployeeData } = this.state;
     if(Object.keys(selectedEmployeeData).length > 0) {
-      let inSide = selectedEmployeeData.inSide;
+      let inSide;
+      if(localStorage.unit == '') {
+        inSide = selectedEmployeeData.inSide || false;
+      } else {
+        inSide  = selectedEmployeeData[localStorage.unit] ? selectedEmployeeData[localStorage.unit].inSide : false;
+      }
+
+      console.log(inSide);
       return (
         !inSide ?
           <Button
