@@ -255,7 +255,6 @@ class AttendanceOut extends Component {
         return data;
       },
       error: function (responseData, textStatus, errorThrown) {
-      console.log(responseData);
     }
   })
 
@@ -495,7 +494,6 @@ class AttendanceOut extends Component {
 renderSearchedEmployee() {
   const { selectedEmployeeData, hideOutsideCamera, pickScreenshotFromOutsideCamera } = this.state;
   let inSide;
-  console.log(selectedEmployeeData);
   const screenShotFromOutsideCamera = this.state.screenshot;
   if(Object.keys(selectedEmployeeData).length > 0) {
     const { screenshot, name, employeeId } = selectedEmployeeData;

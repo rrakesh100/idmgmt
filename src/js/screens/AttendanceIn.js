@@ -35,6 +35,10 @@ import moment from 'moment';
 import Status from 'grommet/components/icons/Status';
 import { getShifts, getTimeslots } from '../api/configuration';
 import Spinning from 'grommet/components/icons/Spinning';
+import { Print } from 'react-easy-print';
+import Table from 'grommet/components/Table';
+import TableRow from 'grommet/components/TableRow';
+
 
 const localStorage = window.localStorage;
 
@@ -154,7 +158,6 @@ class AttendanceIn extends Component {
     if(selectedEmployeeId) {
     getEmployee(selectedEmployeeId).then((snap) => {
       const selectedEmployeeData = snap.val();
-      console.log(selectedEmployeeData);
       this.setState({
         selectedEmployeeData
       }, () =>{
@@ -192,7 +195,6 @@ class AttendanceIn extends Component {
     let filtered = [];
 
     if(!options ){
-      console.log('returning because lenght < 3')
       return ;
     }
 
@@ -313,11 +315,9 @@ class AttendanceIn extends Component {
        dataType: 'json',
        data : payload,
        success: (data) => {
-        console.log(data);
         return data;
       },
       error: function (responseData, textStatus, errorThrown) {
-      console.log(responseData);
     }
   })
 
@@ -530,8 +530,6 @@ renderSearchedEmployee() {
     } else {
       inSide  = selectedEmployeeData[localStorage.unit] ? selectedEmployeeData[localStorage.unit].inSide : false;
     }
-    console.log(selectedEmployeeData);
-    console.log(inSide);
 
   return (
 
@@ -695,13 +693,15 @@ renderSearchedEmployee() {
     this.setState({msg:''})
   }
 
+  printAttendanceData() {
+    setTimeout(() => window.print(), 4000);
+  }
+
   onOkButtonClick() {
     this.setState({
       msg:'',
       employeeSearchString:'',
-      selectedEmployeeData:{}
-    });
-    console.log(this.state.barcodeInput.focus());
+    }, this.printAttendanceData());
   }
 
   renderValidationMsg() {
@@ -762,7 +762,6 @@ renderSearchedEmployee() {
         inSide  = selectedEmployeeData[localStorage.unit] ? selectedEmployeeData[localStorage.unit].inSide : false;
       }
 
-      console.log(inSide);
       return (
         !inSide ?
           <Button
@@ -772,6 +771,80 @@ renderSearchedEmployee() {
           primary={true} /> : null
       );
     }
+  }
+
+  renderPrintCard() {
+    const { screenshot, selectedEmployeeData } = this.state;
+    const { name, employeeId, paymentType, village, address, joinedDate } = selectedEmployeeData;
+    const date = new Date();
+    const hours = date.getHours();
+    let shiftVar;
+    if( hours > 14) {
+      shiftVar = 'Night Shift'
+    } else {
+      shiftVar = 'Day Shift'
+    }
+    let shift = shiftVar || this.state.shift;
+    const dateStr = moment(date).format('DD-MM-YYYY') || this.state.Date;
+    const timeStr = moment(date).format('h:mm A');
+    if(!screenshot)
+    return;
+
+    return (
+       <Print name='bizCard' exclusive>
+        <div className='card' style={{width:'100%', height:'30%'}}>
+          <div className='card-body'>
+            <div className='box header'>
+              <h5>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
+              <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
+              <h5 style={{textDecoration : 'underline'}}>Attendance In Card</h5>
+
+            </div>
+            <div className='box sidebar'>
+              <Image src={screenshot} />
+            </div>
+            <div className='box content'>
+            <Table>
+              <tbody>
+                <TableRow>
+                  <td>
+                    <div style={{overflowWrap: 'break-word'}}>Name: <b>{name}</b></div>
+                  </td>
+                  <td margin='xlarge'>
+                    MCode: <b>{employeeId}</b>
+                  </td>
+                  </TableRow>
+                  <TableRow>
+                    <td>
+                      In Date: <b>{dateStr}</b>
+                    </td>
+                    <td>
+                      In Time: <b>{timeStr}</b>
+                    </td>
+                    </TableRow>
+                  <TableRow>
+                    <td>
+                      Shift: <b>{shift}</b>
+                    </td>
+                    <td>
+                      Village: <b>{village}</b>
+                    </td>
+                    </TableRow>
+                    <TableRow>
+                      <td>
+                        Address: <b>{address}</b>
+                      </td>
+                      <td>
+                        Paymment Mode: <b>{paymentType}</b>
+                      </td>
+                  </TableRow>
+                </tbody>
+              </Table>
+            </div>
+          </div>
+        </div>
+        </Print>
+    );
   }
 
   render() {
@@ -825,7 +898,8 @@ renderSearchedEmployee() {
       { this.renderValidationMsg() }
       </div>
       { this.renderSearchedEmployee() }
-        </Article>
+      { this.renderPrintCard() }
+      </Article>
       );
   }
 }

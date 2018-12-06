@@ -714,7 +714,8 @@ renderInputFields() {
             weeklyMaleDayShift,
             weeklyMaleNightShift,
             weeklyFemaleDayShift,
-            weeklyFemaleNightShift , jattuPayment} = this.state;
+            weeklyFemaleNightShift ,
+            jattuPayment, unit, startDate, endDate } = this.state;
 
 
     let weeklyMaleTotal = weeklyMaleDayShift + weeklyMaleNightShift;
@@ -743,6 +744,10 @@ renderInputFields() {
           <div style={{display: 'flex', justifyContent: 'flex-end'}}>
             <a onClick={() => setTimeout(() => window.print(), 1)}>Print</a>
           </div>
+          <div>
+          <h4 style={{marginLeft : '20px'}}>Abstract Report From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{marginLeft: 180}}>Unit: {unit}</span></h4>
+          </div>
+
           <Table scrollable={true}>
               <thead>
                <tr>
@@ -895,10 +900,7 @@ renderInputFields() {
 
 
     Object.keys(response).map((date, index) => {
-      console.log(response);
-      console.log(date);
       const attendanceObj = response[date];
-      console.log(attendanceObj);
       const numOfEmployees = Object.keys(attendanceObj).length;
       if(attendanceObj ==null)
         return;
@@ -1037,8 +1039,8 @@ renderInputFields() {
                      <td>{employeeAttendaceObj.name}</td>
                      <td>{employeeAttendaceObj.paymentType}</td>
                      <td>{employeeAttendaceObj.shift}</td>
-                     <td>{employeeAttendaceObj.in}</td>
-                     <td>{outTime}</td>
+                     <td style={{width: '15%'}}>{employeeAttendaceObj.in}</td>
+                     <td style={{width: '15%'}}>{outTime}</td>
                      <td>{totalTime}</td>
                      </TableRow>
                    }
@@ -1068,8 +1070,10 @@ renderInputFields() {
 
   showOldEmployeeReportsTable() {
     const { startDate, endDate } = this.state;
-
-      let tablesObj = this.getOldTablesArray();
+    let start = new Date().getTime();
+    let tablesObj = this.getOldTablesArray();
+    let end = new Date().getTime();
+    console.log('datewise total time = ' + (end-start))
       if(!tablesObj)
       return null;
 
@@ -1149,7 +1153,6 @@ renderInputFields() {
    const { showAbstractTable } = this.state;
    if(showAbstractTable) {
      let abstractTableCopy = this.renderAbstractTable();
-     console.log(abstractTableCopy)
      return(
        <Print name="hihi" exclusive>
           <div>
@@ -1188,7 +1191,6 @@ renderInputFields() {
    let reportData = [];
    let returnObj = {};
    let idVsName = [];
-   console.log(employeeVsDate);
    Object.keys(employeeVsDate).map((empId) => {
      let empName =  allEmployees[empId]['name'] || "";
      idVsName.push({'id' : empId,
@@ -1393,8 +1395,8 @@ renderInputFields() {
                     <td>{i}</td>
                     <td>{dateVal}</td>
                     <td>{employeeAttendaceObj.shift}</td>
-                    <td>{employeeAttendaceObj.in}</td>
-                    <td>{outTime}</td>
+                    <td style={{width: '15%'}}>{employeeAttendaceObj.in}</td>
+                    <td style={{width: '15%'}}>{outTime}</td>
                     <td>{totalTime}</td>
                     </TableRow>
                   }
@@ -1438,7 +1440,11 @@ renderInputFields() {
             shiftSelected,
             paymentTypeSelected, employeeVsDate, allEmployees } = this.state;
 
-    let tablesObj = this.getTablesArray(false);
+            let start = new Date().getTime();
+            let tablesObj = this.getTablesArray(false);
+            let end = new Date().getTime();
+            console.log('attendance slip total time = ' + (end-start))
+
     if(!tablesObj)
     return null;
     let ob = [{
@@ -1502,7 +1508,7 @@ renderInputFields() {
 
     if(e.target.value == '') {
       filtered = options
-      this.setState({response : null,
+      this.setState({
       selectedEmployeeId : null,
       employeeSelected : false,
       selectedEmployeeData : null
@@ -1703,6 +1709,7 @@ renderActivityIndicator() {
 }
 
   render() {
+    const { selectedIndex } = this.state;
       return (
         <div>
         <Tabs  onActive={ (index) => this.setState({selectedIndex: index}) }>
@@ -1724,7 +1731,7 @@ renderActivityIndicator() {
         { this.abstractPrintPdf() }
         </Tab>
         <Tab title='Employeewise'>
-        { this.renderSearchField() }
+        { this.employeewiseSearchField() }
         { this.renderEmployeeAttendanceTable() }
         </Tab>
         </Tabs>
