@@ -53,7 +53,7 @@ class AttendanceIn extends Component {
       selectedEmployeeId : '',
       selectedEmployeeData : {},
       showLiveCameraFeed: true,
-      Date: '',
+      dateVal: '',
       shift: '',
       numberOfPersons: '',
       manpowerName: '',
@@ -324,8 +324,16 @@ class AttendanceIn extends Component {
   }
 
   onMarkButtonClick() {
-    const { selectedEmployeeId, selectedEmployeeData , screenshot, numberOfPersons, Date } = this.state;
-    const shift = window.localStorage.shift || this.state.shift;
+    const { selectedEmployeeId, selectedEmployeeData , screenshot, numberOfPersons } = this.state;
+    const date = new Date();
+    const hours = date.getHours();
+    let shiftVar;
+    if( hours > 14) {
+      shiftVar = 'Night Shift'
+    } else {
+      shiftVar = 'Day Shift'
+    }
+    let shift = shiftVar || this.state.shift;
     let selectedEmployeeName = selectedEmployeeData.name;
     let selectedEmployeeVillage = selectedEmployeeData.village;
     let paymentType = selectedEmployeeData.paymentType;
@@ -488,7 +496,7 @@ class AttendanceIn extends Component {
   }
 
   onDateChange(e) {
-    this.setState({Date:e})
+    this.setState({dateVal:e})
   }
 
   onFieldChange(fieldName, e) {
@@ -545,7 +553,7 @@ renderSearchedEmployee() {
               format='D/M/YYYY'
               name='name'
               onChange={this.onDateChange.bind(this)}
-              value={this.state.Date || dateStr}
+              value={this.state.dateVal || dateStr}
               />
               </FormField>
               </Form>
@@ -785,7 +793,7 @@ renderSearchedEmployee() {
       shiftVar = 'Day Shift'
     }
     let shift = shiftVar || this.state.shift;
-    const dateStr = moment(date).format('DD-MM-YYYY') || this.state.Date;
+    const dateStr = moment(date).format('DD-MM-YYYY') || this.state.dateVal;
     const timeStr = moment(date).format('h:mm A');
     if(!screenshot)
     return;

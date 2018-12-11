@@ -1497,8 +1497,6 @@ renderInputFields() {
   }
 
   onSearchEntry(e) {
-  //  this.setState({selectedEmployeeData: {}})
-
     let filtered = [];
     let  options  = this.state.employeeSuggestions;
     let exactMatch = false;
@@ -1516,6 +1514,7 @@ renderInputFields() {
     }
     else {
       options.forEach((opt) => {
+        console.log('***Filtering***');
         if(opt.label && opt.label.toUpperCase().startsWith(e.target.value.toUpperCase()))
           filtered.push(opt)
         else if(opt.employeeId && opt.employeeId.toUpperCase().startsWith(e.target.value.toUpperCase())) {
@@ -1534,8 +1533,7 @@ renderInputFields() {
         data.suggestion = filtered[0];
         this.onEmployeeSelect(data, true, false);
       }
-     }
-   );
+    });
   }
 
   fetchSearchedEmployee() {
@@ -1591,6 +1589,7 @@ renderInputFields() {
             placeHolder='Village'
             options={villageOpt}
             value={this.state.village}
+            onSelect={this.onEmployeeSelect.bind(this)}
             onChange={this.onVillageFieldChange.bind(this, 'village')}
           />
       </FormField>
@@ -1602,11 +1601,21 @@ renderInputFields() {
         size='small'
         suggestions={this.state.filteredSuggestions}
         value={this.state.employeeSearchString}
-        onSelect={this.onEmployeeSelect.bind(this)}
         onDOMChange={this.onSearchEntry.bind(this)} />
+
       </div>
       </div>
     )
+  }
+
+  onSearchButtonClick() {
+    const { filteredSuggestions } = this.state;
+    console.log(filteredSuggestions);
+    if(filteredSuggestions.length == 1) {
+      let data = {};
+      data.suggestion = filteredSuggestions[0];
+      this.onEmployeeSelect(data, true);
+    }
   }
 
   renderSearchField() {
