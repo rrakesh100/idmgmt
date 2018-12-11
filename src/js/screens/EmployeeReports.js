@@ -1589,7 +1589,6 @@ renderInputFields() {
             placeHolder='Village'
             options={villageOpt}
             value={this.state.village}
-            onSelect={this.onEmployeeSelect.bind(this)}
             onChange={this.onVillageFieldChange.bind(this, 'village')}
           />
       </FormField>
@@ -1600,6 +1599,7 @@ renderInputFields() {
         iconAlign='start'
         size='small'
         suggestions={this.state.filteredSuggestions}
+        onSelect={this.onEmployeeSelect.bind(this)}
         value={this.state.employeeSearchString}
         onDOMChange={this.onSearchEntry.bind(this)} />
 
