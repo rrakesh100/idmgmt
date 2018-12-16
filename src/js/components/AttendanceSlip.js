@@ -297,13 +297,13 @@ getEmployees() {
          totalNumberOfdays++;
       }
 
-      if(paymentTypeSelected && paymentType !== empAttObj.paymentType) {
-        isValid = false;
-      }
+          if(paymentTypeSelected && paymentType !== empAttObj.paymentType) {
+            isValid = false;
+          }
 
-      if(shiftSelected && shift !== employeeAttendaceObj.shift) {
-        isValid = false;
-      }
+          if(shiftSelected && shift !== employeeAttendaceObj.shift) {
+            isValid = false;
+          }
 
           if(genderSelected && gender !== allEmployees[employeeId]['gender'] ) {
             isValid = false;
@@ -355,7 +355,7 @@ getEmployees() {
         return
       }
 
-      let top = iterator * 16.4;
+      let top = iterator * 17.115;
       let topStr = top + 'in'
       iterator++;
 
@@ -367,7 +367,6 @@ getEmployees() {
       <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{marginLeft: 120}}>Unit: {unit}</span><span style={{position: 'absolute', right : 0, marginRight : 20}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span></h4>
       <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}><Barcode value={employeeId} height={20}/><span style={{position: 'absolute', right : 0, marginRight : 20}}>Date : {timestampStr}</span></h4>
       <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 0, marginRight : 20}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
-      <h3 style={!isPrint ? {display:'none'} : {marginLeft: 20}}>{paymentType}, {shift}, {gender}, {village}</h3>
       <Table scrollable={true} style={isPrint ? {} :  { marginTop : '10px', marginLeft : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>
@@ -535,7 +534,7 @@ getEmployees() {
     window.onbeforeprint = () => {
       console.log('beginning')
     }
-    setTimeout(() => window.print(), 1)
+    window.setTimeout(() => window.print(), 1000)
     savePrintCopiesData(key, copies, unit);
   }
 
