@@ -849,6 +849,11 @@ renderSearchedEmployee() {
                 </tbody>
               </Table>
             </div>
+            <div className='footer'>
+              <Barcode value={employeeId}
+                height={20}
+              />
+            </div>
           </div>
         </div>
         </Print>
