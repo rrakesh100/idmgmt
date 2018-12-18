@@ -229,26 +229,46 @@ span.grommetux-form-field__contents {
   color:#bbb8b3;
 }
 
+
+
+
 @page {
-        size: A4;
-        margin: 20;
+        size: portrait;
+        margin-right: 2cm;
 }
 
 
 
 @media print {
-        html, body {
-            width: 210mm;
-            height: 297mm;
-        }
+
         .printVisitor {
             border: initial;
             border-radius: initial;
-            background-color: #7FFFD4;
+            color: #000;
+            background-color: #fff;
             width: initial;
             min-height: initial;
             box-shadow: initial;
             background: initial;
             page-break-after: always;
+            text-shadow: none;
+        }
+
+        .datewiseTable
+        {
+          width: 100%;
+          font-size: 8px;
+        }
+
+        .reportsTable {
+          color: #000;
+          background-color: #fff;
+          box-shadow: none;
+          text-shadow: none;
+        }
+
+        .abstractPrint {
+          box-shadow: none;
+          text-shadow: none;
         }
 }

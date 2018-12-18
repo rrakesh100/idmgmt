@@ -18,6 +18,8 @@ import { attendanceDatesLoop,
   fetchPrintCopiesData } from '../api/attendance';
 import moment from 'moment';
 import * as firebase from 'firebase';
+import CloseIcon from 'grommet/components/icons/base/Close';
+
 const uniqid = require('uniqid');
 
 
@@ -34,6 +36,9 @@ export default class DatewiseReports extends Component {
       shift: '',
       emailReport: false,
       loading: false,
+      allEmployees: null,
+      response: null,
+      employeeSuggestions: [],
       filteredSuggestions: []
     }
   }
@@ -236,7 +241,7 @@ export default class DatewiseReports extends Component {
            <h2 style={{marginLeft: 30}}>{date}</h2>
            <h2 style={{marginLeft: 30}}>Number of Employees: {numOfEmployees}</h2>
            </div>
-           <Table scrollable={true} style={{ marginLeft : '30px'}}>
+           <Table className="datewiseTable" scrollable={true} style={{ marginLeft : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>
              <th>S No.</th>
@@ -532,15 +537,18 @@ export default class DatewiseReports extends Component {
 
    if(showAbstractTable) {
      return (
-       <Layer closer={true}
+       <Layer
          flush={false}
          onClose={this.onCloseLayer.bind(this)}>
-         <div style={{width:1000, marginTop: 20, marginLeft: 'auto', marginRight: 'auto'}}>
+         <div style={{marginTop: 20, marginLeft: 'auto', marginRight: 'auto'}}>
          <div style={{display: 'flex', justifyContent: 'flex-end'}}>
            <a onClick={() => setTimeout(() => window.print(), 1)}>Print</a>
+           <div className="layerIcon">
+           <CloseIcon style={{marginLeft:20}} onClick={this.onCloseLayer.bind(this)}/>
+           </div>
          </div>
          <div>
-         <h4 style={{marginLeft : '20px'}}>Abstract Report From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{marginLeft: 180}}>Unit: {unit}</span></h4>
+         <h4 style={{marginLeft : '20px'}}>Abstract Report From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{marginLeft: 150}}>Unit: {unit}</span></h4>
          </div>
 
          <Table scrollable={true}>
@@ -631,7 +639,7 @@ export default class DatewiseReports extends Component {
        if(tablesObj) {
          return(
            <Print name="datewisePrint" exclusive>
-              <div>
+              <div className="reportsTable">
                 {tablesObj['tablesArray']}
               </div>
            </Print>
@@ -647,7 +655,7 @@ export default class DatewiseReports extends Component {
      let abstractTableCopy = this.renderAbstractTable();
      return(
        <Print name="hihi" exclusive>
-          <div>
+          <div className="abstractPrint">
             {abstractTableCopy}
           </div>
        </Print>
@@ -825,6 +833,7 @@ export default class DatewiseReports extends Component {
     return (
       <div>
       { this.renderValidationMsg() }
+      { console.log(this) }
       { this.renderInputForm() }
       { this.renderActivityIndicator() }
       { this.showOldEmployeeReportsTable() }

@@ -208,14 +208,14 @@ class NewVisitor extends Component {
 
 
   renderBusinessCardForPrint() {
-    const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', remarks=''
-    , timestampStr, department,company='', screenshot, serialNo='' } = this.state;
+    const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', remarks='', timestampStr, department,company='', screenshot, serialNo='' } = this.state;
 
     if(!screenshot)
       return null
 
     return (
        <Print name='bizCard' exclusive>
+       <div className="printVisitor">
         <div className='card' style={{width:'100%', height:'30%'}}>
           <div className='card-body'>
             <div className='box header'>
@@ -294,8 +294,9 @@ class NewVisitor extends Component {
               />
             </div>
           </div>
+          </div>
         </div>
-         </Print>
+        </Print>
     );
   }
 

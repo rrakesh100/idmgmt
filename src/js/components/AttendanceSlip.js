@@ -544,7 +544,7 @@ getEmployees() {
         if(tablesObj) {
           return(
             <Print name="hihi" exclusive>
-               <div>
+               <div className="reportsTable">
                  {tablesObj['tablesArray']}
                </div>
             </Print>
