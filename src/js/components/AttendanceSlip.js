@@ -500,7 +500,7 @@ getEmployees() {
         tablesObj['tablesArray'].length == 0 ? null :
         <div>
         <div>
-          <h3 style={{marginLeft: 20,marginBottom: 20, color: '#865CD6'}}>Number of Employees : { tablesObj['tablesArray'].length }</h3>
+          <h3 style={{marginLeft: 20,marginBottom: 20, color: '#865CD6'}}>Number of Manpower : { tablesObj['tablesArray'].length }</h3>
         </div>
         <div style={{float : 'right'}}>
 

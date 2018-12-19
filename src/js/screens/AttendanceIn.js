@@ -804,13 +804,11 @@ renderSearchedEmployee() {
         <div className='card' style={{width:'100%', height:'30%'}}>
           <div className='card-body'>
             <div className='box header'>
-              <h5>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
-              <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
               <h5 style={{textDecoration : 'underline'}}>Attendance In Card</h5>
 
             </div>
             <div className='box sidebar'>
-              <Image src={screenshot} />
+              <Image src={screenshot} style={{width:150, height:150}}/>
             </div>
             <div className='box content'>
             <Table>

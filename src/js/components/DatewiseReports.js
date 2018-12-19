@@ -239,7 +239,7 @@ export default class DatewiseReports extends Component {
       tablesArray.push(<div className='tablesArray' key={index}>
           <div style={{display:'flex', flexDirection: 'column'}}>
            <h2 style={{marginLeft: 30}}>{date}</h2>
-           <h2 style={{marginLeft: 30}}>Number of Employees: {numOfEmployees}</h2>
+           <h2 style={{marginLeft: 30}}>Number of Manpower: {numOfEmployees}</h2>
            </div>
            <Table className="datewiseTable" scrollable={true} style={{ marginLeft : '30px'}}>
           <thead style={{position:'relative'}}>
