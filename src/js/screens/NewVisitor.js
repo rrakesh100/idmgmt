@@ -29,6 +29,8 @@ import TableRow from 'grommet/components/TableRow';
 import Layer from 'grommet/components/Layer';
 
 import { saveVisitor, uploadVisitorImage } from '../api/visitors';
+import VisitorPrintComponent from '../components/VisitorPrintComponent';
+import ReactToPrint from "react-to-print";
 
 
 class NewVisitor extends Component {
@@ -125,9 +127,9 @@ class NewVisitor extends Component {
     }).catch((e) => console.log(e))
   }
 
-  onSubmitClick(e) {
-    e.stopPropagation();
-    const { name, screenshot, mobile, whomToMeet, purpose, comingFrom} = this.state;
+  onSubmitClick() {
+    const { name, whomToMeet, purpose, mobile, comingFrom, screenshot } = this.state;
+
     if (!name) {
       alert('NAME is missing');
       this.setState({
@@ -206,98 +208,30 @@ class NewVisitor extends Component {
     );
   }
 
+  setPrintRef(ref) {
+    this.componentRef = ref;
+  }
 
   renderBusinessCardForPrint() {
-    const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', remarks='', timestampStr, department,company='', screenshot, serialNo='' } = this.state;
-
-    if(!screenshot)
-      return null
+    const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', remarks='', timestampStr, department,company='', screenshot, serialNo='', visitorId } = this.state;
 
     return (
-       <Print name='bizCard' exclusive>
-       <div className="printVisitor">
-        <div className='card' style={{width:'100%', height:'30%'}}>
-          <div className='card-body'>
-            <div className='box header'>
-              <h5>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h5>
-              <h5>Unit-II, Valuthimmapuram Road, Peddapuram</h5>
-              <h5 style={{textDecoration : 'underline'}}>VISITOR PASS</h5>
-
-            </div>
-            <div className='box sidebar'>
-              <Image src={screenshot} />
-            </div>
-            <div className='box content'>
-            <Table>
-              <tbody>
-                <TableRow>
-                  <td>
-                    <div style={{overflowWrap: 'break-word'}}>Name: <b>{name.toUpperCase()}</b></div>
-                  </td>
-                  <td>
-                    From: <b>{comingFrom.toUpperCase()}</b>
-                  </td>
-                  </TableRow>
-                  <TableRow>
-                    <td>
-                      To Meet: <b>{whomToMeet.toUpperCase()}</b>
-                    </td>
-                    <td>
-                      Mobile: <b>{mobile.toUpperCase()}</b>
-                    </td>
-                    </TableRow>
-                    <TableRow>
-                      <td>
-                        Purpose: <b>{purpose.toUpperCase()}</b>
-                      </td>
-                      <td>
-                        Department: <b>{department}</b>
-                      </td>
-                  </TableRow>
-                  <TableRow>
-                    <td>
-                      Company: <b>{company.toUpperCase()}</b>
-                    </td>
-                    <td>
-                      Remarks: <b>{remarks}</b>
-                    </td>
-                </TableRow>
-                <TableRow style={{marginTop : '40px', color:'red'}}>
-                  <td>
-                    In Time: <b>{timestampStr}</b>
-                  </td>
-                  <td>
-                    Serial No.#: <b>{serialNo}</b>
-                  </td>
-              </TableRow>
-                </tbody>
-              </Table>
-                <Table style={{marginTop : '40px'}}>
-                  <tbody>
-                    <TableRow>
-                      <td>
-                        Operator Signature
-                      </td>
-                      <td>
-                        Visitor Signature
-                      </td>
-                      <td>
-                        Officer Signature
-                      </td>
-                      </TableRow>
-                    </tbody>
-                </Table>
-            </div>
-            <div className='footer'>
-              <Barcode value={this.state.visitorId}
-                height={20}
-              />
-            </div>
-          </div>
-          </div>
-        </div>
-        </Print>
-    );
+      <VisitorPrintComponent
+        ref={this.setPrintRef.bind(this)}
+        name={name}
+        visitorId={visitorId}
+        whomToMeet={whomToMeet}
+        purpose={purpose}
+        comingFrom={comingFrom}
+        mobile={mobile}
+        remarks={remarks}
+        timestampStr={timestampStr}
+        department={department}
+        company={company}
+        screenshot={screenshot}
+        serialNo={serialNo}
+      />
+    )
   }
 
   renderToastMsg() {
@@ -323,9 +257,28 @@ class NewVisitor extends Component {
     return null;
   }
 
+  handleAfterPrint() {
+    console.log('after printing');
+  }
+
+  handleBeforePrint() {
+    this.onSubmitClick();
+  }
+
+ renderContent() {
+   return this.componentRef;
+ }
+
+ renderTrigger() {
+   return (
+          <Button  icon={<Edit />}
+              label="SAVE"
+              href='#' primary={true}
+            />
+   )
+ }
+
   render() {
-
-
     return (
       <div>
         { this.renderValidationMsg() }
@@ -405,12 +358,12 @@ class NewVisitor extends Component {
                   <Barcode value={this.state.visitorId} style="" height="20"/>
                   <Section pad='small'
                     align='center'>
-                    <Button icon={<Edit />}
-                      label='SAVE'
-                      onClick={this.onSubmitClick.bind(this)}
-                      disabled={true}
-                      href='#'
-                      primary={true} />
+                      <ReactToPrint
+                          trigger={this.renderTrigger.bind(this)}
+                          content={this.renderContent.bind(this)}
+                          onBeforePrint={this.handleBeforePrint.bind(this)}
+                          onAfterPrint={this.handleAfterPrint.bind(this)}
+                        />
                   </Section>
               </Box>
             </Split>

@@ -81,6 +81,7 @@
     "pre-commit": "^1.2.2",
     "react-dev-utils": "^0.4.2",
     "react-test-renderer": "^15.4.1",
+    "react-to-print": "^2.0.0-alpha-5",
     "sass-lint": "^1.10.2",
     "sass-loader": "^6.0.3",
     "webpack": "^3.4.1"

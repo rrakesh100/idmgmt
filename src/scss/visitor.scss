@@ -58,13 +58,6 @@ textarea.itemTextArea {
   color: blue;
 }
 
-.card {
-  position: absolute;
-  top: 0;
-  width: 8.0in;
-  height: 3.5in;
-  border: 1px solid  red;
-}
 
 .eCard {
   position: absolute;
@@ -73,56 +66,7 @@ textarea.itemTextArea {
   height: 3.5in;
 }
 
-.card-body {
-  position: absolute;
-  width: 10in;
-  height: 5in;
-  padding: .125in;
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  grid-auto-rows: minmax(100px, auto);
-  grid-template-areas:
-        "hd hd hd hd   hd   hd   hd   hd   hd"
-        "sd sd sd main main main main main main"
-        "ft ft ft ft   ft   ft   ft   ft   ft";
-  text-align: center;
-  line-height: 0;
 
-  h3, h4, h5 {
-    margin: 0 0;
-  }
-
-  h3 {
-    text-decoration: underline;
-  }
-
-  .sidebar {
-    grid-area: sd;
-    position: relative;
-    height : 4in;
-    margin-top: 20px;
-  }
-
-  .content {
-    grid-area: main;
-    height : 2.5in;
-    margin-top: 20px;
-    line-height: 0in;
-  }
-
-  .header {
-    grid-area: hd;
-    height: 0.3in;
-    line-height: 0;
-    text-align: center;
-  }
-  .footer {
-    grid-area: ft;
-    height : 0.2in;
-    font-size: 0.1in;
-    text-align: center;
-  }
-}
 
 .newVisitor {
   input.grommetux-text-input {
@@ -137,7 +81,17 @@ textarea.itemTextArea {
   }
 }
 
+.card {
+  display: none;
+}
 
+.visitorCard {
+  display: none;
+}
+
+.card-body {
+  display: none;
+}
 
 .visitors {
   height : '700px' !important;
@@ -230,13 +184,10 @@ span.grommetux-form-field__contents {
 }
 
 
-
-
 @page {
         size: portrait;
         margin-right: 2cm;
 }
-
 
 
 @media print {
@@ -252,6 +203,77 @@ span.grommetux-form-field__contents {
             background: initial;
             page-break-after: always;
             text-shadow: none;
+        }
+
+        .card {
+          display: block;
+          position: absolute;
+          top: 40;
+          left: 80;
+          width: 10in;
+          height: 4in;
+          border: 1px solid  red;
+        }
+
+        .visitorCard {
+          display: block;
+          position: absolute;
+          top: 40;
+          left: 80;
+          width: 10in;
+          height: 5in;
+          border: 1px solid  red;
+        }
+
+        .card-body {
+          display: block;
+          position: absolute;
+          width: 10in;
+          height: 5in;
+          padding: .125in;
+          display: grid;
+          grid-template-columns: repeat(9, 1fr);
+          grid-auto-rows: minmax(100px, auto);
+          grid-template-areas:
+                "hd hd hd hd   hd   hd   hd   hd   hd"
+                "sd sd sd main main main main main main"
+                "ft ft ft ft   ft   ft   ft   ft   ft";
+          text-align: center;
+          line-height: 0;
+
+
+
+          h3 {
+            text-decoration: underline;
+          }
+
+          .sidebar {
+            grid-area: sd;
+            position: relative;
+            height : 4in;
+            margin-top: 20px;
+          }
+
+          .content {
+            grid-area: main;
+            height : 2.5in;
+            margin-top: 20px;
+            line-height: 0in;
+          }
+
+          .header {
+            grid-area: hd;
+            height: 0.3in;
+            line-height: 0;
+            text-align: center;
+          }
+          .footer {
+            grid-area: ft;
+            height : 0.2in;
+            font-size: 0.1in;
+            text-align: center;
+          }
+
         }
 
         .datewiseTable
