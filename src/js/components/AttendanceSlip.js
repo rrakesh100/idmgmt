@@ -339,7 +339,7 @@ getEmployees() {
         return
       }
 
-      let top = iterator * 17.115;
+      let top = iterator * 17.18;
       let topStr = top + 'in'
       iterator++;
 
@@ -354,7 +354,7 @@ getEmployees() {
       <Table scrollable={true} style={isPrint ? {} :  { marginTop : '10px', marginLeft : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>
-             <th>S No.</th>
+             <th>S.No</th>
              <th>Date</th>
              <th>Shift</th>
              <th>In Time</th>
@@ -419,12 +419,11 @@ getEmployees() {
                      {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                      {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
                      {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
-
                      <td>{i}</td>
                      <td>{dateVal}</td>
                      <td>{employeeAttendaceObj.shift}</td>
-                     <td style={{width: '15%'}}>{employeeAttendaceObj.in}</td>
-                     <td style={{width: '15%'}}>{outTime}</td>
+                     <td>{employeeAttendaceObj.in}</td>
+                     <td>{outTime}</td>
                      <td>{totalTime}</td>
                      </TableRow>
                    }
