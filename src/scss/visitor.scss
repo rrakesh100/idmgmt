@@ -183,6 +183,10 @@ span.grommetux-form-field__contents {
   color:#bbb8b3;
 }
 
+.attSlip {
+  display: none;
+}
+
 
 @page {
         size: portrait;
@@ -203,6 +207,14 @@ span.grommetux-form-field__contents {
             background: initial;
             page-break-after: always;
             text-shadow: none;
+        }
+
+        .attSlip {
+          display: block;
+        }
+
+        h3, h4 {
+          margin-left: 20px;
         }
 
         .card {

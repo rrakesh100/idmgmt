@@ -19,6 +19,8 @@ import { attendanceDatesLoop,
 import moment from 'moment';
 import * as firebase from 'firebase';
 import CloseIcon from 'grommet/components/icons/base/Close';
+import DatewisePrintComponent from './DatewisePrintComponent';
+import ReactToPrint from "react-to-print";
 
 const uniqid = require('uniqid');
 
@@ -429,6 +431,10 @@ export default class DatewiseReports extends Component {
        onClick={this.datewisePrintTableData.bind(this)}
        primary={true}
        href='#'/>
+       <ReactToPrint
+           trigger={this.renderTrigger.bind(this)}
+           content={this.renderContent.bind(this)}
+         />
      </div>
      <div  style={{marginBottom: 40}}>
       {tablesObj['tablesArray']}
@@ -436,6 +442,19 @@ export default class DatewiseReports extends Component {
      </div>
    )
  }
+
+ renderContent() {
+   return this.componentRef;
+ }
+
+ renderTrigger() {
+   return (
+     <Button icon={<PrintIcon />} label='Print' fill={true}
+     primary={true} style={{marginRight: '13px'}}
+     href='#'/>
+   )
+ }
+
 
  onFieldChange(fieldName, e) {
    this.setState({
@@ -829,11 +848,30 @@ export default class DatewiseReports extends Component {
    )
  }
 
+ setPrintRef(ref) {
+   this.componentRef = ref;
+ }
+
+ renderNewPrintCard() {
+   let tablesObj = this.getOldTablesArray();
+   if(!tablesObj)
+   return null;
+
+   let datewiseArr = tablesObj['tablesArray'];
+   return (
+     <div>
+         <DatewisePrintComponent
+           ref={this.setPrintRef.bind(this)}
+           datewiseArr={datewiseArr}
+         />
+     </div>
+   )
+ }
+
   render() {
     return (
       <div>
       { this.renderValidationMsg() }
-      { console.log(this) }
       { this.renderInputForm() }
       { this.renderActivityIndicator() }
       { this.showOldEmployeeReportsTable() }
@@ -841,6 +879,7 @@ export default class DatewiseReports extends Component {
       { this.renderAbstractTable() }
       { this.datewisePrintPdf() }
       { this.abstractPrintPdf() }
+      { this.renderNewPrintCard() }
       </div>
     )
   }

@@ -13,32 +13,16 @@ import moment from 'moment';
 import * as firebase from 'firebase';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
-import NavControl from '../components/NavControl';
 import { getMessage } from 'grommet/utils/Intl';
-import Article from 'grommet/components/Article';
-import Header from 'grommet/components/Header';
-import Heading from 'grommet/components/Heading';
-import Box from 'grommet/components/Box';
-import Search from 'grommet/components/Search';
 import Notification from 'grommet/components/Notification';
-import Tabs from 'grommet/components/Tabs';
-import Tab from 'grommet/components/Tab';
-import TextInput from 'grommet/components/TextInput';
-import Layer from 'grommet/components/Layer';
-import Split from 'grommet/components/Split';
-import Section from 'grommet/components/Section';
-import Label from 'grommet/components/Label';
-import Workbook from 'react-excel-workbook';
-import DownloadIcon from 'grommet/components/icons/base/Download';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import BookIcon from 'grommet/components/icons/base/Book';
 import Button from 'grommet/components/Button';
-import { Container, Row, Col } from 'react-grid-system';
-import { getShifts } from '../api/configuration';
 import { Print } from 'react-easy-print';
-import axios from 'axios';
 import { RingLoader } from 'react-spinners';
 import Barcode from 'react-barcode';
+import AttendanceSlipPrint from './AttendanceSlipPrint';
+import ReactToPrint from "react-to-print";
 const uniqid = require('uniqid');
 
 
@@ -48,9 +32,9 @@ constructor(props) {
   super(props);
   this.state = {
     validationMsg:'',
-    startDate : null,
-    endDate: null,
-    unit: null,
+    startDate : '',
+    endDate: '',
+    unit: '',
     paymentType: '',
     shift: '',
     loading: false,
@@ -363,7 +347,7 @@ getEmployees() {
       let  now = new Date();
       const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
 
-      tablesArray.push(<div className='' key={uniqId} style={isPrint ? {position: 'absolute' , top: topStr , width: '11.0in'} : {}}>
+      tablesArray.push(<div className="" key={uniqId} style={isPrint ? {position: 'absolute' , top: topStr , width: '11.0in'} : {}}>
       <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{marginLeft: 120}}>Unit: {unit}</span><span style={{position: 'absolute', right : 0, marginRight : 20}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span></h4>
       <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}><Barcode value={employeeId} height={20}/><span style={{position: 'absolute', right : 0, marginRight : 20}}>Date : {timestampStr}</span></h4>
       <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 0, marginRight : 20}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
@@ -444,11 +428,9 @@ getEmployees() {
                      <td>{totalTime}</td>
                      </TableRow>
                    }
-
             })
           }
-
-          </tbody>
+        </tbody>
       </Table>
       </div>)
     })
@@ -483,9 +465,7 @@ getEmployees() {
             shiftSelected,
             paymentTypeSelected, employeeVsDate, allEmployees } = this.state;
 
-            let start = new Date().getTime();
-            let tablesObj = this.getTablesArray(false);
-            let end = new Date().getTime();
+    let tablesObj = this.getTablesArray(false);
 
     if(!tablesObj)
     return null;
@@ -503,11 +483,12 @@ getEmployees() {
           <h3 style={{marginLeft: 20,marginBottom: 20, color: '#865CD6'}}>Number of Manpower : { tablesObj['tablesArray'].length }</h3>
         </div>
         <div style={{float : 'right'}}>
-
-          <Button icon={<PrintIcon />} label='Print' fill={true}
-          onClick={this.attendancePrintTableData.bind(this)}
-          primary={true} style={{marginRight: '13px'}}
-          href='#'/>
+          <ReactToPrint
+              trigger={this.renderTrigger.bind(this)}
+              content={this.renderContent.bind(this)}
+              onBeforePrint={this.handleBeforePrint.bind(this)}
+              onAfterPrint={this.handleAfterPrint.bind(this)}
+            />
           </div>
         </div>
       }
@@ -519,40 +500,43 @@ getEmployees() {
 
   }
 
+  renderContent() {
+    return this.componentRef;
+  }
+
+  renderTrigger() {
+    return (
+      <Button icon={<PrintIcon />} label='Print' fill={true}
+      primary={true} style={{marginRight: '13px'}}
+      href='#'/>
+    )
+  }
+
+  handleBeforePrint() {
+    this.attendancePrintTableData();
+  }
+
+  handleAfterPrint() {
+    this.setState({
+      response: null,
+      startDate : '',
+      endDate: '',
+      unit: '',
+    })
+  }
+
   attendancePrintTableData() {
     const { dateRange, printCopies, employeePrintCopies, employeeSelected, selectedEmployeeId, startDate, endDate, unit } = this.state;
-    let key =  startDate + '_' + endDate  + '_'+unit;
+    let key =  startDate + '_' + endDate  + '_'+ unit;
     let copies = printCopies;
 
     if(employeeSelected) {
       key = key + '_' + selectedEmployeeId;
       copies = employeePrintCopies;
     }
-    window.onafterprint = () => {
-      console.log('end')
-    }
-    window.onbeforeprint = () => {
-      console.log('beginning')
-    }
-    window.setTimeout(() => window.print(), 1000)
     savePrintCopiesData(key, copies, unit);
   }
 
-
-  attendancePrintPdf() {
-       let tablesObj = this.getTablesArray(true);
-        if(tablesObj) {
-          return(
-            <Print name="hihi" exclusive>
-               <div className="reportsTable">
-                 {tablesObj['tablesArray']}
-               </div>
-            </Print>
-          );
-        } else {
-          return
-        }
-  }
 
   onUnitSelected(unit) {
     this.setState({
@@ -681,6 +665,26 @@ getEmployees() {
     )
   }
 
+  setPrintRef(ref) {
+    this.componentRef = ref;
+  }
+
+  renderNewPrintCard() {
+    let tablesObj = this.getTablesArray(true);
+    if(!tablesObj)
+    return null;
+
+    let attendanceSlipArr = tablesObj['tablesArray'];
+    return (
+      <div>
+          <AttendanceSlipPrint
+            ref={this.setPrintRef.bind(this)}
+            attendanceSlipArr={attendanceSlipArr}
+          />
+      </div>
+    )
+  }
+
   render() {
     return (
       <div>
@@ -688,7 +692,7 @@ getEmployees() {
       { this.renderInputForm() }
       { this.renderActivityIndicator() }
       { this.showEmployeeReportsTable() }
-      { this.attendancePrintPdf() }
+      { this.renderNewPrintCard() }
       </div>
     )
   }
