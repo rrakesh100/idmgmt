@@ -35,11 +35,10 @@ import moment from 'moment';
 import Status from 'grommet/components/icons/Status';
 import { getShifts, getTimeslots } from '../api/configuration';
 import Spinning from 'grommet/components/icons/Spinning';
-import { Print } from 'react-easy-print';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
-import AttendancePrintComponent from '../components/AttendancePrintComponent';
 import ReactToPrint from "react-to-print";
+import AttendancePrintComponent from '../components/AttendancePrintComponent'
 
 
 const localStorage = window.localStorage;
@@ -349,6 +348,7 @@ class AttendanceIn extends Component {
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
          let inwardPhoto = snapshot.downloadURL;
+      document.getElementById('printAnchor').click();
     saveAttendanceInData({
       selectedEmployeeId,
       selectedEmployeeName,
@@ -365,7 +365,8 @@ class AttendanceIn extends Component {
         selectedEmployeeData:'',
         showLiveCameraFeed: true,
         hideOutsideCamera : false,
-        savingInProgress : false
+        savingInProgress : false,
+        inwardPhoto
       },() => {
           setTimeout( () => { this.onOkButtonClick() }, 500);
       })
@@ -709,10 +710,11 @@ renderSearchedEmployee() {
   }
 
   onOkButtonClick() {
+    console.log('this = = = ', this);
     this.setState({
       msg:'',
       employeeSearchString:'',
-    }, this.renderContent());
+    });
   }
 
   renderValidationMsg() {
@@ -763,6 +765,20 @@ renderSearchedEmployee() {
     }, this.onMarkButtonClick.bind(this))
   }
 
+  renderReactToPrintComponent() {
+    const { selectedEmployeeData } = this.state;
+
+      return (
+       <ReactToPrint
+            trigger={() => <a id="printAnchor"
+                       href='#' style={{marginLeft: '80px',display:'none' }}>Print</a>
+                    }
+            content={this.renderContent.bind(this)}
+          />
+      );
+
+  }
+
   renderSaveButton() {
     const { selectedEmployeeData } = this.state;
     if(Object.keys(selectedEmployeeData).length > 0) {
@@ -775,12 +791,11 @@ renderSearchedEmployee() {
 
       return (
         !inSide ?
-        <ReactToPrint
-            trigger={this.renderTrigger.bind(this)}
-            content={this.renderContent.bind(this)}
-            onBeforePrint={this.handleBeforePrint.bind(this)}
-            onAfterPrint={this.handleAfterPrint.bind(this)}
-          /> : null
+          <Button
+           label='Save'
+           onClick={this.oneClickCapture.bind(this)}
+           href='#' style={{marginLeft: '80px'}}
+            primary={true} /> : null
       );
     }
   }
@@ -791,30 +806,23 @@ renderSearchedEmployee() {
     })
   }
 
-  handleBeforePrint() {
-    this.oneClickCapture()
-  }
 
  renderContent() {
    return this.componentRef;
  }
 
- renderTrigger() {
-   return (
-          <Button
-              label="save"
-              href='#' primary={true}
-              style={{marginLeft: '80px'}}
-            />
-   )
- }
-
  setPrintRef(ref) {
+   console.log('set print ref called');
    this.componentRef = ref;
  }
 
+ setPrintButtonRef(ref) {
+   console.log('set print button ref called, this =', this);
+   this.printButtonRef = ref;
+ }
+
   renderPrintCard() {
-    const { printMode, shift, dateVal, screenshot, selectedEmployeeData } = this.state;
+    const { printMode, shift, dateVal, screenshot, selectedEmployeeData, inwardPhoto } = this.state;
     return (
       <div>
       <AttendancePrintComponent
@@ -829,7 +837,7 @@ renderSearchedEmployee() {
   }
 
   render() {
-    const { msg, hideOutsideCamera , savingInProgress } = this.state;
+    const { msg, hideOutsideCamera , savingInProgress, saved } = this.state;
     if(msg) {
       return (
         <Layer
@@ -866,6 +874,7 @@ renderSearchedEmployee() {
       { savingInProgress ?  (<Layer style={{ background : 'transparent' }}><Spinning style={{ background : 'transparent' }} size="huge" /></Layer>) : null}
       { this.renderEmployeeSearch() }
       { this.renderEmployeeSearchByBarcode() }
+      { this.renderSaveButton() }
       {
         !hideOutsideCamera &&
         <div onClick={this.oneClickCapture.bind(this)}
@@ -875,11 +884,11 @@ renderSearchedEmployee() {
 
         </div>
       }
-      { this.renderSaveButton() }
+      {this.renderPrintCard()}
+      { this.renderReactToPrintComponent() }
       { this.renderValidationMsg() }
       </div>
       { this.renderSearchedEmployee() }
-      {this.renderPrintCard()}
       </Article>
       );
   }

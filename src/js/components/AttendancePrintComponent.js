@@ -30,7 +30,7 @@ export default class AttendancePrintComponent extends Component {
                 <h3 style={{textDecoration : 'underline'}}>Attendance In Card</h3>
               </div>
               <div className='box sidebar'>
-                <Image src={screenshot} style={{width:150, height:150}}/>
+                <Image src={screenshot} style={{width:250, height:250}}/>
               </div>
               <div className='box content'>
               <Table>

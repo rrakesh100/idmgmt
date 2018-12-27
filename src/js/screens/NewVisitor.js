@@ -21,7 +21,7 @@ import Header from 'grommet/components/Header';
 import Notification from 'grommet/components/Notification';
 import Heading from 'grommet/components/Heading';
 import Button from 'grommet/components/Button';
-import Edit from 'grommet/components/icons/base/Print';
+import PrintIcon from 'grommet/components/icons/base/Print';
 import Toast from 'grommet/components/Toast';
 import Headline from 'grommet/components/Headline';
 import Table from 'grommet/components/Table';
@@ -75,9 +75,6 @@ class NewVisitor extends Component {
     }
   }
 
-  printNewVisitor() {
-    setTimeout(() => window.print(), 4000);
-  }
 
   saveAndPrint() {
     const { visitorId, name, remarks, screenshot, timestamp,
@@ -86,7 +83,6 @@ class NewVisitor extends Component {
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
       uploadVisitorImage(imgFile, visitorId).then((snapshot) => {
       let screenshot = snapshot.downloadURL;
-
     saveVisitor({
       visitorId,
       name,
@@ -114,7 +110,7 @@ class NewVisitor extends Component {
       .then(()=> {
         this.setState({
           toastMsg: `User ${name} is saved `,
-        }, this.printNewVisitor() )
+        })
       }
 
       )
@@ -127,7 +123,8 @@ class NewVisitor extends Component {
     }).catch((e) => console.log(e))
   }
 
-  onSubmitClick() {
+  onSubmitClick(e) {
+    e.stopPropagation();
     const { name, whomToMeet, purpose, mobile, comingFrom, screenshot } = this.state;
 
     if (!name) {
@@ -174,6 +171,8 @@ class NewVisitor extends Component {
     }
     const timestamp = new Date();
     const timestampStr = Moment(timestamp).format('DD/MM/YYYY hh:mm:ss A');
+
+    document.getElementById('printVisitor').click();
     this.setState({
       timestamp,
       timestampStr,
@@ -257,26 +256,11 @@ class NewVisitor extends Component {
     return null;
   }
 
-  handleAfterPrint() {
-    console.log('after printing');
-  }
-
-  handleBeforePrint() {
-    this.onSubmitClick();
-  }
 
  renderContent() {
    return this.componentRef;
  }
 
- renderTrigger() {
-   return (
-          <Button  icon={<Edit />}
-              label="SAVE"
-              href='#' primary={true}
-            />
-   )
- }
 
   render() {
     return (
@@ -354,20 +338,25 @@ class NewVisitor extends Component {
                 </Box>
               <Box onClick={this.capture.bind(this)} direction='column'
                 style={{marginTop:'25px', marginLeft : '10px', width:'300px'}} align='center'>
-                  {this.renderCamera() }
+                  { this.renderCamera() }
                   <Barcode value={this.state.visitorId} style="" height="20"/>
                   <Section pad='small'
                     align='center'>
-                      <ReactToPrint
-                          trigger={this.renderTrigger.bind(this)}
-                          content={this.renderContent.bind(this)}
-                          onBeforePrint={this.handleBeforePrint.bind(this)}
-                          onAfterPrint={this.handleAfterPrint.bind(this)}
-                        />
+                     <Button icon={<PrintIcon />}
+                       label='SAVE'
+                        onClick={this.onSubmitClick.bind(this)}
+                        href='#'
+                        primary={true} />
                   </Section>
               </Box>
             </Split>
           </Section>
+          <ReactToPrint
+              trigger={() => <a id="printVisitor" style={{display:'none'}}
+                     href='#'>Print</a>
+                  }
+              content={this.renderContent.bind(this)}
+            />
       </div>
     );
   }
