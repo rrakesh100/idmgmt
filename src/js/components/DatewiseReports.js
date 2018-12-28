@@ -427,13 +427,10 @@ export default class DatewiseReports extends Component {
    return (
     <div>
      <div style={{position: 'absolute', right: 40}}>
-       <Button icon={<PrintIcon />} label='Print' fill={true}
-       onClick={this.datewisePrintTableData.bind(this)}
-       primary={true}
-       href='#'/>
        <ReactToPrint
            trigger={this.renderTrigger.bind(this)}
            content={this.renderContent.bind(this)}
+           onAfterPrint={this.handleAfterPrint.bind(this)}
          />
      </div>
      <div  style={{marginBottom: 40}}>
@@ -441,6 +438,12 @@ export default class DatewiseReports extends Component {
      </div>
      </div>
    )
+ }
+
+ handleAfterPrint() {
+   this.setState({
+     response: null
+   })
  }
 
  renderContent() {
