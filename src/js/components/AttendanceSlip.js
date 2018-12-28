@@ -316,7 +316,7 @@ getEmployees() {
         return
       }
 
-      let top = iterator * 17.18;
+      let top = iterator * 15.556;
       let topStr = top + 'in'
       iterator++;
 
