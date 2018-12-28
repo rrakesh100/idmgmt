@@ -184,13 +184,12 @@ span.grommetux-form-field__contents {
 }
 
 .attSlip {
-  display: none;
+  visibility: hidden;
 }
-
 
 @page {
         size: portrait;
-        margin-right: 2cm;
+        margin: 0;
 }
 
 
@@ -210,7 +209,7 @@ span.grommetux-form-field__contents {
         }
 
         .attSlip {
-          display: block;
+          visibility: visible;
         }
 
         h3, h4 {

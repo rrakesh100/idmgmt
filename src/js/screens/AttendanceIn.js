@@ -812,12 +812,10 @@ renderSearchedEmployee() {
  }
 
  setPrintRef(ref) {
-   console.log('set print ref called');
    this.componentRef = ref;
  }
 
  setPrintButtonRef(ref) {
-   console.log('set print button ref called, this =', this);
    this.printButtonRef = ref;
  }
 

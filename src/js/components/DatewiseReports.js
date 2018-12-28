@@ -41,7 +41,8 @@ export default class DatewiseReports extends Component {
       allEmployees: null,
       response: null,
       employeeSuggestions: [],
-      filteredSuggestions: []
+      filteredSuggestions: [],
+      refreshData: false
     }
   }
 
@@ -49,20 +50,6 @@ export default class DatewiseReports extends Component {
     this.getEmployees();
   }
 
-  sort(arr){
-      arr.sort(function(a , b){
-          let A = a.label || "";
-          let B = b.label || "";
-          if(A < B)
-              return -1;
-          else if (A > B)
-              return 1;
-          else {
-              return 0;
-          }
-      })
-      return arr;
-  }
 
   getEmployees() {
     getEmployees()
@@ -71,17 +58,7 @@ export default class DatewiseReports extends Component {
         if (!data) {
           return;
         }
-        let suggests = [];
-        Object.keys(data).forEach((employee) => {
-          if(employee !== 'count')
-          suggests.push({
-             label : data[employee].name,
-             employeeId : employee
-          })
-        })
         this.setState({
-          employeeSuggestions: this.sort(suggests),
-          filteredSuggestions: this.sort(suggests),
           allEmployees : data
         });
       })
@@ -401,16 +378,6 @@ export default class DatewiseReports extends Component {
     return returnObj;
   }
 
-  datewisePrintTableData() {
-    window.onafterprint = () => {
-      console.log('end')
-    }
-    window.onbeforeprint = () => {
-      console.log('beginning')
-    }
-    setTimeout(() => window.print(), 1)
-  }
-
 
   showOldEmployeeReportsTable() {
     const { startDate, endDate } = this.state;
@@ -656,20 +623,6 @@ export default class DatewiseReports extends Component {
    }
  }
 
- datewisePrintPdf() {
-      let tablesObj = this.getOldTablesArray();
-       if(tablesObj) {
-         return(
-           <Print name="datewisePrint" exclusive>
-              <div className="reportsTable">
-                {tablesObj['tablesArray']}
-              </div>
-           </Print>
-         );
-       } else {
-         return
-       }
- }
 
  abstractPrintPdf() {
    const { showAbstractTable } = this.state;
@@ -836,6 +789,7 @@ export default class DatewiseReports extends Component {
  renderInputForm() {
    return (
      <InputForm
+       refreshData={this.state.refreshData}
        onUnitSelected={this.onUnitSelected.bind(this)}
        onStartDateSelected={this.onStartDateSelected.bind(this)}
        onEndDateSelected={this.onEndDateSelected.bind(this)}
@@ -880,7 +834,6 @@ export default class DatewiseReports extends Component {
       { this.showOldEmployeeReportsTable() }
       { this.emailReportDialog() }
       { this.renderAbstractTable() }
-      { this.datewisePrintPdf() }
       { this.abstractPrintPdf() }
       { this.renderNewPrintCard() }
       </div>

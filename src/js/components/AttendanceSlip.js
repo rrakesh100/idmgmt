@@ -38,6 +38,7 @@ constructor(props) {
     paymentType: '',
     shift: '',
     loading: false,
+    refreshData: false
   }
 }
 
@@ -45,20 +46,6 @@ componentDidMount() {
   this.getEmployees();
 }
 
-sort(arr){
-    arr.sort(function(a , b){
-        let A = a.label || "";
-        let B = b.label || "";
-        if(A < B)
-            return -1;
-        else if (A > B)
-            return 1;
-        else {
-            return 0;
-        }
-    })
-    return arr;
-}
 
 getEmployees() {
   getEmployees()
@@ -67,17 +54,7 @@ getEmployees() {
       if (!data) {
         return;
       }
-      let suggests = [];
-      Object.keys(data).forEach((employee) => {
-        if(employee !== 'count')
-        suggests.push({
-           label : data[employee].name,
-           employeeId : employee
-        })
-      })
       this.setState({
-        employeeSuggestions: this.sort(suggests),
-        filteredSuggestions: this.sort(suggests),
         allEmployees : data
       });
     })
@@ -518,9 +495,7 @@ getEmployees() {
   handleAfterPrint() {
     this.setState({
       response: null,
-      startDate : '',
-      endDate: '',
-      unit: '',
+      refreshData: true
     })
   }
 
@@ -549,7 +524,7 @@ getEmployees() {
     this.setState({
       startDate,
       response : null,
-      validationMsg: ''
+      validationMsg: '',
     })
   }
 
@@ -650,6 +625,7 @@ getEmployees() {
   renderInputForm() {
     return (
       <InputForm
+        refreshData={this.state.refreshData}
         onUnitSelected={this.onUnitSelected.bind(this)}
         onStartDateSelected={this.onStartDateSelected.bind(this)}
         onEndDateSelected={this.onEndDateSelected.bind(this)}

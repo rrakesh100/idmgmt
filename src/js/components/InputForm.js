@@ -39,6 +39,15 @@ export default class InputForm extends Component {
   constructor(props) {
     super(props);
     this.state={
+      unit: '',
+      startDate: '',
+      endDate: '',
+      paymentType: '',
+      shift: '',
+      gender: '',
+      village: '',
+      shiftOpt: [],
+      villageOpt: [],
     };
   }
 
@@ -269,6 +278,7 @@ onEmployeeSelect(data, isSuggestionSelected) {
 
 
   render() {
+    const { refreshData } = this.props;
 
     return (
       <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
