@@ -4,7 +4,7 @@ export default class DatewisePrintComponent extends Component {
 
   render() {
     return (
-      <div>
+      <div className="datewisePrint">
         { this.props.datewiseArr }
       </div>
     )

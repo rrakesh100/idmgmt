@@ -212,8 +212,12 @@ span.grommetux-form-field__contents {
           visibility: visible;
         }
 
-        h3, h4 {
-          margin-left: 20px;
+        .attTableRow {
+          background-color: #FFFFFF !important;
+        }
+
+        .datewiseTableRow {
+          background-color: #FFFFFF !important;
         }
 
         .card {

@@ -38,14 +38,14 @@ import Status from 'grommet/components/icons/Status';
 import { getVillages } from '../api/configuration';
 import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
-
+import ReactToPrint from "react-to-print";
+import ManPowerPrintComponent from '../components/ManPowerPrintComponent';
 
 
 export default class ManPower extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      employeeId:'',
       name:'',
       joinedDate: '',
       gender: '',
@@ -61,19 +61,20 @@ export default class ManPower extends Component {
       editBtnClick: false,
       villageFieldSelected: false,
       reportGenderSelected: false,
-      reportPaymentTypeSelected: false
+      reportPaymentTypeSelected: false,
+      villageOpt: [],
+      printEmployeeObj: null
     }
   }
 
   componentDidMount() {
-    { this.getEmployeeDetails() }
-    { this.getVillageOptions() }
+     this.getEmployeeDetails();
+     this.getVillageOptions();
   }
 
   getVillageOptions() {
     getVillages().then((snap) => {
       const options = snap.val();
-      console.log(options);
       let villageOpt = ['-EMPTY-'];
       Object.keys(options).forEach((opt) => {
         villageOpt.push(opt)
@@ -442,11 +443,18 @@ export default class ManPower extends Component {
     )
   }
 
+
   saveAndPrint(employeeId, employeeObj) {
     this.setState({
       printEmployeeId : employeeId,
       printEmployeeObj : employeeObj
-    })
+    }, () => {
+      console.log('Started = ', new Date());
+      setTimeout(() => {
+        console.log('inside settimeout = ', new Date());
+      document.getElementById('printEmployee').click()
+    }, 10000)
+  })
   }
 
   printBusinessCard() {
@@ -526,14 +534,6 @@ export default class ManPower extends Component {
 
   }
 
-  setTimeoutFunc() {
-    setTimeout(() => window.print(), 4000)
-  }
-
-  print() {
-    if(this.state.printEmployeeId)
-     this.setState({printEmployeeId : null}, this.setTimeoutFunc() );
-  }
 
   onEditClick(id, e) {
 
@@ -675,7 +675,7 @@ export default class ManPower extends Component {
     return (
       <div className='table'>
       <div>
-        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '910px', marginRight: '10px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
+        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '910px', marginRight: '10px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
           <Workbook.Sheet data={reportData} name="Sheet 1">
               <Workbook.Column label="Serial No" value="serialNo"/>
               <Workbook.Column label="Employee ID" value="employeeId"/>
@@ -763,15 +763,39 @@ export default class ManPower extends Component {
                  } else {
                    return null;
                  }
-
-
-
               })
             }
           </tbody>
       </Table>
       </div>
     )
+  }
+
+  renderContent() {
+    return this.componentRef;
+  }
+
+  handleAfterPrint() {
+    console.log('after print');
+  }
+
+  setRef(ref) {
+    this.componentRef = ref;
+  }
+
+  renderPrintComponent() {
+    if(this.state.printEmployeeObj) {
+      return (
+        <div>
+          <ManPowerPrintComponent
+            ref={this.setRef.bind(this)}
+            printEmployeeObj={this.state.printEmployeeObj}
+          />
+        </div>
+      )
+    } else {
+      return null;
+    }
   }
 
   onDeleteEmployee(employeeId, paymentType, gender, countObj) {
@@ -847,8 +871,20 @@ export default class ManPower extends Component {
       )
   }
 
+  renderReactToPrintComponent() {
+    if(this.state.printEmployeeObj) {
+      return (
+        <ReactToPrint
+            trigger={() => <a id="printEmployee"
+                       href='#' style={{marginLeft: '80px',display:'none' }}>Print</a>}
+            content={this.renderContent.bind(this)} />
+      )
+    } else {
+       return null;
+    }
+  }
+
   render() {
-    console.log(this.state)
     return (
       <div className='manPower'>
       <Header
@@ -870,10 +906,10 @@ export default class ManPower extends Component {
       <Tab title='REPORTS'>
       { this.renderComboBox() }
       { this.renderAllEmployees() }
-      { this.printBusinessCard() }
-      { this.print() }
       { this.renderConfirmationDialog() }
       { this.renderEditForm() }
+      { this.renderReactToPrintComponent() }
+      { this.renderPrintComponent() }
       </Tab>
       </Tabs>
       { this.renderToastMsg() }

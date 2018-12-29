@@ -340,7 +340,7 @@ export default class DatewiseReports extends Component {
                        outTime : istOutTime,
                        totalTime : totalTime
                      })
-                     return <TableRow key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+                     return <TableRow className="datewiseTableRow" key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
                      {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                      {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
                      {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>

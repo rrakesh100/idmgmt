@@ -324,7 +324,7 @@ getEmployees() {
       let  now = new Date();
       const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
 
-      tablesArray.push(<div className="" key={uniqId} style={isPrint ? {position: 'absolute' , top: topStr , width: '11.0in'} : {}}>
+      tablesArray.push(<div className="attendanceTableArr" key={uniqId} style={isPrint ? {position: 'absolute' , top: topStr , width: '11.0in'} : {}}>
       <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{marginLeft: 120}}>Unit: {unit}</span><span style={{position: 'absolute', right : 0, marginRight : 20}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span></h4>
       <h4 style={!isPrint ? {display:'none'} : {marginLeft : '20px'}}><Barcode value={employeeId} height={20}/><span style={{position: 'absolute', right : 0, marginRight : 20}}>Date : {timestampStr}</span></h4>
       <h3 style={{marginLeft : '20px'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 0, marginRight : 20}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
@@ -392,7 +392,7 @@ getEmployees() {
                      totalTime : totalTime
                    });
 
-                     return <TableRow key={index} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+                     return <TableRow key={index} className="attTableRow" style={employeeAttendaceObj.paymentType == 'Daily payment' ?
                      {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                      {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
                      {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
