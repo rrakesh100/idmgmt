@@ -51,6 +51,7 @@ export default class VehicleIn extends Component {
       emptyVehicle: true,
       showDetails: false,
       showLiveCameraFeed: true,
+      vehicleOpt: [],
     };
   }
 
@@ -368,6 +369,7 @@ export default class VehicleIn extends Component {
         inwardSNo,
         ownOutVehicle,
         vehicleNumber,
+        selectVehicleNumber,
         driverName,
         driverNumber,
         emptyLoad,
@@ -386,7 +388,7 @@ export default class VehicleIn extends Component {
           return
         }
 
-        if(!vehicleNumber) {
+        if(!vehicleNumber && !selectVehicleNumber) {
           this.setState({
             validationMsg: 'Vehicle Number is missing'
           })
@@ -444,9 +446,6 @@ export default class VehicleIn extends Component {
         this.setState({
           validationMsg:''
         }, this.onSavingInwardVehicle.bind(this))
-
-
-
     }
 
   render() {

@@ -3,11 +3,11 @@ import Image from 'grommet/components/Image';
 import Barcode from 'react-barcode';
 import Table from 'grommet/components/Table'
 import TableRow from 'grommet/components/TableRow'
+const download = require('image-downloader')
 
 export default class ManPowerPrintComponent extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
   }
 
   componentDidMount() {

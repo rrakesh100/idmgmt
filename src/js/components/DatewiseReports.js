@@ -216,7 +216,7 @@ export default class DatewiseReports extends Component {
       if(attendanceObj ==null)
         return;
       tablesArray.push(<div className='tablesArray' key={index}>
-          <div style={{display:'flex', flexDirection: 'column'}}>
+          <div style={{display:'flex', flexDirection: 'column', marginTop: 40}}>
            <h2 style={{marginLeft: 30}}>{date}</h2>
            <h2 style={{marginLeft: 30}}>Number of Manpower: {numOfEmployees}</h2>
            </div>
@@ -350,8 +350,8 @@ export default class DatewiseReports extends Component {
                      <td>{employeeAttendaceObj.name}</td>
                      <td>{employeeAttendaceObj.paymentType}</td>
                      <td>{employeeAttendaceObj.shift}</td>
-                     <td style={{width: '15%'}}>{employeeAttendaceObj.in}</td>
-                     <td style={{width: '15%'}}>{outTime}</td>
+                     <td style={{width: '12%'}}>{employeeAttendaceObj.in}</td>
+                     <td style={{width: '12%'}}>{outTime}</td>
                      <td>{totalTime}</td>
                      </TableRow>
                    }
