@@ -44,7 +44,7 @@ textarea.itemTextArea {
     text-transform: uppercase;
     font-weight: bolder;
   }
-} 
+}
 
 .itemsList {
   span.id {
@@ -187,9 +187,16 @@ span.grommetux-form-field__contents {
   visibility: hidden;
 }
 
+.datewisePrint {
+  visibility: hidden;
+}
+
 @page {
         size: portrait;
         margin: 0;
+        @top-right {
+            content: counter(page)
+        }
 }
 
 
@@ -206,18 +213,6 @@ span.grommetux-form-field__contents {
             background: initial;
             page-break-after: always;
             text-shadow: none;
-        }
-
-        .attSlip {
-          visibility: visible;
-        }
-
-        .attTableRow {
-          background-color: #FFFFFF !important;
-        }
-
-        .datewiseTableRow {
-          background-color: #FFFFFF !important;
         }
 
         .card {
@@ -257,11 +252,6 @@ span.grommetux-form-field__contents {
           line-height: 0;
 
 
-
-          h3 {
-            text-decoration: underline;
-          }
-
           .sidebar {
             grid-area: sd;
             position: relative;
@@ -292,10 +282,30 @@ span.grommetux-form-field__contents {
 
         }
 
+        .attSlip {
+          visibility: visible;
+        }
+
+        .attendanceTableArr {
+          page-break-after: always;
+        }
+
+        .attTableRow {
+          background-color: #FFFFFF !important;
+        }
+
+        .datewiseTableRow {
+          background-color: #FFFFFF !important;
+        }
+
         .datewiseTable
         {
           width: 100%;
           font-size: 8px;
+        }
+
+        .datewisePrint {
+          visibility: visible;
         }
 
         .reportsTable {

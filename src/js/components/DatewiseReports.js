@@ -173,7 +173,7 @@ export default class DatewiseReports extends Component {
       )
   }
 
-  getOldTablesArray() {
+  getOldTablesArray(isPrint) {
     const { response,
             startDate,
             endDate,
@@ -194,8 +194,8 @@ export default class DatewiseReports extends Component {
 
     let tablesArray = [];
     let reportData = [];
+    let empArr = [];
     let returnObj = {};
-
     let i = 0;
 
     let dailyMaleDayShift = 0;
@@ -208,24 +208,29 @@ export default class DatewiseReports extends Component {
     let weeklyFemaleNightShift = 0;
     let jattuPayment = 0;
 
+    let rowCount=0;
 
+    let numOfTable = document.getElementById('datewiseTableId');
+    let  now = new Date();
+    const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
 
     Object.keys(response).map((date, index) => {
       const attendanceObj = response[date];
+      let numOfManpower = empArr.length;
       const numOfEmployees = Object.keys(attendanceObj).length;
       if(attendanceObj ==null)
         return;
-      tablesArray.push(<div className='tablesArray' key={index}>
-          <div style={{display:'flex', flexDirection: 'column', marginTop: 40}}>
-           <h2 style={{marginLeft: 30}}>{date}</h2>
-           <h2 style={{marginLeft: 30}}>Number of Manpower: {numOfEmployees}</h2>
+      tablesArray.push(<div className='tablesArray'  key={index}>
+          <div style={{display:'flex', flexDirection: 'column', marginLeft: 10}}>
+           <h3 style={{marginLeft: 30}}>{date}<span style={isPrint ? {position: 'absolute', right : 0, marginRight : 20} : {display: 'none'}}>Date : {timestampStr}</span></h3>
+           <h3 style={{marginLeft: 30}}>Number of Manpower: {numOfEmployees}</h3>
            </div>
-           <Table className="datewiseTable" scrollable={true} style={{ marginLeft : '30px'}}>
-          <thead style={{position:'relative'}}>
+           <Table className="datewiseTable" id='datewiseTableId' scrollable={true} style={{ marginLeft : 10}}>
+          <thead>
            <tr>
              <th>S No.</th>
-             <th>Manpower Id</th>
              <th>Name</th>
+             <th>Id</th>
              <th>Payment Type</th>
              <th>Shift</th>
              <th>In Time</th>
@@ -328,7 +333,6 @@ export default class DatewiseReports extends Component {
 
 
                     if(isValid && inTime) {
-
                      i++;
                      reportData.push({
                        serialNo : index + 1,
@@ -340,19 +344,20 @@ export default class DatewiseReports extends Component {
                        outTime : istOutTime,
                        totalTime : totalTime
                      })
-                     return <TableRow className="datewiseTableRow" key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+                     empArr.push(date)
+                     return <TableRow className="datewiseTableRow" id="datewiseTableRowId" key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
                      {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                      {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
                      {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
 
-                     <td>{i}</td>
-                     <td>{key}</td>
-                     <td>{employeeAttendaceObj.name}</td>
-                     <td>{employeeAttendaceObj.paymentType}</td>
-                     <td>{employeeAttendaceObj.shift}</td>
-                     <td style={{width: '12%'}}>{employeeAttendaceObj.in}</td>
-                     <td style={{width: '12%'}}>{outTime}</td>
-                     <td>{totalTime}</td>
+                     <td style={{width: '5%'}}>{i}</td>
+                     <td style={{width: '15%'}}>{employeeAttendaceObj.name}</td>
+                     <td style={{width: '10%'}}>{key}</td>
+                     <td style={{width: '15%'}}>{employeeAttendaceObj.paymentType}</td>
+                     <td style={{width: '15%'}}>{employeeAttendaceObj.shift}</td>
+                     <td style={{width: '10%'}}>{employeeAttendaceObj.in}</td>
+                     <td style={{width: '10%'}}>{outTime}</td>
+                     <td style={{width: '15%'}}>{totalTime}</td>
                      </TableRow>
                    }
               }
@@ -380,17 +385,11 @@ export default class DatewiseReports extends Component {
 
 
   showOldEmployeeReportsTable() {
-    const { startDate, endDate } = this.state;
-    let start = new Date().getTime();
-    let tablesObj = this.getOldTablesArray();
-    let end = new Date().getTime();
+    let tablesObj = this.getOldTablesArray(false);
+
       if(!tablesObj)
       return null;
 
-   let ob = [{
-     start : startDate,
-     end : endDate
-   }]
    return (
     <div>
      <div style={{position: 'absolute', right: 40}}>
@@ -670,11 +669,10 @@ export default class DatewiseReports extends Component {
  }
 
  getAbstractSummary() {
-   let tablesObj = this.getOldTablesArray();
+   let tablesObj = this.getOldTablesArray(false);
    if(!tablesObj)
    return null;
    let data = tablesObj['summary'];
-   console.log(data);
    this.setState({
      showAbstractTable: true,
      dailyMaleDayShift: data.dailyMaleDayShift || 0,
@@ -778,7 +776,6 @@ export default class DatewiseReports extends Component {
  }
 
  onEmployeeSelected(employeeSelected, selectedEmployeeId, selectedEmployeeData) {
-   console.log(employeeSelected, selectedEmployeeId, selectedEmployeeData);
    this.setState({
      employeeSelected,
      selectedEmployeeId,
@@ -810,7 +807,8 @@ export default class DatewiseReports extends Component {
  }
 
  renderNewPrintCard() {
-   let tablesObj = this.getOldTablesArray();
+   const { startDate, endDate } = this.state;
+   let tablesObj = this.getOldTablesArray(true);
    if(!tablesObj)
    return null;
 
@@ -819,6 +817,8 @@ export default class DatewiseReports extends Component {
      <div>
          <DatewisePrintComponent
            ref={this.setPrintRef.bind(this)}
+           startDate={startDate}
+           endDate={endDate}
            datewiseArr={datewiseArr}
          />
      </div>

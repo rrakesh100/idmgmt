@@ -6,17 +6,9 @@ import TableRow from 'grommet/components/TableRow'
 const download = require('image-downloader')
 
 export default class ManPowerPrintComponent extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidMount() {
-    console.log(this.props);
-  }
 
   render() {
     const { employeeId, name, gender, village, paymentType, numberOfPersons, screenshot, address } = this.props.printEmployeeObj;
-    console.log(this.props);
     return (
       <div className='card' style={{width:'100%', height:'30%'}}>
         <div className='card-body' >

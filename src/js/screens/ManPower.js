@@ -40,6 +40,7 @@ import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
 import ReactToPrint from "react-to-print";
 import ManPowerPrintComponent from '../components/ManPowerPrintComponent';
+const download = require('image-downloader');
 
 
 export default class ManPower extends Component {
@@ -445,15 +446,14 @@ export default class ManPower extends Component {
 
 
   saveAndPrint(employeeId, employeeObj) {
+
     this.setState({
       printEmployeeId : employeeId,
       printEmployeeObj : employeeObj
     }, () => {
-      console.log('Started = ', new Date());
       setTimeout(() => {
-        console.log('inside settimeout = ', new Date());
       document.getElementById('printEmployee').click()
-    }, 10000)
+    })
   })
   }
 
@@ -775,11 +775,7 @@ export default class ManPower extends Component {
     return this.componentRef;
   }
 
-  handleAfterPrint() {
-    console.log('after print');
-  }
-
-  setRef(ref) {
+  printSetRef(ref) {
     this.componentRef = ref;
   }
 
@@ -788,7 +784,7 @@ export default class ManPower extends Component {
       return (
         <div>
           <ManPowerPrintComponent
-            ref={this.setRef.bind(this)}
+            ref={this.printSetRef.bind(this)}
             printEmployeeObj={this.state.printEmployeeObj}
           />
         </div>
