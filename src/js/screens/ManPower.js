@@ -447,13 +447,15 @@ export default class ManPower extends Component {
 
   saveAndPrint(employeeId, employeeObj) {
 
+    let isChrome = Boolean(window.chrome);
+    let delayTime = isChrome ? 10000 : 0;
     this.setState({
       printEmployeeId : employeeId,
       printEmployeeObj : employeeObj
     }, () => {
       setTimeout(() => {
       document.getElementById('printEmployee').click()
-    })
+    }, delayTime)
   })
   }
 

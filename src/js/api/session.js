@@ -9,7 +9,7 @@ let user = {
 }
  let promise = FireBaseTools.loginUser(user)
   return promise;
-}
+} 
 
 export function deleteSession(session) {
   const options = {

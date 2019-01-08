@@ -89,6 +89,10 @@ textarea.itemTextArea {
   display: none;
 }
 
+.vehicleCard {
+  display: none;
+}
+
 .card-body {
   display: none;
 }
@@ -183,6 +187,7 @@ span.grommetux-form-field__contents {
   color:#bbb8b3;
 }
 
+
 .attSlip {
   visibility: hidden;
 }
@@ -192,11 +197,8 @@ span.grommetux-form-field__contents {
 }
 
 @page {
-        size: portrait;
-        margin: 0;
-        @top-right {
-            content: counter(page)
-        }
+        size: A4;
+        margin-bottom: 60;
 }
 
 
@@ -221,7 +223,7 @@ span.grommetux-form-field__contents {
           top: 40;
           left: 80;
           width: 10in;
-          height: 4in;
+          height: 5in;
           border: 1px solid  red;
         }
 
@@ -235,11 +237,22 @@ span.grommetux-form-field__contents {
           border: 1px solid  red;
         }
 
-        .card-body {
+        .vehicleCard {
           display: block;
+          position: absolute;
+          top: 40;
+          left: 20;
+          width: 10in;
+          height: 6in;
+          border: 1px solid  red;
+        }
+
+        .card-body {
           position: absolute;
           width: 10in;
           height: 5in;
+          top:20;
+          left: 20;
           padding: .125in;
           display: grid;
           grid-template-columns: repeat(9, 1fr);
@@ -282,8 +295,61 @@ span.grommetux-form-field__contents {
 
         }
 
+        .vehicleCardBody {
+          position: absolute;
+          width: 10in;
+          height: 5in;
+          top:20;
+          left: 20;
+          padding: .125in;
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          grid-auto-rows: minmax(100px, auto);
+          grid-template-areas:
+                "hd hd hd hd   hd   hd   hd   hd   hd"
+                "sd sd sd main main main main main main"
+                "ft ft ft ft   ft   ft   ft   ft   ft";
+          text-align: center;
+          line-height: 0;
+
+
+          .sidebar {
+            grid-area: sd;
+            position: relative;
+            height : 4in;
+            margin-top: 20px;
+          }
+
+          .content {
+            grid-area: main;
+            height : 2.5in;
+            margin-top: 20px;
+            line-height: 0in;
+          }
+
+          .header {
+            grid-area: hd;
+            height: 0.3in;
+            line-height: 0;
+            margin-top: 20px;
+            text-align: center;
+          }
+          .footer {
+            grid-area: ft;
+            height : 0.2in;
+            font-size: 0.1in;
+            text-align: center;
+            margin-top: 20px;
+          }
+
+        }
+
+
         .attSlip {
           visibility: visible;
+        }
+
+        .tablesArray {
         }
 
         .attendanceTableArr {

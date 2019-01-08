@@ -1,11 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Webcam from 'react-webcam';
-import Barcode from 'react-barcode';
 import Rand from 'random-key';
 import Moment from 'moment';
-
-
+import Split from 'grommet/components/Split';
 import Heading from 'grommet/components/Heading';
 import Button from 'grommet/components/Button';
 import Article from 'grommet/components/Article';
@@ -13,16 +11,11 @@ import Box from 'grommet/components/Box';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
-import Paragraph from 'grommet/components/Paragraph';
-import AddIcon from 'grommet/components/icons/base/Add';
 import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
 import Section from 'grommet/components/Section';
 import Anchor from 'grommet/components/Anchor';
-import Headline from 'grommet/components/Headline';
-import Image from 'grommet/components/Image';
 import FormFields from 'grommet/components/FormFields';
-import Footer from 'grommet/components/Footer';
 import List from 'grommet/components/List';
 import ListItem from 'grommet/components/ListItem';
 import Search from 'grommet/components/Search';
@@ -31,9 +24,7 @@ import Vehicle from 'grommet/components/icons/base/DocumentConfig';
 import Header from 'grommet/components/Header';
 import Table from 'grommet/components/Table'
 import TableRow from 'grommet/components/TableRow'
-
 import { getVehicles, getVehicle, getAllVehicles } from '../api/vehicles';
-import NewVehicle from './NewVehicle';
 import VehicleIn from './VehicleIn';
 import VehicleOut from './VehicleOut';
 
@@ -213,39 +204,20 @@ class Vehicles extends Component {
     const { error, tasks } = this.props;
     const { intl } = this.context;
 
-    let errorNode;
-    if (error) {
-      errorNode = (
-        <Notification
-          status='critical'
-          size='large'
-          state={error.message}
-          message='An unexpected error happened, please try again later'
-        />
-      );
-    }
-
     return (
       <Article primary={true} full={true} className='giveVehicle'>
         <Header
           direction='row'
-          size='large'
+          size='small'
           colorIndex='light-2'
           align='center'
           responsive={true}
           pad={{ horizontal: 'small' }}
         >
-          <Anchor path='/dashboard'>
-            <LinkPrevious a11yTitle='Back' />
-          </Anchor>
-          <Heading margin='none' strong={true}>
-            Vehicles Tracking system
-          </Heading>
+          <h2><strong>Vehicles Tracking system</strong></h2>
         </Header>
         <Section>
-        {errorNode}
-        <Article>
-            <Tabs justify='start' style={{marginLeft:'40px'}}>
+            <Tabs justify='start' style={{marginLeft: 20, marginTop: -20}}>
             <Tab title='VEHICLE IN'>
             <VehicleIn />
             </Tab>
@@ -255,7 +227,6 @@ class Vehicles extends Component {
             <Tab title='REPORTS'>
             </Tab>
             </Tabs>
-        </Article>
         </Section>
       </Article>
     );
@@ -264,7 +235,3 @@ class Vehicles extends Component {
 
 const vehicles = state => ({ ...state.vehicles });
 export default connect(vehicles)(Vehicles);
-
-// Veriety
-// area
-// agent

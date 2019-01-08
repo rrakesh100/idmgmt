@@ -52,6 +52,7 @@ export default class VehicleOut extends Component {
       emptyVehicle: true,
       showDetails: false,
       showLiveCameraFeed: true,
+      materialOpt: []
     };
   }
 

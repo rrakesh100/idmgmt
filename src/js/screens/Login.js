@@ -119,7 +119,7 @@ class Login extends Component {
                   'browsing mode.'
                 );
               }
-                router.history.push('/visitors')
+                router.history.push('/vehicles')
             }else {
               alert("Invalid username / password");
             }

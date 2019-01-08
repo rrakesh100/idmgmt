@@ -3,11 +3,11 @@ import Search from 'grommet/components/Search';
 import List from 'grommet/components/List';
 import ListItem from 'grommet/components/ListItem';
 import Moment from 'moment';
-import Button from 'grommet/components/Button';
 import Vehicle from 'grommet/components/icons/base/DocumentConfig';
 import Article from 'grommet/components/Article';
 import Select from 'grommet/components/Select';
 import TextInput from 'grommet/components/TextInput';
+import Button from 'grommet/components/Button';
 import Label from 'grommet/components/Label';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
@@ -20,13 +20,23 @@ import Accordion from 'grommet/components/Accordion';
 import AccordionPanel from 'grommet/components/AccordionPanel';
 import Next from 'grommet/components/icons/base/CaretNext';
 import Down from 'grommet/components/icons/base/CaretDown';
-import { getVehicleNumbers, getMaterials } from '../api/configuration';
+import { getVehicleNumbers, getMaterials, getOwnPlaces } from '../api/configuration';
 import Save from 'grommet/components/icons/base/Upload';
+import VehicleIcon from 'grommet/components/icons/base/Bus';
+import PrintIcon from 'grommet/components/icons/base/Print';
 import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Notification from 'grommet/components/Notification';
 import Image from 'grommet/components/Image';
+import Toast from 'grommet/components/Toast';
+import Layer from 'grommet/components/Layer';
+import Heading from 'grommet/components/Heading';
+import Status from 'grommet/components/icons/Status';
+import { Meter } from 'grommet';
+import { Input } from 'semantic-ui-react';
+import VehicleInPrintComponent from '../components/VehicleInPrintComponent';
+import ReactToPrint from "react-to-print";
 
 
 
@@ -51,7 +61,10 @@ export default class VehicleIn extends Component {
       emptyVehicle: true,
       showDetails: false,
       showLiveCameraFeed: true,
+      vehicleSaved: false,
       vehicleOpt: [],
+      materialOpt: [],
+      ownPlaceOpt: []
     };
   }
 
@@ -59,6 +72,18 @@ export default class VehicleIn extends Component {
     this.getVehicleNumberDetails();
     this.getMaterialDetails();
     this.getVehicleDetails();
+    this.getOwnPlaceDetails();
+  }
+
+  getOwnPlaceDetails() {
+    getOwnPlaces().then((snap) => {
+      const options = snap.val();
+      let ownPlaceOpt = [];
+      Object.keys(options).forEach((opt) => {
+        ownPlaceOpt.push(opt)
+      })
+      this.setState({ownPlaceOpt})
+    }).catch((e) => console.log(e))
   }
 
   getVehicleNumberDetails() {
@@ -122,6 +147,21 @@ export default class VehicleIn extends Component {
       }
     }
 
+    onCapturingAndSaving() {
+      if (this.state.showLiveCameraFeed) {
+        const screenshot = this.webcam.getScreenshot();
+        this.setState({
+          screenshot,
+          showLiveCameraFeed: false,
+        }, this.onSaveClick.bind(this));
+      } else {
+        this.setState({
+          showLiveCameraFeed: true,
+          screenshot
+        }, this.onSaveClick.bind(this));
+      }
+    }
+
     setRef(webcam) {
       this.webcam = webcam;
     }
@@ -154,16 +194,47 @@ export default class VehicleIn extends Component {
     }
 
     onFieldChange(fieldName, e) {
+      let re = /^[0-9\b]+$/;
+      let ne = /^[0-9]{11}$/;
+      let an = /^[a-zA-Z0-9]+$/;
+      let nre = /^[a-zA-Z0-9]{11}$/;
+
+      if(fieldName == 'driverNumber' && (e.target.value === '' || re.test(e.target.value))) {
+          if(!ne.test(e.target.value)) {
+            this.setState({
+              [fieldName]: e.target.value,
+              validationMsg:''
+            })
+          }
+      }
+
+      if(fieldName == 'driverName' || fieldName == 'partyName' || fieldName == 'comingFrom' || fieldName == 'billNumber' || fieldName == 'remarks') {
+        this.setState({
+          [fieldName]: e.target.value,
+          validationMsg: ''
+        })
+      }
+
+      if(fieldName == 'vehicleNumber'&& (e.target.value === '' || an.test(e.target.value))) {
+          if(!nre.test(e.target.value)) {
+          this.setState({
+            [fieldName]: e.target.value,
+            validationMsg: ''
+          })
+        }
+      }
+
+      if(fieldName == 'numberOfBags' && (e.target.value === '' || re.test(e.target.value))) {
+        this.setState({
+          [fieldName]: e.target.value,
+          validationMsg: ''
+        })
+      }
 
       if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material' || fieldName == 'selectVehicleNumber') {
         this.setState({
           [fieldName]: e.option,
           validationMsg:''
-        })
-      } else {
-        this.setState({
-          [fieldName]: e.target.value,
-          validationMsg: ''
         })
       }
 
@@ -178,14 +249,10 @@ export default class VehicleIn extends Component {
       }
 
       if(fieldName == 'emptyLoad' && e.option == 'Empty') {
-        let formRef = this.refs.loadVeicleForm;
-        formRef.hidden = true;
           this.setState({
             emptyVehicle: true
           })
       } else {
-        let formRef = this.refs.loadVeicleForm;
-        formRef.hidden = true;
           this.setState({
             emptyVehicle: false
           })
@@ -290,11 +357,58 @@ export default class VehicleIn extends Component {
       )
     }
 
+    toastClose() {
+      this.setState({ toastMsg: '' });
+    }
+
+    renderToastMsg() {
+      const { toastMsg } = this.state;
+      if(toastMsg) {
+        return (
+          <Toast status='ok'
+            onClose={ this.toastClose.bind(this) }>
+            { toastMsg }
+          </Toast>
+        );
+      }
+      return null;
+    }
+
+    onCloseLayer() {
+      this.setState({
+        validationMsg: '',
+        showLiveCameraFeed: true
+      })
+    }
+
+    onOkButtonClick() {
+      this.setState({
+        validationMsg: '',
+        showLiveCameraFeed: true
+      })
+    }
+
     renderValidationMsg() {
       const { validationMsg } = this.state;
       if (validationMsg) {
         return (
-          <Notification message={validationMsg} size='small' status='critical' />
+          <Layer onClose={this.onCloseLayer.bind(this)}>
+            <h3 style={{marginTop:20}}>
+            <Status value='critical'
+            size='medium'
+            style={{marginRight:'10px'}} />
+            <strong>{validationMsg}</strong>
+            </h3>
+             <hr />
+             <h5>Please Select Again</h5>
+             <Row>
+             <Button
+               label='OK'
+               onClick={this.onOkButtonClick.bind(this)}
+               href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
+               primary={true} />
+             </Row>
+          </Layer>
         );
       }
       return null;
@@ -341,21 +455,8 @@ export default class VehicleIn extends Component {
         remarks,
         inwardPhoto
       }).then(this.setState({
-        inwardSNo: '',
-        ownOutVehicle: '',
-        vehicleNumber: '',
-        selectVehicleNumber: '',
-        driverName:'',
-        driverNumber: '',
-        emptyLoad: '',
-        partyName: '',
-        material: '',
-        numberOfBags: '',
-        comingFrom: '',
-        billNumber: '',
-        remarks: '',
-        screenshot: '',
-        showLiveCameraFeed: true
+        toastMsg: `Vehicle ${vNo} is saved`,
+        vehicleSaved: true
       }, this.getVehicleDetails())).catch((err) => {
         console.error('Vehicle Inward Save Error', err);
       })
@@ -448,34 +549,146 @@ export default class VehicleIn extends Component {
         }, this.onSavingInwardVehicle.bind(this))
     }
 
+    onNewBtnClick() {
+      this.setState({
+        vehicleSaved: false,
+        showLiveCameraFeed: true,
+        inwardSNo: '',
+        ownOutVehicle: '',
+        vehicleNumber: '',
+        selectVehicleNumber: '',
+        driverName:'',
+        driverNumber: '',
+        emptyLoad: '',
+        partyName: '',
+        material: '',
+        numberOfBags: '',
+        comingFrom: '',
+        billNumber: '',
+        remarks: '',
+        screenshot: '',
+      })
+    }
+
+    onPrintButtonClick() {
+      console.log('print');
+    }
+
+    setPrintRef(ref) {
+      this.componentRef = ref;
+    }
+
+    renderVehiclePrintCard() {
+      return (
+        <VehicleInPrintComponent
+          ref={this.setPrintRef.bind(this)}
+          screenshot={this.state.screenshot}
+          inwardSNo={this.state.inwardSNo}
+          ownOutVehicle={this.state.ownOutVehicle}
+          vehicleNumber={this.state.vehicleNumber}
+          driverName={this.state.driverName}
+          driverNumber={this.state.driverNumber}
+          remarks={this.state.remarks}
+          material={this.state.material}
+          numberOfBags={this.state.numberOfBags}
+          comingFrom={this.state.comingFrom}
+          billNumber={this.state.billNumber}
+        />
+      )
+    }
+
+    renderTrigger() {
+      return (
+        <Button icon={<PrintIcon />}
+          label='PRINT' style={ !this.state.vehicleSaved ?
+          {
+            marginTop:20,
+            width: '300px',
+            display: 'none'
+          } :
+          {
+            marginTop:20,
+            width: '300px',
+          }}
+          href='#'
+          primary={true} />
+      )
+    }
+
+    renderContent() {
+      return this.componentRef;
+    }
+
+    handleAfterPrint() {
+      console.log('after print');
+    }
+
   render() {
     const date = new Date();
     const dateStr = moment(date).format('DD-MM-YYYY');
-    const { ourVehicle, emptyVehicle, showDetails, vehicleOpt, materialOpt, inwardSNo } = this.state;
+    const { ownOutVehicle,
+            ourVehicle,
+            emptyVehicle,
+            showDetails,
+            vehicleOpt,
+            materialOpt,
+            inwardSNo,
+            vehicleSaved,
+            vehicleNumber,
+            selectVehicleNumber,
+            driverName,
+            driverNumber,
+            emptyLoad,
+            partyName,
+            material,
+            numberOfBags,
+            comingFrom,
+            billNumber,
+            remarks } = this.state;
     return (
       <div>
+      { this.renderToastMsg() }
       { this.renderValidationMsg() }
+      { this.renderVehiclePrintCard() }
+        <h4 style={{marginLeft: 20, textDecoration: 'underline', fontWeight: 'bold'}}>Present Inward Details</h4>
+          <Split style={{marginTop: -20}}>
+            <Box direction='column' style={{marginLeft:'20px', width:'300px'}} >
 
-        <h4 style={{marginLeft: 40, textDecoration: 'underline', fontWeight: 'bold'}}>Present Inward Details</h4>
-        <Section justify='center'>
-          <Split>
-            <Box direction='column' style={{marginLeft:'40px', width:'300px'}} >
-
-                <Form className='newVisitorFields'>
-                  <FormField  label='Inward Sno'  strong={true} style={{marginTop : '15px'}}  >
-                  <Label style={{marginLeft:'20px'}}><strong>{inwardSNo}</strong></Label>
-                  </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
-                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Own/Out Vehicle *</Label>
+                  { vehicleSaved ?
+                    <Form className='newVisitorFields'>
+                      <FormField  label='Inward Sno'  strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardSNo}</strong></Label>
+                      </FormField>
+                    <FormField label='Own/Out Vehicle' strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{fontSize: 16, marginLeft: 20}}><strong>{ownOutVehicle}</strong></Label>
+                    </FormField>
+                    <FormField label='Vehicle No' strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{fontSize: 16, marginLeft: 20}}><strong>{vehicleNumber || selectVehicleNumber}</strong></Label>
+                    </FormField>
+                    <FormField label='Driver Name' strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{fontSize: 16, marginLeft: 20}}><strong>{driverName}</strong></Label>
+                    </FormField><FormField label='Driver Cell No' strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{fontSize: 16, marginLeft: 20}}><strong>{driverNumber}</strong></Label>
+                    </FormField><FormField label='Empty/Load' strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{fontSize: 16, marginLeft: 20}}><strong>{emptyLoad}</strong></Label>
+                    </FormField>
+                    </Form> :
+                    <Form className='newVisitorFields'>
+                      <FormField  label='Inward Sno'  strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{marginLeft:'20px'}}><strong>{inwardSNo}</strong></Label>
+                      </FormField>
+                    <FormField strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{fontSize: 16,marginLeft: 20,color: 'red'}}>Own/Out Vehicle</Label>
                       <Select
                       options={['Own Vehicle', 'Outside Vehicle']}
                       placeHolder='Own/Out Vehicle'
-                      value={this.state.ownOutVehicle}
+                      value={ownOutVehicle}
                       onChange={this.onFieldChange.bind(this, 'ownOutVehicle')}
                       />
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px', color: 'red'}}>
-                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle No *</Label>
+                  <FormField strong={true}
+                   style={{marginTop : '10px', color: 'red'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle No</Label>
                       {
                       !ourVehicle ?
                       <TextInput
@@ -491,23 +704,24 @@ export default class VehicleIn extends Component {
                       />
                     }
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
-                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Driver Name *</Label>
+                  <FormField strong={true} style={{marginTop : '10px'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Driver Name</Label>
                       <TextInput
                           placeHolder='Driver Name'
                           value={this.state.driverName}
                           onDOMChange={this.onFieldChange.bind(this, 'driverName')}
                       />
                   </FormField>
-                  <FormField label='Driver Cell No' strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Driver Cell No'
+                    strong={true} style={{marginTop : '10px'}}>
                       <TextInput
                           placeHolder='Driver Cell No'
                           value={this.state.driverNumber}
                           onDOMChange={this.onFieldChange.bind(this, 'driverNumber')}
                       />
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
-                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Empty/Load *</Label>
+                  <FormField strong={true} style={{marginTop : '10px'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Empty/Load</Label>
                       <Select
                         options={['Empty', 'Load']}
                         placeHolder='Empty/Load'
@@ -515,12 +729,30 @@ export default class VehicleIn extends Component {
                         onChange={this.onFieldChange.bind(this, 'emptyLoad')}
                       />
                   </FormField>
-                </Form>
+                </Form> }
             </Box>
             <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
-                <Form className='newVisitorFields'>
-
-                  <FormField strong={true}  ref='loadVeicleForm' style={{marginTop : '18px'}}>
+                {vehicleSaved ?
+                  <Form className='newVisitorFields'>
+                    <FormField  label='Party Name'  strong={true} style={{marginTop : '10px'}}>
+                    <Label style={{marginLeft:'20px'}}><strong>{partyName}</strong></Label>
+                    </FormField>
+                  <FormField label='Material' strong={true} style={{marginTop : '10px'}}>
+                    <Label style={{fontSize: 16, marginLeft: 20}}><strong>{material}</strong></Label>
+                  </FormField>
+                  <FormField label='No of Bags' strong={true} style={{marginTop : '10px'}}>
+                    <Label style={{fontSize: 16, marginLeft: 20}}><strong>{numberOfBags}</strong></Label>
+                  </FormField>
+                  <FormField label='Coming From' strong={true} style={{marginTop : '10px'}}>
+                    <Label style={{fontSize: 16, marginLeft: 20}}><strong>{comingFrom}</strong></Label>
+                  </FormField><FormField label='Bill No' strong={true} style={{marginTop : '10px'}}>
+                    <Label style={{fontSize: 16, marginLeft: 20}}><strong>{billNumber}</strong></Label>
+                  </FormField><FormField label='Remarks' strong={true} style={{marginTop : '10px'}}>
+                    <Label style={{fontSize: 16, marginLeft: 20}}><strong>{remarks}</strong></Label>
+                  </FormField>
+                  </Form> :
+                  <Form className='newVisitorFields'>
+                  <FormField strong={true} style={{marginTop : '10px'}}>
                   <Label style={!emptyVehicle ?
                           {
                             fontSize:14,
@@ -538,7 +770,7 @@ export default class VehicleIn extends Component {
                       />
                   </FormField>
 
-                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '10px'}}>
                   <Label style={!emptyVehicle ?
                           {
                             fontSize:14,
@@ -556,7 +788,7 @@ export default class VehicleIn extends Component {
                         onChange={this.onFieldChange.bind(this, 'material')}
                       />
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '10px'}}>
                   <Label style={!emptyVehicle ?
                           {
                             fontSize:14,
@@ -573,7 +805,7 @@ export default class VehicleIn extends Component {
                           onDOMChange={this.onFieldChange.bind(this, 'numberOfBags')}
                       />
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '10px'}}>
                   <Label style={!emptyVehicle ?
                           {
                             fontSize:14,
@@ -584,50 +816,73 @@ export default class VehicleIn extends Component {
                             marginLeft: 20,
                             color: 'black'
                           }}>Coming From</Label>
-                      <TextInput
-                          placeHolder='Coming From'
-                          value={this.state.comingFrom}
-                          onDOMChange={this.onFieldChange.bind(this, 'comingFrom')}
-                      />
+                      <Input transparent
+                        list='places'
+                        placeholder='Coming From'
+                        onChange={this.onFieldChange.bind(this, 'comingFrom')} />
+                      <datalist id='places'>
+                        {
+                          this.state.ownPlaceOpt.map((val, index) => {
+                            return <option value={val} key={index}/>
+                          })
+                        }
+                      </datalist>
                   </FormField>
-                  <FormField label='Bill No' strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Bill No' strong={true} style={{marginTop : '10px'}}>
                       <TextInput
                           placeHolder='Bill No'
                           value={this.state.billNumber}
                           onDOMChange={this.onFieldChange.bind(this, 'billNumber')}
                       />
                   </FormField>
-                  <FormField label='Remarks' strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Remarks' strong={true} style={{marginTop : '10px'}}>
                       <TextInput
                           placeHolder='Remarks'
                           value={this.state.remarks}
                           onDOMChange={this.onFieldChange.bind(this, 'remarks')}
                       />
                   </FormField>
-                </Form>
+                </Form>}
               </Box>
             <Box direction='column'
-              style={{marginTop:'25px', marginLeft : '10px', width:'300px'}} align='center'>
-              <div  onClick={this.capture.bind(this)}>
+              style={{marginLeft : '10px', width:'300px'}} align='center'>
+              <div onClick={this.capture.bind(this)}>
                 {this.renderCamera() }
               </div>
-                <Section pad='small'
-                  align='center'>
-                  <Button icon={<Save />}
-                    label='SAVE'
-                    onClick={this.onSaveClick.bind(this)}
-                    disabled={true}
-                    href='#'
-                    primary={true} />
-                </Section>
+                    <Button icon={<Save />}
+                      label='SAVE' style={ vehicleSaved ? {
+                        marginTop:20,
+                        width: '300px',
+                        display: 'none'
+                      } :
+                      {
+                        marginTop:20,
+                        width: '300px',
+                      }}
+                      onClick={this.onCapturingAndSaving.bind(this)}
+                      disabled={true}
+                      href='#'
+                      primary={true} />
+                    <ReactToPrint
+                        trigger={this.renderTrigger.bind(this)}
+                        content={this.renderContent.bind(this)}
+                        onAfterPrint={this.handleAfterPrint.bind(this)}
+                      />
+                      <Button icon={<VehicleIcon />}
+                        label='NEW' style={{marginTop: 20, width: '300px'}}
+                        onClick={this.onNewBtnClick.bind(this)}
+                        disabled={true}
+                        href='#'
+                        primary={true} />
+
             </Box>
           </Split>
           <div>
-            <h4 style={{marginLeft: 40, textDecoration: 'underline', fontWeight: 'bold'}}>Date&Time Details</h4>
+            <h4 style={{marginLeft: 20, textDecoration: 'underline', fontWeight: 'bold'}}>Date&Time Details</h4>
             <Container>
                 <Row>
                     <Col>
-                      <span style={{marginLeft: 30}}>In Date : {dateStr}</span>
+                      <span style={{marginLeft: 20}}>In Date : {dateStr}</span>
                     </Col>
                     <Col>
                       <span>In Time : <Clock format={'hh:mm:ss A'} ticking={true} /></span>
@@ -635,10 +890,9 @@ export default class VehicleIn extends Component {
                 </Row>
             </Container>
           </div>
-          <div style={{marginLeft: 40, marginTop: 40}}>
+          <div style={{marginLeft: 20, marginTop: 20}}>
             { showDetails ? this.showOutwardDetails() : this.hideOutwardDetails() }
           </div>
-        </Section>
       </div>
     )
   }

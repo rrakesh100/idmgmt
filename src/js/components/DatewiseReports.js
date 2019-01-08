@@ -207,6 +207,7 @@ export default class DatewiseReports extends Component {
     let weeklyFemaleDayShift = 0;
     let weeklyFemaleNightShift = 0;
     let jattuPayment = 0;
+    let iterator = 0;
 
     let rowCount=0;
 
@@ -215,6 +216,7 @@ export default class DatewiseReports extends Component {
     const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
 
     Object.keys(response).map((date, index) => {
+      iterator++
       const attendanceObj = response[date];
       let numOfManpower = empArr.length;
       const numOfEmployees = Object.keys(attendanceObj).length;
@@ -222,8 +224,8 @@ export default class DatewiseReports extends Component {
         return;
       tablesArray.push(<div className='tablesArray'  key={index}>
           <div style={{display:'flex', flexDirection: 'column', marginLeft: 10}}>
-           <h3 style={{marginLeft: 30}}>{date}<span style={isPrint ? {position: 'absolute', right : 0, marginRight : 20} : {display: 'none'}}>Date : {timestampStr}</span></h3>
-           <h3 style={{marginLeft: 30}}>Number of Manpower: {numOfEmployees}</h3>
+           <h3 style={{marginLeft: 30}}>{date}<span  style={isPrint ? {position: 'absolute', right:40} : {display: 'none'}}>{iterator}</span></h3>
+           <h3 style={{marginLeft: 30}}>Number of Manpower: {numOfEmployees}<span  style={isPrint ? {position: 'absolute', right:40} : {display: 'none'}}>{timestampStr}</span></h3>
            </div>
            <Table className="datewiseTable" id='datewiseTableId' scrollable={true} style={{ marginLeft : 10}}>
           <thead>
@@ -344,8 +346,7 @@ export default class DatewiseReports extends Component {
                        outTime : istOutTime,
                        totalTime : totalTime
                      })
-                     empArr.push(date)
-                     return <TableRow className="datewiseTableRow" id="datewiseTableRowId" key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
+                     return <TableRow className="datewiseTableRow" key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
                      {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                      {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
                      {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
@@ -527,18 +528,20 @@ export default class DatewiseReports extends Component {
      return (
        <Layer
          flush={false}
+         closer={true}
          onClose={this.onCloseLayer.bind(this)}>
          <div style={{marginTop: 20, marginLeft: 'auto', marginRight: 'auto'}}>
          <div style={{display: 'flex', justifyContent: 'flex-end'}}>
            <a onClick={() => setTimeout(() => window.print(), 1)}>Print</a>
-           <div className="layerIcon">
-           <CloseIcon style={{marginLeft:20}} onClick={this.onCloseLayer.bind(this)}/>
-           </div>
          </div>
          <div>
-         <h4 style={{marginLeft : '20px'}}>Abstract Report From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={{marginLeft: 150}}>Unit: {unit}</span></h4>
+         {
+           startDate == endDate ?
+           <h5 style={{textAlign: 'center', marginLeft : '20px'}}><strong>ABSTRACT MANPOWER DETAILS AS ON :{startDate}</strong></h5> :
+           <h5 style={{textAlign: 'center', marginLeft : '20px'}}><strong>ABSTRACT MANPOWER DETAILS AS ON :{startDate} To: {endDate}</strong></h5>
+         }
+         <h5><strong>Unit: {unit}</strong></h5>
          </div>
-
          <Table scrollable={true}>
              <thead>
               <tr>
@@ -561,19 +564,14 @@ export default class DatewiseReports extends Component {
                    <td>{weeklyFemaleNightShift}</td>
                    <td>{weeklyFemaleTotal}</td>
                </TableRow>
-
+               <hr style={{width: '300%'}}/>
                <TableRow style={{color : 'red'}}>
                    <td>Sub Total</td>
                    <td>{weeklyDaySubTotal}</td>
                    <td>{weeklyNightSubTotal}</td>
                    <td>{weeklySubTotal}</td>
                </TableRow>
-               <TableRow>
-                   <td>-------------------------</td>
-                   <td>-------------------------</td>
-                   <td>-------------------------</td>
-                   <td>-------------------------</td>
-               </TableRow>
+               <hr style={{width: '300%'}}/>
                <TableRow style={{color : 'blue'}}>
                    <td>Daily Male</td>
                    <td>{dailyMaleDayShift}</td>
@@ -586,31 +584,26 @@ export default class DatewiseReports extends Component {
                    <td>{dailyFemaleNightShift}</td>
                    <td>{dailyFemaleTotal}</td>
                </TableRow>
-
+               <hr style={{width: '300%'}}/>
                <TableRow style={{color : 'red'}}>
                    <td>Sub Total</td>
                    <td>{dailyDaySubTotal}</td>
                    <td>{dailyNightSubTotal}</td>
                    <td>{dailySubTotal}</td>
                </TableRow>
-               <TableRow>
-                   <td>-------------------------</td>
-                   <td>-------------------------</td>
-                   <td>-------------------------</td>
-                   <td>-------------------------</td>
-               </TableRow>
-
+               <hr style={{width: '300%'}}/>
                <TableRow>
                    <td>Jattu</td>
                    <td>{jattuPayment}</td>
                    <td>0</td>
                    <td>{jattuPayment}</td>
                </TableRow>
+               <hr style={{width: '300%'}}/>
                <TableRow style={{color : 'red'}}>
-                   <td>Grand Total</td>
-                   <td>{dayGrandTotal}</td>
-                   <td>{nightGrandTotal}</td>
-                   <td>{grandTotal}</td>
+                   <td>GRAND TOTAL</td>
+                   <td><strong>{dayGrandTotal}</strong></td>
+                   <td><strong>{nightGrandTotal}</strong></td>
+                   <td><strong>{grandTotal}</strong></td>
                </TableRow>
              </tbody>
          </Table>
