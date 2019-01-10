@@ -27,6 +27,13 @@ import Clock from 'react-live-clock';
 import moment from 'moment';
 import Image from 'grommet/components/Image';
 import Notification from 'grommet/components/Notification';
+import Toast from 'grommet/components/Toast';
+import Layer from 'grommet/components/Layer';
+import Status from 'grommet/components/icons/Status';
+import VehicleIcon from 'grommet/components/icons/base/Bus';
+import PrintIcon from 'grommet/components/icons/base/Print';
+import ReactToPrint from "react-to-print";
+import VehicleOutPrintComponent from '../components/VehicleOutPrintComponent';
 
 
 
@@ -44,7 +51,7 @@ export default class VehicleOut extends Component {
       partyName: '',
       material: '',
       numberOfBags: '',
-      comingFrom: '',
+      goingTo: '',
       billNumber: '',
       remarks: '',
       inwardObj: {},
@@ -52,7 +59,9 @@ export default class VehicleOut extends Component {
       emptyVehicle: true,
       showDetails: false,
       showLiveCameraFeed: true,
-      materialOpt: []
+      toastMsg: '',
+      materialOpt: [],
+      vehicleSaved: false
     };
   }
 
@@ -114,14 +123,47 @@ export default class VehicleOut extends Component {
   }
 
   onFieldChange(fieldName, e) {
+    let re = /^[0-9\b]+$/;
+    let ne = /^[0-9]{11}$/;
+    let an = /^[a-zA-Z0-9]+$/;
+    let nre = /^[a-zA-Z0-9]{11}$/;
+
+    if(fieldName == 'driverNumber' && (e.target.value === '' || re.test(e.target.value))) {
+        if(!ne.test(e.target.value)) {
+          this.setState({
+            [fieldName]: e.target.value,
+            validationMsg:''
+          })
+        }
+    }
+
+    if(fieldName == 'driverName' || fieldName == 'partyName' || fieldName == 'goingTo' || fieldName == 'billNumber' || fieldName == 'remarks') {
+      this.setState({
+        [fieldName]: e.target.value,
+        validationMsg: ''
+      })
+    }
+
+    if(fieldName == 'vehicleNumber'&& (e.target.value === '' || an.test(e.target.value))) {
+        if(!nre.test(e.target.value)) {
+        this.setState({
+          [fieldName]: e.target.value,
+          validationMsg: ''
+        })
+      }
+    }
+
+    if(fieldName == 'numberOfBags' && (e.target.value === '' || re.test(e.target.value))) {
+      this.setState({
+        [fieldName]: e.target.value,
+        validationMsg: ''
+      })
+    }
 
     if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material' || fieldName == 'selectVehicleNumber') {
       this.setState({
-        [fieldName]: e.option
-      })
-    } else {
-      this.setState({
-        [fieldName]: e.target.value
+        [fieldName]: e.option,
+        validationMsg:''
       })
     }
 
@@ -144,14 +186,43 @@ export default class VehicleOut extends Component {
           emptyVehicle: false
         })
     }
+  }
 
+  onCloseLayer() {
+    this.setState({
+      validationMsg: '',
+      showLiveCameraFeed: true
+    })
+  }
+
+  onOkButtonClick() {
+    this.setState({
+      validationMsg: '',
+      showLiveCameraFeed: true
+    })
   }
 
   renderValidationMsg() {
     const { validationMsg } = this.state;
     if (validationMsg) {
       return (
-        <Notification message={validationMsg} size='small' status='critical' />
+        <Layer onClose={this.onCloseLayer.bind(this)}>
+          <h3 style={{marginTop:20}}>
+          <Status value='critical'
+          size='medium'
+          style={{marginRight:'10px'}} />
+          <strong>{validationMsg}</strong>
+          </h3>
+           <hr />
+           <h5>Please Select Again</h5>
+           <Row>
+           <Button
+             label='OK'
+             onClick={this.onOkButtonClick.bind(this)}
+             href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
+             primary={true} />
+           </Row>
+        </Layer>
       );
     }
     return null;
@@ -277,7 +348,7 @@ export default class VehicleOut extends Component {
       partyName,
       material,
       numberOfBags,
-      comingFrom,
+      goingTo,
       billNumber,
       remarks,
       screenshot } = this.state;
@@ -300,30 +371,39 @@ export default class VehicleOut extends Component {
         partyName,
         material,
         numberOfBags,
-        comingFrom,
+        goingTo,
         billNumber,
         remarks,
         outwardPhoto
       }).then(this.setState({
-        outwardSNo: '',
-        ownOutVehicle: '',
-        vehicleNumber: '',
-        driverName:'',
-        driverNumber: '',
-        emptyLoad: '',
-        partyName: '',
-        material: '',
-        numberOfBags: '',
-        comingFrom: '',
-        billNumber: '',
-        remarks: '',
-        screenshot:'',
-        showLiveCameraFeed: true
+        toastMsg: `Vehicle ${vNo} Out is saved`,
+        vehicleSaved: true
       }, this.getVehicleDetails())).catch((err) => {
         console.error('Vehicle Outward Save Error', err);
       })
     })
 
+  }
+
+  onNewBtnClick() {
+    this.setState({
+      outwardSNo: '',
+      ownOutVehicle: '',
+      vehicleNumber: '',
+      selectVehicleNumber: '',
+      driverName:'',
+      driverNumber: '',
+      emptyLoad: '',
+      partyName: '',
+      material: '',
+      numberOfBags: '',
+      goingTo: '',
+      billNumber: '',
+      remarks: '',
+      screenshot:'',
+      showLiveCameraFeed: true,
+      vehicleSaved: false
+    })
   }
 
   onSaveClick() {
@@ -338,7 +418,7 @@ export default class VehicleOut extends Component {
       partyName,
       material,
       numberOfBags,
-      comingFrom,
+      goingTo,
       billNumber,
       remarks,
       screenshot } = this.state;
@@ -362,9 +442,9 @@ export default class VehicleOut extends Component {
           })
           return
         }
-        if(!comingFrom) {
+        if(!goingTo) {
           this.setState({
-            validationMsg: 'Coming From is missing'
+            validationMsg: 'Going to is missing'
           })
           return
         }
@@ -390,7 +470,9 @@ export default class VehicleOut extends Component {
         return
       }
 
-    this.onSavingOutwardVehicle();
+      this.setState({
+        validationMsg:''
+      }, this.onSavingOutwardVehicle.bind(this))
 
   }
 
@@ -406,7 +488,7 @@ export default class VehicleOut extends Component {
           height={300}
           ref={this.setRef.bind(this)}
           screenshotFormat='image/jpeg'
-          width={400}
+          width={300}
           onClick={this.capture.bind(this)}
         />
       );
@@ -424,26 +506,143 @@ export default class VehicleOut extends Component {
     );
   }
 
+  toastClose() {
+    this.setState({ toastMsg: '' });
+  }
+
+  renderToastMsg() {
+    const { toastMsg } = this.state;
+    if(toastMsg) {
+      return (
+        <Toast status='ok'
+          onClose={ this.toastClose.bind(this) }>
+          { toastMsg }
+        </Toast>
+      );
+    }
+    return null;
+  }
+
+  handleAfterPrint() {
+    console.log('after print');
+  }
+
+  renderContent() {
+    return this.componentRef;
+  }
+
+  renderTrigger() {
+    return (
+      <Button icon={<PrintIcon />}
+        label='PRINT' style={ !this.state.vehicleSaved ?
+        {
+          marginTop:20,
+          width: '300px',
+          display: 'none'
+        } :
+        {
+          marginTop:20,
+          width: '300px',
+        }}
+        href='#'
+        primary={true} />
+    )
+  }
+
+  onCapturingAndSaving() {
+    if (this.state.showLiveCameraFeed) {
+      const screenshot = this.webcam.getScreenshot();
+      this.setState({
+        screenshot,
+        showLiveCameraFeed: false,
+      }, this.onSaveClick.bind(this));
+    } else {
+      this.setState({
+        showLiveCameraFeed: true,
+        screenshot
+      }, this.onSaveClick.bind(this));
+    }
+  }
+
+  setPrintRef(ref) {
+    this.componentRef = ref;
+  }
+
+  renderVehiclePrintCard() {
+    return (
+      <VehicleOutPrintComponent
+        ref={this.setPrintRef.bind(this)}
+        screenshot={this.state.screenshot}
+        outwardSNo={this.state.outwardSNo}
+        ownOutVehicle={this.state.ownOutVehicle}
+        vehicleNumber={this.state.vehicleNumber}
+        driverName={this.state.driverName}
+        driverNumber={this.state.driverNumber}
+        remarks={this.state.remarks}
+        material={this.state.material}
+        numberOfBags={this.state.numberOfBags}
+        goingTo={this.state.goingTo}
+        billNumber={this.state.billNumber}
+      />
+    )
+  }
 
 
   render() {
     const date = new Date();
     const dateStr = moment(date).format('DD-MM-YYYY');
-    const { ourVehicle, emptyVehicle, showDetails, vehicleOpt, materialOpt, outwardSNo } = this.state;
+    const { ourVehicle,
+            emptyVehicle,
+            showDetails,
+            vehicleOpt,
+            materialOpt,
+            outwardSNo,
+            vehicleSaved,
+            driverName,
+            vehicleNumber,
+            selectVehicleNumber,
+            ownOutVehicle,
+            driverNumber,
+            emptyLoad,
+            partyName,
+            material,
+            numberOfBags,
+            goingTo,
+            billNumber,
+            remarks } = this.state;
     return (
       <div>
+      { this.renderToastMsg() }
       { this.renderValidationMsg() }
-        <h4 style={{marginLeft: 40, textDecoration: 'underline', fontWeight: 'bold'}}>Present Outward Details</h4>
-        <Section justify='center'>
-          <Split>
-            <Box direction='column' style={{marginLeft:'40px', width:'300px'}} >
-
+      { this.renderVehiclePrintCard() }
+        <h4 style={{marginLeft: 20, textDecoration: 'underline', fontWeight: 'bold'}}>Present Outward Details</h4>
+          <Split style={{marginTop: -20}}>
+            <Box direction='column' style={{marginLeft:'20px', width:'300px'}} >
+            { vehicleSaved ?
+              <Form className='newVisitorFields'>
+                <FormField  label='Outward Sno'  strong={true} style={{marginTop : '10px'}}>
+                <Label style={{marginLeft:'20px'}}><strong>{outwardSNo}</strong></Label>
+                </FormField>
+              <FormField label='Own/Out Vehicle' strong={true} style={{marginTop : '10px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{ownOutVehicle}</strong></Label>
+              </FormField>
+              <FormField label='Vehicle No' strong={true} style={{marginTop : '10px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{vehicleNumber || selectVehicleNumber}</strong></Label>
+              </FormField>
+              <FormField label='Driver Name' strong={true} style={{marginTop : '10px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{driverName}</strong></Label>
+              </FormField><FormField label='Driver Cell No' strong={true} style={{marginTop : '10px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{driverNumber}</strong></Label>
+              </FormField><FormField label='Empty/Load' strong={true} style={{marginTop : '10px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{emptyLoad}</strong></Label>
+              </FormField>
+              </Form> :
                 <Form className='newVisitorFields'>
-                  <FormField  label='Outward Sno'  strong={true} style={{marginTop : '15px'}}  >
+                  <FormField  label='Outward Sno'  strong={true} style={{marginTop : '8px'}}  >
                   <Label style={{marginLeft:'20px'}}><strong>{outwardSNo}</strong></Label>
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
-                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Own/Out Vehicle *</Label>
+                  <FormField strong={true} style={{marginTop : '8px'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Own/Out Vehicle</Label>
                       <Select
                       options={['Own Vehicle', 'Outside Vehicle']}
                       placeHolder='Own/Out Vehicle'
@@ -451,8 +650,8 @@ export default class VehicleOut extends Component {
                       onChange={this.onFieldChange.bind(this, 'ownOutVehicle')}
                       />
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
-                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle Number *</Label>
+                  <FormField strong={true} style={{marginTop : '8px'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle Number</Label>
                       {
                       !ourVehicle ?
                       <TextInput
@@ -468,8 +667,8 @@ export default class VehicleOut extends Component {
                       />
                     }
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
-                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Driver Name *</Label>
+                  <FormField strong={true} style={{marginTop : '8px'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Driver Name</Label>
 
                       <TextInput
                           placeHolder='Driver Name'
@@ -477,15 +676,15 @@ export default class VehicleOut extends Component {
                           onDOMChange={this.onFieldChange.bind(this, 'driverName')}
                       />
                   </FormField>
-                  <FormField label='Driver Cell No' strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Driver Cell No' strong={true} style={{marginTop : '8px'}}>
                       <TextInput
                           placeHolder='Driver Cell No'
                           value={this.state.driverNumber}
                           onDOMChange={this.onFieldChange.bind(this, 'driverNumber')}
                       />
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
-                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Empty/Load *</Label>
+                  <FormField strong={true} style={{marginTop : '8px'}}>
+                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Empty/Load</Label>
 
                       <Select
                         options={['Empty', 'Load']}
@@ -494,12 +693,30 @@ export default class VehicleOut extends Component {
                         onChange={this.onFieldChange.bind(this, 'emptyLoad')}
                       />
                   </FormField>
-                </Form>
+                </Form>}
             </Box>
             <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
+            {vehicleSaved ?
+              <Form className='newVisitorFields'>
+                <FormField  label='Party Name'  strong={true} style={{marginTop : '10px'}}>
+                <Label style={{marginLeft:'20px'}}><strong>{partyName}</strong></Label>
+                </FormField>
+              <FormField label='Material' strong={true} style={{marginTop : '10px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{material}</strong></Label>
+              </FormField>
+              <FormField label='No of Bags' strong={true} style={{marginTop : '10px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{numberOfBags}</strong></Label>
+              </FormField>
+              <FormField label='Going To' strong={true} style={{marginTop : '10px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{goingTo}</strong></Label>
+              </FormField><FormField label='Bill No' strong={true} style={{marginTop : '10px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{billNumber}</strong></Label>
+              </FormField><FormField label='Remarks' strong={true} style={{marginTop : '10px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{remarks}</strong></Label>
+              </FormField>
+              </Form> :
                 <Form className='newVisitorFields'>
-
-                  <FormField strong={true}  ref='loadVeicleForm' style={{marginTop : '18px'}}>
+                  <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={!emptyVehicle ?
                           {
                             fontSize:14,
@@ -517,7 +734,7 @@ export default class VehicleOut extends Component {
                       />
                   </FormField>
 
-                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={!emptyVehicle ?
                           {
                             fontSize:14,
@@ -535,7 +752,7 @@ export default class VehicleOut extends Component {
                         onChange={this.onFieldChange.bind(this, 'material')}
                       />
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={!emptyVehicle ?
                           {
                             fontSize:14,
@@ -552,7 +769,7 @@ export default class VehicleOut extends Component {
                           onDOMChange={this.onFieldChange.bind(this, 'numberOfBags')}
                       />
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '15px'}}>
+                  <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={!emptyVehicle ?
                           {
                             fontSize:14,
@@ -562,41 +779,60 @@ export default class VehicleOut extends Component {
                             fontSize:14,
                             marginLeft: 20,
                             color: 'black'
-                          }}>Coming From</Label>
+                          }}>Going To</Label>
                       <TextInput
-                          placeHolder='Coming From'
-                          value={this.state.comingFrom}
-                          onDOMChange={this.onFieldChange.bind(this, 'comingFrom')}
+                          placeHolder='Going To'
+                          value={this.state.goingTo}
+                          onDOMChange={this.onFieldChange.bind(this, 'goingTo')}
                       />
                   </FormField>
-                  <FormField label='Bill No' strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Bill No' strong={true} style={{marginTop : '8px'}}>
                       <TextInput
                           placeHolder='Bill No'
                           value={this.state.billNumber}
                           onDOMChange={this.onFieldChange.bind(this, 'billNumber')}
                       />
                   </FormField>
-                  <FormField label='Remarks' strong={true} style={{marginTop : '15px'}}>
+                  <FormField label='Remarks' strong={true} style={{marginTop : '8px'}}>
                       <TextInput
                           placeHolder='Remarks'
                           value={this.state.remarks}
                           onDOMChange={this.onFieldChange.bind(this, 'remarks')}
                       />
                   </FormField>
-                </Form>
+                </Form> }
               </Box>
-            <Box onClick={this.capture.bind(this)} direction='column'
-              style={{marginTop:'25px', marginLeft : '10px', width:'300px'}} align='center'>
+            <Box direction='column'
+              style={{marginLeft : '10px', width:'300px'}} align='center'>
+                <div onClick={this.capture.bind(this)}>
                 {this.renderCamera() }
-                <Section pad='small'
-                  align='center'>
+                </div>
                   <Button icon={<Save />}
-                    label='SAVE'
-                    onClick={this.onSaveClick.bind(this)}
+                    label='SAVE' style={ vehicleSaved ?
+                      {
+                        marginTop: 20,
+                        width: '300px',
+                        display: 'none'
+                      } :
+                      {
+                        marginTop: 20,
+                        width: '300px'
+                      }}
+                    onClick={this.onCapturingAndSaving.bind(this)}
                     disabled={true}
                     href='#'
                     primary={true} />
-                </Section>
+                <ReactToPrint
+                    trigger={this.renderTrigger.bind(this)}
+                    content={this.renderContent.bind(this)}
+                    onAfterPrint={this.handleAfterPrint.bind(this)}
+                  />
+                <Button icon={<VehicleIcon />}
+                  label='NEW' style={{marginTop: 20, width: '300px'}}
+                  onClick={this.onNewBtnClick.bind(this)}
+                  disabled={true}
+                  href='#'
+                  primary={true} />
             </Box>
           </Split>
           <div>
@@ -615,7 +851,6 @@ export default class VehicleOut extends Component {
           <div style={{marginLeft: 40, marginTop: 40}}>
             { showDetails ? this.showInwardDetails() : this.hideInwardDetails() }
           </div>
-        </Section>
       </div>
     )
   }
