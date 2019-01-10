@@ -40,7 +40,6 @@ import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
 import ReactToPrint from "react-to-print";
 import ManPowerPrintComponent from '../components/ManPowerPrintComponent';
-const download = require('image-downloader');
 
 
 export default class ManPower extends Component {
