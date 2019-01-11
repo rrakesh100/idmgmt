@@ -17,6 +17,8 @@ export function saveVehicle(data) {
 }
 
 export function savingInwardVehicle(data) {
+  const date = new Date();
+  const dateStr = moment(date).format('DD-MM-YYYY');
   const dbRef = firebase.database().ref();
   const updates = {}; let prefix = 'U2';
   if(localStorage.unit === 'UNIT3') {
@@ -25,10 +27,13 @@ export function savingInwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicles/${prefix}/in/${data.inwardSNo}`] = data;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/inCount`] = data.lastCount+1;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastInward`] = data;
+  updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/${dateStr}/vehicleIn`] = true;
   return dbRef.update(updates);
 }
 
 export function savingOutwardVehicle(data) {
+  const date = new Date();
+  const dateStr = moment(date).format('DD-MM-YYYY');
   const dbRef = firebase.database().ref();
   const updates = {}; let prefix = 'U2';
   if(localStorage.unit === 'UNIT3') {
@@ -37,6 +42,8 @@ export function savingOutwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicles/${prefix}/out/${data.outwardSNo}`] = data;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/outCount`] = data.lastCount+1;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastOutward`] = data;
+  updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/${dateStr}/vehicleOut`] = true;
+
   return dbRef.update(updates);
 }
 
@@ -66,6 +73,14 @@ export function getUserInfo(token) {
 
 export function getVehicle(vehicleId) {
   const vehiclePath = localStorage.unit + '/' +`vehicles/${vehicleId}`;
+  const dbRef = firebase.database().ref(vehiclePath);
+  return dbRef.once('value');
+}
+
+export function getVehicleData(vehicleNumber) {
+  const date = new Date();
+  const dateStr = moment(date).format('DD-MM-YYYY');
+  const vehiclePath = localStorage.unit + '/' +`vehicles/${vehicleNumber}/${dateStr}`;
   const dbRef = firebase.database().ref(vehiclePath);
   return dbRef.once('value');
 }
@@ -105,4 +120,41 @@ export function updateVehicleStatus(data) {
     updates[localStorage.unit + '/' +`insideVehicles/${unitId}/${vehicleId}`] = data;
   }
   return dbRef.update(updates);
+}
+
+export function saveVehicleInPrintCopiesData(vehicleKey, printData) {
+  const dbRef = firebase.database().ref();
+  const updates = {};
+  if(printData) {
+    updates[`vehicleInPrintCopies/${vehicleKey}`] = printData + 1;
+  } else {
+    updates[`vehicleInPrintCopies/${vehicleKey}`] = 1;
+  }
+
+  return dbRef.update(updates);
+}
+
+export function saveVehicleOutPrintCopiesData(vehicleKey, printData) {
+  console.log(vehicleKey);
+  console.log(printData);
+  const dbRef = firebase.database().ref();
+  const updates = {};
+  if(printData) {
+    updates[`vehicleOutPrintCopies/${vehicleKey}`] = printData + 1;
+  } else {
+    updates[`vehicleOutPrintCopies/${vehicleKey}`] = 1;
+  }
+
+  return dbRef.update(updates);
+}
+
+
+export function fetchVehicleInPrintCopiesData(vehicleKey) {
+  const dbRef = firebase.database().ref(`vehicleInPrintCopies/${vehicleKey}`);
+  return dbRef.once('value');
+}
+
+export function fetchVehicleOutPrintCopiesData(vehicleKey) {
+  const dbRef = firebase.database().ref(`vehicleOutPrintCopies/${vehicleKey}`);
+  return dbRef.once('value');
 }

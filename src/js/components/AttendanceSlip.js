@@ -2,10 +2,10 @@ import React from 'react';
 import InputForm from './InputForm';
 import { getEmployees, getEmployee } from '../api/employees';
 import { attendanceDatesLoop,
-  getEmployeeAttendanceDates,
-  saveEmailReport,
-  savePrintCopiesData,
-  fetchPrintCopiesData } from '../api/attendance';
+        getEmployeeAttendanceDates,
+        saveEmailReport,
+        savePrintCopiesData,
+        fetchPrintCopiesData } from '../api/attendance';
 import { getVillages } from '../api/configuration';
 import Select from 'grommet/components/Select';
 import DateTime from 'grommet/components/DateTime';
@@ -316,19 +316,16 @@ getEmployees() {
         return
       }
 
-      let top = iterator * 15.556;
-      let topStr = top + 'in'
       iterator++;
-
 
       let  now = new Date();
       const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
 
       tablesArray.push(<div className="attendanceTableArr" key={uniqId}>
-      <h2 style={!isPrint ? {display:'none'} : {textAlign: 'center',marginTop: 60}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={isPrint ? { position: 'absolute', right: 80, visibility: 'visible'} : { visibility: 'hidden' }}>{iterator}</span></h2>
-      <h4 style={isPrint ? {marginLeft: 40} : {display: 'none'}}>Unit: {unit}<span style={{position: 'absolute', right : 80}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span></h4>
-      <h4 style={!isPrint ? {display:'none'} : {marginLeft : 20}}><Barcode value={employeeId} height={20}/><span style={{position: 'absolute', right : 80}}>Date : {timestampStr}</span></h4>
-      <h3 style={{marginLeft : 20}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 80}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
+      <h2 style={!isPrint ? {display:'none'} : {textAlign: 'center',marginTop: 60}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={isPrint ? { position: 'absolute', right: 80} : { display: 'none' }}>{iterator}</span></h2>
+      <h4 style={isPrint ? {marginLeft: 40} : {display: 'none'}}>Unit: {unit}<span style={{marginLeft: 300}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span><span style={isPrint ? {position: 'absolute', right : 80}: {display:'none'}}>Date : {timestampStr}</span></h4>
+      <h4 style={!isPrint ? {display:'none'} : {marginLeft : 20, display: 'flex', flexDirection: 'row',alignItems: 'center'}}><Barcode value={employeeId} height={20}/><span style={{marginLeft: 200}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}</span><span style={isPrint ? {position: 'absolute', right : 80}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h4>
+      <h3 style={isPrint ? {display: 'none'} : {marginLeft : 20}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 80}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
       <Table scrollable={true} style={isPrint ? {} :  { marginTop : '10px', marginLeft : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>

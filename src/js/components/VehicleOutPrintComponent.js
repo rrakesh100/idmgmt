@@ -18,7 +18,7 @@ export default class VehicleOutPrintComponent extends Component {
             material,
             numberOfBags,
             goingTo,
-            billNumber } = this.props;
+            billNumber, printCopies } = this.props;
 
       const date = new Date();
       const dateStr = moment(date).format('DD-MM-YYYY');
@@ -28,7 +28,9 @@ export default class VehicleOutPrintComponent extends Component {
       return (
           <div className='vehicleCard'>
             <div style={{display: 'flex', flexDirection: 'row', marginTop: 10}}>
-              <h4 style={{marginLeft: 20}}>copy:<strong>ORIGINAL</strong></h4>
+              {printCopies ?
+                <h4 style={{marginLeft: 20}}>copy:<strong>DUPLICATE</strong></h4> :
+                <h4 style={{marginLeft: 20}}>copy:<strong>ORIGINAL</strong></h4>}
               <h4 style={{position: 'absolute', right:20}}><strong>{timestampStr}</strong></h4>
             </div>
             <div className='vehicleCardBody'>

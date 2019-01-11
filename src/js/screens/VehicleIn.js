@@ -24,7 +24,7 @@ import { getVehicleNumbers, getMaterials, getOwnPlaces } from '../api/configurat
 import Save from 'grommet/components/icons/base/Upload';
 import VehicleIcon from 'grommet/components/icons/base/Bus';
 import PrintIcon from 'grommet/components/icons/base/Print';
-import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle } from '../api/vehicles';
+import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle, getVehicleData } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Notification from 'grommet/components/Notification';
@@ -37,6 +37,7 @@ import { Meter } from 'grommet';
 import { Input } from 'semantic-ui-react';
 import VehicleInPrintComponent from '../components/VehicleInPrintComponent';
 import ReactToPrint from "react-to-print";
+import Progress from 'react-progressbar';
 
 
 
@@ -224,6 +225,13 @@ export default class VehicleIn extends Component {
         }
       }
 
+      if(fieldName == 'selectVehicleNumber') {
+        this.setState({
+          [fieldName]: e.option,
+          validationMsg:''
+        })
+      }
+
       if(fieldName == 'numberOfBags' && (e.target.value === '' || re.test(e.target.value))) {
         this.setState({
           [fieldName]: e.target.value,
@@ -231,12 +239,13 @@ export default class VehicleIn extends Component {
         })
       }
 
-      if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material' || fieldName == 'selectVehicleNumber') {
+      if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material') {
         this.setState({
           [fieldName]: e.option,
           validationMsg:''
         })
       }
+
 
       if(fieldName == 'ownOutVehicle' && e.option == 'Own Vehicle') {
         this.setState({
@@ -414,28 +423,42 @@ export default class VehicleIn extends Component {
       return null;
     }
 
-    onSavingInwardVehicle() {
+    getVehicleData() {
+      const { vehicleNumber, selectVehicleNumber } = this.state;
+      let vNo = vehicleNumber || selectVehicleNumber;
+      getVehicleData(vNo).then((snap) => {
+        const vehicle = snap.val();
+        const vehicleExists = vehicle ? vehicle['vehicleIn'] : null;
+        if(vehicleExists) {
+          this.setState({vehicleExists})
+        } else {
+          this.setState({vehicleExists}, this.savingVehicleIn())
+        }
+      })
+    }
 
-      const {
-        lastCount,
-        inwardSNo,
-        ownOutVehicle,
-        vehicleNumber,
-        selectVehicleNumber,
-        driverName,
-        driverNumber,
-        emptyLoad,
-        partyName,
-        material,
-        numberOfBags,
-        comingFrom,
-        billNumber,
-        remarks,
-        screenshot } = this.state;
-        let vNo=vehicleNumber;
-        if(selectVehicleNumber)
-         vNo = selectVehicleNumber;
-        let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    savingVehicleIn() {
+          const {
+            lastCount,
+            inwardSNo,
+            ownOutVehicle,
+            vehicleNumber,
+            selectVehicleNumber,
+            driverName,
+            driverNumber,
+            emptyLoad,
+            partyName,
+            material,
+            numberOfBags,
+            comingFrom,
+            billNumber,
+            remarks,
+            screenshot, vehicleExists } = this.state;
+            console.log(vehicleExists);
+            let vNo=vehicleNumber;
+            if(selectVehicleNumber)
+             vNo = selectVehicleNumber;
+          let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
         uploadVehicleImage(imgFile, vNo, inwardSNo).then((snapshot) => {
              let inwardPhoto = snapshot.downloadURL;
 
@@ -458,11 +481,56 @@ export default class VehicleIn extends Component {
         toastMsg: `Vehicle ${vNo} is saved`,
         vehicleSaved: true
       }, this.getVehicleDetails())).catch((err) => {
+        this.setState({
+          showLiveCameraFeed: true
+        })
         console.error('Vehicle Inward Save Error', err);
       })
     })
     }
 
+    onYesButtonClick() {
+      this.setState({
+        vehicleExists: false
+      }, this.savingVehicleIn())
+    }
+
+    onNoButtonClick() {
+      this.setState({
+        vehicleExists: false
+      })
+    }
+
+    renderValidationForVehicleSave() {
+      const { vehicleExists } = this.state;
+      if(vehicleExists) {
+        return (
+          <Layer>
+            <h3 style={{marginTop:20}}>
+            <Status value='critical'
+            size='medium'
+            style={{marginRight:'10px'}} />
+            <strong>Vehicle already exists. Do you want to save again?</strong>
+            </h3>
+             <hr />
+             <Row>
+             <Button
+               label='Yes'
+               onClick={this.onYesButtonClick.bind(this)}
+               href='#' style={{marginLeft: '350px', marginBottom:'10px'}}
+               primary={true} />
+             <Button
+               label='No'
+               onClick={this.onNoButtonClick.bind(this)}
+               href='#' style={{marginLeft: '20px', marginBottom:'10px'}}
+               primary={true} />
+             </Row>
+          </Layer>
+        )
+      } else {
+        return null;
+      }
+    }
 
     onSaveClick() {
       const {
@@ -546,14 +614,13 @@ export default class VehicleIn extends Component {
 
         this.setState({
           validationMsg:''
-        }, this.onSavingInwardVehicle.bind(this))
+        }, this.getVehicleData.bind(this))
     }
 
     onNewBtnClick() {
       this.setState({
         vehicleSaved: false,
         showLiveCameraFeed: true,
-        inwardSNo: '',
         ownOutVehicle: '',
         vehicleNumber: '',
         selectVehicleNumber: '',
@@ -568,10 +635,6 @@ export default class VehicleIn extends Component {
         remarks: '',
         screenshot: '',
       })
-    }
-
-    onPrintButtonClick() {
-      console.log('print');
     }
 
     setPrintRef(ref) {
@@ -649,6 +712,7 @@ export default class VehicleIn extends Component {
       <div>
       { this.renderToastMsg() }
       { this.renderValidationMsg() }
+      { this.renderValidationForVehicleSave() }
       { this.renderVehiclePrintCard() }
         <h4 style={{marginLeft: 20, textDecoration: 'underline', fontWeight: 'bold'}}>Present Inward Details</h4>
           <Split style={{marginTop: -20}}>

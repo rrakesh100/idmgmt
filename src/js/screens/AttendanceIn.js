@@ -710,7 +710,6 @@ renderSearchedEmployee() {
   }
 
   onOkButtonClick() {
-    console.log('this = = = ', this);
     this.setState({
       msg:'',
       employeeSearchString:'',

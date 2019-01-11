@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Search from 'grommet/components/Search';
 import List from 'grommet/components/List';
 import ListItem from 'grommet/components/ListItem';
-import Moment from 'moment';
 import Button from 'grommet/components/Button';
 import Vehicle from 'grommet/components/icons/base/DocumentConfig';
 import Article from 'grommet/components/Article';
@@ -22,7 +21,12 @@ import Next from 'grommet/components/icons/base/CaretNext';
 import Down from 'grommet/components/icons/base/CaretDown';
 import { getVehicleNumbers, getMaterials } from '../api/configuration';
 import Save from 'grommet/components/icons/base/Upload';
-import { savingOutwardVehicle, getAllVehicles, getInwardVehicle, uploadVehicleImage } from '../api/vehicles';
+import { savingOutwardVehicle,
+         getAllVehicles,
+         getInwardVehicle,
+         uploadVehicleImage,
+         saveVehicleOutPrintCopiesData,
+         fetchVehicleOutPrintCopiesData, getVehicleData } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Image from 'grommet/components/Image';
@@ -379,6 +383,9 @@ export default class VehicleOut extends Component {
         toastMsg: `Vehicle ${vNo} Out is saved`,
         vehicleSaved: true
       }, this.getVehicleDetails())).catch((err) => {
+        this.setState({
+          showLiveCameraFeed: true
+        })
         console.error('Vehicle Outward Save Error', err);
       })
     })
@@ -387,7 +394,6 @@ export default class VehicleOut extends Component {
 
   onNewBtnClick() {
     this.setState({
-      outwardSNo: '',
       ownOutVehicle: '',
       vehicleNumber: '',
       selectVehicleNumber: '',
@@ -472,7 +478,7 @@ export default class VehicleOut extends Component {
 
       this.setState({
         validationMsg:''
-      }, this.onSavingOutwardVehicle.bind(this))
+      }, this.getVehicleData.bind(this))
 
   }
 
@@ -523,8 +529,82 @@ export default class VehicleOut extends Component {
     return null;
   }
 
+  getVehicleData() {
+    const { vehicleNumber, selectVehicleNumber } = this.state;
+    let vNo = vehicleNumber || selectVehicleNumber;
+    getVehicleData(vNo).then((snap) => {
+      const vehicle = snap.val();
+      const vehicleExists = vehicle ? vehicle['vehicleOut'] : null;
+      if(vehicleExists) {
+        this.setState({vehicleExists})
+      } else {
+        this.setState({vehicleExists}, this.onSavingOutwardVehicle())
+      }
+    })
+  }
+
+  onYesButtonClick() {
+    this.setState({
+      vehicleExists: false
+    }, this.onSavingOutwardVehicle())
+  }
+
+  onNoButtonClick() {
+    this.setState({
+      vehicleExists: false,
+      showLiveCameraFeed: true
+    })
+  }
+
+  renderValidationForVehicleSave() {
+    const { vehicleExists } = this.state;
+    if(vehicleExists) {
+      return (
+        <Layer>
+          <h3 style={{marginTop:20}}>
+          <Status value='critical'
+          size='medium'
+          style={{marginRight:'10px'}} />
+          <strong>Vehicle already exists. Do you want to save again?</strong>
+          </h3>
+           <hr />
+           <Row>
+           <Button
+             label='Yes'
+             onClick={this.onYesButtonClick.bind(this)}
+             href='#' style={{marginLeft: '350px', marginBottom:'10px'}}
+             primary={true} />
+           <Button
+             label='No'
+             onClick={this.onNoButtonClick.bind(this)}
+             href='#' style={{marginLeft: '20px', marginBottom:'10px'}}
+             primary={true} />
+           </Row>
+        </Layer>
+      )
+    } else {
+      return null;
+    }
+  }
+
   handleAfterPrint() {
-    console.log('after print');
+    const { vehicleNumber, selectVehicleNumber, printCopies } = this.state;
+    const date = new Date();
+    const dateStr = moment(date).format('DD-MM-YYYY');
+    let vNo = vehicleNumber || selectVehicleNumber;
+    const vehicleKey = vNo+ '_' +dateStr;
+    saveVehicleOutPrintCopiesData(vehicleKey, printCopies);
+  }
+
+  handleBeforePrint() {
+  const { vehicleNumber } = this.state;
+  const date = new Date();
+  const dateStr = moment(date).format('DD-MM-YYYY');
+  const vehicleKey = vehicleNumber+ '_' +dateStr;
+  fetchVehicleOutPrintCopiesData(vehicleKey).then((snap) => {
+    let printCopies = snap.val();
+    this.setState({printCopies})
+  }).catch((err) => console.log(err))
   }
 
   renderContent() {
@@ -583,6 +663,7 @@ export default class VehicleOut extends Component {
         numberOfBags={this.state.numberOfBags}
         goingTo={this.state.goingTo}
         billNumber={this.state.billNumber}
+        printCopies={this.state.printCopies}
       />
     )
   }
@@ -614,6 +695,7 @@ export default class VehicleOut extends Component {
       <div>
       { this.renderToastMsg() }
       { this.renderValidationMsg() }
+      { this.renderValidationForVehicleSave() }
       { this.renderVehiclePrintCard() }
         <h4 style={{marginLeft: 20, textDecoration: 'underline', fontWeight: 'bold'}}>Present Outward Details</h4>
           <Split style={{marginTop: -20}}>
@@ -825,6 +907,7 @@ export default class VehicleOut extends Component {
                 <ReactToPrint
                     trigger={this.renderTrigger.bind(this)}
                     content={this.renderContent.bind(this)}
+                    onBeforePrint={this.handleBeforePrint.bind(this)}
                     onAfterPrint={this.handleAfterPrint.bind(this)}
                   />
                 <Button icon={<VehicleIcon />}

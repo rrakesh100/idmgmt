@@ -27,7 +27,7 @@ import TableRow from 'grommet/components/TableRow'
 import { getVehicles, getVehicle, getAllVehicles } from '../api/vehicles';
 import VehicleIn from './VehicleIn';
 import VehicleOut from './VehicleOut';
-
+import AllVehiclesPrint from './AllVehiclesPrint';
 
 
 class Vehicles extends Component {
