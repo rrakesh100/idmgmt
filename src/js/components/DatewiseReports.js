@@ -214,18 +214,41 @@ export default class DatewiseReports extends Component {
     let numOfTable = document.getElementById('datewiseTableId');
     let  now = new Date();
     const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
+    let strt = moment(startDate , 'DD-MM-YYYY');
+    let end = moment(endDate, 'DD-MM-YYYY');
+    let diff = end.diff(strt, 'days');
 
     Object.keys(response).map((date, index) => {
       iterator++
       const attendanceObj = response[date];
+      let header;
+      if(diff==1&&index==0) {
+        header = `Datewise Manpower Details as on ${startDate}`;
+      } else if(diff==1&&index==1){
+        header = `Datewise Manpower Details as on ${endDate}`;
+      } else if(startDate == endDate) {
+        header = `Datewise Manpower Details as on ${startDate}`;
+      } else if (diff>1) {
+        header = `Datewise Manpower Details from ${startDate} to ${endDate}`
+      }
       let numOfManpower = empArr.length;
       const numOfEmployees = Object.keys(attendanceObj).length;
       if(attendanceObj ==null)
         return;
       tablesArray.push(<div className='tablesArray'  key={index}>
+      <h2 style={isPrint ? {textAlign: 'center', marginTop: 80}: {textAlign: 'center'}}><strong>{header}</strong></h2>
+        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
           <div style={{display:'flex', flexDirection: 'column', marginLeft: 10}}>
            <h3 style={{marginLeft: 30}}>{date}<span  style={isPrint ? {position: 'absolute', right:40} : {display: 'none'}}>{iterator}</span></h3>
            <h3 style={{marginLeft: 30}}>Number of Manpower: {numOfEmployees}<span  style={isPrint ? {position: 'absolute', right:40} : {display: 'none'}}>{timestampStr}</span></h3>
+           </div>
+           <div style={isPrint ? {display: 'none'}:{position: 'absolute', right: 40}}>
+             <ReactToPrint
+                 trigger={this.renderTrigger.bind(this)}
+                 content={this.renderContent.bind(this)}
+                 onAfterPrint={this.handleAfterPrint.bind(this)}
+               />
+           </div>
            </div>
            <Table className="datewiseTable" id='datewiseTableId' scrollable={true} style={{ marginLeft : 10}}>
           <thead>
@@ -393,13 +416,6 @@ export default class DatewiseReports extends Component {
 
    return (
     <div>
-     <div style={{position: 'absolute', right: 40}}>
-       <ReactToPrint
-           trigger={this.renderTrigger.bind(this)}
-           content={this.renderContent.bind(this)}
-           onAfterPrint={this.handleAfterPrint.bind(this)}
-         />
-     </div>
      <div  style={{marginBottom: 40}}>
       {tablesObj['tablesArray']}
      </div>
