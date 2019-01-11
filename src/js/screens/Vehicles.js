@@ -218,6 +218,9 @@ class Vehicles extends Component {
         </Header>
         <Section>
             <Tabs justify='start' style={{marginLeft: 20, marginTop: -20}}>
+            <Tab title='HOME'>
+            <AllVehiclesPrint />
+            </Tab>
             <Tab title='VEHICLE IN'>
             <VehicleIn />
             </Tab>

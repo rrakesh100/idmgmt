@@ -43,7 +43,6 @@ export function savingOutwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/outCount`] = data.lastCount+1;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastOutward`] = data;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/${dateStr}/vehicleOut`] = true;
-
   return dbRef.update(updates);
 }
 

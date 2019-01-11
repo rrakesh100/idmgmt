@@ -429,6 +429,34 @@ export default class VehicleOut extends Component {
       remarks,
       screenshot } = this.state;
 
+      if(!ownOutVehicle) {
+        this.setState({
+          validationMsg: 'Own/Out Vehicle is missing'
+        })
+        return
+      }
+
+      if(!vehicleNumber && !selectVehicleNumber) {
+        this.setState({
+          validationMsg: 'Vehicle Number is missing'
+        })
+        return
+      }
+
+      if(!driverName) {
+        this.setState({
+          validationMsg: 'Driver Name is missing'
+        })
+        return
+      }
+
+      if(!emptyLoad) {
+        this.setState({
+          validationMsg: 'Empty/Load is missing'
+        })
+        return
+      }
+
       if(emptyLoad === 'Load') {
         if(!partyName) {
           this.setState({
