@@ -196,13 +196,26 @@ span.grommetux-form-field__contents {
   visibility: hidden;
 }
 
+.printFooter {
+  visibility: hidden;
+}
+
 @page {
         size: A4;
-        margin-bottom: 60;
+        margin-bottom: 20;
 }
 
 
 @media print {
+
+        th,td {
+          text-align: center;
+        }
+
+        .printFooter:after {
+          counter-increment: page;
+          content: counter(page) "/" counter(pages);
+        }
 
         .printVisitor {
             border: initial;
@@ -350,6 +363,7 @@ span.grommetux-form-field__contents {
         }
 
         .tablesArray {
+          page-break-after: always;
         }
 
         .attendanceTableArr {
@@ -384,5 +398,12 @@ span.grommetux-form-field__contents {
         .abstractPrint {
           box-shadow: none;
           text-shadow: none;
+        }
+
+        .printFooter {
+          visibility: visible;
+          position: fixed;
+          bottom: 0;
+          right: 20
         }
 }

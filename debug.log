@@ -4,3 +4,4 @@
 [0716/141922.554:ERROR:settings.cc(319)] Settings magic is not 1129342067
 [1205/223833.415:ERROR:http_transport_win.cc(273)] WinHttpSendRequest: The server name or address could not be resolved (0x2ee7)
 [1224/103128.850:ERROR:settings.cc(319)] Settings magic is not 1129342067
+[0116/104441.629:ERROR:settings.cc(319)] Settings magic is not 1129342067

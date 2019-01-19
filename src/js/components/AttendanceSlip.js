@@ -38,7 +38,17 @@ constructor(props) {
     paymentType: '',
     shift: '',
     loading: false,
-    refreshData: false
+    refreshData: false,
+    allEmployees: null,
+    response: null,
+    noDataMsg: '',
+    paymentTypeSelected: false,
+    shiftSelected: false,
+    genderSelected: false,
+    villageSelected: false,
+    employeeSelected: false,
+    selectedEmployeeId: '',
+    selectedEmployeeData: null
   }
 }
 

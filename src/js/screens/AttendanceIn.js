@@ -48,7 +48,6 @@ class AttendanceIn extends Component {
     super(props);
     this.state = {
       barCodeId: Rand.generateBase30(8),
-      showLiveCameraFeed : true,
       msg : '',
       employeeSearchString : '',
       selectedEmployeeId : '',
@@ -63,7 +62,11 @@ class AttendanceIn extends Component {
       barcodeInput : '',
       scheduled : false,
       savingInProgress : false,
-      printMode: false
+      timeslotOpt: [],
+      shiftOpt: [],
+      employeeSuggestions: [],
+      filteredSuggestions: [],
+      screenshot: ''
     };
     this.onCompareClick.bind(this);
   }
@@ -362,7 +365,7 @@ class AttendanceIn extends Component {
         shift: '',
         numberOfPersons: '',
         selectedEmployeeId : '',
-        selectedEmployeeData:'',
+        selectedEmployeeData:{},
         showLiveCameraFeed: true,
         hideOutsideCamera : false,
         savingInProgress : false,
@@ -799,13 +802,6 @@ renderSearchedEmployee() {
     }
   }
 
-  handleAfterPrint() {
-    this.setState({
-      printMode: false
-    })
-  }
-
-
  renderContent() {
    return this.componentRef;
  }
@@ -819,7 +815,7 @@ renderSearchedEmployee() {
  }
 
   renderPrintCard() {
-    const { printMode, shift, dateVal, screenshot, selectedEmployeeData, inwardPhoto } = this.state;
+    const { shift, dateVal, screenshot, selectedEmployeeData, inwardPhoto } = this.state;
     return (
       <div>
       <AttendancePrintComponent

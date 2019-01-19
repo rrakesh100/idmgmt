@@ -198,7 +198,6 @@ class Employees extends Component {
         </Heading>
       </Header>
         {errorNode}
-        <Split>
             <Tabs justify='start' style={{marginLeft:'40px', width: 1000}}>
             <Tab title='ATTENDANCE IN'>
             <AttendanceIn />
@@ -210,7 +209,6 @@ class Employees extends Component {
             <EmployeeReports />
             </Tab>
             </Tabs>
-        </Split>
       </Article>
     );
   }

@@ -31,18 +31,24 @@ export default class DatewiseReports extends Component {
     super(props);
     this.state = {
       validationMsg:'',
-      startDate : null,
-      endDate: null,
-      unit: null,
+      startDate : '',
+      endDate: '',
+      unit: '',
       paymentType: '',
       shift: '',
       emailReport: false,
       loading: false,
       allEmployees: null,
       response: null,
-      employeeSuggestions: [],
-      filteredSuggestions: [],
-      refreshData: false
+      refreshData: false,
+      noDataMsg: '',
+      paymentTypeSelected: false,
+      shiftSelected: false,
+      genderSelected: false,
+      villageSelected: false,
+      employeeSelected: false,
+      selectedEmployeeId: '',
+      selectedEmployeeData: null
     }
   }
 
@@ -63,7 +69,7 @@ export default class DatewiseReports extends Component {
         });
       })
       .catch((err) => {
-        console.error('VISITOR FETCH FAILED', err);
+        console.error('EMPLOYEE DETAILS FETCH FAILED', err);
       });
   }
 
@@ -175,6 +181,7 @@ export default class DatewiseReports extends Component {
 
   getOldTablesArray(isPrint) {
     const { response,
+            unit,
             startDate,
             endDate,
             paymentType,
@@ -187,14 +194,13 @@ export default class DatewiseReports extends Component {
             genderSelected,
             villageSelected,
             employeeSelected,
-            selectedEmployeeId } = this.state;
+            selectedEmployeeId, numOfEmp } = this.state;
+
 
     if(!response)
     return null;
 
     let tablesArray = [];
-    let reportData = [];
-    let empArr = [];
     let returnObj = {};
     let i = 0;
 
@@ -211,7 +217,6 @@ export default class DatewiseReports extends Component {
 
     let rowCount=0;
 
-    let numOfTable = document.getElementById('datewiseTableId');
     let  now = new Date();
     const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
     let strt = moment(startDate , 'DD-MM-YYYY');
@@ -222,36 +227,40 @@ export default class DatewiseReports extends Component {
       iterator++
       const attendanceObj = response[date];
       let header;
-      if(diff==1&&index==0) {
+      let subHead;
+      if(startDate == endDate) {
         header = `Datewise Manpower Details as on ${startDate}`;
-      } else if(diff==1&&index==1){
-        header = `Datewise Manpower Details as on ${endDate}`;
-      } else if(startDate == endDate) {
-        header = `Datewise Manpower Details as on ${startDate}`;
-      } else if (diff>1) {
-        header = `Datewise Manpower Details from ${startDate} to ${endDate}`
+        subHead = false;
+      } else {
+        header = `Datewise Manpower Details from ${startDate} to ${endDate}`;
+        subHead = true;
       }
-      let numOfManpower = empArr.length;
       const numOfEmployees = Object.keys(attendanceObj).length;
       if(attendanceObj ==null)
         return;
       tablesArray.push(<div className='tablesArray'  key={index}>
-      <h2 style={isPrint ? {textAlign: 'center', marginTop: 80}: {textAlign: 'center'}}><strong>{header}</strong></h2>
-        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-          <div style={{display:'flex', flexDirection: 'column', marginLeft: 10}}>
-           <h3 style={{marginLeft: 30}}>{date}<span  style={isPrint ? {position: 'absolute', right:40} : {display: 'none'}}>{iterator}</span></h3>
-           <h3 style={{marginLeft: 30}}>Number of Manpower: {numOfEmployees}<span  style={isPrint ? {position: 'absolute', right:40} : {display: 'none'}}>{timestampStr}</span></h3>
+      <div className="headerContent">
+        <h2 style={isPrint ? {textAlign: 'center', marginTop: 80}: {display: 'none'}}><strong>{header}</strong></h2>
+          <div style={{display:'flex', flexDirection: 'row', alignItems: 'center'}}>
+           { subHead ?
+             <div>
+              <h3 style={{marginLeft: 30}}>Grand Total of Manpower: {numOfEmp}</h3>
+              <h3 style={{marginLeft: 30}}>Sub Date: {date}<span style={{marginLeft:20}}>Sub Total of Manpower: {numOfEmployees}</span><span  style={isPrint ? {position: 'absolute', right:40} : {display: 'none'}}>unit: {unit}</span></h3>
+              </div> :
+              <div>
+                <h3 style={{marginLeft: 30}}>No of Manpower: {numOfEmployees}<span  style={isPrint ? {position: 'absolute', right:40} : {display: 'none'}}>unit: {unit}</span></h3>
+              </div> }
+              <div style={isPrint ? {display: 'none'}:{position: 'absolute', right: 40}}>
+                <ReactToPrint
+                    trigger={this.renderTrigger.bind(this)}
+                    content={this.renderContent.bind(this)}
+                    onAfterPrint={this.handleAfterPrint.bind(this)}
+                  />
+              </div>
            </div>
-           <div style={isPrint ? {display: 'none'}:{position: 'absolute', right: 40}}>
-             <ReactToPrint
-                 trigger={this.renderTrigger.bind(this)}
-                 content={this.renderContent.bind(this)}
-                 onAfterPrint={this.handleAfterPrint.bind(this)}
-               />
            </div>
-           </div>
-           <Table className="datewiseTable" id='datewiseTableId' scrollable={true} style={{ marginLeft : 10}}>
-          <thead>
+           <Table className="datewiseTable" scrollable={true} style={{ marginLeft : 10}}>
+          <thead className="datewiseTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
            <tr>
              <th>S No.</th>
              <th>Name</th>
@@ -359,29 +368,19 @@ export default class DatewiseReports extends Component {
 
                     if(isValid && inTime) {
                      i++;
-                     reportData.push({
-                       serialNo : index + 1,
-                       manpowerId : key,
-                       name :  employeeAttendaceObj.name,
-                       numberOfPersons : employeeAttendaceObj.numberOfPersons,
-                       shift : employeeAttendaceObj.shift,
-                       inTime : istInTime,
-                       outTime : istOutTime,
-                       totalTime : totalTime
-                     })
                      return <TableRow className="datewiseTableRow" key={key} style={employeeAttendaceObj.paymentType == 'Daily payment' ?
                      {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                      {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
                      {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
 
-                     <td style={{width: '5%'}}>{i}</td>
-                     <td style={{width: '15%'}}>{employeeAttendaceObj.name}</td>
-                     <td style={{width: '10%'}}>{key}</td>
-                     <td style={{width: '15%'}}>{employeeAttendaceObj.paymentType}</td>
-                     <td style={{width: '15%'}}>{employeeAttendaceObj.shift}</td>
-                     <td style={{width: '10%'}}>{employeeAttendaceObj.in}</td>
-                     <td style={{width: '10%'}}>{outTime}</td>
-                     <td style={{width: '15%'}}>{totalTime}</td>
+                     <td>{index+1}</td>
+                     <td>{employeeAttendaceObj.name}</td>
+                     <td>{key}</td>
+                     <td>{employeeAttendaceObj.paymentType}</td>
+                     <td>{employeeAttendaceObj.shift}</td>
+                     <td>{employeeAttendaceObj.in}</td>
+                     <td>{outTime}</td>
+                     <td>{totalTime}</td>
                      </TableRow>
                    }
               }
@@ -389,7 +388,9 @@ export default class DatewiseReports extends Component {
             }
           </tbody>
       </Table>
-
+      <div className="printFooter">
+         <p><span>Dated: {timestampStr}</span></p>
+      </div>
       </div>)
     })
     returnObj['tablesArray'] = tablesArray;
@@ -540,6 +541,8 @@ export default class DatewiseReports extends Component {
    let nightGrandTotal = weeklyNightSubTotal + dailyNightSubTotal;
    let grandTotal = dayGrandTotal + nightGrandTotal + jattuPayment;
 
+   const date = new Date();
+   const timestampStr = moment(date).format('DD/MM/YYYY hh:mm:ss A');
    if(showAbstractTable) {
      return (
        <Layer
@@ -553,8 +556,8 @@ export default class DatewiseReports extends Component {
          <div>
          {
            startDate == endDate ?
-           <h5 style={{textAlign: 'center', marginLeft : '20px'}}><strong>ABSTRACT MANPOWER DETAILS AS ON :{startDate}</strong></h5> :
-           <h5 style={{textAlign: 'center', marginLeft : '20px'}}><strong>ABSTRACT MANPOWER DETAILS AS ON :{startDate} To: {endDate}</strong></h5>
+           <h5 style={{textAlign: 'center'}}><strong>ABSTRACT MANPOWER DETAILS AS ON :{startDate}</strong></h5> :
+           <h5 style={{textAlign: 'center'}}><strong>ABSTRACT MANPOWER DETAILS FROM :{startDate} To: {endDate}</strong></h5>
          }
          <h5><strong>Unit: {unit}</strong></h5>
          </div>
@@ -580,14 +583,12 @@ export default class DatewiseReports extends Component {
                    <td>{weeklyFemaleNightShift}</td>
                    <td>{weeklyFemaleTotal}</td>
                </TableRow>
-               <hr style={{width: '300%'}}/>
                <TableRow style={{color : 'red'}}>
                    <td>Sub Total</td>
                    <td>{weeklyDaySubTotal}</td>
                    <td>{weeklyNightSubTotal}</td>
                    <td>{weeklySubTotal}</td>
                </TableRow>
-               <hr style={{width: '300%'}}/>
                <TableRow style={{color : 'blue'}}>
                    <td>Daily Male</td>
                    <td>{dailyMaleDayShift}</td>
@@ -600,21 +601,18 @@ export default class DatewiseReports extends Component {
                    <td>{dailyFemaleNightShift}</td>
                    <td>{dailyFemaleTotal}</td>
                </TableRow>
-               <hr style={{width: '300%'}}/>
                <TableRow style={{color : 'red'}}>
                    <td>Sub Total</td>
                    <td>{dailyDaySubTotal}</td>
                    <td>{dailyNightSubTotal}</td>
                    <td>{dailySubTotal}</td>
                </TableRow>
-               <hr style={{width: '300%'}}/>
                <TableRow>
                    <td>Jattu</td>
                    <td>{jattuPayment}</td>
                    <td>0</td>
                    <td>{jattuPayment}</td>
                </TableRow>
-               <hr style={{width: '300%'}}/>
                <TableRow style={{color : 'red'}}>
                    <td>GRAND TOTAL</td>
                    <td><strong>{dayGrandTotal}</strong></td>
@@ -623,6 +621,9 @@ export default class DatewiseReports extends Component {
                </TableRow>
              </tbody>
          </Table>
+         </div>
+         <div>
+            <p style={{position: 'absolute', right: 20}}><strong>page 1/1,<span>Dated {timestampStr}</span></strong></p>
          </div>
        </Layer>
      )
@@ -729,6 +730,8 @@ export default class DatewiseReports extends Component {
    const { startDate, endDate, unit, allEmployees } = this.state;
 
    let datesArr=[];
+   let empArr=[];
+   let sumArr=0;
    let startDateParts = startDate.split("-");
    let endDateParts = endDate.split("-");
    let startDateObj = new Date(startDateParts[2], startDateParts[1]-1, startDateParts[0]);
@@ -751,6 +754,9 @@ export default class DatewiseReports extends Component {
      datesArr.map((date) => {
        return dbRef.child('dates').child(date).once('value').then((snapshot) => {
          let response = snapshot.val();
+         let numOfEmp = Object.keys(response).length;
+         empArr.push(numOfEmp);
+         console.log(empArr);
          returnObj[date] = response;
        })
      })
@@ -775,10 +781,14 @@ export default class DatewiseReports extends Component {
            })
          }
        });
+       for (let i = 0; i < empArr.length; i++) {
+         sumArr += empArr[i]
+       }
        this.setState({
            response: returnObj,
            employeeVsDate,
-           loading: false
+           loading: false,
+           numOfEmp: sumArr
          });
    })
 

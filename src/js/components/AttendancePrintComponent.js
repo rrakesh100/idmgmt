@@ -9,7 +9,7 @@ import moment from 'moment';
 export default class AttendancePrintComponent extends Component {
 
   render() {
-    const { screenshot, selectedEmployeeData } = this.props;
+      const { screenshot, selectedEmployeeData } = this.props;
       const { name, employeeId, paymentType, village, address, joinedDate } = selectedEmployeeData;
       const date = new Date();
       const hours = date.getHours();
@@ -22,7 +22,6 @@ export default class AttendancePrintComponent extends Component {
       let shift = shiftVar || this.props.shift;
       const dateStr = moment(date).format('DD-MM-YYYY') || this.props.dateVal;
       const timeStr = moment(date).format('h:mm A');
-
       return (
           <div className='card'>
             <div className='card-body'>

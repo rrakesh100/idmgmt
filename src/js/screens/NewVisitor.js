@@ -339,7 +339,7 @@ class NewVisitor extends Component {
               <Box onClick={this.capture.bind(this)} direction='column'
                 style={{marginTop:'25px', marginLeft : '10px', width:'300px'}} align='center'>
                   { this.renderCamera() }
-                  <Barcode value={this.state.visitorId} style="" height="20"/>
+                  <Barcode value={this.state.visitorId} height={20}/>
                   <Section pad='small'
                     align='center'>
                      <Button icon={<PrintIcon />}
