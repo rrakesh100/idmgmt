@@ -756,7 +756,6 @@ export default class DatewiseReports extends Component {
          let response = snapshot.val();
          let numOfEmp = Object.keys(response).length;
          empArr.push(numOfEmp);
-         console.log(empArr);
          returnObj[date] = response;
        })
      })

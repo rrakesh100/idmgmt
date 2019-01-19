@@ -242,7 +242,7 @@ getEmployees() {
     let jattuPayment = 0;
     let iterator = 0;
 
-
+    let numOfEmp = idVsName.length;
     idVsName.map((idNameObj, index) => {
       let employeeId = idNameObj['id'];
 
@@ -332,7 +332,11 @@ getEmployees() {
       const timestampStr = moment(now).format('DD/MM/YYYY hh:mm:ss A');
 
       tablesArray.push(<div className="attendanceTableArr" key={uniqId}>
-      <h2 style={!isPrint ? {display:'none'} : {textAlign: 'center',marginTop: 60}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={isPrint ? { position: 'absolute', right: 80} : { display: 'none' }}>{iterator}</span></h2>
+      {
+        startDate == endDate ?
+        <h2 style={!isPrint ? {display:'none'} : {textAlign: 'center',marginTop: 60}}>Attendance Slip as on <strong>{startDate}</strong><span style={isPrint ? { position: 'absolute', right: 80} : { display: 'none' }}>{iterator}/{numOfEmp}</span></h2> :
+        <h2 style={!isPrint ? {display:'none'} : {textAlign: 'center',marginTop: 60}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={isPrint ? { position: 'absolute', right: 80} : { display: 'none' }}>{iterator}/{numOfEmp}</span></h2>
+      }
       <h4 style={isPrint ? {marginLeft: 40} : {display: 'none'}}>Unit: {unit}<span style={{marginLeft: 300}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span><span style={isPrint ? {position: 'absolute', right : 80}: {display:'none'}}>Date : {timestampStr}</span></h4>
       <h4 style={!isPrint ? {display:'none'} : {marginLeft : 20, display: 'flex', flexDirection: 'row',alignItems: 'center'}}><Barcode value={employeeId} height={20}/><span style={{marginLeft: 200}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}</span><span style={isPrint ? {position: 'absolute', right : 80}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h4>
       <h3 style={isPrint ? {display: 'none'} : {marginLeft : 20}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 80}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
