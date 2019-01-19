@@ -212,11 +212,6 @@ span.grommetux-form-field__contents {
           text-align: center;
         }
 
-        .printFooter:after {
-          counter-increment: page;
-          content: counter(page) "/" counter(pages);
-        }
-
         .printVisitor {
             border: initial;
             border-radius: initial;
@@ -403,7 +398,7 @@ span.grommetux-form-field__contents {
         .printFooter {
           visibility: visible;
           position: fixed;
-          bottom: 0;
-          right: 20
+          bottom: -20px;
+          right: 40px;
         }
 }

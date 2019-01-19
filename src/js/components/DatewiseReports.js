@@ -373,14 +373,14 @@ export default class DatewiseReports extends Component {
                      {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
                      {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
 
-                     <td>{index+1}</td>
-                     <td>{employeeAttendaceObj.name}</td>
-                     <td>{key}</td>
-                     <td>{employeeAttendaceObj.paymentType}</td>
-                     <td>{employeeAttendaceObj.shift}</td>
-                     <td>{employeeAttendaceObj.in}</td>
-                     <td>{outTime}</td>
-                     <td>{totalTime}</td>
+                     <td style={{width: '5%'}}>{i}</td>
+                     <td style={{width: '12%'}}>{employeeAttendaceObj.name}</td>
+                     <td style={{width: '10%'}}>{key}</td>
+                     <td style={{width: '18%'}}>{employeeAttendaceObj.paymentType}</td>
+                     <td style={{width: '15%'}}>{employeeAttendaceObj.shift}</td>
+                     <td style={{width: '10%'}}>{employeeAttendaceObj.in}</td>
+                     <td style={{width: '10%'}}>{outTime}</td>
+                     <td style={{width: '15%'}}>{totalTime}</td>
                      </TableRow>
                    }
               }
