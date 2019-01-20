@@ -200,7 +200,9 @@ span.grommetux-form-field__contents {
   visibility: hidden;
 }
 
-
+.prntAnchor {
+  visibility: visible;
+}
 
 @page {
         size: A4;
@@ -214,6 +216,10 @@ span.grommetux-form-field__contents {
           padding: 10px;
           text-align: center;
           color: black;
+        }
+
+        .prntAnchor {
+          visibility: hidden;
         }
 
         .unitClass {
