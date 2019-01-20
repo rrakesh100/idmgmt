@@ -21,6 +21,7 @@ import * as firebase from 'firebase';
 import CloseIcon from 'grommet/components/icons/base/Close';
 import DatewisePrintComponent from './DatewisePrintComponent';
 import ReactToPrint from "react-to-print";
+import AbstractLayer from './AbstractLayer';
 
 const uniqid = require('uniqid');
 
@@ -511,6 +512,12 @@ export default class DatewiseReports extends Component {
 
  }
 
+ setAbstractPrintRef(ref) {
+   console.log(ref);
+   this.abstractComponentRef = ref;
+   console.log(this);
+ }
+
  renderAbstractTable() {
    const { showAbstractTable,
            dailyMaleDayShift,
@@ -523,109 +530,23 @@ export default class DatewiseReports extends Component {
            weeklyFemaleNightShift ,
            jattuPayment, unit, startDate, endDate } = this.state;
 
-
-   let weeklyMaleTotal = weeklyMaleDayShift + weeklyMaleNightShift;
-   let weeklyFemaleTotal = weeklyFemaleDayShift + weeklyFemaleNightShift;
-   let dailyMaleTotal = dailyMaleDayShift + dailyMaleNightShift;
-   let dailyFemaleTotal = dailyFemaleDayShift + dailyFemaleNightShift;
-
-   let weeklyDaySubTotal = weeklyMaleDayShift + weeklyFemaleDayShift;
-   let weeklyNightSubTotal = weeklyMaleNightShift + weeklyFemaleNightShift;
-   let weeklySubTotal = weeklyDaySubTotal + weeklyNightSubTotal;
-
-   let dailyDaySubTotal = dailyMaleDayShift + dailyFemaleDayShift;
-   let dailyNightSubTotal = dailyMaleNightShift + dailyFemaleNightShift;
-   let dailySubTotal = dailyDaySubTotal + dailyNightSubTotal;
-
-   let dayGrandTotal = weeklyDaySubTotal + dailyDaySubTotal;
-   let nightGrandTotal = weeklyNightSubTotal + dailyNightSubTotal;
-   let grandTotal = dayGrandTotal + nightGrandTotal + jattuPayment;
-
-   const date = new Date();
-   const timestampStr = moment(date).format('DD/MM/YYYY hh:mm:ss A');
    if(showAbstractTable) {
      return (
-       <Layer
-         flush={false}
-         closer={true}
-         onClose={this.onCloseLayer.bind(this)}>
-         <div style={{marginTop: 20, marginLeft: 'auto', marginRight: 'auto'}}>
-         <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-           <a onClick={() => setTimeout(() => window.print(), 1)}>Print</a>
-         </div>
-         <div>
-         {
-           startDate == endDate ?
-           <h5 style={{textAlign: 'center'}}><strong>ABSTRACT MANPOWER DETAILS AS ON :{startDate}</strong></h5> :
-           <h5 style={{textAlign: 'center'}}><strong>ABSTRACT MANPOWER DETAILS FROM :{startDate} To: {endDate}</strong></h5>
-         }
-         <h5><strong>Unit: {unit}</strong></h5>
-         </div>
-         <Table scrollable={true}>
-             <thead>
-              <tr>
-                <th></th>
-                <th>Day Shift</th>
-                <th>Night Shift</th>
-                <th>Day Total</th>
-              </tr>
-             </thead>
-             <tbody>
-               <TableRow style={{color : 'green'}}>
-                   <td>Weekly Male</td>
-                   <td>{weeklyMaleDayShift}</td>
-                   <td>{weeklyMaleNightShift}</td>
-                   <td>{weeklyMaleTotal}</td>
-               </TableRow>
-               <TableRow style={{color : 'green'}}>
-                   <td>Weekly Female</td>
-                   <td>{weeklyFemaleDayShift}</td>
-                   <td>{weeklyFemaleNightShift}</td>
-                   <td>{weeklyFemaleTotal}</td>
-               </TableRow>
-               <TableRow style={{color : 'red'}}>
-                   <td>Sub Total</td>
-                   <td>{weeklyDaySubTotal}</td>
-                   <td>{weeklyNightSubTotal}</td>
-                   <td>{weeklySubTotal}</td>
-               </TableRow>
-               <TableRow style={{color : 'blue'}}>
-                   <td>Daily Male</td>
-                   <td>{dailyMaleDayShift}</td>
-                   <td>{dailyMaleNightShift}</td>
-                   <td>{dailyMaleTotal}</td>
-               </TableRow>
-               <TableRow style={{color : 'blue'}}>
-                   <td>Daily Female</td>
-                   <td>{dailyFemaleDayShift}</td>
-                   <td>{dailyFemaleNightShift}</td>
-                   <td>{dailyFemaleTotal}</td>
-               </TableRow>
-               <TableRow style={{color : 'red'}}>
-                   <td>Sub Total</td>
-                   <td>{dailyDaySubTotal}</td>
-                   <td>{dailyNightSubTotal}</td>
-                   <td>{dailySubTotal}</td>
-               </TableRow>
-               <TableRow>
-                   <td>Jattu</td>
-                   <td>{jattuPayment}</td>
-                   <td>0</td>
-                   <td>{jattuPayment}</td>
-               </TableRow>
-               <TableRow style={{color : 'red'}}>
-                   <td>GRAND TOTAL</td>
-                   <td><strong>{dayGrandTotal}</strong></td>
-                   <td><strong>{nightGrandTotal}</strong></td>
-                   <td><strong>{grandTotal}</strong></td>
-               </TableRow>
-             </tbody>
-         </Table>
-         </div>
-         <div>
-            <p style={{position: 'absolute', right: 20}}><strong>page 1/1,<span>Dated {timestampStr}</span></strong></p>
-         </div>
-       </Layer>
+       <AbstractLayer
+          startDate={startDate}
+          endDate={endDate}
+          unit={unit}
+          dailyMaleDayShift={dailyMaleDayShift}
+          dailyMaleNightShift={dailyMaleNightShift}
+          dailyFemaleDayShift={dailyFemaleDayShift}
+          dailyFemaleNightShift={dailyFemaleNightShift}
+          weeklyMaleDayShift={weeklyMaleDayShift}
+          weeklyMaleNightShift={weeklyMaleNightShift}
+          weeklyFemaleDayShift={weeklyFemaleDayShift}
+          weeklyFemaleNightShift={weeklyFemaleNightShift}
+          jattuPayment={jattuPayment}
+          onCloseLayer={this.onCloseLayer.bind(this)}
+        />
      )
    } else {
      return

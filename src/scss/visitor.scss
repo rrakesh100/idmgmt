@@ -200,6 +200,8 @@ span.grommetux-form-field__contents {
   visibility: hidden;
 }
 
+
+
 @page {
         size: A4;
         margin-bottom: 20;
@@ -209,7 +211,13 @@ span.grommetux-form-field__contents {
 @media print {
 
         th,td {
+          padding: 10px;
           text-align: center;
+          color: black;
+        }
+
+        .unitClass {
+          margin-left: 60px;
         }
 
         .printVisitor {
