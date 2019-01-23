@@ -236,6 +236,7 @@ export default class DatewiseReports extends Component {
         header = `Datewise Manpower Details from ${startDate} to ${endDate}`;
         subHead = true;
       }
+      console.log(attendanceObj);
       const numOfEmployees = Object.keys(attendanceObj).length;
       if(attendanceObj ==null)
         return;
@@ -334,35 +335,35 @@ export default class DatewiseReports extends Component {
                     isValid = false;
                   }
 
-                  if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+                  if(inTime && empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
                     dailyMaleDayShift += 1
                  }
 
-                 if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+                 if(inTime && empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
                    dailyMaleNightShift += 1
                 }
 
-                if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+                if(inTime && empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
                   dailyFemaleDayShift += 1
                }
 
-               if(empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+               if(inTime && empAttObj.paymentType === 'Daily payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
                  dailyFemaleNightShift += 1
               }
 
-              if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
+              if(inTime && empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Day Shift') {
                 weeklyMaleDayShift += 1
              }
-             if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
+             if(inTime && empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Male' && empAttObj.shift === 'Night Shift') {
                weeklyMaleNightShift += 1
             }
-            if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
+            if(inTime && empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Day Shift') {
               weeklyFemaleDayShift += 1
            }
-           if(empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
+           if(inTime && empAttObj.paymentType === 'Weekly payment' && empAttObj.gender === 'Female' && empAttObj.shift === 'Night Shift') {
              weeklyFemaleNightShift += 1
           }
-          if(empAttObj.paymentType === 'Jattu-Daily payment') {
+          if(inTime && empAttObj.paymentType === 'Jattu-Daily payment') {
             jattuPayment += 1
           }
 
@@ -513,9 +514,7 @@ export default class DatewiseReports extends Component {
  }
 
  setAbstractPrintRef(ref) {
-   console.log(ref);
    this.abstractComponentRef = ref;
-   console.log(this);
  }
 
  renderAbstractTable() {
@@ -529,6 +528,7 @@ export default class DatewiseReports extends Component {
            weeklyFemaleDayShift,
            weeklyFemaleNightShift ,
            jattuPayment, unit, startDate, endDate } = this.state;
+
 
    if(showAbstractTable) {
      return (

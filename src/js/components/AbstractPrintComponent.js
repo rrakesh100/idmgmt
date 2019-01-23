@@ -49,61 +49,64 @@ export default class AbstractPrintComponent extends Component {
         <h5 className="unitClass"><strong>Unit: {unit}</strong></h5>
         </div>
         <table style={{width:'100%'}}>
+            <thead>
              <tr>
                <th></th>
                <th>Day Shift</th>
                <th>Night Shift</th>
                <th>Day Total</th>
              </tr>
-              <tr style={{color : 'green'}}>
+             </thead>
+             <tbody>
+              <tr style={{color : 'green', fontSize: 14}}>
                   <td>Weekly Male</td>
                   <td>{weeklyMaleDayShift}</td>
                   <td>{weeklyMaleNightShift}</td>
                   <td>{weeklyMaleTotal}</td>
               </tr>
-              <tr style={{color : 'green'}}>
+              <tr style={{color : 'green', fontSize: 14}}>
                   <td>Weekly Female</td>
                   <td>{weeklyFemaleDayShift}</td>
                   <td>{weeklyFemaleNightShift}</td>
                   <td>{weeklyFemaleTotal}</td>
               </tr>
-              <tr style={{color : 'red'}}>
+              <tr style={{color : 'red', fontSize: 18}}>
                   <td>Sub Total</td>
                   <td>{weeklyDaySubTotal}</td>
                   <td>{weeklyNightSubTotal}</td>
                   <td>{weeklySubTotal}</td>
               </tr>
-              <tr style={{color : 'blue'}}>
+              <tr style={{color : 'blue', fontSize: 14}}>
                   <td>Daily Male</td>
                   <td>{dailyMaleDayShift}</td>
                   <td>{dailyMaleNightShift}</td>
                   <td>{dailyMaleTotal}</td>
               </tr>
-              <tr style={{color : 'blue'}}>
+              <tr style={{color : 'blue', fontSize: 14}}>
                   <td>Daily Female</td>
                   <td>{dailyFemaleDayShift}</td>
                   <td>{dailyFemaleNightShift}</td>
                   <td>{dailyFemaleTotal}</td>
               </tr>
-
-              <tr style={{color : 'red'}}>
+              <tr style={{color : 'red', fontSize: 18}}>
                   <td>Sub Total</td>
                   <td>{dailyDaySubTotal}</td>
                   <td>{dailyNightSubTotal}</td>
                   <td>{dailySubTotal}</td>
               </tr>
-              <tr>
+              <tr style={{fontSize: 14}}>
                   <td>Jattu</td>
                   <td>{jattuPayment}</td>
                   <td>0</td>
                   <td>{jattuPayment}</td>
               </tr>
-              <tr style={{color : 'red'}}>
+              <tr style={{color : 'red', fontSize: 18}}>
                   <td>GRAND TOTAL</td>
                   <td><strong>{dayGrandTotal}</strong></td>
                   <td><strong>{nightGrandTotal}</strong></td>
                   <td><strong>{grandTotal}</strong></td>
               </tr>
+              </tbody>
         </table>
         <div>
            <p style={{position: 'absolute', right: 20}}><strong>page 1/1,<span>Dated {timestampStr}</span></strong></p>

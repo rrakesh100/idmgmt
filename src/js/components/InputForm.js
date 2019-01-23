@@ -282,7 +282,7 @@ onEmployeeSelect(data, isSuggestionSelected) {
 
     return (
       <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
-      <div style={{display : 'flex', flexDirection : 'column'}} >
+      <div style={{display : 'flex', flexDirection : 'column', marginLeft:30}} >
       <div style={{width: 300}}>
       <FormField label={<UnitText/>} style={{marginTop:20}}>
         <Select
@@ -319,7 +319,7 @@ onEmployeeSelect(data, isSuggestionSelected) {
       </div>
       </div>
 
-      <div style={{display : 'flex', flexDirection : 'column',marginLeft: '20px'}} >
+      <div style={{display : 'flex', flexDirection : 'column',marginLeft: 30}} >
           <div style={{width: 300}}>
           <FormField label='Select Payment Type' style={{marginTop:20}}>
 
@@ -352,7 +352,7 @@ onEmployeeSelect(data, isSuggestionSelected) {
           </FormField>
           </div>
           </div>
-          <div style={{display : 'flex', flexDirection : 'column', marginTop: 20, marginLeft: '20px'}} >
+          <div style={{display : 'flex', flexDirection : 'column', marginTop: 20, marginLeft: 30}} >
           <div style={{width: 300}}>
           <FormField label='Select Village' style={{marginLeft:20}}>
               <Select

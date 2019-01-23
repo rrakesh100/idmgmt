@@ -283,7 +283,7 @@ class Tasks extends Component {
 
     return (
       <div className='table'>
-      <Heading tag="h4" strong="true" style={{marginLeft : '20px', marginTop : '20px'}}> Todays Visitors</Heading>
+      <Heading tag="h4" strong={true} style={{marginLeft : '20px', marginTop : '20px'}}> Todays Visitors</Heading>
       <Table scrollable={true} style={{marginTop : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>

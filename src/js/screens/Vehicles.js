@@ -28,7 +28,7 @@ import { getVehicles, getVehicle, getAllVehicles } from '../api/vehicles';
 import VehicleIn from './VehicleIn';
 import VehicleOut from './VehicleOut';
 import AllVehiclesPrint from './AllVehiclesPrint';
-
+import VehicleReports from '../components/VehicleReports';
 
 class Vehicles extends Component {
 
@@ -228,6 +228,7 @@ class Vehicles extends Component {
             <VehicleOut />
             </Tab>
             <Tab title='REPORTS'>
+            <VehicleReports />
             </Tab>
             </Tabs>
         </Section>

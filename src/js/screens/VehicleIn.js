@@ -116,7 +116,7 @@ export default class VehicleIn extends Component {
       if(window.localStorage.unit === 'UNIT3') {
         prefix = 'U3';
       }
-      const lastCount = data ? data[prefix]['count']['inCount'] :  0;
+      const lastCount = data && data[prefix]['count']['inCount'] ? data[prefix]['count']['inCount'] :  0;
       let inwardSNo = `${prefix}-in-${lastCount}`;
       this.setState({ inwardSNo, lastCount })
     }).catch((e) => console.log(e))
@@ -220,7 +220,8 @@ export default class VehicleIn extends Component {
           if(!nre.test(e.target.value)) {
           this.setState({
             [fieldName]: e.target.value,
-            validationMsg: ''
+            validationMsg: '',
+            selectVehicleNumber: ''
           })
         }
       }
@@ -228,7 +229,8 @@ export default class VehicleIn extends Component {
       if(fieldName == 'selectVehicleNumber') {
         this.setState({
           [fieldName]: e.option,
-          validationMsg:''
+          validationMsg:'',
+          vehicleNumber:''
         })
       }
 
@@ -454,7 +456,6 @@ export default class VehicleIn extends Component {
             billNumber,
             remarks,
             screenshot, vehicleExists } = this.state;
-            console.log(vehicleExists);
             let vNo=vehicleNumber;
             if(selectVehicleNumber)
              vNo = selectVehicleNumber;

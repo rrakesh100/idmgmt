@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import Button from 'grommet/components/Button';
 import Layer from 'grommet/components/Layer';
-import Table from 'grommet/components/Table';
-import TableRow from 'grommet/components/TableRow';
 import AbstractPrintComponent from './AbstractPrintComponent';
 import ReactToPrint from "react-to-print";
 import PrintIcon from 'grommet/components/icons/base/Print';

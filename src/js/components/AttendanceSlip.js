@@ -23,6 +23,8 @@ import { RingLoader } from 'react-spinners';
 import Barcode from 'react-barcode';
 import AttendanceSlipPrint from './AttendanceSlipPrint';
 import ReactToPrint from "react-to-print";
+import Image from 'grommet/components/Image';
+
 const uniqid = require('uniqid');
 
 
@@ -208,7 +210,6 @@ getEmployees() {
     return null;
 
     let tablesArray = [];
-    let reportData = [];
     let returnObj = {};
     let idVsName = [];
     Object.keys(employeeVsDate).map((empId) => {
@@ -349,11 +350,12 @@ getEmployees() {
              <th>In Time</th>
              <th>Out Time</th>
              <th>Total Time Spent</th>
+             <th>Image</th>
+             <th>Reference Image</th>
            </tr>
           </thead>
           <tbody>
             {
-
                 attendanceObjArray.map((dateObject,index)=> {
                   let totalNumberOfdays = 0;
                   const dateVal = dateObject['date']
@@ -391,19 +393,7 @@ getEmployees() {
                 if(outTime !== 'N/A')
                   istOutTime=moment.utc(outTime).local().format('YYYY-MM-DD HH:mm:ss');
 
-
-                   i++;
-                     reportData.push( {
-                     serialNo : i,
-                     manpowerId : employeeId,
-                     name :  employeeAttendaceObj.name,
-                     numberOfPersons : employeeAttendaceObj.numberOfPersons,
-                     shift : employeeAttendaceObj.shift,
-                     inTime : inTime,
-                     outTime : outTime,
-                     totalTime : totalTime
-                   });
-
+                      i++;
                      return <TableRow key={index} className="attTableRow" style={employeeAttendaceObj.paymentType == 'Daily payment' ?
                      {backgroundColor : '#C6D2E3'} : employeeAttendaceObj.paymentType == 'Jattu-Daily payment' ?
                      {backgroundColor: '#eeeeee'}: employeeAttendaceObj.paymentType == 'Weekly payment' ?
@@ -414,8 +404,10 @@ getEmployees() {
                      <td>{employeeAttendaceObj.in}</td>
                      <td>{outTime}</td>
                      <td>{totalTime}</td>
+                     <td><Image src={employeeAttendaceObj.inwardPhoto} style={{width:150, height:150}}/></td>
+                     <td><Image src={empAttObj.screenshot} style={{width:150, height:150}}/></td>
                      </TableRow>
-                   }
+                 }
             })
           }
         </tbody>
@@ -423,7 +415,6 @@ getEmployees() {
       </div>)
     })
     returnObj['tablesArray'] = tablesArray;
-    returnObj['reportData'] = reportData;
     returnObj['summary'] = {
       dailyMaleDayShift,
       dailyMaleNightShift,
@@ -457,20 +448,17 @@ getEmployees() {
 
     if(!tablesObj)
     return null;
-    let ob = [{
-      start : startDate,
-      end : endDate
-    }]
+
     return (
 
       <div className='table' style={{marginTop: 40}}>
       {
         tablesObj['tablesArray'].length == 0 ? null :
-        <div>
+        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
         <div>
           <h3 style={{marginLeft: 20,marginBottom: 20, color: '#865CD6'}}>Number of Manpower : { tablesObj['tablesArray'].length }</h3>
         </div>
-        <div style={{float : 'right'}}>
+        <div>
           <ReactToPrint
               trigger={this.renderTrigger.bind(this)}
               content={this.renderContent.bind(this)}
@@ -486,6 +474,12 @@ getEmployees() {
       </div>
     )
 
+  }
+
+  onPrintImgBtnClick() {
+    this.setState({
+      printWithImages: true
+    })
   }
 
   renderContent() {
@@ -626,7 +620,6 @@ getEmployees() {
   }
 
   onEmployeeSelected(employeeSelected, selectedEmployeeId, selectedEmployeeData) {
-    console.log(employeeSelected, selectedEmployeeId, selectedEmployeeData);
     this.setState({
       employeeSelected,
       selectedEmployeeId,
