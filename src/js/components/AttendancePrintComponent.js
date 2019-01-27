@@ -9,8 +9,8 @@ import moment from 'moment';
 export default class AttendancePrintComponent extends Component {
 
   render() {
-      const { screenshot, selectedEmployeeData } = this.props;
-      const { name, employeeId, paymentType, village, address, joinedDate } = selectedEmployeeData;
+      const { inwardImage, selectedEmployeeData } = this.props;
+      const { name, employeeId, paymentType, village, address, joinedDate, screenshot } = selectedEmployeeData;
       const date = new Date();
       const hours = date.getHours();
       let shiftVar;
@@ -24,19 +24,20 @@ export default class AttendancePrintComponent extends Component {
       const timeStr = moment(date).format('h:mm A');
       return (
           <div className='card'>
-            <div className='card-body'>
+            <div className='attendanceCardBody'>
               <div className='box header'>
                 <h3 style={{textDecoration : 'underline'}}>Attendance In Card</h3>
               </div>
-              <div className='box sidebar'>
-                <Image src={screenshot} style={{width:250, height:250}}/>
-              </div>
               <div className='box content'>
+                <Image src={screenshot} style={{width:180, height:200}}/>
+                <Image src={inwardImage} style={{width:180, height:200}}/>
+              </div>
+              <div className='box sidebar'>
               <Table>
                 <tbody>
                   <TableRow>
                     <td>
-                      <div style={{overflowWrap: 'break-word'}}>Name: <b>{name}</b></div>
+                      Name: <b>{name}</b>
                     </td>
                     <td margin='xlarge'>
                       MCode: <b>{employeeId}</b>

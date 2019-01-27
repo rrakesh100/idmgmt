@@ -822,7 +822,7 @@ renderSearchedEmployee() {
         ref={this.setPrintRef.bind(this)}
         shift={shift}
         dateVal={dateVal}
-        screenshot={screenshot}
+        inwardImage={screenshot}
         selectedEmployeeData={selectedEmployeeData}
       />
       </div>

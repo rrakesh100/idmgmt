@@ -281,7 +281,7 @@ onEmployeeSelect(data, isSuggestionSelected) {
     const { refreshData } = this.props;
 
     return (
-      <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
+      <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 330, display : 'flex', flexDirection : 'row'}}>
       <div style={{display : 'flex', flexDirection : 'column', marginLeft:30}} >
       <div style={{width: 300}}>
       <FormField label={<UnitText/>} style={{marginTop:20}}>
@@ -377,9 +377,20 @@ onEmployeeSelect(data, isSuggestionSelected) {
             style={{ display : 'inline-block' , marginTop : '20px', width:'300px'}}
             primary={true}
             href='#'/>
+            {this.props.showImageReport ?
+            <Button  label='Show Report with Images'
+            onClick={this.props.onShowImageReport}
+            style={{ display : 'inline-block' , marginTop : '20px', width:'300px'}}
+            primary={true}
+            href='#'/> : null }
             {this.props.showAbstractButton ?
             <Button label='Show Abstract Report'
             onClick={this.props.onAbstractButtonClick}
+            primary={true} style={{ display : 'inline-block' , marginTop : '20px', width:'300px'}}
+            href='#'/> : null}
+            {this.props.showInwardButton ?
+            <Button label='Inward Photos'
+            onClick={this.props.onShowingInwardClick}
             primary={true} style={{ display : 'inline-block' , marginTop : '20px', width:'300px'}}
             href='#'/> : null}
           </div>

@@ -50,7 +50,8 @@ constructor(props) {
     villageSelected: false,
     employeeSelected: false,
     selectedEmployeeId: '',
-    selectedEmployeeData: null
+    selectedEmployeeData: null,
+    showReportWithImages: false
   }
 }
 
@@ -78,7 +79,6 @@ getEmployees() {
   renderActivityIndicator() {
     const { loading } = this.state;
       return (
-
         <div style={{display: 'flex', justifyContent: 'center', marginTop:10}}>
         <RingLoader
               sizeUnit={"px"}
@@ -204,7 +204,7 @@ getEmployees() {
             employeeVsDate,
             allEmployees,
             employeeSelected,
-            selectedEmployeeId, unit, printCopies } = this.state;
+            selectedEmployeeId, unit, printCopies, showReportWithImages } = this.state;
 
     if(!response)
     return null;
@@ -253,10 +253,7 @@ getEmployees() {
         return;
         let i = 0;
 
-
         let isValid = true;
-
-
 
       let uniqId = uniqid();
       let totalNumberOfdays = 0;
@@ -340,7 +337,10 @@ getEmployees() {
       }
       <h4 style={isPrint ? {marginLeft: 40} : {display: 'none'}}>Unit: {unit}<span style={{marginLeft: 300}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span><span style={isPrint ? {position: 'absolute', right : 80}: {display:'none'}}>Date : {timestampStr}</span></h4>
       <h4 style={!isPrint ? {display:'none'} : {marginLeft : 20, display: 'flex', flexDirection: 'row',alignItems: 'center'}}><Barcode value={employeeId} height={20}/><span style={{marginLeft: 200}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}</span><span style={isPrint ? {position: 'absolute', right : 80}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h4>
+      <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems:'center'}}>
       <h3 style={isPrint ? {display: 'none'} : {marginLeft : 20}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 80}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
+      {showReportWithImages ? <Image src={empAttObj.screenshot} style={isPrint ? {marginLeft:800, width:100, height:100} :{width:100, height:100, marginRight:200}}/>: null}
+      </div>
       <Table scrollable={true} style={isPrint ? {} :  { marginTop : '10px', marginLeft : '30px'}}>
           <thead style={{position:'relative'}}>
            <tr>
@@ -350,8 +350,8 @@ getEmployees() {
              <th>In Time</th>
              <th>Out Time</th>
              <th>Total Time Spent</th>
-             <th>Image</th>
-             <th>Reference Image</th>
+             {showReportWithImages ? <th>Inward Image</th> : null}
+             {showReportWithImages ? <th>Outward Image</th> : null}
            </tr>
           </thead>
           <tbody>
@@ -404,8 +404,8 @@ getEmployees() {
                      <td>{employeeAttendaceObj.in}</td>
                      <td>{outTime}</td>
                      <td>{totalTime}</td>
-                     <td><Image src={employeeAttendaceObj.inwardPhoto} style={{width:150, height:150}}/></td>
-                     <td><Image src={empAttObj.screenshot} style={{width:150, height:150}}/></td>
+                     {showReportWithImages ? <td><Image src={employeeAttendaceObj.inwardPhoto} style={{width:100, height:100}}/></td> : null}
+                     {showReportWithImages ? <td><Image src={employeeAttendaceObj.outwardPhoto} style={{width:100, height:100}}/></td> : null}
                      </TableRow>
                  }
             })
@@ -627,6 +627,20 @@ getEmployees() {
     }, this.getEmployeePrintCopiesData.bind(this))
   }
 
+  onShowingReportsWithImages() {
+    this.setState({
+      showReportWithImages: true,
+      response: null
+    }, this.onValidatingInputs.bind(this))
+  }
+
+  onShowingReports() {
+    this.setState({
+      showReportWithImages: false,
+      response: null
+    }, this.onValidatingInputs.bind(this))
+  }
+
   renderInputForm() {
     return (
       <InputForm
@@ -639,8 +653,10 @@ getEmployees() {
         onGenderSelected={this.onGenderSelected.bind(this)}
         onVillageSelected={this.onVillageSelected.bind(this)}
         onEmployeeSelected={this.onEmployeeSelected.bind(this)}
-        onShowReport={this.onValidatingInputs.bind(this)}
+        onShowReport={this.onShowingReports.bind(this)}
+        onShowImageReport={this.onShowingReportsWithImages.bind(this)}
         showAbstractButton={false}
+        showImageReport={true}
       />
     )
   }

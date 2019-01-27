@@ -22,6 +22,8 @@ import CloseIcon from 'grommet/components/icons/base/Close';
 import DatewisePrintComponent from './DatewisePrintComponent';
 import ReactToPrint from "react-to-print";
 import AbstractLayer from './AbstractLayer';
+import Image from 'grommet/components/Image';
+
 
 const uniqid = require('uniqid');
 
@@ -49,7 +51,9 @@ export default class DatewiseReports extends Component {
       villageSelected: false,
       employeeSelected: false,
       selectedEmployeeId: '',
-      selectedEmployeeData: null
+      selectedEmployeeData: null,
+      showReportsClicked: false,
+      showInwardPhotosClicked: false
     }
   }
 
@@ -95,8 +99,10 @@ export default class DatewiseReports extends Component {
       endDate,
       dateRange,
       response: null,
-      validationMsg: ''
-    })
+      validationMsg: '',
+      showReportsClicked: false,
+      showInwardPhotosClicked: false
+    }, this.attendanceDatesLoop.bind(this))
   }
 
   onPaymentSelected(paymentType) {
@@ -195,10 +201,9 @@ export default class DatewiseReports extends Component {
             genderSelected,
             villageSelected,
             employeeSelected,
-            selectedEmployeeId, numOfEmp } = this.state;
+            selectedEmployeeId, numOfEmp, showReportsClicked } = this.state;
 
-
-    if(!response)
+    if(!response || !showReportsClicked)
     return null;
 
     let tablesArray = [];
@@ -236,7 +241,6 @@ export default class DatewiseReports extends Component {
         header = `Datewise Manpower Details from ${startDate} to ${endDate}`;
         subHead = true;
       }
-      console.log(attendanceObj);
       const numOfEmployees = Object.keys(attendanceObj).length;
       if(attendanceObj ==null)
         return;
@@ -553,23 +557,6 @@ export default class DatewiseReports extends Component {
    }
  }
 
-
- abstractPrintPdf() {
-   const { showAbstractTable } = this.state;
-   if(showAbstractTable) {
-     let abstractTableCopy = this.renderAbstractTable();
-     return(
-       <Print name="hihi" exclusive>
-          <div className="abstractPrint">
-            {abstractTableCopy}
-          </div>
-       </Print>
-     );
-   } else {
-     return null;
-   }
- }
-
  onAbstractClick() {
    const { unit, startDate, endDate } = this.state;
 
@@ -618,6 +605,13 @@ export default class DatewiseReports extends Component {
    })
  }
 
+ onShowingReportsTable() {
+   this.setState({
+     showReportsClicked: true,
+     showInwardPhotosClicked: false
+   }, this.onValidatingInputs.bind(this))
+ }
+
  onValidatingInputs() {
    const { startDate, endDate, unit } = this.state;
    if(!unit) {
@@ -649,7 +643,6 @@ export default class DatewiseReports extends Component {
 
  attendanceDatesLoop() {
    const { startDate, endDate, unit, allEmployees } = this.state;
-
    let datesArr=[];
    let empArr=[];
    let sumArr=0;
@@ -722,6 +715,50 @@ export default class DatewiseReports extends Component {
    })
  }
 
+ onShowingInwardClick() {
+   this.setState({
+     showInwardPhotosClicked:true,
+     showReportsClicked: false,
+   })
+ }
+
+ renderInwardPhotos() {
+   const {response, showInwardPhotosClicked, startDate, endDate, unit} = this.state;
+   if(!response || !showInwardPhotosClicked)
+   return null;
+
+   let inwardImagesArr=[];
+   let uniqId = uniqid();
+
+   Object.keys(response).map((date, index) => {
+     const employeesList = response[date];
+     Object.keys(employeesList).map((key, indx) => {
+       const eachEmployeeObj = employeesList[key];
+       inwardImagesArr.push(
+         <div style={{marginLeft: 30}}>
+           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+             <Image src={eachEmployeeObj.inwardPhoto} style={{width:150, height:150}}/>
+             <h4><strong>{key}</strong></h4>
+           </div>
+         </div>
+       )
+     })
+   })
+   return (
+     <div>
+     {
+       startDate == endDate ?
+       <h3 style={{textAlign: 'center'}}><strong>DATEWISE MANPOWER INWARD IMAGES AS ON: {startDate}</strong></h3> :
+       <h3 style={{textAlign: 'center'}}><strong>DATEWISE MANPOWER INWARD IMAGES FROM: {startDate} TO: {endDate}</strong></h3>
+     }
+     <h4 style={{marginLeft:30}}><strong>Unit:{unit}</strong></h4>
+     <div style={{display:'flex', flex:1, flexDirection:'row', flexWrap: 'wrap'}}>
+     {inwardImagesArr}
+     </div>
+     </div>
+   )
+ }
+
  renderInputForm() {
    return (
      <InputForm
@@ -734,9 +771,12 @@ export default class DatewiseReports extends Component {
        onGenderSelected={this.onGenderSelected.bind(this)}
        onVillageSelected={this.onVillageSelected.bind(this)}
        onEmployeeSelected={this.onEmployeeSelected.bind(this)}
-       onShowReport={this.onValidatingInputs.bind(this)}
+       onShowReport={this.onShowingReportsTable.bind(this)}
        onAbstractButtonClick={this.onAbstractClick.bind(this)}
+       onShowingInwardClick={this.onShowingInwardClick.bind(this)}
        showAbstractButton={true}
+       showImageReport={false}
+       showInwardButton={true}
      />
    )
  }
@@ -773,8 +813,8 @@ export default class DatewiseReports extends Component {
       { this.showOldEmployeeReportsTable() }
       { this.emailReportDialog() }
       { this.renderAbstractTable() }
-      { this.abstractPrintPdf() }
       { this.renderNewPrintCard() }
+      { this.renderInwardPhotos() }
       </div>
     )
   }

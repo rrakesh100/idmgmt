@@ -58,6 +58,20 @@ export function savingInwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/inwardPhoto`] = data.inwardPhoto;
+
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inwardSNo`] = data.inwardSNo;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/ownOutVehicle`] = data.ownOutVehicle;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/vehicleNumber`] = data.vehicleNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/driverName`] = data.driverName;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/driverNumber`] = data.driverNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/emptyLoad`] = data.emptyLoad;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/partyName`] = data.partyName;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/material`] = data.material;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/numberOfBags`] = data.numberOfBags;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/comingFrom`] = data.comingFrom;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inwardPhoto`] = data.inwardPhoto;
   return dbRef.update(updates);
 }
 
@@ -78,7 +92,26 @@ export function savingOutwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/outwardPhoto`] = data.outwardPhoto;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/out`] = timeStr;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/outwardPhoto`] = data.outwardPhoto;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outwardSNo`] = data.outwardSNo;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/ownOutVehicle`] = data.ownOutVehicle;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/vehicleNumber`] = data.vehicleNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/driverName`] = data.driverName;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/driverNumber`] = data.driverNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/emptyLoad`] = data.emptyLoad;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/partyName`] = data.partyName;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/material`] = data.material;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/numberOfBags`] = data.numberOfBags;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/goingTo`] = data.goingTo;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outwardPhoto`] = data.outwardPhoto;
+
   return dbRef.update(updates);
+}
+
+export function fetchVehicleReportsData() {
+  const dbRef = firebase.database().ref(localStorage.unit + '/' + 'vehicleReports/in');
+  return dbRef.once('value');
 }
 
 export function uploadVehicleImage(img, vehicleNumber, serialNo) {

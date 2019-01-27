@@ -247,9 +247,9 @@ th,td {
           display: block;
           position: absolute;
           top: 40;
-          left: 80;
-          width: 10in;
-          height: 5in;
+          left: 40;
+          width: 10.2in;
+          height: 4in;
           border: 1px solid  red;
         }
 
@@ -366,6 +366,42 @@ th,td {
             font-size: 0.1in;
             text-align: center;
             margin-top: 20px;
+          }
+
+        }
+
+        .attendanceCardBody {
+          position: absolute;
+          width: 10in;
+          height: 5in;
+          top:20;
+          left: 20;
+          padding: .125in;
+          display: grid;
+          grid-template-columns: repeat(5.5, 1fr);
+          grid-auto-rows: minmax(50px, auto);
+          grid-template-areas:
+                "hd hd hd hd   hd   hd   hd   hd   hd"
+                "sd sd sd main main main main main main"
+                "ft ft ft ft   ft   ft   ft   ft   ft";
+          text-align: center;
+          line-height: 0;
+
+
+          .sidebar {
+            grid-area: sd;
+          }
+
+          .content {
+            grid-area: main;
+          }
+
+          .header {
+            grid-area: hd;
+            text-align: center;
+          }
+          .footer {
+            grid-area: ft;
           }
 
         }

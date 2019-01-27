@@ -5,9 +5,10 @@ import DateTime from 'grommet/components/DateTime';
 import Button from 'grommet/components/Button';
 import moment from 'moment';
 import TimePicker from 'rc-time-picker';
-import {
-  TimeInput,
-} from 'semantic-ui-calendar-react';
+import Notification from 'grommet/components/Notification';
+import * as firebase from 'firebase';
+import { fetchVehicleReportsData } from '../api/vehicles';
+
 
 export default class VehicleReports extends Component {
 
@@ -16,9 +17,10 @@ export default class VehicleReports extends Component {
     this.state = {
       startDate:'',
       endDate:'',
-      reportType: [],
-      ownOutVehicle: [],
-      emptyLoad: []
+      reportType: null,
+      ownOutVehicle: null,
+      emptyLoad: null,
+      validationMsg:'',
     }
   }
 
@@ -63,8 +65,52 @@ export default class VehicleReports extends Component {
     })
   }
 
-  onShowingReport() {
-    console.log('show report');
+  onFetchingVehicleData() {
+    const { reportType, ownOutVehicle, emptyLoad } = this.state;
+    fetchVehicleReportsData().then((res) => {
+      const response = res.val();
+      console.log(response);
+    })
+    .catch((err) => console.error(err))
+  }
+
+  renderValidationMsg() {
+    const { validationMsg } = this.state;
+    if (validationMsg) {
+      return (
+        <Notification message={validationMsg} size='small' status='critical' />
+      );
+    }
+    return null;
+  }
+
+  onValidatingInputs() {
+    const { reportType, ownOutVehicle, emptyLoad } = this.state;
+
+    if(!reportType) {
+      this.setState({
+        validationMsg: 'Report Type is Missing'
+      })
+      return
+    }
+
+    if(!ownOutVehicle) {
+      this.setState({
+        validationMsg: 'Own/Out Vehicle is Missing'
+      })
+      return
+    }
+
+    if(!emptyLoad) {
+      this.setState({
+        validationMsg: 'Empty/Load is Missing'
+      })
+      return
+    }
+
+    this.setState({
+      validationMsg: ''
+    }, this.onFetchingVehicleData.bind(this))
   }
 
   onPrintingReport() {
@@ -75,10 +121,8 @@ export default class VehicleReports extends Component {
     console.log('close report');
   }
 
-
-  render() {
+  renderInputFields() {
     return (
-      <div>
       <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
       <div style={{display : 'flex', flexDirection : 'column', marginLeft: 10}} >
       <div style={{width: 250}}>
@@ -153,7 +197,7 @@ export default class VehicleReports extends Component {
 
       <div style={{display : 'flex', flexDirection : 'column', marginLeft: 10}}>
       <Button  label='Show Report'
-      onClick={this.onShowingReport.bind(this)}
+      onClick={this.onValidatingInputs.bind(this)}
       style={{ display : 'inline-block' , marginTop: 20, width:250}}
       primary={true}
       href='#'/>
@@ -169,7 +213,15 @@ export default class VehicleReports extends Component {
       href='#'/>
       </div>
       </div>
-      <h1 style={{textAlign:'center'}}>WORK IN PROGRESS</h1>
+    )
+  }
+
+
+  render() {
+    return (
+      <div>
+      { this.renderValidationMsg() }
+      { this.renderInputFields() }
       </div>
     )
   }
