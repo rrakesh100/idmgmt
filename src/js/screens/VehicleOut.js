@@ -58,7 +58,7 @@ export default class VehicleOut extends Component {
       goingTo: '',
       billNumber: '',
       remarks: '',
-      inwardObj: {},
+      inwardObj: null,
       ourVehicle: false,
       emptyVehicle: true,
       showDetails: false,
@@ -122,6 +122,7 @@ export default class VehicleOut extends Component {
          vNo = selectVehicleNumber;
       getInwardVehicle(vNo).then((snap) => {
         const inwardObj = snap.val();
+        console.log(inwardObj);
         this.setState({inwardObj})
       }).catch((e) => console.log(e));
   }
@@ -153,7 +154,7 @@ export default class VehicleOut extends Component {
         this.setState({
           [fieldName]: e.target.value,
           validationMsg: ''
-        })
+        }, this.getInwardVehicleDetails.bind(this))
       }
     }
 
@@ -164,11 +165,18 @@ export default class VehicleOut extends Component {
       })
     }
 
-    if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material' || fieldName == 'selectVehicleNumber') {
+    if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material') {
       this.setState({
         [fieldName]: e.option,
         validationMsg:''
       })
+    }
+
+    if(fieldName == 'selectVehicleNumber') {
+      this.setState({
+        [fieldName]: e.option,
+        validationMsg: ''
+      }, this.getInwardVehicleDetails.bind(this))
     }
 
     if(fieldName == 'ownOutVehicle' && e.option == 'Own Vehicle') {
@@ -246,7 +254,6 @@ export default class VehicleOut extends Component {
 
   showInwardDetails() {
     const { ourVehicle, emptyVehicle, showDetails, outwardSNo, inwardObj } = this.state;
-    let inwardObjKey = inwardObj['inwardSNo'];
     let inwardObjVal = inwardObj;
     return (
       <div>
@@ -355,8 +362,10 @@ export default class VehicleOut extends Component {
       goingTo,
       billNumber,
       remarks,
-      screenshot } = this.state;
-
+      screenshot, inwardObj } = this.state;
+      console.log(inwardObj);
+      let inwardDate = inwardObj ? inwardObj.inwardDate : null;
+      let inTime = inwardObj ? inwardObj.inTime : null;
       let vNo=vehicleNumber;
       if(selectVehicleNumber)
        vNo = selectVehicleNumber;
@@ -378,7 +387,9 @@ export default class VehicleOut extends Component {
         goingTo,
         billNumber,
         remarks,
-        outwardPhoto
+        outwardPhoto,
+        inwardDate,
+        inTime
       }).then(this.setState({
         toastMsg: `Vehicle ${vNo} Out is saved`,
         vehicleSaved: true

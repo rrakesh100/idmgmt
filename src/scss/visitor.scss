@@ -204,6 +204,15 @@ span.grommetux-form-field__contents {
   visibility: visible;
 }
 
+.vehicleReportsTable {
+  width: 97%;
+  border-collapse: collapse;
+}
+
+.vehicleReportsTable th, .vehicleReportsTable td {
+  border: 1px solid #ddd;
+}
+
 th,td {
   text-align: center;
 }

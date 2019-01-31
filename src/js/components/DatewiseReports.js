@@ -5,14 +5,14 @@ import TableRow from 'grommet/components/TableRow';
 import Notification from 'grommet/components/Notification';
 import TextInput from 'grommet/components/TextInput';
 import Layer from 'grommet/components/Layer';
+import Image from 'grommet/components/Image';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import Button from 'grommet/components/Button';
 import { Container, Row, Col } from 'react-grid-system';
 import { Print } from 'react-easy-print';
 import { RingLoader } from 'react-spinners';
 import { getEmployees, getEmployee } from '../api/employees';
-import { attendanceDatesLoop,
-  getEmployeeAttendanceDates,
+import {
   saveEmailReport,
   savePrintCopiesData,
   fetchPrintCopiesData } from '../api/attendance';
@@ -22,7 +22,7 @@ import CloseIcon from 'grommet/components/icons/base/Close';
 import DatewisePrintComponent from './DatewisePrintComponent';
 import ReactToPrint from "react-to-print";
 import AbstractLayer from './AbstractLayer';
-import Image from 'grommet/components/Image';
+import InwardImagesPrintComponent from './InwardImagesPrintComponent';
 
 
 const uniqid = require('uniqid');
@@ -399,7 +399,7 @@ export default class DatewiseReports extends Component {
       </div>
       </div>)
     })
-    returnObj['tablesArray'] = tablesArray;
+    returnObj['reny'] = tablesArray;
     returnObj['summary'] = {
       dailyMaleDayShift,
       dailyMaleNightShift,
@@ -722,12 +722,13 @@ export default class DatewiseReports extends Component {
    })
  }
 
- renderInwardPhotos() {
+ displayInwardPhotos() {
    const {response, showInwardPhotosClicked, startDate, endDate, unit} = this.state;
    if(!response || !showInwardPhotosClicked)
    return null;
 
    let inwardImagesArr=[];
+   let returnObj ={};
    let uniqId = uniqid();
 
    Object.keys(response).map((date, index) => {
@@ -746,17 +747,61 @@ export default class DatewiseReports extends Component {
    })
    return (
      <div>
-     {
-       startDate == endDate ?
-       <h3 style={{textAlign: 'center'}}><strong>DATEWISE MANPOWER INWARD IMAGES AS ON: {startDate}</strong></h3> :
-       <h3 style={{textAlign: 'center'}}><strong>DATEWISE MANPOWER INWARD IMAGES FROM: {startDate} TO: {endDate}</strong></h3>
-     }
-     <h4 style={{marginLeft:30}}><strong>Unit:{unit}</strong></h4>
-     <div style={{display:'flex', flex:1, flexDirection:'row', flexWrap: 'wrap'}}>
-     {inwardImagesArr}
-     </div>
+       <InwardImagesPrintComponent
+        ref={this.setInwardRef.bind(this)}
+        startDate={startDate}
+        endDate={endDate}
+        unit={unit}
+        inwardImagesArr={inwardImagesArr}
+       />
      </div>
    )
+ }
+
+ setInwardRef(ref) {
+   this.inwardComponentRef = ref;
+ }
+
+ renderInwardTrigger() {
+   return (
+     <Button  icon={<PrintIcon />}
+      href="#" label="print" primary={true}
+      style={{marginRight: 20}}
+     />
+   )
+ }
+
+ renderInwardContent() {
+   return this.inwardComponentRef;
+ }
+
+
+ handleInwardBeforePrint() {
+   console.log('before print inward images');
+ }
+
+ renderInwardImages() {
+   const {startDate, endDate, unit} = this.state;
+
+   let imagesArr = this.displayInwardPhotos();
+   if(imagesArr !== null) {
+     return (
+       <div>
+         <div style={{display:'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
+           <ReactToPrint
+               trigger={this.renderInwardTrigger.bind(this)}
+               content={this.renderInwardContent.bind(this)}
+               onAfterPrint={this.handleInwardBeforePrint.bind(this)}
+            />
+         </div>
+         <div>
+          {imagesArr}
+         </div>
+       </div>
+     )
+   } else {
+     return null;
+   }
  }
 
  renderInputForm() {
@@ -814,7 +859,7 @@ export default class DatewiseReports extends Component {
       { this.emailReportDialog() }
       { this.renderAbstractTable() }
       { this.renderNewPrintCard() }
-      { this.renderInwardPhotos() }
+      { this.renderInwardImages() }
       </div>
     )
   }

@@ -25,10 +25,12 @@ export function savingInwardVehicle(data) {
   if(localStorage.unit === 'UNIT3') {
     prefix = 'U3';
   }
+  const newData = Object.assign({}, data);
+  newData.inwardDate= dateStr;
+  newData.inTime=timeStr;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/in/${data.inwardSNo}`] = data;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/inCount`] = data.lastCount+1;
-  updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastInward`] = data;
-  updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/${dateStr}/vehicleIn`] = true;
+  updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastInward`] = newData;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/savedBy`] = localStorage.email;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/in`] = timeStr;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/inwardSNo`] = data.inwardSNo;
@@ -72,6 +74,9 @@ export function savingInwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inwardPhoto`] = data.inwardPhoto;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inDate`] = dateStr;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inTime`] = timeStr;
+  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inSide`] = true;
   return dbRef.update(updates);
 }
 
@@ -84,10 +89,18 @@ export function savingOutwardVehicle(data) {
   if(localStorage.unit === 'UNIT3') {
     prefix = 'U3';
   }
+
+  if(data.inwardDate) {
+    updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/inSide`] = false;
+    updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/outDate`] = dateStr;
+    updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/outTime`] = timeStr;
+    updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/outwardSNo`] = data.outwardSNo;
+    updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/goingTo`] = data.goingTo;
+  }
+
   updates[localStorage.unit + '/' +`vehicles/${prefix}/out/${data.outwardSNo}`] = data;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/outCount`] = data.lastCount+1;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastOutward`] = data;
-  updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/${dateStr}/vehicleIn`] = false;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/out`] = timeStr;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/outwardPhoto`] = data.outwardPhoto;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/out`] = timeStr;
@@ -105,12 +118,23 @@ export function savingOutwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outwardPhoto`] = data.outwardPhoto;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outDate`] = dateStr;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outTime`] = timeStr;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/inDate`] = data.inwardDate;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/inTime`] = data.inTime;
+
 
   return dbRef.update(updates);
 }
 
-export function fetchVehicleReportsData() {
-  const dbRef = firebase.database().ref(localStorage.unit + '/' + 'vehicleReports/in');
+export function fetchVehicleReportsData(report) {
+  let reportType;
+  if(report == 'Outward' ) {
+    reportType = 'out';
+  } else {
+    reportType = 'in';
+  }
+  const dbRef = firebase.database().ref(localStorage.unit + '/' + `vehicleReports/${reportType}`);
   return dbRef.once('value');
 }
 

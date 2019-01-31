@@ -21,6 +21,7 @@ export default class VehicleReports extends Component {
       ownOutVehicle: null,
       emptyLoad: null,
       validationMsg:'',
+      response: null
     }
   }
 
@@ -65,11 +66,18 @@ export default class VehicleReports extends Component {
     })
   }
 
+  onReportTypeFieldChange(fieldName, e) {
+    this.setState({
+      [fieldName]: e.option,
+      response: null
+    })
+  }
+
   onFetchingVehicleData() {
     const { reportType, ownOutVehicle, emptyLoad } = this.state;
-    fetchVehicleReportsData().then((res) => {
+    fetchVehicleReportsData(reportType).then((res) => {
       const response = res.val();
-      console.log(response);
+      this.setState({response})
     })
     .catch((err) => console.error(err))
   }
@@ -129,9 +137,9 @@ export default class VehicleReports extends Component {
       <FormField label='Report Type' style={{marginTop:20}}>
         <Select
           placeHolder='Report Type'
-          options={['-EMPTY-', 'Inward', 'In-Outward-Pending', 'In-Outward-Completed', 'Outward']}
+          options={['Inward', 'In-Outward-Pending', 'In-Outward-Completed', 'Outward']}
           value={this.state.reportType}
-          onChange={this.onFieldChange.bind(this, 'reportType')}
+          onChange={this.onReportTypeFieldChange.bind(this, 'reportType')}
         />
       </FormField>
       </div>
@@ -139,7 +147,7 @@ export default class VehicleReports extends Component {
       <FormField label='Own/Out Vehicle' style={{marginTop:15}}>
           <Select
             placeHolder='Own/Out'
-            options={['-EMPTY-', 'All Vehicles', 'Own Vehicles', 'Out Vehicles']}
+            options={['All Vehicles', 'Own Vehicle', 'Outside Vehicle']}
             value={this.state.ownOutVehicle}
             onChange={this.onFieldChange.bind(this, 'ownOutVehicle')}
           />
@@ -149,7 +157,7 @@ export default class VehicleReports extends Component {
       <FormField label='Empty/Load' style={{marginTop:15}}>
           <Select
             placeHolder='Empty/Load'
-            options={['-EMPTY-', 'All', 'Empty', 'Full']}
+            options={['All', 'Empty', 'Load']}
             value={this.state.emptyLoad}
             onChange={this.onFieldChange.bind(this, 'emptyLoad')}
           />
@@ -216,12 +224,126 @@ export default class VehicleReports extends Component {
     )
   }
 
+  showVehicleReports() {
+    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate } = this.state;
+    if(!response)
+    return null;
+
+    let tHead1, tHead2, tHead3, tHead4;
+    let tRow;
+    if(reportType == 'Inward') {
+      tHead1='Inward Sno';
+      tHead2='Outward Sno';
+      tHead3='Going To';
+      tHead4='Coming From';
+    } else if(reportType == 'Outward') {
+      tHead1='Outward Sno';
+      tHead2='Inward Sno';
+      tHead3='Coming From';
+      tHead4='Going To';
+    }
+
+    let tablesArray=[];
+
+    Object.keys(response).map((vNo, index) => {
+      const vehicleObj = response[vNo];
+      Object.keys(vehicleObj).map((date, indx) => {
+        const vObj = vehicleObj[date];
+        console.log(vObj);
+        let isValid=true;
+
+        if(ownOutVehicle !== 'All Vehicles' && ownOutVehicle !== vObj.ownOutVehicle) {
+          isValid=false;
+        }
+          if(emptyLoad !== 'All' && emptyLoad !== vObj.emptyLoad) {
+            isValid=false;
+          }
+
+          if(reportType == 'Inward') {
+            tRow=vObj.inwardSNo;
+          } else if(reportType == 'Outward') {
+            tRow=vObj.outwardSNo;
+          }
+
+          if(isValid) {
+          tablesArray.push(
+            <tbody key={index}>
+              <tr>
+               <td rowSpan={2}>{index+1}</td>
+               <td rowSpan={2}>{tRow}</td>
+               <td rowSpan={2}>{vObj.ownOutVehicle}</td>
+               <td rowSpan={2}>{vObj.vehicleNumber}</td>
+               <td>{vObj.driverName}</td>
+               <td>{vObj.inDate}</td>
+               <td>{vObj.outDate || '--'}</td>
+               <td>{vObj.outwardSNo || '--'}</td>
+               <td rowSpan={2}></td>
+               <td>{vObj.material}</td>
+               <td>{vObj.partyName}</td>
+               <td>{vObj.billNumber}</td>
+             </tr>
+             <tr>
+               <td>{vObj.driverNumber}</td>
+               <td>{vObj.inTime}</td>
+               <td>{vObj.outTime || '--'}</td>
+               <td>{vObj.goingTo || '--'}</td>
+               <td>{vObj.numberOfBags}</td>
+               <td>{vObj.comingFrom}</td>
+               <td>{vObj.remarks}</td>
+             </tr>
+           </tbody>
+         )
+         }
+       })
+     })
+
+      return (
+        <div className="vehicleReports">
+           <table className="vehicleReportsTable" style={{ marginLeft : 20, marginTop:10}}>
+             <thead className="vehiclesTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
+              <tr>
+                <th colSpan={4}>Out/Own Vehicles: {ownOutVehicle}</th>
+                <th colSpan={4}>Empty/Load: {emptyLoad}</th>
+                <th colSpan={4}>No of Vehicles:</th>
+              </tr>
+              <tr>
+                <th rowSpan={2}>S No.</th>
+                <th rowSpan={2}>{tHead1}</th>
+                <th rowSpan={2}>Out/Own Vehicle</th>
+                <th rowSpan={2}>Vehicle No</th>
+                <th>Driver Name</th>
+                <th>In Date</th>
+                <th>Out Date</th>
+                <th>{tHead2}</th>
+                <th rowSpan={2}>Duration</th>
+                <th>Material</th>
+                <th>Party</th>
+                <th>Bill No</th>
+              </tr>
+              <tr>
+                <th>Cell No</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>{tHead3}</th>
+                <th>Bags</th>
+                <th>{tHead4}</th>
+                <th>Remarks</th>
+              </tr>
+             </thead>
+              {tablesArray}
+           </table>
+      </div>
+    )
+
+  }
+
 
   render() {
     return (
       <div>
-      { this.renderValidationMsg() }
-      { this.renderInputFields() }
+        { this.renderValidationMsg() }
+        { this.renderInputFields() }
+        { this.showVehicleReports() }
       </div>
     )
   }
