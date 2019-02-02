@@ -156,6 +156,7 @@ getEmployees() {
       datesArr.map((date) => {
         return dbRef.child('dates').child(date).once('value').then((snapshot) => {
           let response = snapshot.val();
+          console.log(response);
           returnObj[date] = response;
         })
       })

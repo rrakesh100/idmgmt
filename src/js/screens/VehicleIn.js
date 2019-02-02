@@ -22,7 +22,7 @@ import Next from 'grommet/components/icons/base/CaretNext';
 import Down from 'grommet/components/icons/base/CaretDown';
 import { getVehicleNumbers, getMaterials, getOwnPlaces } from '../api/configuration';
 import Save from 'grommet/components/icons/base/Upload';
-import VehicleIcon from 'grommet/components/icons/base/Bus';
+import Car from 'grommet/components/icons/base/Car';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle, getVehicleData } from '../api/vehicles';
 import Clock from 'react-live-clock';
@@ -933,7 +933,7 @@ export default class VehicleIn extends Component {
                         content={this.renderContent.bind(this)}
                         onAfterPrint={this.handleAfterPrint.bind(this)}
                       />
-                      <Button icon={<VehicleIcon />}
+                      <Button icon={<Car />}
                         label='NEW' style={{marginTop: 20, width: '300px'}}
                         onClick={this.onNewBtnClick.bind(this)}
                         disabled={true}

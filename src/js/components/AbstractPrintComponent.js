@@ -48,7 +48,7 @@ export default class AbstractPrintComponent extends Component {
         }
         <h5 className="unitClass"><strong>Unit: {unit}</strong></h5>
         </div>
-        <table style={{width:'100%'}}>
+        <table className="abstractTable" style={{width:'100%'}}>
             <thead>
              <tr>
                <th></th>

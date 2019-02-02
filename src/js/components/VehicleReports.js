@@ -8,6 +8,8 @@ import TimePicker from 'rc-time-picker';
 import Notification from 'grommet/components/Notification';
 import * as firebase from 'firebase';
 import { fetchVehicleReportsData } from '../api/vehicles';
+import VehicleReportsComponent from './VehicleReportsComponent';
+import ReactToPrint from "react-to-print";
 
 
 export default class VehicleReports extends Component {
@@ -26,7 +28,7 @@ export default class VehicleReports extends Component {
   }
 
   onStartDateChange(e) {
-    const { endDate, unit } = this.state;
+    const { endDate } = this.state;
     let startDate = e.replace(/\//g, '-');
     if(endDate) {
       let strt = moment(startDate , 'DD-MM-YYYY');
@@ -57,12 +59,43 @@ export default class VehicleReports extends Component {
       alert('End Date should be greater than Start Date');
       return;
     }
-    this.setState({endDate})
+    this.setState({endDate}, this.vehicleDatesLoop.bind(this))
+  }
+
+  vehicleDatesLoop() {
+    const { startDate, endDate } = this.state;
+
+    let datesArr=[];
+    let startDateParts = startDate.split("-");
+    let endDateParts = endDate.split("-");
+    let startDateObj = new Date(startDateParts[2], startDateParts[1]-1, startDateParts[0]);
+    let endDateObj = new Date(endDateParts[2], endDateParts[1]-1, endDateParts[0]);
+
+    while (startDateObj <= endDateObj) {
+    datesArr.push(moment(startDateObj).format('DD-MM-YYYY'));
+    startDateObj.setDate(startDateObj.getDate() + 1);
+    }
+
+    let returnObj = {};
+    let unitVal = window.localStorage.unit;
+
+    const dbRef = firebase.database().ref(`${unitVal}/vehicleReports/`);
+    Promise.all(
+      datesArr.map((date) => {
+        return dbRef.child('dates').child(date).once('value').then((snapshot) => {
+          let response = snapshot.val();
+          console.log(response);
+          returnObj[date] = response;
+        })
+      })
+    ).then(() => console.log('success'));
+
   }
 
   onFieldChange(fieldName, e) {
     this.setState({
       [fieldName]: e.option,
+      response: null
     })
   }
 
@@ -74,9 +107,10 @@ export default class VehicleReports extends Component {
   }
 
   onFetchingVehicleData() {
-    const { reportType, ownOutVehicle, emptyLoad } = this.state;
-    fetchVehicleReportsData(reportType).then((res) => {
+    const { reportType, startDate, endDate } = this.state;
+    fetchVehicleReportsData(reportType, startDate, endDate).then((res) => {
       const response = res.val();
+      console.log(response);
       this.setState({response})
     })
     .catch((err) => console.error(err))
@@ -121,19 +155,34 @@ export default class VehicleReports extends Component {
     }, this.onFetchingVehicleData.bind(this))
   }
 
-  onPrintingReport() {
-    console.log('print report');
+  onClosingReport() {
+    this.setState({
+      response: null
+    })
   }
 
-  onClosingReport() {
-    console.log('close report');
+  renderTrigger() {
+    return (
+      <Button  label='Print Report'
+      style={{ display : 'inline-block' , marginTop: 20, width:300}}
+      primary={true}
+      href='#'/>
+    )
+  }
+
+  renderContent() {
+    return this.componentRef;
+  }
+
+  setRef(ref) {
+    this.componentRef = ref;
   }
 
   renderInputFields() {
     return (
       <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
-      <div style={{display : 'flex', flexDirection : 'column', marginLeft: 10}} >
-      <div style={{width: 250}}>
+      <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}} >
+      <div style={{width: 300}}>
       <FormField label='Report Type' style={{marginTop:20}}>
         <Select
           placeHolder='Report Type'
@@ -143,7 +192,7 @@ export default class VehicleReports extends Component {
         />
       </FormField>
       </div>
-      <div style={{width: 250}}>
+      <div style={{width: 300}}>
       <FormField label='Own/Out Vehicle' style={{marginTop:15}}>
           <Select
             placeHolder='Own/Out'
@@ -153,7 +202,7 @@ export default class VehicleReports extends Component {
           />
       </FormField>
       </div>
-      <div style={{width: 250}}>
+      <div style={{width: 300}}>
       <FormField label='Empty/Load' style={{marginTop:15}}>
           <Select
             placeHolder='Empty/Load'
@@ -164,59 +213,44 @@ export default class VehicleReports extends Component {
       </FormField>
       </div>
       </div>
-      <div style={{display : 'flex', flexDirection : 'column', marginLeft: 10}}>
+      <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}}>
 
-      <div style={{width: 250}}>
-      <FormField label='From Date' style={{marginTop:20}}>
-      <DateTime id='id'
-      format='D/M/YYYY'
-      name='name'
-      onChange={this.onStartDateChange.bind(this)}
-      value={this.state.startDate}
-      />
-      </FormField>
+      <div style={{width: 300}}>
+        <FormField label='From Date' style={{marginTop:20}}>
+          <DateTime id='id'
+          format='D/M/YYYY'
+          name='name'
+          onChange={this.onStartDateChange.bind(this)}
+          value={this.state.startDate}
+          />
+        </FormField>
       </div>
 
-      <div style={{width: 250}}>
-      <FormField label='To Date' style={{marginTop:15}}>
-      <DateTime id='id'
-      format='D/M/YYYY'
-      name='name'
-      onChange={this.onEndDateChange.bind(this)}
-      value={this.state.endDate}
-      />
-      </FormField>
-      </div>
-      </div>
-      <div style={{display : 'flex', flexDirection : 'column', marginLeft: 10}}>
-
-      <div style={{width: 250}}>
-      <FormField label='From Time' style={{marginTop:20}}>
-
-      </FormField>
-      </div>
-
-      <div style={{width: 250}}>
-      <FormField label='To Time' style={{marginTop:15}}>
-
-      </FormField>
+      <div style={{width: 300}}>
+        <FormField label='To Date' style={{marginTop:15}}>
+          <DateTime id='id'
+          format='D/M/YYYY'
+          name='name'
+          onChange={this.onEndDateChange.bind(this)}
+          value={this.state.endDate}
+          />
+        </FormField>
       </div>
       </div>
 
-      <div style={{display : 'flex', flexDirection : 'column', marginLeft: 10}}>
+      <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}}>
       <Button  label='Show Report'
       onClick={this.onValidatingInputs.bind(this)}
-      style={{ display : 'inline-block' , marginTop: 20, width:250}}
+      style={{ display : 'inline-block' , marginTop: 20, width:300}}
       primary={true}
       href='#'/>
-      <Button  label='Print Report'
-      onClick={this.onPrintingReport.bind(this)}
-      style={{ display : 'inline-block' , marginTop: 20, width:250}}
-      primary={true}
-      href='#'/>
+      <ReactToPrint
+          trigger={this.renderTrigger.bind(this)}
+          content={this.renderContent.bind(this)}
+        />
       <Button  label='Close Report'
       onClick={this.onClosingReport.bind(this)}
-      style={{ display : 'inline-block' , marginTop: 20, width:250}}
+      style={{ display : 'inline-block' , marginTop: 20, width:300}}
       primary={true}
       href='#'/>
       </div>
@@ -224,117 +258,24 @@ export default class VehicleReports extends Component {
     )
   }
 
-  showVehicleReports() {
+  vehicleReports() {
     const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate } = this.state;
-    if(!response)
-    return null;
-
-    let tHead1, tHead2, tHead3, tHead4;
-    let tRow;
-    if(reportType == 'Inward') {
-      tHead1='Inward Sno';
-      tHead2='Outward Sno';
-      tHead3='Going To';
-      tHead4='Coming From';
-    } else if(reportType == 'Outward') {
-      tHead1='Outward Sno';
-      tHead2='Inward Sno';
-      tHead3='Coming From';
-      tHead4='Going To';
-    }
-
-    let tablesArray=[];
-
-    Object.keys(response).map((vNo, index) => {
-      const vehicleObj = response[vNo];
-      Object.keys(vehicleObj).map((date, indx) => {
-        const vObj = vehicleObj[date];
-        console.log(vObj);
-        let isValid=true;
-
-        if(ownOutVehicle !== 'All Vehicles' && ownOutVehicle !== vObj.ownOutVehicle) {
-          isValid=false;
-        }
-          if(emptyLoad !== 'All' && emptyLoad !== vObj.emptyLoad) {
-            isValid=false;
-          }
-
-          if(reportType == 'Inward') {
-            tRow=vObj.inwardSNo;
-          } else if(reportType == 'Outward') {
-            tRow=vObj.outwardSNo;
-          }
-
-          if(isValid) {
-          tablesArray.push(
-            <tbody key={index}>
-              <tr>
-               <td rowSpan={2}>{index+1}</td>
-               <td rowSpan={2}>{tRow}</td>
-               <td rowSpan={2}>{vObj.ownOutVehicle}</td>
-               <td rowSpan={2}>{vObj.vehicleNumber}</td>
-               <td>{vObj.driverName}</td>
-               <td>{vObj.inDate}</td>
-               <td>{vObj.outDate || '--'}</td>
-               <td>{vObj.outwardSNo || '--'}</td>
-               <td rowSpan={2}></td>
-               <td>{vObj.material}</td>
-               <td>{vObj.partyName}</td>
-               <td>{vObj.billNumber}</td>
-             </tr>
-             <tr>
-               <td>{vObj.driverNumber}</td>
-               <td>{vObj.inTime}</td>
-               <td>{vObj.outTime || '--'}</td>
-               <td>{vObj.goingTo || '--'}</td>
-               <td>{vObj.numberOfBags}</td>
-               <td>{vObj.comingFrom}</td>
-               <td>{vObj.remarks}</td>
-             </tr>
-           </tbody>
-         )
-         }
-       })
-     })
-
-      return (
-        <div className="vehicleReports">
-           <table className="vehicleReportsTable" style={{ marginLeft : 20, marginTop:10}}>
-             <thead className="vehiclesTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
-              <tr>
-                <th colSpan={4}>Out/Own Vehicles: {ownOutVehicle}</th>
-                <th colSpan={4}>Empty/Load: {emptyLoad}</th>
-                <th colSpan={4}>No of Vehicles:</th>
-              </tr>
-              <tr>
-                <th rowSpan={2}>S No.</th>
-                <th rowSpan={2}>{tHead1}</th>
-                <th rowSpan={2}>Out/Own Vehicle</th>
-                <th rowSpan={2}>Vehicle No</th>
-                <th>Driver Name</th>
-                <th>In Date</th>
-                <th>Out Date</th>
-                <th>{tHead2}</th>
-                <th rowSpan={2}>Duration</th>
-                <th>Material</th>
-                <th>Party</th>
-                <th>Bill No</th>
-              </tr>
-              <tr>
-                <th>Cell No</th>
-                <th>In Time</th>
-                <th>Out Time</th>
-                <th>{tHead3}</th>
-                <th>Bags</th>
-                <th>{tHead4}</th>
-                <th>Remarks</th>
-              </tr>
-             </thead>
-              {tablesArray}
-           </table>
-      </div>
+    return (
+      <VehicleReportsComponent
+          ref={this.setRef.bind(this)}
+          response={response}
+          reportType={reportType}
+          ownOutVehicle={ownOutVehicle}
+          emptyLoad={emptyLoad}
+          startDate={startDate}
+          endDate={endDate}
+      />
     )
+  }
 
+  showVehicleReports() {
+    let reportsTable=this.vehicleReports();
+    return reportsTable;
   }
 
 

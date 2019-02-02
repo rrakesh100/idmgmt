@@ -34,7 +34,7 @@ import Notification from 'grommet/components/Notification';
 import Toast from 'grommet/components/Toast';
 import Layer from 'grommet/components/Layer';
 import Status from 'grommet/components/icons/Status';
-import VehicleIcon from 'grommet/components/icons/base/Bus';
+import Car from 'grommet/components/icons/base/Car';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import ReactToPrint from "react-to-print";
 import VehicleOutPrintComponent from '../components/VehicleOutPrintComponent';
@@ -363,9 +363,10 @@ export default class VehicleOut extends Component {
       billNumber,
       remarks,
       screenshot, inwardObj } = this.state;
-      console.log(inwardObj);
       let inwardDate = inwardObj ? inwardObj.inwardDate : null;
       let inTime = inwardObj ? inwardObj.inTime : null;
+      let comingFrom = inwardObj ? inwardObj.comingFrom : null;
+      let inwardSNo = inwardObj ? inwardObj.inwardSNo : null;
       let vNo=vehicleNumber;
       if(selectVehicleNumber)
        vNo = selectVehicleNumber;
@@ -389,7 +390,9 @@ export default class VehicleOut extends Component {
         remarks,
         outwardPhoto,
         inwardDate,
-        inTime
+        inTime,
+        comingFrom,
+        inwardSNo
       }).then(this.setState({
         toastMsg: `Vehicle ${vNo} Out is saved`,
         vehicleSaved: true
@@ -949,7 +952,7 @@ export default class VehicleOut extends Component {
                     onBeforePrint={this.handleBeforePrint.bind(this)}
                     onAfterPrint={this.handleAfterPrint.bind(this)}
                   />
-                <Button icon={<VehicleIcon />}
+                <Button icon={<Car />}
                   label='NEW' style={{marginTop: 20, width: '300px'}}
                   onClick={this.onNewBtnClick.bind(this)}
                   disabled={true}

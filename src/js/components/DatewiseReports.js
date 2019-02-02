@@ -399,7 +399,7 @@ export default class DatewiseReports extends Component {
       </div>
       </div>)
     })
-    returnObj['reny'] = tablesArray;
+    returnObj['tablesArray'] = tablesArray;
     returnObj['summary'] = {
       dailyMaleDayShift,
       dailyMaleNightShift,
@@ -417,7 +417,6 @@ export default class DatewiseReports extends Component {
 
   showOldEmployeeReportsTable() {
     let tablesObj = this.getOldTablesArray(false);
-
       if(!tablesObj)
       return null;
 

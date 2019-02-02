@@ -225,7 +225,7 @@ th,td {
 
 @media print {
 
-        th,td {
+        .abstractTable th, .abstractTable td {
           padding: 10px;
           text-align: center;
           color: black;

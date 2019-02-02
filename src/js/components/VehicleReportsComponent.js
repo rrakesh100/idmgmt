@@ -1,0 +1,168 @@
+import React, {Component} from 'react';
+import moment from 'moment';
+
+
+export default class VehicleReportsComponent extends Component {
+
+  renderVehicleReports() {
+    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate } = this.props;
+    if(!response)
+    return null;
+
+    let tHead1, tHead2, tHead3, tHead4;
+    let tRow1, tRow2, tRow3, tRow4;
+    let i=0;
+
+    if(reportType == 'Outward') {
+      tHead1='Outward Sno';
+      tHead2='Inward Sno';
+      tHead3='Coming From';
+      tHead4='Going To';
+    } else {
+      tHead1='Inward Sno';
+      tHead2='Outward Sno';
+      tHead3='Going To';
+      tHead4='Coming From';
+    }
+
+    let tablesArray=[];
+    Object.keys(response).map((vNo, index) => {
+      const vehicleObj = response[vNo];
+      Object.keys(vehicleObj).map((date, indx) => {
+        const vObj = vehicleObj[date];
+        let isValid=true;
+        let inTime=vObj.inTime;
+        let outTime=vObj.outTime;
+        let totalNumberOfdays=0;
+        let totalTime='N/A';
+
+        if(outTime && inTime) {
+          totalNumberOfdays++;
+          let startTime = moment(inTime, "HH:mm a");
+          let endTime=moment(outTime, "HH:mm a");
+          let duration = moment.duration(endTime.diff(startTime));
+
+          let hours = 0, minutes =0;
+          if(duration.asMilliseconds() < 0) {
+           let dMillis = duration.asMilliseconds();
+           let bufferedMillis = dMillis + (24 * 60 * 60 * 1000);
+           let bufferedSeconds = bufferedMillis / 1000;
+            hours = Math.floor(bufferedSeconds / 3600);
+           let remainingSeconds = bufferedSeconds % 3600;
+            minutes = remainingSeconds / 60;
+           }else {
+            hours = parseInt(duration.asHours());
+            minutes = parseInt(duration.asMinutes())%60;
+           }
+           totalTime = hours + ' hr ' + minutes + ' min ';
+        }
+
+        if(ownOutVehicle !== 'All Vehicles' && ownOutVehicle !== vObj.ownOutVehicle) {
+          isValid=false;
+        }
+          if(emptyLoad !== 'All' && emptyLoad !== vObj.emptyLoad) {
+            isValid=false;
+          }
+
+          if(reportType == 'In-Outward-Pending' && !vObj.inSide) {
+            isValid=false;
+          }
+
+          if(reportType == 'In-Outward-Completed' && vObj.inSide) {
+            isValid=false;
+          }
+
+          if(reportType == 'Outward') {
+            tRow1=vObj.outwardSNo;
+            tRow2=vObj.inwardSNo;
+            tRow3=vObj.comingFrom;
+            tRow4=vObj.goingTo;
+          } else {
+            tRow1=vObj.inwardSNo;
+            tRow2=vObj.outwardSNo;
+            tRow3=vObj.goingTo;
+            tRow4=vObj.comingFrom;
+          }
+
+          if(isValid) {
+            i++;
+          tablesArray.push(
+            <tbody key={index}>
+              <tr>
+               <td rowSpan={2}>{i}</td>
+               <td rowSpan={2}>{tRow1}</td>
+               <td rowSpan={2}>{vObj.ownOutVehicle}</td>
+               <td rowSpan={2}>{vObj.vehicleNumber}</td>
+               <td>{vObj.driverName}</td>
+               <td>{vObj.inDate}</td>
+               <td>{vObj.outDate || '--'}</td>
+               <td>{tRow2 || '--'}</td>
+               <td rowSpan={2}>{totalTime}</td>
+               <td>{vObj.material}</td>
+               <td>{vObj.partyName}</td>
+               <td>{vObj.billNumber}</td>
+             </tr>
+             <tr>
+               <td>{vObj.driverNumber}</td>
+               <td>{vObj.inTime}</td>
+               <td>{vObj.outTime || '--'}</td>
+               <td>{tRow3}</td>
+               <td>{vObj.numberOfBags}</td>
+               <td>{tRow4}</td>
+               <td>{vObj.remarks}</td>
+             </tr>
+           </tbody>
+         )
+         }
+       })
+     })
+
+      return (
+        <div className="vehicleReports">
+           <table className="vehicleReportsTable" style={{ marginLeft : 20, marginTop:10}}>
+             <thead className="vehiclesTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
+              <tr>
+                <th colSpan={4}>Out/Own Vehicles: {ownOutVehicle}</th>
+                <th colSpan={4}>Empty/Load: {emptyLoad}</th>
+                <th colSpan={4}>No of Vehicles: {tablesArray.length}</th>
+              </tr>
+              <tr>
+                <th rowSpan={2}>S No.</th>
+                <th rowSpan={2}>{tHead1}</th>
+                <th rowSpan={2}>Out/Own Vehicle</th>
+                <th rowSpan={2}>Vehicle No</th>
+                <th>Driver Name</th>
+                <th>In Date</th>
+                <th>Out Date</th>
+                <th>{tHead2}</th>
+                <th rowSpan={2}>Duration</th>
+                <th>Material</th>
+                <th>Party</th>
+                <th>Bill No</th>
+              </tr>
+              <tr>
+                <th>Cell No</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>{tHead3}</th>
+                <th>Bags</th>
+                <th>{tHead4}</th>
+                <th>Remarks</th>
+              </tr>
+             </thead>
+              {tablesArray}
+           </table>
+      </div>
+    )
+
+  }
+
+  render() {
+
+    return (
+      <div>
+      {this.renderVehicleReports()}
+      </div>
+    )
+  }
+}

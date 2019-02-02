@@ -90,6 +90,7 @@ export function savingOutwardVehicle(data) {
     prefix = 'U3';
   }
 
+
   if(data.inwardDate) {
     updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/inSide`] = false;
     updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/outDate`] = dateStr;
@@ -122,14 +123,16 @@ export function savingOutwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outTime`] = timeStr;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/inDate`] = data.inwardDate;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/inTime`] = data.inTime;
-
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/comingFrom`] = data.comingFrom;
+  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/inwardSNo`] = data.inwardSNo;
 
   return dbRef.update(updates);
 }
 
-export function fetchVehicleReportsData(report) {
+export function fetchVehicleReportsData(report, startDate, endDate) {
+
   let reportType;
-  if(report == 'Outward' ) {
+  if(report == 'Outward') {
     reportType = 'out';
   } else {
     reportType = 'in';
@@ -226,8 +229,7 @@ export function saveVehicleInPrintCopiesData(vehicleKey, printData) {
 }
 
 export function saveVehicleOutPrintCopiesData(vehicleKey, printData) {
-  console.log(vehicleKey);
-  console.log(printData);
+
   const dbRef = firebase.database().ref();
   const updates = {};
   if(printData) {
