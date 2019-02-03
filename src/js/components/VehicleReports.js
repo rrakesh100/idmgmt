@@ -100,7 +100,6 @@ export default class VehicleReports extends Component {
     const { reportType, startDate, endDate } = this.state;
     fetchVehicleReportsData(reportType, startDate, endDate).then((res) => {
       const response = res.val();
-      console.log(response);
       this.setState({response})
     })
     .catch((err) => console.error(err))
@@ -248,19 +247,34 @@ export default class VehicleReports extends Component {
     )
   }
 
+  renderReportsHeader() {
+    const {reportType, startDate, endDate}=this.state;
+    return (
+      <div style={{marginTop:20}}>
+        {
+          reportType && startDate && endDate ? 
+          <h3 style={{textAlign: 'center'}}><strong>{reportType} Vehicle Details Report- Indate From {startDate} To {endDate}</strong></h3> : null
+        }
+      </div>
+    )
+  }
+
   vehicleReports() {
     const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr } = this.state;
     return (
-      <VehicleReportsComponent
-          ref={this.setRef.bind(this)}
-          response={response}
-          datesArr={datesArr}
-          reportType={reportType}
-          ownOutVehicle={ownOutVehicle}
-          emptyLoad={emptyLoad}
-          startDate={startDate}
-          endDate={endDate}
-      />
+      <div>
+        {this.renderReportsHeader()}
+        <VehicleReportsComponent
+            ref={this.setRef.bind(this)}
+            response={response}
+            datesArr={datesArr}
+            reportType={reportType}
+            ownOutVehicle={ownOutVehicle}
+            emptyLoad={emptyLoad}
+            startDate={startDate}
+            endDate={endDate}
+        />
+      </div>
     )
   }
 

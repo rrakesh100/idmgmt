@@ -26,12 +26,17 @@ export default class VehicleReportsComponent extends Component {
     }
 
     let tablesArray=[];
+    let vObj;
     Object.keys(response).map((vNo, index) => {
       const vehicleObj = response[vNo];
       Object.keys(vehicleObj).map((date, indx) => {
+        if(datesArr) {
         let datesFilterArr = datesArr.filter(val => val == date);
         let filteredDate = datesFilterArr[0];
-        const vObj = vehicleObj[filteredDate];
+        vObj = vehicleObj[filteredDate];
+      } else {
+        vObj=vehicleObj[date];
+      }
         if(!vObj)
         return null;
 
