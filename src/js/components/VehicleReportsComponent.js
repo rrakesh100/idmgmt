@@ -5,7 +5,7 @@ import moment from 'moment';
 export default class VehicleReportsComponent extends Component {
 
   renderVehicleReports() {
-    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate } = this.props;
+    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr } = this.props;
     if(!response)
     return null;
 
@@ -29,7 +29,12 @@ export default class VehicleReportsComponent extends Component {
     Object.keys(response).map((vNo, index) => {
       const vehicleObj = response[vNo];
       Object.keys(vehicleObj).map((date, indx) => {
-        const vObj = vehicleObj[date];
+        let datesFilterArr = datesArr.filter(val => val == date);
+        let filteredDate = datesFilterArr[0];
+        const vObj = vehicleObj[filteredDate];
+        if(!vObj)
+        return null;
+
         let isValid=true;
         let inTime=vObj.inTime;
         let outTime=vObj.outTime;
@@ -116,7 +121,6 @@ export default class VehicleReportsComponent extends Component {
          }
        })
      })
-
       return (
         <div className="vehicleReports">
            <table className="vehicleReportsTable" style={{ marginLeft : 20, marginTop:10}}>
@@ -152,13 +156,12 @@ export default class VehicleReportsComponent extends Component {
              </thead>
               {tablesArray}
            </table>
-      </div>
+       </div>
     )
 
   }
 
   render() {
-
     return (
       <div>
       {this.renderVehicleReports()}

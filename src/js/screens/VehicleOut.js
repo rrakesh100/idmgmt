@@ -432,6 +432,7 @@ export default class VehicleOut extends Component {
       outwardSNo,
       ownOutVehicle,
       vehicleNumber,
+      selectVehicleNumber,
       driverName,
       driverNumber,
       emptyLoad,

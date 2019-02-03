@@ -39,9 +39,9 @@ export default class VehicleReports extends Component {
         alert('End Date should be greater than Start Date');
         return;
       }
-      this.setState({startDate})
+      this.setState({startDate, endDate:''})
     } else {
-      this.setState({startDate})
+      this.setState({startDate, endDate:''})
     }
 
   }
@@ -79,17 +79,7 @@ export default class VehicleReports extends Component {
     let returnObj = {};
     let unitVal = window.localStorage.unit;
 
-    const dbRef = firebase.database().ref(`${unitVal}/vehicleReports/`);
-    Promise.all(
-      datesArr.map((date) => {
-        return dbRef.child('dates').child(date).once('value').then((snapshot) => {
-          let response = snapshot.val();
-          console.log(response);
-          returnObj[date] = response;
-        })
-      })
-    ).then(() => console.log('success'));
-
+    this.setState({datesArr});
   }
 
   onFieldChange(fieldName, e) {
@@ -259,11 +249,12 @@ export default class VehicleReports extends Component {
   }
 
   vehicleReports() {
-    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate } = this.state;
+    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr } = this.state;
     return (
       <VehicleReportsComponent
           ref={this.setRef.bind(this)}
           response={response}
+          datesArr={datesArr}
           reportType={reportType}
           ownOutVehicle={ownOutVehicle}
           emptyLoad={emptyLoad}
