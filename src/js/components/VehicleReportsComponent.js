@@ -128,6 +128,12 @@ export default class VehicleReportsComponent extends Component {
      })
       return (
         <div className="vehicleReports">
+          <div style={{marginTop:20}}>
+            {
+              reportType && startDate && endDate ?
+              <h3 style={{textAlign: 'center'}}><strong>{reportType} Vehicle Details Report- Indate From {startDate} To {endDate}</strong></h3> : null
+            }
+          </div>
            <table className="vehicleReportsTable" style={{ marginLeft : 20, marginTop:10}}>
              <thead className="vehiclesTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
               <tr>

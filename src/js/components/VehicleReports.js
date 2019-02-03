@@ -59,7 +59,7 @@ export default class VehicleReports extends Component {
       alert('End Date should be greater than Start Date');
       return;
     }
-    this.setState({endDate}, this.vehicleDatesLoop.bind(this))
+    this.setState({endDate, response: null}, this.vehicleDatesLoop.bind(this))
   }
 
   vehicleDatesLoop() {
@@ -247,23 +247,10 @@ export default class VehicleReports extends Component {
     )
   }
 
-  renderReportsHeader() {
-    const {reportType, startDate, endDate}=this.state;
-    return (
-      <div style={{marginTop:20}}>
-        {
-          reportType && startDate && endDate ? 
-          <h3 style={{textAlign: 'center'}}><strong>{reportType} Vehicle Details Report- Indate From {startDate} To {endDate}</strong></h3> : null
-        }
-      </div>
-    )
-  }
-
   vehicleReports() {
     const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr } = this.state;
     return (
       <div>
-        {this.renderReportsHeader()}
         <VehicleReportsComponent
             ref={this.setRef.bind(this)}
             response={response}
