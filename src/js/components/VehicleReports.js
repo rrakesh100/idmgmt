@@ -146,7 +146,12 @@ export default class VehicleReports extends Component {
 
   onClosingReport() {
     this.setState({
-      response: null
+      response: null,
+      startDate:'',
+      endDate:'',
+      reportType: null,
+      ownOutVehicle: null,
+      emptyLoad: null,
     })
   }
 
