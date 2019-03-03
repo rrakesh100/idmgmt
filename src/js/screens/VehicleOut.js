@@ -371,6 +371,8 @@ export default class VehicleOut extends Component {
       if(selectVehicleNumber)
        vNo = selectVehicleNumber;
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+      console.log(inwardDate);
+      if(inwardDate) {
       uploadVehicleImage(imgFile, vNo, outwardSNo).then((snapshot) => {
            let outwardPhoto = snapshot.downloadURL;
       savingOutwardVehicle({
@@ -403,7 +405,9 @@ export default class VehicleOut extends Component {
         console.error('Vehicle Outward Save Error', err);
       })
     })
-
+  } else {
+    alert('Vehicle In is not marked')
+  }
   }
 
   onNewBtnClick() {
