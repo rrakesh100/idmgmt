@@ -213,6 +213,21 @@ span.grommetux-form-field__contents {
   border: 1px solid #ddd;
 }
 
+.progressBar {
+  position: relative;
+  height: 15px;
+  width: 350px;
+  border-radius: 50px;
+  border: 1px solid #481BA2;
+}
+
+.filler {
+  background: #501EB4;
+  height: 100%;
+  border-radius: inherit;
+  transition: width .2s ease-in;
+}
+
 th,td {
   text-align: center;
 }

@@ -36,8 +36,10 @@ import Status from 'grommet/components/icons/Status';
 import { Meter } from 'grommet';
 import { Input } from 'semantic-ui-react';
 import VehicleInPrintComponent from '../components/VehicleInPrintComponent';
+import ProgressBar from '../components/ProgressBar';
 import ReactToPrint from "react-to-print";
 import Progress from 'react-progressbar';
+import { BeatLoader } from 'react-spinners';
 
 
 
@@ -65,7 +67,9 @@ export default class VehicleIn extends Component {
       vehicleSaved: false,
       vehicleOpt: [],
       materialOpt: [],
-      ownPlaceOpt: []
+      ownPlaceOpt: [],
+      percentage: 20,
+      showProgressBar: false
     };
   }
 
@@ -195,10 +199,12 @@ export default class VehicleIn extends Component {
     }
 
     onFieldChange(fieldName, e) {
-      let re = /^[0-9\b]+$/;
+      let re = /^[0-9\b]{0,5}$/;
       let ne = /^[0-9]{11}$/;
       let an = /^[a-zA-Z0-9]+$/;
       let nre = /^[a-zA-Z0-9]{11}$/;
+      let tre = /^[A-Za-z. ]+$/;
+      let pre = /^[A-Za-z. ]{0,100}$/;
 
       if(fieldName == 'driverNumber' && (e.target.value === '' || re.test(e.target.value))) {
           if(!ne.test(e.target.value)) {
@@ -209,17 +215,42 @@ export default class VehicleIn extends Component {
           }
       }
 
-      if(fieldName == 'driverName' || fieldName == 'partyName' || fieldName == 'comingFrom' || fieldName == 'billNumber' || fieldName == 'remarks') {
+      if(fieldName == 'billNumber' || fieldName == 'remarks') {
         this.setState({
           [fieldName]: e.target.value,
           validationMsg: ''
         })
       }
 
+      if(fieldName == 'driverName' && (e.target.value === '' || tre.test(e.target.value))) {
+        let dText = (e.target.value).toUpperCase();
+        this.setState({
+          [fieldName]: dText,
+          validationMsg: ''
+        })
+      }
+
+      if(fieldName == 'partyName' && (e.target.value === '' || pre.test(e.target.value))) {
+        let pText = (e.target.value).toUpperCase();
+        this.setState({
+          [fieldName]: pText,
+          validationMsg: ''
+        })
+      }
+
+      if(fieldName == 'comingFrom' && (e.target.value === '' || pre.test(e.target.value))) {
+        let cText = (e.target.value).toUpperCase();
+        this.setState({
+          [fieldName]: cText,
+          validationMsg: ''
+        })
+      }
+
       if(fieldName == 'vehicleNumber'&& (e.target.value === '' || an.test(e.target.value))) {
           if(!nre.test(e.target.value)) {
+            let vText = (e.target.value).toUpperCase();
           this.setState({
-            [fieldName]: e.target.value,
+            [fieldName]: vText,
             validationMsg: '',
             selectVehicleNumber: ''
           })
@@ -479,6 +510,7 @@ export default class VehicleIn extends Component {
         remarks,
         inwardPhoto
       }).then(this.setState({
+        showProgressBar: false,
         toastMsg: `Vehicle ${vNo} is saved`,
         vehicleSaved: true
       }, this.getVehicleDetails())).catch((err) => {
@@ -531,6 +563,12 @@ export default class VehicleIn extends Component {
       } else {
         return null;
       }
+    }
+
+    startLoading() {
+      this.setState({
+        showProgressBar: true
+      }, this.getVehicleData.bind(this))
     }
 
     onSaveClick() {
@@ -615,7 +653,7 @@ export default class VehicleIn extends Component {
 
         this.setState({
           validationMsg:''
-        }, this.getVehicleData.bind(this))
+        }, this.startLoading.bind(this))
     }
 
     onNewBtnClick() {
@@ -687,6 +725,12 @@ export default class VehicleIn extends Component {
       console.log('after print');
     }
 
+    onToastOkButtonClick() {
+      this.setState({
+        toastMsg: ''
+      })
+    }
+
   render() {
     const date = new Date();
     const dateStr = moment(date).format('DD-MM-YYYY');
@@ -708,10 +752,52 @@ export default class VehicleIn extends Component {
             numberOfBags,
             comingFrom,
             billNumber,
-            remarks } = this.state;
+            remarks, showProgressBar, toastMsg, lastCount } = this.state;
+
+            let prefix = 'U2';
+            if(window.localStorage.unit === 'UNIT3') {
+              prefix = 'U3';
+            }
+            let savedCount = Number(lastCount) - 1;
+            let savedInwardSNo = `${prefix}-in-${savedCount}`;
+
+      if(showProgressBar) {
+        return (
+          <div style={{display: 'flex', justifyContent: 'center', marginTop:200}}>
+          <BeatLoader
+                sizeUnit={"px"}
+                size={40}
+                color={'#865CD6'}
+                loading={this.state.showProgressBar}
+              />
+          </div>
+        )
+      }
+
+      if(toastMsg) {
+        return (
+          <Layer>
+          <strong>
+          <h2 style={{marginTop: 20}}>
+          <Status value='ok'
+          size='medium'
+          style={{marginRight:'10px'}} />
+          {toastMsg}!
+          </h2>
+          </strong>
+           <hr />
+           <Row>
+           <Button
+             label='OK'
+             onClick={this.onToastOkButtonClick.bind(this)}
+             href='#' style={{marginLeft:200, marginBottom:'10px'}}
+             primary={true} />
+           </Row>
+          </Layer>
+        )
+      }
     return (
       <div>
-      { this.renderToastMsg() }
       { this.renderValidationMsg() }
       { this.renderValidationForVehicleSave() }
       { this.renderVehiclePrintCard() }
@@ -722,7 +808,7 @@ export default class VehicleIn extends Component {
                   { vehicleSaved ?
                     <Form className='newVisitorFields'>
                       <FormField  label='Inward Sno'  strong={true} style={{marginTop : '10px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong>{inwardSNo}</strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{savedInwardSNo}</strong></Label>
                       </FormField>
                     <FormField label='Own/Out Vehicle' strong={true} style={{marginTop : '10px'}}>
                       <Label style={{fontSize: 16, marginLeft: 20}}><strong>{ownOutVehicle}</strong></Label>

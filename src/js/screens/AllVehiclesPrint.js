@@ -4,13 +4,16 @@ import TableRow from 'grommet/components/TableRow'
 import Button from 'grommet/components/Button';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import { getAllVehicles } from '../api/vehicles';
+import VehicleInPrintComponent from '../components/VehicleInPrintComponent';
+import ReactToPrint from "react-to-print";
 
 
 export default class AllVehiclesPrint extends Component {
   constructor(props) {
     super(props);
     this.state={
-      vehicles: null
+      vehicles: null,
+      vehicleInObj: null,
     }
   }
 
@@ -24,13 +27,56 @@ export default class AllVehiclesPrint extends Component {
     })
   }
 
-  onVehicleInPrint() {
-
+  onVehicleInPrint(vehicle) {
+    const {vehicles} = this.state;
+    let vehicleInObj = vehicles[vehicle]['lastInward'];
+    console.log(vehicleInObj);
+    this.setState({vehicleInObj})
   }
 
   onVehicleOutPrint() {
 
   }
+
+  renderContent() {
+    return this.componentRef;
+  }
+
+  renderTrigger(vehicle) {
+    return (
+      <Button icon={<PrintIcon />}
+            onClick={this.onVehicleInPrint.bind(this, vehicle)}
+            plain={true} />
+    )
+  }
+
+  setPrintRef(ref) {
+    this.componentRef = ref;
+  }
+
+  renderVehiclePrintCard() {
+    const {vehicleInObj} = this.state;
+    if(!vehicleInObj)
+    return;
+    return (
+      <VehicleInPrintComponent
+        ref={this.setPrintRef.bind(this)}
+        screenshot={vehicleInObj.screenshot}
+        inwardSNo={vehicleInObj.inwardSNo}
+        ownOutVehicle={vehicleInObj.ownOutVehicle}
+        vehicleNumber={vehicleInObj.vehicleNumber}
+        driverName={vehicleInObj.driverName}
+        driverNumber={vehicleInObj.driverNumber}
+        remarks={vehicleInObj.remarks}
+        material={vehicleInObj.material}
+        numberOfBags={vehicleInObj.numberOfBags}
+        comingFrom={vehicleInObj.comingFrom}
+        billNumber={vehicleInObj.billNumber}
+      />
+    )
+  }
+
+
 
   render() {
     const {vehicles} = this.state;
@@ -39,6 +85,7 @@ export default class AllVehiclesPrint extends Component {
     let i=0;
     return (
       <div>
+      { this.renderVehiclePrintCard() }
       <div className='table'>
       <Table scrollable={true} style={{marginTop : '60px'}}>
           <thead style={{position:'relative'}}>
@@ -61,9 +108,10 @@ export default class AllVehiclesPrint extends Component {
                 <td>{i}</td>
                 <td>{vehicle}</td>
                 <td>
-                   <Button icon={<PrintIcon />}
-                         onClick={this.onVehicleInPrint.bind(this)}
-                         plain={true} />
+                   <ReactToPrint
+                       trigger={this.renderTrigger.bind(this, vehicle)}
+                       content={this.renderContent.bind(this)}
+                     />
                 </td>
                 <td>
                    <Button icon={<PrintIcon />}

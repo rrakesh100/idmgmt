@@ -38,6 +38,7 @@ import Car from 'grommet/components/icons/base/Car';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import ReactToPrint from "react-to-print";
 import VehicleOutPrintComponent from '../components/VehicleOutPrintComponent';
+import { BeatLoader } from 'react-spinners';
 
 
 
@@ -65,7 +66,8 @@ export default class VehicleOut extends Component {
       showLiveCameraFeed: true,
       toastMsg: '',
       materialOpt: [],
-      vehicleSaved: false
+      vehicleSaved: false,
+      showProgressBar: false,
     };
   }
 
@@ -128,10 +130,12 @@ export default class VehicleOut extends Component {
   }
 
   onFieldChange(fieldName, e) {
-    let re = /^[0-9\b]+$/;
+    let re = /^[0-9\b]{0,5}$/;
     let ne = /^[0-9]{11}$/;
     let an = /^[a-zA-Z0-9]+$/;
     let nre = /^[a-zA-Z0-9]{11}$/;
+    let tre = /^[A-Za-z. ]+$/;
+    let pre = /^[A-Za-z. ]{0,100}$/;
 
     if(fieldName == 'driverNumber' && (e.target.value === '' || re.test(e.target.value))) {
         if(!ne.test(e.target.value)) {
@@ -142,17 +146,34 @@ export default class VehicleOut extends Component {
         }
     }
 
-    if(fieldName == 'driverName' || fieldName == 'partyName' || fieldName == 'goingTo' || fieldName == 'billNumber' || fieldName == 'remarks') {
+    if(fieldName == 'goingTo' || fieldName == 'billNumber' || fieldName == 'remarks') {
       this.setState({
         [fieldName]: e.target.value,
         validationMsg: ''
       })
     }
 
+    if(fieldName == 'driverName' && (e.target.value === '' || tre.test(e.target.value))) {
+      let dText = (e.target.value).toUpperCase();
+      this.setState({
+        [fieldName]: dText,
+        validationMsg: ''
+      })
+    }
+
+    if(fieldName == 'partyName' && (e.target.value === '' || pre.test(e.target.value))) {
+      let pText = (e.target.value).toUpperCase();
+      this.setState({
+        [fieldName]: pText,
+        validationMsg: ''
+      })
+    }
+
     if(fieldName == 'vehicleNumber'&& (e.target.value === '' || an.test(e.target.value))) {
         if(!nre.test(e.target.value)) {
+          let vText = (e.target.value).toUpperCase();
         this.setState({
-          [fieldName]: e.target.value,
+          [fieldName]: vText,
           validationMsg: ''
         }, this.getInwardVehicleDetails.bind(this))
       }
@@ -346,6 +367,12 @@ export default class VehicleOut extends Component {
     }
   }
 
+  startLoading() {
+    this.setState({
+      showProgressBar: true
+    }, this.getVehicleData.bind(this))
+  }
+
   onSavingOutwardVehicle() {
     const {
       lastCount,
@@ -396,7 +423,8 @@ export default class VehicleOut extends Component {
         comingFrom,
         inwardSNo
       }).then(this.setState({
-        toastMsg: `Vehicle ${vNo} Out is saved`,
+        showProgressBar: false,
+        toastMsg: `Vehicle ${vNo} is saved`,
         vehicleSaved: true
       }, this.getVehicleDetails())).catch((err) => {
         this.setState({
@@ -525,7 +553,7 @@ export default class VehicleOut extends Component {
 
       this.setState({
         validationMsg:''
-      }, this.getVehicleData.bind(this))
+      }, this.startLoading.bind(this))
 
   }
 
@@ -715,6 +743,12 @@ export default class VehicleOut extends Component {
     )
   }
 
+  onToastOkButtonClick() {
+    this.setState({
+      toastMsg: ''
+    })
+  }
+
 
   render() {
     const date = new Date();
@@ -737,10 +771,52 @@ export default class VehicleOut extends Component {
             numberOfBags,
             goingTo,
             billNumber,
-            remarks } = this.state;
+            remarks, showProgressBar, toastMsg, lastCount } = this.state;
+
+            let prefix = 'U2';
+            if(window.localStorage.unit === 'UNIT3') {
+              prefix = 'U3';
+            }
+            let savedCount = Number(lastCount) - 1;
+            let savedOutwardSNo = `${prefix}-out-${savedCount}`;
+
+            if(showProgressBar) {
+              return (
+                <div style={{display: 'flex', justifyContent: 'center', marginTop:200}}>
+                <BeatLoader
+                      sizeUnit={"px"}
+                      size={40}
+                      color={'#865CD6'}
+                      loading={this.state.showProgressBar}
+                    />
+                </div>
+              )
+            }
+
+            if(toastMsg) {
+              return (
+                <Layer>
+                <strong>
+                <h2 style={{marginTop: 20}}>
+                <Status value='ok'
+                size='medium'
+                style={{marginRight:'10px'}} />
+                {toastMsg}!
+                </h2>
+                </strong>
+                 <hr />
+                 <Row>
+                 <Button
+                   label='OK'
+                   onClick={this.onToastOkButtonClick.bind(this)}
+                   href='#' style={{marginLeft:200, marginBottom:'10px'}}
+                   primary={true} />
+                 </Row>
+                </Layer>
+              )
+            }
     return (
       <div>
-      { this.renderToastMsg() }
       { this.renderValidationMsg() }
       { this.renderValidationForVehicleSave() }
       { this.renderVehiclePrintCard() }
@@ -750,7 +826,7 @@ export default class VehicleOut extends Component {
             { vehicleSaved ?
               <Form className='newVisitorFields'>
                 <FormField  label='Outward Sno'  strong={true} style={{marginTop : '10px'}}>
-                <Label style={{marginLeft:'20px'}}><strong>{outwardSNo}</strong></Label>
+                <Label style={{marginLeft:'20px'}}><strong>{savedOutwardSNo}</strong></Label>
                 </FormField>
               <FormField label='Own/Out Vehicle' strong={true} style={{marginTop : '10px'}}>
                 <Label style={{fontSize: 16, marginLeft: 20}}><strong>{ownOutVehicle}</strong></Label>
