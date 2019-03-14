@@ -6,6 +6,7 @@ import Button from 'grommet/components/Button';
 import Vehicle from 'grommet/components/icons/base/DocumentConfig';
 import Article from 'grommet/components/Article';
 import Select from 'grommet/components/Select';
+import { Input } from 'semantic-ui-react';
 import TextInput from 'grommet/components/TextInput';
 import Label from 'grommet/components/Label';
 import Form from 'grommet/components/Form';
@@ -19,7 +20,7 @@ import Accordion from 'grommet/components/Accordion';
 import AccordionPanel from 'grommet/components/AccordionPanel';
 import Next from 'grommet/components/icons/base/CaretNext';
 import Down from 'grommet/components/icons/base/CaretDown';
-import { getVehicleNumbers, getMaterials } from '../api/configuration';
+import { getVehicleNumbers, getMaterials, getOwnPlaces } from '../api/configuration';
 import Save from 'grommet/components/icons/base/Upload';
 import { savingOutwardVehicle,
          getAllVehicles,
@@ -66,6 +67,7 @@ export default class VehicleOut extends Component {
       showLiveCameraFeed: true,
       toastMsg: '',
       materialOpt: [],
+      ownPlaceOpt:[],
       vehicleSaved: false,
       showProgressBar: false,
     };
@@ -75,6 +77,18 @@ export default class VehicleOut extends Component {
     this.getVehicleNumberDetails();
     this.getMaterialDetails();
     this.getVehicleDetails();
+    this.getOwnPlaceDetails();
+  }
+
+  getOwnPlaceDetails() {
+    getOwnPlaces().then((snap) => {
+      const options = snap.val();
+      let ownPlaceOpt = [];
+      Object.keys(options).forEach((opt) => {
+        ownPlaceOpt.push(opt)
+      })
+      this.setState({ownPlaceOpt})
+    }).catch((e) => console.log(e))
   }
 
   getVehicleNumberDetails() {
@@ -106,7 +120,7 @@ export default class VehicleOut extends Component {
       if(window.localStorage.unit === 'UNIT3') {
         prefix = 'U3';
       }
-      const lastCount = vehicleData && vehicleData[prefix]['count']['outCount'] ? vehicleData[prefix]['count']['outCount'] :  0;
+      const lastCount = vehicleData && vehicleData[prefix]['count']['outCount'] ? vehicleData[prefix]['count']['outCount'] : 1;
       let outwardSNo = `${prefix}-out-${lastCount}`;
 
       this.setState({
@@ -124,20 +138,21 @@ export default class VehicleOut extends Component {
          vNo = selectVehicleNumber;
       getInwardVehicle(vNo).then((snap) => {
         const inwardObj = snap.val();
-        console.log(inwardObj);
         this.setState({inwardObj})
       }).catch((e) => console.log(e));
   }
 
   onFieldChange(fieldName, e) {
-    let re = /^[0-9\b]{0,5}$/;
+    let dr = /^[0-9\b]/;
+    let re = /^[1-9][0-9]{0,4}$/;
     let ne = /^[0-9]{11}$/;
+    let mn = /^\d{10}$/;
     let an = /^[a-zA-Z0-9]+$/;
     let nre = /^[a-zA-Z0-9]{11}$/;
     let tre = /^[A-Za-z. ]+$/;
     let pre = /^[A-Za-z. ]{0,100}$/;
 
-    if(fieldName == 'driverNumber' && (e.target.value === '' || re.test(e.target.value))) {
+    if(fieldName == 'driverNumber' && (e.target.value === '' || dr.test(e.target.value))) {
         if(!ne.test(e.target.value)) {
           this.setState({
             [fieldName]: e.target.value,
@@ -146,9 +161,18 @@ export default class VehicleOut extends Component {
         }
     }
 
-    if(fieldName == 'goingTo' || fieldName == 'billNumber' || fieldName == 'remarks') {
+    if(fieldName == 'billNumber' || fieldName == 'remarks') {
       this.setState({
         [fieldName]: e.target.value,
+        validationMsg: ''
+      })
+    }
+
+    if(fieldName == 'goingTo' && (o.value === '' || pre.test(o.value))) {
+      let cText = (o.value).toUpperCase();
+      console.log(cText);
+      this.setState({
+        [fieldName]: cText,
         validationMsg: ''
       })
     }
@@ -367,10 +391,23 @@ export default class VehicleOut extends Component {
     }
   }
 
+  vehicleValidation() {
+    const { inwardObj } = this.state;
+    let inwardDate = inwardObj ? inwardObj.inwardDate : null;
+
+    if(!inwardDate) {
+      this.setState({
+        vehicleExists: true
+      })
+    } else {
+      this.startLoading();
+    }
+  }
+
   startLoading() {
     this.setState({
       showProgressBar: true
-    }, this.getVehicleData.bind(this))
+    }, this.onSavingOutwardVehicle.bind(this))
   }
 
   onSavingOutwardVehicle() {
@@ -398,8 +435,6 @@ export default class VehicleOut extends Component {
       if(selectVehicleNumber)
        vNo = selectVehicleNumber;
       let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
-      console.log(inwardDate);
-      if(inwardDate) {
       uploadVehicleImage(imgFile, vNo, outwardSNo).then((snapshot) => {
            let outwardPhoto = snapshot.downloadURL;
       savingOutwardVehicle({
@@ -433,9 +468,6 @@ export default class VehicleOut extends Component {
         console.error('Vehicle Outward Save Error', err);
       })
     })
-  } else {
-    alert('Vehicle In is not marked')
-  }
   }
 
   onNewBtnClick() {
@@ -497,6 +529,13 @@ export default class VehicleOut extends Component {
         return
       }
 
+      if(driverNumber && (driverNumber.toString()).length<10) {
+          this.setState({
+            validationMsg: 'Mobile Number must contain atleast 10 digits'
+          })
+          return
+      }
+
       if(!emptyLoad) {
         this.setState({
           validationMsg: 'Empty/Load is missing'
@@ -553,7 +592,7 @@ export default class VehicleOut extends Component {
 
       this.setState({
         validationMsg:''
-      }, this.startLoading.bind(this))
+      }, this.vehicleValidation.bind(this))
 
   }
 
@@ -618,13 +657,8 @@ export default class VehicleOut extends Component {
     })
   }
 
-  onYesButtonClick() {
-    this.setState({
-      vehicleExists: false
-    }, this.onSavingOutwardVehicle())
-  }
 
-  onNoButtonClick() {
+  onYesButtonClick() {
     this.setState({
       vehicleExists: false,
       showLiveCameraFeed: true
@@ -640,19 +674,14 @@ export default class VehicleOut extends Component {
           <Status value='critical'
           size='medium'
           style={{marginRight:'10px'}} />
-          <strong>Vehicle already exists. Do you want to save again?</strong>
+          <strong>Vehicle In is not marked</strong>
           </h3>
            <hr />
            <Row>
            <Button
-             label='Yes'
+             label='Ok'
              onClick={this.onYesButtonClick.bind(this)}
-             href='#' style={{marginLeft: '350px', marginBottom:'10px'}}
-             primary={true} />
-           <Button
-             label='No'
-             onClick={this.onNoButtonClick.bind(this)}
-             href='#' style={{marginLeft: '20px', marginBottom:'10px'}}
+             href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
              primary={true} />
            </Row>
         </Layer>
@@ -985,11 +1014,17 @@ export default class VehicleOut extends Component {
                             marginLeft: 20,
                             color: 'black'
                           }}>Going To</Label>
-                      <TextInput
-                          placeHolder='Going To'
-                          value={this.state.goingTo}
-                          onDOMChange={this.onFieldChange.bind(this, 'goingTo')}
-                      />
+                          <Input transparent
+                            list='places'
+                            placeholder='Going To'
+                            onChange={this.onFieldChange.bind(this, 'goingTo')} />
+                          <datalist id='places'>
+                            {
+                              this.state.ownPlaceOpt.map((val, index) => {
+                                return <option value={val} key={index}/>
+                              })
+                            }
+                          </datalist>
                   </FormField>
                   <FormField label='Bill No' strong={true} style={{marginTop : '8px'}}>
                       <TextInput

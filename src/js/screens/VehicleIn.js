@@ -24,7 +24,7 @@ import { getVehicleNumbers, getMaterials, getOwnPlaces } from '../api/configurat
 import Save from 'grommet/components/icons/base/Upload';
 import Car from 'grommet/components/icons/base/Car';
 import PrintIcon from 'grommet/components/icons/base/Print';
-import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle, getVehicleData } from '../api/vehicles';
+import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle,getInwardVehicle, getVehicleData } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Notification from 'grommet/components/Notification';
@@ -69,7 +69,8 @@ export default class VehicleIn extends Component {
       materialOpt: [],
       ownPlaceOpt: [],
       percentage: 20,
-      showProgressBar: false
+      showProgressBar: false,
+      vehicleExists: false
     };
   }
 
@@ -78,6 +79,17 @@ export default class VehicleIn extends Component {
     this.getMaterialDetails();
     this.getVehicleDetails();
     this.getOwnPlaceDetails();
+  }
+
+  getInwardVehicleDetails() {
+    const { vehicleNumber, selectVehicleNumber } = this.state;
+        let vNo=vehicleNumber;
+        if(selectVehicleNumber)
+         vNo = selectVehicleNumber;
+      getInwardVehicle(vNo).then((snap) => {
+        const inwardObj = snap.val();
+        this.setState({inwardObj})
+      }).catch((e) => console.log(e));
   }
 
   getOwnPlaceDetails() {
@@ -120,7 +132,7 @@ export default class VehicleIn extends Component {
       if(window.localStorage.unit === 'UNIT3') {
         prefix = 'U3';
       }
-      const lastCount = data && data[prefix]['count']['inCount'] ? data[prefix]['count']['inCount'] :  0;
+      const lastCount = data && data[prefix]['count']['inCount'] ? data[prefix]['count']['inCount'] :  1;
       let inwardSNo = `${prefix}-in-${lastCount}`;
       this.setState({ inwardSNo, lastCount })
     }).catch((e) => console.log(e))
@@ -198,21 +210,24 @@ export default class VehicleIn extends Component {
       );
     }
 
-    onFieldChange(fieldName, e) {
-      let re = /^[0-9\b]{0,5}$/;
+    onFieldChange(fieldName, e, o) {
+      console.log(o);
+      let dr = /^[0-9\b]/;
+      let re = /^[1-9][0-9]{0,4}$/;
       let ne = /^[0-9]{11}$/;
+      let mn = /^\d{10}$/;
       let an = /^[a-zA-Z0-9]+$/;
       let nre = /^[a-zA-Z0-9]{11}$/;
       let tre = /^[A-Za-z. ]+$/;
       let pre = /^[A-Za-z. ]{0,100}$/;
 
-      if(fieldName == 'driverNumber' && (e.target.value === '' || re.test(e.target.value))) {
-          if(!ne.test(e.target.value)) {
-            this.setState({
-              [fieldName]: e.target.value,
-              validationMsg:''
-            })
-          }
+      if(fieldName == 'driverNumber' && (e.target.value === '' || dr.test(e.target.value))) {
+            if(!ne.test(e.target.value)) {
+              this.setState({
+                [fieldName]: e.target.value,
+                validationMsg:''
+              })
+            }
       }
 
       if(fieldName == 'billNumber' || fieldName == 'remarks') {
@@ -238,8 +253,8 @@ export default class VehicleIn extends Component {
         })
       }
 
-      if(fieldName == 'comingFrom' && (e.target.value === '' || pre.test(e.target.value))) {
-        let cText = (e.target.value).toUpperCase();
+      if(fieldName == 'comingFrom' && (o.value === '' || pre.test(o.value))) {
+        let cText = (o.value).toUpperCase();
         this.setState({
           [fieldName]: cText,
           validationMsg: ''
@@ -253,7 +268,7 @@ export default class VehicleIn extends Component {
             [fieldName]: vText,
             validationMsg: '',
             selectVehicleNumber: ''
-          })
+          }, this.getOutwardVehicleDetails.bind(this))
         }
       }
 
@@ -262,7 +277,7 @@ export default class VehicleIn extends Component {
           [fieldName]: e.option,
           validationMsg:'',
           vehicleNumber:''
-        })
+        }, this.getOutwardVehicleDetails.bind(this))
       }
 
       if(fieldName == 'numberOfBags' && (e.target.value === '' || re.test(e.target.value))) {
@@ -461,11 +476,11 @@ export default class VehicleIn extends Component {
       let vNo = vehicleNumber || selectVehicleNumber;
       getVehicleData(vNo).then((snap) => {
         const vehicle = snap.val();
-        const vehicleExists = vehicle ? vehicle['vehicleIn'] : null;
+        const vehicleExists = vehicle ? vehicle['lastOutward'] : null;
         if(vehicleExists) {
           this.setState({vehicleExists})
         } else {
-          this.setState({vehicleExists}, this.savingVehicleIn())
+          this.setState({vehicleExists}, this.savingVehicleIn.bind(this))
         }
       })
     }
@@ -512,7 +527,7 @@ export default class VehicleIn extends Component {
       }).then(this.setState({
         showProgressBar: false,
         toastMsg: `Vehicle ${vNo} is saved`,
-        vehicleSaved: true
+        vehicleSaved: true,
       }, this.getVehicleDetails())).catch((err) => {
         this.setState({
           showLiveCameraFeed: true
@@ -524,7 +539,8 @@ export default class VehicleIn extends Component {
 
     onYesButtonClick() {
       this.setState({
-        vehicleExists: false
+        vehicleExists: false,
+        showProgressBar: true,
       }, this.savingVehicleIn())
     }
 
@@ -565,10 +581,21 @@ export default class VehicleIn extends Component {
       }
     }
 
+    vehicleValidation() {
+      const { outwardObj } = this.state;
+      if(!outwardObj) {
+        this.setState({
+          vehicleExists: true
+        })
+      } else {
+        this.startLoading();
+      }
+    }
+
     startLoading() {
       this.setState({
         showProgressBar: true
-      }, this.getVehicleData.bind(this))
+      }, this.savingVehicleIn.bind(this))
     }
 
     onSaveClick() {
@@ -588,7 +615,6 @@ export default class VehicleIn extends Component {
         billNumber,
         remarks,
         screenshot } = this.state;
-
         if(!ownOutVehicle) {
           this.setState({
             validationMsg: 'Own/Out Vehicle is missing'
@@ -608,6 +634,13 @@ export default class VehicleIn extends Component {
             validationMsg: 'Driver Name is missing'
           })
           return
+        }
+
+        if(driverNumber && (driverNumber.toString()).length<10) {
+            this.setState({
+              validationMsg: 'Mobile Number must contain atleast 10 digits'
+            })
+            return
         }
 
         if(!emptyLoad) {
@@ -653,7 +686,7 @@ export default class VehicleIn extends Component {
 
         this.setState({
           validationMsg:''
-        }, this.startLoading.bind(this))
+        }, this.vehicleValidation.bind(this))
     }
 
     onNewBtnClick() {
