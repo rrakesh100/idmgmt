@@ -24,7 +24,9 @@ import { getVehicleNumbers, getMaterials, getOwnPlaces } from '../api/configurat
 import Save from 'grommet/components/icons/base/Upload';
 import Car from 'grommet/components/icons/base/Car';
 import PrintIcon from 'grommet/components/icons/base/Print';
-import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle,getInwardVehicle, getVehicleData } from '../api/vehicles';
+import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle,getInwardVehicle,
+  getVehicleData,
+getVehicleForValidation } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Notification from 'grommet/components/Notification';
@@ -149,6 +151,17 @@ export default class VehicleIn extends Component {
       }).catch((e) => console.log(e));
   }
 
+  getVehicleForValidation() {
+    const { vehicleNumber, selectVehicleNumber } = this.state;
+        let vNo=vehicleNumber;
+        if(selectVehicleNumber)
+         vNo = selectVehicleNumber;
+      getVehicleForValidation(vNo).then((snap) => {
+        const vehicleValidationObj = snap.val();
+        this.setState({vehicleValidationObj})
+      }).catch((e) => console.log(e));
+  }
+
     capture() {
       if (this.state.showLiveCameraFeed) {
         const screenshot = this.webcam.getScreenshot();
@@ -211,7 +224,6 @@ export default class VehicleIn extends Component {
     }
 
     onFieldChange(fieldName, e, o) {
-      console.log(o);
       let dr = /^[0-9\b]/;
       let re = /^[1-9][0-9]{0,4}$/;
       let ne = /^[0-9]{11}$/;
@@ -268,7 +280,7 @@ export default class VehicleIn extends Component {
             [fieldName]: vText,
             validationMsg: '',
             selectVehicleNumber: ''
-          }, this.getOutwardVehicleDetails.bind(this))
+          }, this.getVehicleForValidation.bind(this))
         }
       }
 
@@ -277,7 +289,7 @@ export default class VehicleIn extends Component {
           [fieldName]: e.option,
           validationMsg:'',
           vehicleNumber:''
-        }, this.getOutwardVehicleDetails.bind(this))
+        }, this.getVehicleForValidation.bind(this))
       }
 
       if(fieldName == 'numberOfBags' && (e.target.value === '' || re.test(e.target.value))) {
@@ -582,13 +594,16 @@ export default class VehicleIn extends Component {
     }
 
     vehicleValidation() {
-      const { outwardObj } = this.state;
-      if(!outwardObj) {
+      const { vehicleValidationObj } = this.state;
+      console.log(vehicleValidationObj);
+      let vehicleLastOutward = vehicleValidationObj ? vehicleValidationObj['lastOutward'] : null;
+      console.log(vehicleLastOutward);
+      if((!vehicleValidationObj) || (vehicleValidationObj && vehicleLastOutward)) {
+        this.startLoading();
+      } else if(vehicleValidationObj && !vehicleLastOutward) {
         this.setState({
           vehicleExists: true
         })
-      } else {
-        this.startLoading();
       }
     }
 
