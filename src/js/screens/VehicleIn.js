@@ -72,7 +72,8 @@ export default class VehicleIn extends Component {
       ownPlaceOpt: [],
       percentage: 20,
       showProgressBar: false,
-      vehicleExists: false
+      vehicleExists: false,
+      savedVehicleNumber: null,
     };
   }
 
@@ -497,6 +498,14 @@ export default class VehicleIn extends Component {
       })
     }
 
+    refreshVehicleData(vNo) {
+      const {vehicleOpt} = this.state;
+      vehicleOpt.filter(item => {
+        return item !== vNo;
+      })
+      this.setState({vehicleOpt});
+    }
+
     savingVehicleIn() {
           const {
             lastCount,
@@ -540,7 +549,10 @@ export default class VehicleIn extends Component {
         showProgressBar: false,
         toastMsg: `Vehicle ${vNo} is saved`,
         vehicleSaved: true,
-      }, this.getVehicleDetails())).catch((err) => {
+      }, () => {
+        this.getVehicleDetails()
+        this.refreshVehicleData(vNo)
+      })).catch((err) => {
         this.setState({
           showLiveCameraFeed: true
         })
@@ -552,13 +564,7 @@ export default class VehicleIn extends Component {
     onYesButtonClick() {
       this.setState({
         vehicleExists: false,
-        showProgressBar: true,
-      }, this.savingVehicleIn())
-    }
-
-    onNoButtonClick() {
-      this.setState({
-        vehicleExists: false
+        showLiveCameraFeed: true,
       })
     }
 
@@ -571,19 +577,14 @@ export default class VehicleIn extends Component {
             <Status value='critical'
             size='medium'
             style={{marginRight:'10px'}} />
-            <strong>Vehicle already exists. Do you want to save again?</strong>
+            <strong>Vehicle already exists!</strong>
             </h3>
              <hr />
              <Row>
              <Button
-               label='Yes'
+               label='Ok'
                onClick={this.onYesButtonClick.bind(this)}
                href='#' style={{marginLeft: '350px', marginBottom:'10px'}}
-               primary={true} />
-             <Button
-               label='No'
-               onClick={this.onNoButtonClick.bind(this)}
-               href='#' style={{marginLeft: '20px', marginBottom:'10px'}}
                primary={true} />
              </Row>
           </Layer>
@@ -595,15 +596,19 @@ export default class VehicleIn extends Component {
 
     vehicleValidation() {
       const { vehicleValidationObj } = this.state;
-      console.log(vehicleValidationObj);
-      let vehicleLastOutward = vehicleValidationObj ? vehicleValidationObj['lastOutward'] : null;
-      console.log(vehicleLastOutward);
-      if((!vehicleValidationObj) || (vehicleValidationObj && vehicleLastOutward)) {
-        this.startLoading();
-      } else if(vehicleValidationObj && !vehicleLastOutward) {
+      let existingVehicle=false;
+      vehicleValidationObj && Object.keys(vehicleValidationObj).map(item => {
+        let vehicleVal = vehicleValidationObj[item];
+        if(vehicleVal.inSide) {
+          existingVehicle = true
+        }
+      })
+      if(existingVehicle) {
         this.setState({
           vehicleExists: true
         })
+      } else {
+        this.startLoading();
       }
     }
 
@@ -801,7 +806,6 @@ export default class VehicleIn extends Component {
             comingFrom,
             billNumber,
             remarks, showProgressBar, toastMsg, lastCount } = this.state;
-
             let prefix = 'U2';
             if(window.localStorage.unit === 'UNIT3') {
               prefix = 'U3';

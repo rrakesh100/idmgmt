@@ -14,7 +14,7 @@ export default class VehicleInPrintComponent extends Component {
             vehicleNumber,
             driverName,
             driverNumber,
-            remarks, material, numberOfBags, comingFrom, billNumber } = this.props;
+            remarks, material, numberOfBags, comingFrom, billNumber, allVehiclesPrint } = this.props;
 
       const date = new Date();
       const dateStr = moment(date).format('DD-MM-YYYY');
@@ -22,7 +22,7 @@ export default class VehicleInPrintComponent extends Component {
       const timestampStr = moment(date).format('DD/MM/YYYY hh:mm:ss A');
 
       return (
-          <div className='vehicleCard'>
+          <div className={allVehiclesPrint ? 'allVehicleCard' : 'vehicleCard'}>
             <div style={{display: 'flex', flexDirection: 'row', marginTop: 10}}>
               <h4 style={{marginLeft: 20}}>copy:<strong>ORIGINAL</strong></h4>
               <h4 style={{position: 'absolute', right:20}}><strong>{timestampStr}</strong></h4>
