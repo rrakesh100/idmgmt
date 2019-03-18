@@ -165,6 +165,9 @@ export default class VehicleOut extends Component {
   }
 
   onFieldChange(fieldName, e, o) {
+    console.log(fieldName);
+    console.log(e);
+    console.log(o);
     let dr = /^[0-9\b]/;
     let re = /^[1-9][0-9]{0,4}$/;
     let ne = /^[0-9]{11}$/;
@@ -190,10 +193,9 @@ export default class VehicleOut extends Component {
       })
     }
 
-    if(fieldName == 'goingTo' && (o.value === '' || pre.test(o.value))) {
-      let cText = (o.value).toUpperCase();
+    if(fieldName == 'goingTo') {
       this.setState({
-        [fieldName]: cText,
+        [fieldName]: o.value,
         validationMsg: ''
       })
     }
