@@ -113,7 +113,7 @@ export default class VehicleIn extends Component {
       Object.keys(options).forEach((opt) => {
         vehicleOpt.push(opt)
       })
-      this.setState({vehicleOpt})
+      this.setState({vehicleOpt, allVehicleOptions: vehicleOpt})
     }).catch((e) => console.log(e))
   }
 
@@ -237,6 +237,8 @@ export default class VehicleIn extends Component {
     }
 
     onFieldChange(fieldName, e, o) {
+      console.log(fieldName);
+      console.log(e,o);
       let dr = /^[0-9\b]/;
       let re = /^[1-9][0-9]{0,4}$/;
       let ne = /^[0-9]{11}$/;
@@ -298,10 +300,8 @@ export default class VehicleIn extends Component {
       }
 
       if(fieldName == 'selectVehicleNumber') {
-        let options=this.state.vehicleOpt;
-
+        let options=this.state.allVehicleOptions;
         let exactMatch = false;
-
         if(!options)
           return ;
         let filtered=[];
