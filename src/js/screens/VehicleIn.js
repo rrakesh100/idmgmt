@@ -224,6 +224,18 @@ export default class VehicleIn extends Component {
       );
     }
 
+    onVehicleSelect(data, isSuggestionSelected) {
+      if(isSuggestionSelected) {
+        this.setState({
+          selectVehicleNumber: data.suggestion
+        });
+      } else {
+        this.setState({
+          selectVehicleNumber: data.target.value
+        });
+      }
+    }
+
     onFieldChange(fieldName, e, o) {
       let dr = /^[0-9\b]/;
       let re = /^[1-9][0-9]{0,4}$/;
@@ -286,11 +298,29 @@ export default class VehicleIn extends Component {
       }
 
       if(fieldName == 'selectVehicleNumber') {
+        let options=this.state.vehicleOpt;
+
+        let exactMatch = false;
+
+        if(!options)
+          return ;
+        let filtered=[];
+        if(e.target.value == '') {
+          filtered=options;
+        } else {
+          options.map(opt => {
+            if(opt.toUpperCase().startsWith(e.target.value.toUpperCase())) {
+              filtered.push(opt);
+            }
+          })
+        }
+        console.log(filtered);
+        console.log(options);
         this.setState({
-          [fieldName]: e.option,
-          validationMsg:'',
-          vehicleNumber:''
-        }, this.getVehicleForValidation.bind(this))
+          [fieldName]: e.target.value,
+          vehicleOpt: filtered,
+          validationMsg: '',
+        })
       }
 
       if(fieldName == 'numberOfBags' && (e.target.value === '' || re.test(e.target.value))) {
@@ -549,10 +579,8 @@ export default class VehicleIn extends Component {
         showProgressBar: false,
         toastMsg: `Vehicle ${vNo} is saved`,
         vehicleSaved: true,
-      }, () => {
-        this.getVehicleDetails()
-        this.refreshVehicleData(vNo)
-      })).catch((err) => {
+      }, this.getVehicleDetails()
+    )).catch((err) => {
         this.setState({
           showLiveCameraFeed: true
         })
@@ -899,12 +927,14 @@ export default class VehicleIn extends Component {
                           value={this.state.vehicleNumber}
                           onDOMChange={this.onFieldChange.bind(this, 'vehicleNumber')}
                       /> :
-                      <Select
-                      placeHolder='Vehicle No'
-                      options={vehicleOpt}
-                      value={this.state.selectVehicleNumber}
-                      onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
-                      />
+                      <Search placeHolder='Vehicle No'
+                        inline={true}
+                        iconAlign='end'
+                        suggestions={vehicleOpt}
+                        value={this.state.selectVehicleNumber}
+                        onSelect={this.onVehicleSelect.bind(this)}
+                        onDOMChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
+                        />
                     }
                   </FormField>
                   <FormField strong={true} style={{marginTop : '10px'}}>

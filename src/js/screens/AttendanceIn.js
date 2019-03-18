@@ -254,6 +254,8 @@ class AttendanceIn extends Component {
         }
       })
     }
+    console.log(filtered);
+    console.log(options);
     this.setState({
       employeeSearchString: e.target.value,
       filteredSuggestions: filtered

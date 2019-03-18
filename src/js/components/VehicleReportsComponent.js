@@ -169,7 +169,6 @@ export default class VehicleReportsComponent extends Component {
            </table>
        </div>
     )
-
   }
 
   render() {
