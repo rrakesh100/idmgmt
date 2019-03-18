@@ -110,6 +110,15 @@ class NewVisitor extends Component {
       .then(()=> {
         this.setState({
           toastMsg: `User ${name} is saved `,
+          name: '',
+          whomToMeet: '',
+          purpose: '',
+          mobile:'',
+          comingFrom:'',
+          department:'',
+          company:'',
+          remarks:'',
+          showLiveCameraFeed: true,
         })
       }
 

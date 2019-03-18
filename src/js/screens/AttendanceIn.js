@@ -634,8 +634,7 @@ renderSearchedEmployee() {
       </Col>
       {
         hideOutsideCamera &&
-        <div onClick={this.oneClickCapture.bind(this)}
-         style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
+        <div style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
           { this.renderInsideCamera() }
         </div>
       }

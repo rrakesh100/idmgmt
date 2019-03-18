@@ -166,6 +166,11 @@ export function getVehicleForValidation(vehicleNumber) {
   return dbRef.once('value');
 }
 
+export function getInsideVehicles(vehicleNumber) {
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicleReports/in`);
+  return dbRef.once('value');
+}
+
 export function getUserInfo(token) {
   const userInfoPath=localStorage.unit + '/' +`userInfo/${token}`;
   const dbRef = firebase.database().ref(userInfoPath);

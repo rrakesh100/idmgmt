@@ -27,7 +27,7 @@ import { savingOutwardVehicle,
          getInwardVehicle,
          uploadVehicleImage,
          saveVehicleOutPrintCopiesData,
-         fetchVehicleOutPrintCopiesData, getVehicleData } from '../api/vehicles';
+         fetchVehicleOutPrintCopiesData, getVehicleData, getInsideVehicles } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Image from 'grommet/components/Image';
@@ -70,6 +70,7 @@ export default class VehicleOut extends Component {
       ownPlaceOpt:[],
       vehicleSaved: false,
       showProgressBar: false,
+      vehiclesArr:[],
     };
   }
 
@@ -78,6 +79,27 @@ export default class VehicleOut extends Component {
     this.getMaterialDetails();
     this.getVehicleDetails();
     this.getOwnPlaceDetails();
+    this.getInsideVehicles();
+  }
+
+  getInsideVehicles() {
+    getInsideVehicles().then(snap => {
+      const inVehicles = snap.val();
+      let ownVehiclesArr=[];
+      let outVehiclesArr=[];
+      Object.keys(inVehicles).forEach(vehicle => {
+        let vehicleOb = inVehicles[vehicle];
+        Object.keys(vehicleOb).forEach(item => {
+          let vObj = vehicleOb[item];
+          if(vObj.inSide && vObj.ownOutVehicle == 'Own Vehicle') {
+            ownVehiclesArr.push(vehicle);
+          } else if(vObj.inSide && vObj.ownOutVehicle == 'Outside Vehicle') {
+            outVehiclesArr.push(vehicle)
+          }
+        })
+      })
+      this.setState({ownVehiclesArr, outVehiclesArr});
+    })
   }
 
   getOwnPlaceDetails() {
@@ -142,7 +164,7 @@ export default class VehicleOut extends Component {
       }).catch((e) => console.log(e));
   }
 
-  onFieldChange(fieldName, e) {
+  onFieldChange(fieldName, e, o) {
     let dr = /^[0-9\b]/;
     let re = /^[1-9][0-9]{0,4}$/;
     let ne = /^[0-9]{11}$/;
@@ -170,7 +192,6 @@ export default class VehicleOut extends Component {
 
     if(fieldName == 'goingTo' && (o.value === '' || pre.test(o.value))) {
       let cText = (o.value).toUpperCase();
-      console.log(cText);
       this.setState({
         [fieldName]: cText,
         validationMsg: ''
@@ -507,7 +528,7 @@ export default class VehicleOut extends Component {
       billNumber,
       remarks,
       screenshot } = this.state;
-
+      console.log(goingTo);
       if(!ownOutVehicle) {
         this.setState({
           validationMsg: 'Own/Out Vehicle is missing'
@@ -569,18 +590,7 @@ export default class VehicleOut extends Component {
           return
         }
 
-        if(!billNumber) {
-          this.setState({
-            validationMsg: 'Bill Number is missing'
-          })
-          return
-        }
-        if(!remarks) {
-          this.setState({
-            validationMsg: 'Remarks is missing'
-          })
-          return
-        }
+
       }
 
       if(!screenshot) {
@@ -800,8 +810,7 @@ export default class VehicleOut extends Component {
             numberOfBags,
             goingTo,
             billNumber,
-            remarks, showProgressBar, toastMsg, lastCount } = this.state;
-
+            remarks, showProgressBar, toastMsg, lastCount, ownVehiclesArr, outVehiclesArr } = this.state;
             let prefix = 'U2';
             if(window.localStorage.unit === 'UNIT3') {
               prefix = 'U3';
@@ -888,14 +897,15 @@ export default class VehicleOut extends Component {
                   <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle Number</Label>
                       {
                       !ourVehicle ?
-                      <TextInput
-                          placeHolder='Vehicle No'
-                          value={this.state.vehicleNumber}
-                          onDOMChange={this.onFieldChange.bind(this, 'vehicleNumber')}
+                      <Select
+                      placeHolder='Vehicle No'
+                      options={outVehiclesArr}
+                      value={this.state.selectVehicleNumber}
+                      onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
                       /> :
                       <Select
                       placeHolder='Vehicle No'
-                      options={vehicleOpt}
+                      options={ownVehiclesArr}
                       value={this.state.selectVehicleNumber}
                       onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
                       />

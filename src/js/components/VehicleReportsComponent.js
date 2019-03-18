@@ -33,7 +33,7 @@ export default class VehicleReportsComponent extends Component {
         if(datesArr) {
         let datesFilterArr = datesArr.filter(val => val == date);
         let filteredDate = datesFilterArr[0];
-        vObj = vehicleObj[filteredDate];
+        vObj=vehicleObj[filteredDate];
       } else {
         vObj=vehicleObj[date];
       }

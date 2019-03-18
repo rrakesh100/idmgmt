@@ -98,7 +98,7 @@ export default class VehicleReports extends Component {
 
   onFetchingVehicleData() {
     const { reportType, startDate, endDate } = this.state;
-    fetchVehicleReportsData(reportType, startDate, endDate).then((res) => {
+    fetchVehicleReportsData(reportType, startDate, endDate).then(res => {
       const response = res.val();
       this.setState({response})
     })
