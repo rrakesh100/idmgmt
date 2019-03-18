@@ -170,7 +170,8 @@ class VisitorOut extends Component {
 
   renderVisitorDetail() {
     const { visitorBtnClick, selectedVisitorId, selectedVisitorData } = this.state;
-    return visitorBtnClick ?   <Visitor visitorData={selectedVisitorData} visitorId={selectedVisitorId}/> : null
+    const {refreshVisitors}=this.props;
+    return visitorBtnClick ?   <Visitor refreshVisitors={refreshVisitors} visitorData={selectedVisitorData} visitorId={selectedVisitorId}/> : null
   }
 
   render() {

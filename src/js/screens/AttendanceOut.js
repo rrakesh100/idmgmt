@@ -268,8 +268,7 @@ class AttendanceOut extends Component {
   oneClickCapture() {
 
 
-    const { pickScreenshotFromOutsideCamera, screenshot } = this.state;
-
+    const { pickScreenshotFromOutsideCamera, screenshot, showLiveCameraFeed } = this.state;
     if(pickScreenshotFromOutsideCamera){
       this.setState({
         showLiveCameraFeed: false

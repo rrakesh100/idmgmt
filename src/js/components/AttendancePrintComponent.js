@@ -11,6 +11,8 @@ export default class AttendancePrintComponent extends Component {
   render() {
       const { inwardImage, selectedEmployeeData } = this.props;
       const { name, employeeId, paymentType, village, address, joinedDate, screenshot } = selectedEmployeeData;
+      const unit = localStorage.unit || 'UNIT2';
+
       const date = new Date();
       const hours = date.getHours();
       let shiftVar;
@@ -29,8 +31,8 @@ export default class AttendancePrintComponent extends Component {
                 <h3 style={{textDecoration : 'underline'}}>Attendance In Card</h3>
               </div>
               <div className='box content'>
-                <Image src={screenshot} style={{width:180, height:200}}/>
-                <Image src={inwardImage} style={{width:180, height:200}}/>
+                <Image src={screenshot} style={{width:150, height:150}}/>
+                <Image src={inwardImage} style={{width:150, height:150}}/>
               </div>
               <div className='box sidebar'>
               <Table>
@@ -67,6 +69,13 @@ export default class AttendancePrintComponent extends Component {
                           Paymment Mode: <b>{paymentType}</b>
                         </td>
                     </TableRow>
+                    <TableRow>
+                      <td>
+                        Unit: <b>{unit}</b>
+                      </td>
+                      <td>
+                      </td>
+                  </TableRow>
                   </tbody>
                 </Table>
                 <div className='footer'>

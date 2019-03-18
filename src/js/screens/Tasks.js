@@ -50,6 +50,10 @@ class Tasks extends Component {
   }
 
   componentDidMount() {
+    this.getVisitors();
+  }
+
+  getVisitors() {
     getVisitors()
       .then((snap) => {
         const data = snap.val();
@@ -73,7 +77,6 @@ class Tasks extends Component {
         console.error('VISITOR FETCH FAILED', err);
       });
   }
-
 
   onVisitorSelect(data, isSuggestionSelected) {
     if(isSuggestionSelected) {
@@ -373,7 +376,7 @@ class Tasks extends Component {
             <NewVisitor serialNo={serialNo} style={{height : '400px'}}/>
             </Tab>
             <Tab title='VISITOR OUT'>
-            <VisitorOut />
+            <VisitorOut refreshVisitors={this.getVisitors.bind(this)}/>
             </Tab>
             <Tab title='REPORTS'>
             <Reports />

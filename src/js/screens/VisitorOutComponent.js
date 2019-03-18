@@ -243,7 +243,10 @@ onRadioChange(button, e) {
         .then(() => {
           this.setState({
             toastMsg: `Successfully updated the status of ${this.state.visitorId}`
-          }, this.getVisitorData.bind(this));
+          }, () => {
+            this.getVisitorData.bind(this);
+            this.props.refreshVisitors();
+          });
         })
         .catch((err) => {
           console.error(`Unable to update ${visitorData.name}\'s status`, err);

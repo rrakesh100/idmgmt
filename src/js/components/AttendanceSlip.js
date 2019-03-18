@@ -336,11 +336,24 @@ getEmployees() {
         <h2 style={!isPrint ? {display:'none'} : {textAlign: 'center',marginTop: 60}}>Attendance Slip as on <strong>{startDate}</strong><span style={isPrint ? { position: 'absolute', right: 80} : { display: 'none' }}>{iterator}/{numOfEmp}</span></h2> :
         <h2 style={!isPrint ? {display:'none'} : {textAlign: 'center',marginTop: 60}}>Attendance Slip From : <strong>{startDate}</strong> To: <strong>{endDate}</strong><span style={isPrint ? { position: 'absolute', right: 80} : { display: 'none' }}>{iterator}/{numOfEmp}</span></h2>
       }
-      <h4 style={isPrint ? {marginLeft: 40} : {display: 'none'}}>Unit: {unit}<span style={{marginLeft: 300}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></span><span style={isPrint ? {position: 'absolute', right : 80}: {display:'none'}}>Date : {timestampStr}</span></h4>
-      <h4 style={!isPrint ? {display:'none'} : {marginLeft : 20, display: 'flex', flexDirection: 'row',alignItems: 'center'}}><Barcode value={employeeId} height={20}/><span style={{marginLeft: 200}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}</span><span style={isPrint ? {position: 'absolute', right : 80}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h4>
-      <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems:'center'}}>
-      <h3 style={isPrint ? {display: 'none'} : {marginLeft : 20}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}<span style={isPrint ? {position: 'absolute', right : 80}: {marginLeft : 80}}>No of days = <strong>{totalNumberOfdays}</strong></span></h3>
-      {showReportWithImages ? <Image src={empAttObj.screenshot} style={isPrint ? {marginLeft:800, width:100, height:100} :{width:100, height:100, marginRight:200}}/>: null}
+      <div style={{display: 'flex', flexDirection:'row', alignItems: 'center', justifyContent: 'space-around'}}>
+        <div>
+          <div style={{display: 'flex', flexDirection: 'row', justifyContent:'space-around', alignItems: 'center'}}>
+            <div style={isPrint ? {marginLeft: 20} : {display: 'none'}}>Unit: {unit}</div>
+            <div style={isPrint ? {marginLeft:20} : {display: 'none'}}>Copy:<strong>{printCopies ? 'Duplicate ' + '# '+printCopies : 'Original'}</strong></div>
+            <div style={isPrint ? {marginRight: 20} : {display: 'none'}}>Date : {timestampStr}</div>
+          </div>
+          <div style={{display: 'flex', flexDirection: 'row', justifyContent:'space-around', alignItems: 'center'}}>
+            <div style={isPrint ? {} : {display: 'none'}}><Barcode value={employeeId} height={20}/></div>
+            <div style={isPrint ? {marginLeft:20} : {display: 'none'}}>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}</div>
+            <div style={isPrint ? {marginLeft: 20} : {display: 'none'}}>No of days = <strong>{totalNumberOfdays}</strong></div>
+          </div>
+        </div>
+      <div style={{display:'flex', flexDirection: 'row', alignItems: 'center'}}>
+        <div style={isPrint ? {display: 'none'} : {marginRight:180}}><h3>{allEmployees[employeeId]['name']} ; {employeeId} ; {allEmployees[employeeId]['village']}</h3></div>
+        <div style={isPrint ? {display: 'none'} : {marginRight:100}}><h3>No of days = <strong>{totalNumberOfdays}</strong></h3></div>
+        {showReportWithImages ? <Image src={empAttObj.screenshot} style={{width:80, height:80}}/>: null}
+      </div>
       </div>
       <Table scrollable={true} style={isPrint ? {} :  { marginTop : '10px', marginLeft : '30px'}}>
           <thead style={{position:'relative'}}>
@@ -405,8 +418,8 @@ getEmployees() {
                      <td>{employeeAttendaceObj.in}</td>
                      <td>{outTime}</td>
                      <td>{totalTime}</td>
-                     {showReportWithImages ? <td><Image src={employeeAttendaceObj.inwardPhoto} style={{width:100, height:100}}/></td> : null}
-                     {showReportWithImages ? <td><Image src={employeeAttendaceObj.outwardPhoto} style={{width:100, height:100}}/></td> : null}
+                     {showReportWithImages ? <td><Image src={employeeAttendaceObj.inwardPhoto} style={{width:80, height:80}}/></td> : null}
+                     {showReportWithImages ? <td><Image src={employeeAttendaceObj.outwardPhoto} style={{width:80, height:80}}/></td> : null}
                      </TableRow>
                  }
             })

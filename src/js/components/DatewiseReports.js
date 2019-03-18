@@ -732,8 +732,10 @@ export default class DatewiseReports extends Component {
 
    Object.keys(response).map((date, index) => {
      const employeesList = response[date];
+     console.log(employeesList);
      Object.keys(employeesList).map((key, indx) => {
        const eachEmployeeObj = employeesList[key];
+       console.log(eachEmployeeObj);
        inwardImagesArr.push(
          <div style={{marginLeft: 30}}>
            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>

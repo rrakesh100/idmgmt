@@ -97,7 +97,7 @@ export default class VehicleReportsComponent extends Component {
           if(isValid) {
             i++;
           tablesArray.push(
-            <tbody key={index}>
+            <tbody key={index} style={vObj.ownOutVehicle == 'Own Vehicle' ? {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
               <tr>
                <td rowSpan={2}>{i}</td>
                <td rowSpan={2}>{tRow1}</td>
