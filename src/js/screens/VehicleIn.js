@@ -262,12 +262,7 @@ export default class VehicleIn extends Component {
         })
       }
 
-      if(fieldName=='transactionType') {
-        this.setState({
-          [fieldName]: e.target.value,
-          validationMsg: ''
-        })
-      }
+      
 
       if(fieldName == 'driverName' && (e.target.value === '' || tre.test(e.target.value))) {
         let dText = (e.target.value).toUpperCase();
@@ -664,7 +659,7 @@ export default class VehicleIn extends Component {
         comingFrom,
         billNumber,
         remarks,
-        screenshot, transactionType } = this.state;
+        screenshot } = this.state;
         if(!ownOutVehicle) {
           this.setState({
             validationMsg: 'Own/Out Vehicle is missing'
@@ -708,12 +703,7 @@ export default class VehicleIn extends Component {
         }
 
         if(emptyLoad === 'Load') {
-          if(!transactionType) {
-            this.setState({
-              validationMsg: 'Transaction Type is missing'
-            })
-            return
-          }
+
 
           if(!partyName) {
             this.setState({
@@ -842,8 +832,7 @@ export default class VehicleIn extends Component {
             numberOfBags,
             comingFrom,
             billNumber,
-            remarks, showProgressBar, toastMsg, lastCount, transactionType } = this.state;
-            console.log(transactionType);
+            remarks, showProgressBar, toastMsg, lastCount } = this.state;
             let prefix = 'U2';
             if(window.localStorage.unit === 'UNIT3') {
               prefix = 'U3';
@@ -972,19 +961,7 @@ export default class VehicleIn extends Component {
                         onChange={this.onFieldChange.bind(this, 'emptyLoad')}
                       />
                   </FormField>
-                  <FormField strong={true} style={{marginTop : '10px'}}>
-                  <Label style={{
-                            fontSize:16,
-                            marginLeft: 20,
-                            color: 'red'
-                          }}>Transaction Type</Label>
-                          <Select
-                            options={['Internal', 'Purchase', 'Sale']}
-                            placeHolder='Transaction Type'
-                            value={this.state.transactionType}
-                            onChange={this.onFieldChange.bind(this, 'transactionType')}
-                          />
-                  </FormField>
+
                 </Form> }
             </Box>
             <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
@@ -1073,9 +1050,7 @@ export default class VehicleIn extends Component {
                             marginLeft: 20,
                             color: 'black'
                           }}>Coming From</Label>
-                      {
-                        transactionType=='Internal' ?
-                      <div>
+
                         <Input transparent
                         list='places'
                         placeholder='Coming From'
@@ -1087,8 +1062,7 @@ export default class VehicleIn extends Component {
                           })
                         }
                       </datalist>
-                      </div>: null
-                    }
+
                   </FormField>
                   <FormField label='Bill No' strong={true} style={{marginTop : '10px'}}>
                       <TextInput
