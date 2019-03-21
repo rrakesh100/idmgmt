@@ -171,6 +171,11 @@ export function getInsideVehicles(vehicleNumber) {
   return dbRef.once('value');
 }
 
+export function getOutsideVehicles(vehicleNumber) {
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicleReports/out`);
+  return dbRef.once('value');
+}
+
 export function getUserInfo(token) {
   const userInfoPath=localStorage.unit + '/' +`userInfo/${token}`;
   const dbRef = firebase.database().ref(userInfoPath);

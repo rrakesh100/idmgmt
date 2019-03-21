@@ -237,8 +237,6 @@ export default class VehicleIn extends Component {
     }
 
     onFieldChange(fieldName, e, o) {
-      console.log(fieldName);
-      console.log(e,o);
       let dr = /^[0-9\b]/;
       let re = /^[1-9][0-9]{0,4}$/;
       let ne = /^[0-9]{11}$/;
@@ -258,6 +256,13 @@ export default class VehicleIn extends Component {
       }
 
       if(fieldName == 'billNumber' || fieldName == 'remarks') {
+        this.setState({
+          [fieldName]: e.target.value,
+          validationMsg: ''
+        })
+      }
+
+      if(fieldName=='transactionType') {
         this.setState({
           [fieldName]: e.target.value,
           validationMsg: ''
@@ -301,7 +306,6 @@ export default class VehicleIn extends Component {
 
       if(fieldName == 'selectVehicleNumber') {
         let options=this.state.allVehicleOptions;
-        let exactMatch = false;
         if(!options)
           return ;
         let filtered=[];
@@ -314,10 +318,8 @@ export default class VehicleIn extends Component {
             }
           })
         }
-        console.log(filtered);
-        console.log(options);
         this.setState({
-          [fieldName]: e.target.value,
+          [fieldName]: e.target.value.toUpperCase(),
           vehicleOpt: filtered,
           validationMsg: '',
         })
@@ -662,7 +664,7 @@ export default class VehicleIn extends Component {
         comingFrom,
         billNumber,
         remarks,
-        screenshot } = this.state;
+        screenshot, transactionType } = this.state;
         if(!ownOutVehicle) {
           this.setState({
             validationMsg: 'Own/Out Vehicle is missing'
@@ -706,6 +708,13 @@ export default class VehicleIn extends Component {
         }
 
         if(emptyLoad === 'Load') {
+          if(!transactionType) {
+            this.setState({
+              validationMsg: 'Transaction Type is missing'
+            })
+            return
+          }
+
           if(!partyName) {
             this.setState({
               validationMsg: 'Party Name is missing'
@@ -833,7 +842,8 @@ export default class VehicleIn extends Component {
             numberOfBags,
             comingFrom,
             billNumber,
-            remarks, showProgressBar, toastMsg, lastCount } = this.state;
+            remarks, showProgressBar, toastMsg, lastCount, transactionType } = this.state;
+            console.log(transactionType);
             let prefix = 'U2';
             if(window.localStorage.unit === 'UNIT3') {
               prefix = 'U3';
@@ -920,7 +930,7 @@ export default class VehicleIn extends Component {
                   <FormField strong={true}
                    style={{marginTop : '10px', color: 'red'}}>
                   <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle No</Label>
-                      {
+                    {
                       !ourVehicle ?
                       <TextInput
                           placeHolder='Vehicle No'
@@ -962,6 +972,19 @@ export default class VehicleIn extends Component {
                         onChange={this.onFieldChange.bind(this, 'emptyLoad')}
                       />
                   </FormField>
+                  <FormField strong={true} style={{marginTop : '10px'}}>
+                  <Label style={{
+                            fontSize:16,
+                            marginLeft: 20,
+                            color: 'red'
+                          }}>Transaction Type</Label>
+                          <Select
+                            options={['Internal', 'Purchase', 'Sale']}
+                            placeHolder='Transaction Type'
+                            value={this.state.transactionType}
+                            onChange={this.onFieldChange.bind(this, 'transactionType')}
+                          />
+                  </FormField>
                 </Form> }
             </Box>
             <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
@@ -985,6 +1008,7 @@ export default class VehicleIn extends Component {
                   </FormField>
                   </Form> :
                   <Form className='newVisitorFields'>
+
                   <FormField strong={true} style={{marginTop : '10px'}}>
                   <Label style={!emptyVehicle ?
                           {
@@ -1049,7 +1073,10 @@ export default class VehicleIn extends Component {
                             marginLeft: 20,
                             color: 'black'
                           }}>Coming From</Label>
-                      <Input transparent
+                      {
+                        transactionType=='Internal' ?
+                      <div>
+                        <Input transparent
                         list='places'
                         placeholder='Coming From'
                         onChange={this.onFieldChange.bind(this, 'comingFrom')} />
@@ -1060,6 +1087,8 @@ export default class VehicleIn extends Component {
                           })
                         }
                       </datalist>
+                      </div>: null
+                    }
                   </FormField>
                   <FormField label='Bill No' strong={true} style={{marginTop : '10px'}}>
                       <TextInput

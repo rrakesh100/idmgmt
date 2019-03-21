@@ -667,7 +667,7 @@ export default class DatewiseReports extends Component {
      datesArr.map((date) => {
        return dbRef.child('dates').child(date).once('value').then((snapshot) => {
          let response = snapshot.val();
-         let numOfEmp = Object.keys(response).length;
+         let numOfEmp = response && Object.keys(response).length;
          empArr.push(numOfEmp);
          returnObj[date] = response;
        })

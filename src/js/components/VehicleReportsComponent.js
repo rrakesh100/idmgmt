@@ -93,6 +93,17 @@ export default class VehicleReportsComponent extends Component {
             tRow3=vObj.goingTo;
             tRow4=vObj.comingFrom;
           }
+          let vInDate=vObj.inDate;
+          let vOutDate=vObj.outDate;
+          let slicedInDate,slicedOutDate;
+          if(vInDate) {
+            slicedInDate=vInDate.slice(0,6) + vInDate.slice(8,10);
+          }
+          console.log(slicedInDate);
+          if(vOutDate) {
+            slicedOutDate=vOutDate.slice(0,6) + vOutDate.slice(8,10);
+          }
+          console.log(slicedOutDate);
 
           if(isValid) {
             i++;
@@ -104,8 +115,8 @@ export default class VehicleReportsComponent extends Component {
                <td rowSpan={2}>{vObj.ownOutVehicle}</td>
                <td rowSpan={2}>{vObj.vehicleNumber}</td>
                <td>{vObj.driverName}</td>
-               <td>{vObj.inDate}</td>
-               <td>{vObj.outDate || '--'}</td>
+               <td>{slicedInDate}</td>
+               <td>{slicedOutDate || '--'}</td>
                <td>{tRow2 || '--'}</td>
                <td rowSpan={2}>{totalTime}</td>
                <td>{vObj.material}</td>
@@ -131,10 +142,11 @@ export default class VehicleReportsComponent extends Component {
           <div style={{marginTop:20}}>
             {
               reportType && startDate && endDate ?
-              <h3 style={{textAlign: 'center'}}><strong>{reportType} Vehicle Details Report- Indate From {startDate} To {endDate}</strong></h3> : null
+              <h3 style={{textAlign: 'center'}}><strong>{reportType} Vehicle Details Report- Indate From {startDate} To {endDate}</strong></h3> :
+              <h3 style={{textAlign: 'center'}}><strong>{reportType} Vehicle Details Reports</strong></h3>
             }
           </div>
-           <table className="vehicleReportsTable" style={{ marginLeft : 20, marginTop:10}}>
+           <table className="vehicleReportsTable" style={{ marginLeft : 4, marginTop:10}}>
              <thead className="vehiclesTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
               <tr>
                 <th colSpan={4}>Out/Own Vehicles: {ownOutVehicle}</th>

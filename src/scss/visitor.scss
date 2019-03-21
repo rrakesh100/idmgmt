@@ -207,8 +207,19 @@ span.grommetux-form-field__contents {
 }
 
 .vehicleReportsTable {
-  width: 97%;
+  width: 100%;
   border-collapse: collapse;
+}
+
+.vehicleReportsTable tr td {
+  font-size: 11px;
+}
+
+.vehicleAbstractReportsTable {
+  width: 80%;
+  border-collapse: collapse;
+  margin-left: 10%;
+  margin-right: 10%;
 }
 
 .vehicleReportsTable th, .vehicleReportsTable td {

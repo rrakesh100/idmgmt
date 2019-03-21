@@ -7,9 +7,12 @@ import moment from 'moment';
 import TimePicker from 'rc-time-picker';
 import Notification from 'grommet/components/Notification';
 import * as firebase from 'firebase';
-import { fetchVehicleReportsData } from '../api/vehicles';
+import { fetchVehicleReportsData, getOutsideVehicles } from '../api/vehicles';
 import VehicleReportsComponent from './VehicleReportsComponent';
+import AbstractVehicleReports from './AbstractVehicleReports';
+import AbstractOnHandVehicleReports from './AbstractOnHandVehicleReports';
 import ReactToPrint from "react-to-print";
+import Label from 'grommet/components/Label';
 
 
 export default class VehicleReports extends Component {
@@ -23,34 +26,37 @@ export default class VehicleReports extends Component {
       ownOutVehicle: null,
       emptyLoad: null,
       validationMsg:'',
-      response: null
+      response: null,
+      abstractOnhandResponse: null
     }
   }
 
   onStartDateChange(e) {
-    const { endDate } = this.state;
+    const { endDate, reportType } = this.state;
+
     let startDate = e.replace(/\//g, '-');
-    if(endDate) {
-      let strt = moment(startDate , 'DD-MM-YYYY');
-      let end = moment(endDate, 'DD-MM-YYYY');
-
-      let isBefore = strt.valueOf() === end.valueOf() ?  true : moment(strt).isBefore(end) ;
-      if(!isBefore) {
-        alert('End Date should be greater than Start Date');
-        return;
-      }
-      this.setState({startDate, endDate:''})
+    if(reportType == 'Total Abstract' || reportType=='Abstract OH Vehicles') {
+      this.setState({startDate, endDate: startDate}, this.vehicleDatesLoop.bind(this))
     } else {
-      this.setState({startDate, endDate:''})
-    }
+      if(endDate) {
+        let strt = moment(startDate , 'DD-MM-YYYY');
+        let end = moment(endDate, 'DD-MM-YYYY');
 
+        let isBefore = strt.valueOf() === end.valueOf() ?  true : moment(strt).isBefore(end) ;
+        if(!isBefore) {
+          alert('End Date should be greater than Start Date');
+          return;
+        }
+        this.setState({startDate, endDate:''})
+      } else {
+        this.setState({startDate, endDate:''})
+      }
+    }
   }
 
   onEndDateChange(e) {
     let endDate = e.replace(/\//g, '-');
-    let {startDate} = this.state ;
-    let dateRange = startDate + '_' + endDate;
-
+    let {startDate, reportType} = this.state ;
     let strt = moment(startDate , 'DD-MM-YYYY');
     let end = moment(endDate, 'DD-MM-YYYY');
 
@@ -59,7 +65,16 @@ export default class VehicleReports extends Component {
       alert('End Date should be greater than Start Date');
       return;
     }
-    this.setState({endDate, response: null}, this.vehicleDatesLoop.bind(this))
+
+    if(reportType == 'Total Abstract' || reportType=='Abstract OH Vehicles') {
+      if(startDate !== endDate){
+          this.setState({endDate: ''}, () => alert('Both dates should be same'));
+      } else {
+        this.setState({endDate}, this.vehicleDatesLoop.bind(this));
+      }
+    } else {
+      this.setState({endDate, response: null}, this.vehicleDatesLoop.bind(this));
+    }
   }
 
   vehicleDatesLoop() {
@@ -98,11 +113,19 @@ export default class VehicleReports extends Component {
 
   onFetchingVehicleData() {
     const { reportType, startDate, endDate } = this.state;
-    fetchVehicleReportsData(reportType, startDate, endDate).then(res => {
-      const response = res.val();
-      this.setState({response})
-    })
-    .catch((err) => console.error(err))
+    if(reportType=='Abstract OH Vehicles') {
+      getOutsideVehicles().then(snap => {
+        let abstractOnhandResponse=snap.val();
+        this.setState({abstractOnhandResponse})
+      }).catch(err => console.error(err))
+    } else {
+      fetchVehicleReportsData(reportType, startDate, endDate).then(res => {
+        const response = res.val();
+        this.setState({response})
+      })
+      .catch((err) => console.error(err))
+    }
+
   }
 
   renderValidationMsg() {
@@ -116,7 +139,7 @@ export default class VehicleReports extends Component {
   }
 
   onValidatingInputs() {
-    const { reportType, ownOutVehicle, emptyLoad } = this.state;
+    const { reportType, ownOutVehicle, emptyLoad, startDate } = this.state;
 
     if(!reportType) {
       this.setState({
@@ -125,14 +148,14 @@ export default class VehicleReports extends Component {
       return
     }
 
-    if(!ownOutVehicle) {
+    if(reportType !== 'Total Abstract' && reportType !== 'Abstract OH Vehicles' && !ownOutVehicle) {
       this.setState({
         validationMsg: 'Own/Out Vehicle is Missing'
       })
       return
     }
 
-    if(!emptyLoad) {
+    if(reportType !== 'Total Abstract' && reportType !== 'Abstract OH Vehicles' && !emptyLoad) {
       this.setState({
         validationMsg: 'Empty/Load is Missing'
       })
@@ -173,6 +196,7 @@ export default class VehicleReports extends Component {
   }
 
   renderInputFields() {
+    const {reportType}=this.state;
     return (
       <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
       <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}} >
@@ -180,7 +204,7 @@ export default class VehicleReports extends Component {
       <FormField label='Report Type' style={{marginTop:20}}>
         <Select
           placeHolder='Report Type'
-          options={['Inward', 'In-Outward-Pending', 'In-Outward-Completed', 'Outward']}
+          options={['Total Abstract', 'Abstract OH Vehicles', 'Detailed OH Vehicles', 'Inward', 'In-Outward-Pending', 'In-Outward-Completed', 'Outward']}
           value={this.state.reportType}
           onChange={this.onReportTypeFieldChange.bind(this, 'reportType')}
         />
@@ -188,27 +212,34 @@ export default class VehicleReports extends Component {
       </div>
       <div style={{width: 300}}>
       <FormField label='Own/Out Vehicle' style={{marginTop:15}}>
-          <Select
-            placeHolder='Own/Out'
-            options={['All Vehicles', 'Own Vehicle', 'Outside Vehicle']}
-            value={this.state.ownOutVehicle}
-            onChange={this.onFieldChange.bind(this, 'ownOutVehicle')}
-          />
+          {
+            reportType=='Total Abstract' || reportType=='Abstract OH Vehicles' || reportType=='Detailed OH Vehicles' ?
+            <Label style={{marginLeft:30}}><strong>N/A</strong></Label> :
+            <Select
+              placeHolder='Own/Out'
+              options={['All Vehicles', 'Own Vehicle', 'Outside Vehicle']}
+              value={this.state.ownOutVehicle}
+              onChange={this.onFieldChange.bind(this, 'ownOutVehicle')}
+            />
+          }
       </FormField>
       </div>
       <div style={{width: 300}}>
       <FormField label='Empty/Load' style={{marginTop:15}}>
-          <Select
-            placeHolder='Empty/Load'
-            options={['All', 'Empty', 'Load']}
-            value={this.state.emptyLoad}
-            onChange={this.onFieldChange.bind(this, 'emptyLoad')}
-          />
+      {
+        reportType=='Total Abstract' || reportType=='Abstract OH Vehicles' || reportType=='Detailed OH Vehicles' ?
+        <Label style={{marginLeft:30}}><strong>N/A</strong></Label> :
+        <Select
+          placeHolder='Empty/Load'
+          options={['All', 'Empty', 'Load']}
+          value={this.state.emptyLoad}
+          onChange={this.onFieldChange.bind(this, 'emptyLoad')}
+        />
+      }
       </FormField>
       </div>
       </div>
       <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}}>
-
       <div style={{width: 300}}>
         <FormField label='From Date' style={{marginTop:20}}>
           <DateTime id='id'
@@ -254,6 +285,7 @@ export default class VehicleReports extends Component {
 
   vehicleReports() {
     const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr } = this.state;
+    if((reportType=='Inward' || reportType=='In-Outward-Pending' || reportType=='In-Outward-Completed' || reportType=='Outward') && response) {
     return (
       <div>
         <VehicleReportsComponent
@@ -269,9 +301,45 @@ export default class VehicleReports extends Component {
       </div>
     )
   }
+  }
+
+  abstractVehicleReports() {
+    const {reportType, response, datesArr}=this.state;
+    if(reportType == 'Total Abstract' && response) {
+      return (
+        <AbstractVehicleReports
+            response={response}
+            datesArr={datesArr}
+        />
+      )
+    }
+    return
+  }
+
+  abstractOnHandVehicleReports() {
+    const {reportType, datesArr, abstractOnhandResponse}=this.state;
+    if(reportType == 'Abstract OH Vehicles' && abstractOnhandResponse) {
+      return (
+        <AbstractOnHandVehicleReports
+          datesArr={datesArr}
+          abstractOnhandResponse={abstractOnhandResponse}
+        />
+      )
+    }
+  }
 
   showVehicleReports() {
     let reportsTable=this.vehicleReports();
+    return reportsTable;
+  }
+
+  showAbstractVehicleReports() {
+    let reportsTable=this.abstractVehicleReports();
+    return reportsTable;
+  }
+
+  showAbstractOnHandVehicleReports() {
+    let reportsTable=this.abstractOnHandVehicleReports();
     return reportsTable;
   }
 
@@ -282,6 +350,8 @@ export default class VehicleReports extends Component {
         { this.renderValidationMsg() }
         { this.renderInputFields() }
         { this.showVehicleReports() }
+        { this.showAbstractVehicleReports() }
+        { this.showAbstractOnHandVehicleReports() }
       </div>
     )
   }

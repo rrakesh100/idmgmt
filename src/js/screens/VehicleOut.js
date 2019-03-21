@@ -120,7 +120,7 @@ export default class VehicleOut extends Component {
       Object.keys(options).forEach((opt) => {
         vehicleOpt.push(opt)
       })
-      this.setState({vehicleOpt})
+      this.setState({vehicleOpt, allVehicleOptions: vehicleOpt})
     }).catch((e) => console.log(e))
   }
 
@@ -194,6 +194,7 @@ export default class VehicleOut extends Component {
     }
 
     if(fieldName == 'goingTo') {
+      console.log(o);
       this.setState({
         [fieldName]: o.value,
         validationMsg: ''
@@ -241,9 +242,23 @@ export default class VehicleOut extends Component {
     }
 
     if(fieldName == 'selectVehicleNumber') {
+      let options=this.state.allVehicleOptions;
+      if(!options)
+        return ;
+      let filtered=[];
+      if(e.target.value == '') {
+        filtered=options;
+      } else {
+        options.map(opt => {
+          if(opt.toUpperCase().startsWith(e.target.value.toUpperCase())) {
+            filtered.push(opt);
+          }
+        })
+      }
       this.setState({
-        [fieldName]: e.option,
-        validationMsg: ''
+        [fieldName]: e.target.value.toUpperCase(),
+        vehicleOpt: filtered,
+        validationMsg: '',
       }, this.getInwardVehicleDetails.bind(this))
     }
 
@@ -265,6 +280,18 @@ export default class VehicleOut extends Component {
         this.setState({
           emptyVehicle: false
         })
+    }
+  }
+
+  onVehicleSelect(data, isSuggestionSelected) {
+    if(isSuggestionSelected) {
+      this.setState({
+        selectVehicleNumber: data.suggestion
+      });
+    } else {
+      this.setState({
+        selectVehicleNumber: data.target.value
+      });
     }
   }
 
@@ -897,21 +924,15 @@ export default class VehicleOut extends Component {
                   </FormField>
                   <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle Number</Label>
-                      {
-                      !ourVehicle ?
-                      <Select
-                      placeHolder='Vehicle No'
-                      options={outVehiclesArr}
-                      value={this.state.selectVehicleNumber}
-                      onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
-                      /> :
-                      <Select
-                      placeHolder='Vehicle No'
-                      options={ownVehiclesArr}
-                      value={this.state.selectVehicleNumber}
-                      onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
-                      />
-                    }
+
+                      <Search placeHolder='Vehicle No'
+                        inline={true}
+                        iconAlign='end'
+                        suggestions={ourVehicle ? ownVehiclesArr : outVehiclesArr}
+                        value={this.state.selectVehicleNumber}
+                        onSelect={this.onVehicleSelect.bind(this)}
+                        onDOMChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
+                        />
                   </FormField>
                   <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Driver Name</Label>
@@ -931,7 +952,6 @@ export default class VehicleOut extends Component {
                   </FormField>
                   <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Empty/Load</Label>
-
                       <Select
                         options={['Empty', 'Load']}
                         placeHolder='Empty/Load'

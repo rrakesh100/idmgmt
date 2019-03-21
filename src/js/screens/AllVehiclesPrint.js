@@ -184,7 +184,6 @@ export default class AllVehiclesPrint extends Component {
               if(vehicle !== 'U2') {
                 const vehicleInwardItem = vehicles[vehicle]['lastInward'];
                 const vehicleOutwadItem = vehicles[vehicle]['lastOutward'];
-                console.log(vehicleOutwadItem);
                 return <TableRow key={index}>
                 <td>{vehicle}</td>
                 <td>{vehicleInwardItem.inwardSNo}</td>
