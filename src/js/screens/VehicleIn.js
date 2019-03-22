@@ -262,7 +262,7 @@ export default class VehicleIn extends Component {
         })
       }
 
-      
+
 
       if(fieldName == 'driverName' && (e.target.value === '' || tre.test(e.target.value))) {
         let dText = (e.target.value).toUpperCase();
@@ -280,10 +280,16 @@ export default class VehicleIn extends Component {
         })
       }
 
-      if(fieldName == 'comingFrom' && (o.value === '' || pre.test(o.value))) {
-        let cText = (o.value).toUpperCase();
+      if(fieldName == 'comingFrom') {
         this.setState({
-          [fieldName]: cText,
+          [fieldName]: o.value,
+          validationMsg: ''
+        })
+      }
+
+      if(fieldName == 'material') {
+        this.setState({
+          [fieldName]: o.value,
           validationMsg: ''
         })
       }
@@ -327,7 +333,7 @@ export default class VehicleIn extends Component {
         })
       }
 
-      if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material') {
+      if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad') {
         this.setState({
           [fieldName]: e.option,
           validationMsg:''
@@ -553,9 +559,6 @@ export default class VehicleIn extends Component {
             let vNo=vehicleNumber;
             if(selectVehicleNumber)
              vNo = selectVehicleNumber;
-          let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
-        uploadVehicleImage(imgFile, vNo, inwardSNo).then((snapshot) => {
-             let inwardPhoto = snapshot.downloadURL;
 
       savingInwardVehicle({
         lastCount,
@@ -571,7 +574,6 @@ export default class VehicleIn extends Component {
         comingFrom,
         billNumber,
         remarks,
-        inwardPhoto
       }).then(this.setState({
         showProgressBar: false,
         toastMsg: `Vehicle ${vNo} is saved`,
@@ -583,7 +585,6 @@ export default class VehicleIn extends Component {
         })
         console.error('Vehicle Inward Save Error', err);
       })
-    })
     }
 
     onYesButtonClick() {
@@ -660,6 +661,8 @@ export default class VehicleIn extends Component {
         billNumber,
         remarks,
         screenshot } = this.state;
+
+        console.log(material);
         if(!ownOutVehicle) {
           this.setState({
             validationMsg: 'Own/Out Vehicle is missing'
@@ -695,16 +698,14 @@ export default class VehicleIn extends Component {
           return
         }
 
-        if(!screenshot) {
+        /*if(!screenshot) {
           this.setState({
             validationMsg: 'Screenshot is missing'
           })
           return
-        }
+        }*/
 
         if(emptyLoad === 'Load') {
-
-
           if(!partyName) {
             this.setState({
               validationMsg: 'Party Name is missing'
@@ -1015,12 +1016,18 @@ export default class VehicleIn extends Component {
                             marginLeft: 20,
                             color: 'black'
                           }}>Material</Label>
-                      <Select
-                        options={materialOpt}
-                        placeHolder='Material'
-                        value={this.state.material}
-                        onChange={this.onFieldChange.bind(this, 'material')}
-                      />
+
+                      <Input transparent
+                      list='materials'
+                      placeholder='Material'
+                      onChange={this.onFieldChange.bind(this, 'material')} />
+                    <datalist id='materials'>
+                      {
+                        this.state.materialOpt.map((val, index) => {
+                          return <option value={val} key={index}/>
+                        })
+                      }
+                    </datalist>
                   </FormField>
                   <FormField strong={true} style={{marginTop : '10px'}}>
                   <Label style={!emptyVehicle ?
@@ -1082,9 +1089,7 @@ export default class VehicleIn extends Component {
               </Box>
             <Box direction='column'
               style={{marginLeft : '10px', width:'300px'}} align='center'>
-              <div onClick={this.capture.bind(this)}>
-                {this.renderCamera() }
-              </div>
+
                     <Button icon={<Save />}
                       label='SAVE' style={ vehicleSaved ? {
                         marginTop:20,
@@ -1095,7 +1100,7 @@ export default class VehicleIn extends Component {
                         marginTop:20,
                         width: '300px',
                       }}
-                      onClick={this.onCapturingAndSaving.bind(this)}
+                      onClick={this.onSaveClick.bind(this)}
                       disabled={true}
                       href='#'
                       primary={true} />

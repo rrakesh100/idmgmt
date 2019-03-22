@@ -45,7 +45,6 @@ export function savingInwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/comingFrom`] = data.comingFrom;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/billNumber`] = data.billNumber;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/remarks`] = data.remarks;
-  updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/inwardPhoto`] = data.inwardPhoto;
 
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/inwardSNo`] = data.inwardSNo;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/ownOutVehicle`] = data.ownOutVehicle;
@@ -59,7 +58,6 @@ export function savingInwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/comingFrom`] = data.comingFrom;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
-  updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/inwardPhoto`] = data.inwardPhoto;
 
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inwardSNo`] = data.inwardSNo;
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/ownOutVehicle`] = data.ownOutVehicle;
@@ -73,7 +71,6 @@ export function savingInwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/comingFrom`] = data.comingFrom;
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inwardPhoto`] = data.inwardPhoto;
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inDate`] = dateStr;
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inTime`] = timeStr;
   updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inSide`] = true;
@@ -105,9 +102,7 @@ export function savingOutwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/outCount`] = data.lastCount+1;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastOutward`] = newData;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/out`] = timeStr;
-  updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/outwardPhoto`] = data.outwardPhoto;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/out`] = timeStr;
-  updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/outwardPhoto`] = data.outwardPhoto;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outwardSNo`] = data.outwardSNo;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/ownOutVehicle`] = data.ownOutVehicle;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/vehicleNumber`] = data.vehicleNumber;
@@ -120,7 +115,6 @@ export function savingOutwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/goingTo`] = data.goingTo;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outwardPhoto`] = data.outwardPhoto;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outDate`] = dateStr;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outTime`] = timeStr;
   updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/inDate`] = data.inwardDate;

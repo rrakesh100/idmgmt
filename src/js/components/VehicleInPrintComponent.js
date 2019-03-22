@@ -33,9 +33,6 @@ export default class VehicleInPrintComponent extends Component {
                 <h2>Valuthimmapuram Road – Peddapuram – Unit2</h2>
                 <h3 style={{textDecoration : 'underline'}}>Vehicle Inward Gatepass</h3>
               </div>
-              <div className='box content'>
-                <Image src={screenshot} style={{width:450, height:300}}/>
-              </div>
               <div className='box sidebar'>
               <Table>
                 <tbody>

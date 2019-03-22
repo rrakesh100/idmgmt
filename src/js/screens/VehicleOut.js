@@ -71,6 +71,8 @@ export default class VehicleOut extends Component {
       vehicleSaved: false,
       showProgressBar: false,
       vehiclesArr:[],
+      ownVehiclesArr:[],
+      outVehiclesArr:[],
     };
   }
 
@@ -158,16 +160,15 @@ export default class VehicleOut extends Component {
         let vNo=vehicleNumber;
         if(selectVehicleNumber)
          vNo = selectVehicleNumber;
+         console.log(vNo);
       getInwardVehicle(vNo).then((snap) => {
         const inwardObj = snap.val();
+        console.log(inwardObj);
         this.setState({inwardObj})
       }).catch((e) => console.log(e));
   }
 
   onFieldChange(fieldName, e, o) {
-    console.log(fieldName);
-    console.log(e);
-    console.log(o);
     let dr = /^[0-9\b]/;
     let re = /^[1-9][0-9]{0,4}$/;
     let ne = /^[0-9]{11}$/;
@@ -176,7 +177,7 @@ export default class VehicleOut extends Component {
     let nre = /^[a-zA-Z0-9]{11}$/;
     let tre = /^[A-Za-z. ]+$/;
     let pre = /^[A-Za-z. ]{0,100}$/;
-
+    console.log(fieldName);
     if(fieldName == 'driverNumber' && (e.target.value === '' || dr.test(e.target.value))) {
         if(!ne.test(e.target.value)) {
           this.setState({
@@ -193,12 +194,18 @@ export default class VehicleOut extends Component {
       })
     }
 
-    if(fieldName == 'goingTo') {
-      console.log(o);
+    if(fieldName == 'goingTo' || fieldName == 'material') {
       this.setState({
         [fieldName]: o.value,
         validationMsg: ''
       })
+    }
+
+    if(fieldName=='selectVehicleNumber') {
+      this.setState({
+        [fieldName]:o.value,
+        validationMsg: ''
+      }, this.getInwardVehicleDetails.bind(this))
     }
 
     if(fieldName == 'driverName' && (e.target.value === '' || tre.test(e.target.value))) {
@@ -234,33 +241,35 @@ export default class VehicleOut extends Component {
       })
     }
 
-    if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad' || fieldName == 'material') {
+    if(fieldName == 'ownOutVehicle' || fieldName == 'emptyLoad') {
       this.setState({
         [fieldName]: e.option,
         validationMsg:''
       })
     }
 
-    if(fieldName == 'selectVehicleNumber') {
-      let options=this.state.allVehicleOptions;
-      if(!options)
-        return ;
-      let filtered=[];
-      if(e.target.value == '') {
-        filtered=options;
-      } else {
-        options.map(opt => {
-          if(opt.toUpperCase().startsWith(e.target.value.toUpperCase())) {
-            filtered.push(opt);
-          }
-        })
-      }
-      this.setState({
-        [fieldName]: e.target.value.toUpperCase(),
-        vehicleOpt: filtered,
-        validationMsg: '',
-      }, this.getInwardVehicleDetails.bind(this))
+  /*
+  if(fieldName == 'selectVehicleNumber') {
+    let options=this.state.allVehicleOptions;
+    if(!options)
+      return ;
+    let filtered=[];
+    if(e.target.value == '') {
+      filtered=options;
+    } else {
+      options.map(opt => {
+        if(opt.toUpperCase().startsWith(e.target.value.toUpperCase())) {
+          filtered.push(opt);
+        }
+      })
     }
+    this.setState({
+      [fieldName]: e.target.value.toUpperCase(),
+      vehicleOpt: filtered,
+      validationMsg: '',
+    }, this.getInwardVehicleDetails.bind(this))
+  }
+  */
 
     if(fieldName == 'ownOutVehicle' && e.option == 'Own Vehicle') {
       this.setState({
@@ -444,7 +453,7 @@ export default class VehicleOut extends Component {
   vehicleValidation() {
     const { inwardObj } = this.state;
     let inwardDate = inwardObj ? inwardObj.inwardDate : null;
-
+    console.log(inwardObj);
     if(!inwardDate) {
       this.setState({
         vehicleExists: true
@@ -484,9 +493,6 @@ export default class VehicleOut extends Component {
       let vNo=vehicleNumber;
       if(selectVehicleNumber)
        vNo = selectVehicleNumber;
-      let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
-      uploadVehicleImage(imgFile, vNo, outwardSNo).then((snapshot) => {
-           let outwardPhoto = snapshot.downloadURL;
       savingOutwardVehicle({
         lastCount,
         outwardSNo,
@@ -502,7 +508,6 @@ export default class VehicleOut extends Component {
         goingTo,
         billNumber,
         remarks,
-        outwardPhoto,
         inwardDate,
         inTime,
         comingFrom,
@@ -517,7 +522,6 @@ export default class VehicleOut extends Component {
         })
         console.error('Vehicle Outward Save Error', err);
       })
-    })
   }
 
   onNewBtnClick() {
@@ -557,7 +561,6 @@ export default class VehicleOut extends Component {
       billNumber,
       remarks,
       screenshot } = this.state;
-      console.log(goingTo);
       if(!ownOutVehicle) {
         this.setState({
           validationMsg: 'Own/Out Vehicle is missing'
@@ -622,12 +625,12 @@ export default class VehicleOut extends Component {
 
       }
 
-      if(!screenshot) {
+      /*if(!screenshot) {
         this.setState({
           validationMsg: 'Screenshot is missing'
         })
         return
-      }
+      }*/
 
       this.setState({
         validationMsg:''
@@ -924,15 +927,34 @@ export default class VehicleOut extends Component {
                   </FormField>
                   <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle Number</Label>
-
-                      <Search placeHolder='Vehicle No'
-                        inline={true}
-                        iconAlign='end'
-                        suggestions={ourVehicle ? ownVehiclesArr : outVehiclesArr}
-                        value={this.state.selectVehicleNumber}
-                        onSelect={this.onVehicleSelect.bind(this)}
-                        onDOMChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
-                        />
+                        {ourVehicle ?
+                          <div>
+                          <Input transparent
+                        list='vehicleNumber'
+                        placeholder='Vehicle Number'
+                        onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')} />
+                      <datalist id='vehicleNumber'>
+                        {
+                          this.state.ownVehiclesArr.map((val, index) => {
+                            return <option value={val} key={index}/>
+                          })
+                        }
+                      </datalist>
+                      </div> :
+                      <div>
+                      <Input transparent
+                    list='vehicleNumber'
+                    placeholder='Vehicle Number'
+                    onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')} />
+                  <datalist id='vehicleNumber'>
+                    {
+                      this.state.outVehiclesArr.map((val, index) => {
+                        return <option value={val} key={index}/>
+                      })
+                    }
+                  </datalist>
+                  </div>
+                    }
                   </FormField>
                   <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Driver Name</Label>
@@ -1011,12 +1033,17 @@ export default class VehicleOut extends Component {
                             marginLeft: 20,
                             color: 'black'
                           }}>Material</Label>
-                      <Select
-                        options={materialOpt}
-                        placeHolder='Material'
-                        value={this.state.material}
-                        onChange={this.onFieldChange.bind(this, 'material')}
-                      />
+                          <Input transparent
+                          list='materials'
+                          placeholder='Material'
+                          onChange={this.onFieldChange.bind(this, 'material')} />
+                        <datalist id='materials'>
+                          {
+                            this.state.materialOpt.map((val, index) => {
+                              return <option value={val} key={index}/>
+                            })
+                          }
+                        </datalist>
                   </FormField>
                   <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={!emptyVehicle ?
@@ -1076,9 +1103,7 @@ export default class VehicleOut extends Component {
               </Box>
             <Box direction='column'
               style={{marginLeft : '10px', width:'300px'}} align='center'>
-                <div onClick={this.capture.bind(this)}>
-                {this.renderCamera() }
-                </div>
+
                   <Button icon={<Save />}
                     label='SAVE' style={ vehicleSaved ?
                       {
@@ -1090,7 +1115,7 @@ export default class VehicleOut extends Component {
                         marginTop: 20,
                         width: '300px'
                       }}
-                    onClick={this.onCapturingAndSaving.bind(this)}
+                    onClick={this.onSaveClick.bind(this)}
                     disabled={true}
                     href='#'
                     primary={true} />
