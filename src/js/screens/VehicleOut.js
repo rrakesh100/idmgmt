@@ -801,7 +801,7 @@ export default class VehicleOut extends Component {
         screenshot={this.state.screenshot}
         outwardSNo={this.state.outwardSNo}
         ownOutVehicle={this.state.ownOutVehicle}
-        vehicleNumber={this.state.vehicleNumber}
+        vehicleNumber={this.state.vehicleNumber || this.state.selectVehicleNumber}
         driverName={this.state.driverName}
         driverNumber={this.state.driverNumber}
         remarks={this.state.remarks}
