@@ -3,11 +3,13 @@ import Table from 'grommet/components/Table'
 import TableRow from 'grommet/components/TableRow'
 import Button from 'grommet/components/Button';
 import PrintIcon from 'grommet/components/icons/base/Print';
+import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
 import { getAllVehicles } from '../api/vehicles';
 import VehicleInPrintComponent from '../components/VehicleInPrintComponent';
 import VehicleOutPrintComponent from '../components/VehicleOutPrintComponent';
 import ReactToPrint from "react-to-print";
 import Layer from 'grommet/components/Layer';
+import Article from 'grommet/components/Article';
 
 
 export default class AllVehiclesPrint extends Component {
@@ -16,7 +18,8 @@ export default class AllVehiclesPrint extends Component {
     this.state={
       vehicles: null,
       vehicleInObj: null,
-      vehicleOutObj: null
+      vehicleOutObj: null,
+      showVehicleList: true
     }
   }
 
@@ -33,13 +36,13 @@ export default class AllVehiclesPrint extends Component {
   onVehicleInPrint(vehicle) {
     const {vehicles} = this.state;
     let vehicleInObj = vehicles[vehicle] && vehicles[vehicle]['lastInward'];
-    this.setState({vehicleInObj})
+    this.setState({vehicleInObj, showVehicleList:false})
   }
 
   onVehicleOutPrint(vehicle) {
     const {vehicles} = this.state;
     let vehicleOutObj = vehicles[vehicle] && vehicles[vehicle]['lastOutward'];
-    this.setState({vehicleOutObj})
+    this.setState({vehicleOutObj, showVehicleList: false})
   }
 
   renderInContent() {
@@ -53,16 +56,16 @@ export default class AllVehiclesPrint extends Component {
 
   renderInTrigger(vehicle) {
     return (
-      <div className="prntAnchor" style={{display: 'flex', justifyContent: 'flex-end'}}>
-      <a>Print</a>
+      <div className="prntAnchor" style={{marginRight:30}}>
+        <a>Print</a>
       </div>
     )
   }
 
   renderOutTrigger(vehicle) {
     return (
-      <div className="prntAnchor" style={{display: 'flex', justifyContent: 'flex-end'}}>
-      <a>Print</a>
+      <div className="prntAnchor" style={{marginRight:30}}>
+        <a>Print</a>
       </div>
     )
   }
@@ -87,19 +90,36 @@ export default class AllVehiclesPrint extends Component {
     })
   }
 
+  onInGoingBack() {
+    this.setState({
+      vehicleInObj: null,
+      showVehicleList: true
+    })
+  }
+
+  onOutGoingBack() {
+    this.setState({
+      vehicleOutObj: null,
+      showVehicleList: true
+    })
+  }
+
+
   renderVehicleInPrintCard() {
     const {vehicleInObj} = this.state;
     if(!vehicleInObj)
     return;
     return (
-      <Layer style={{width: '100%'}}
-        flush={false}
-        closer={true}
-         onClose={this.onVehicleInCloseLayer.bind(this)}>
+      <Article>
+        <div style={{display:'flex', flexDirection:'row',alignItems:'center', justifyContent: 'space-between'}}>
+        <Button icon={<LinkPrevious color='#481BA2'/>}
+              onClick={this.onInGoingBack.bind(this)}
+               />
          <ReactToPrint
              trigger={this.renderInTrigger.bind(this)}
              content={this.renderInContent.bind(this)}
            />
+        </div>
         <VehicleInPrintComponent
           ref={this.setInPrintRef.bind(this)}
           allVehiclesPrint={true}
@@ -115,7 +135,7 @@ export default class AllVehiclesPrint extends Component {
           comingFrom={vehicleInObj.comingFrom}
           billNumber={vehicleInObj.billNumber}
         />
-      </Layer>
+      </Article>
     )
   }
 
@@ -124,14 +144,16 @@ export default class AllVehiclesPrint extends Component {
     if(!vehicleOutObj)
     return;
     return (
-      <Layer
-        flush={false}
-        closer={true}
-         onClose={this.onVehicleOutCloseLayer.bind(this)}>
+      <Article>
+      <div style={{display:'flex', flexDirection:'row',alignItems:'center', justifyContent: 'space-between'}}>
+      <Button icon={<LinkPrevious color='#481BA2'/>}
+            onClick={this.onOutGoingBack.bind(this)}
+             />
          <ReactToPrint
              trigger={this.renderOutTrigger.bind(this)}
              content={this.renderOutContent.bind(this)}
            />
+        </div>
         <VehicleOutPrintComponent
           ref={this.setOutPrintRef.bind(this)}
           allVehiclesPrint={true}
@@ -147,26 +169,23 @@ export default class AllVehiclesPrint extends Component {
           comingFrom={vehicleOutObj.comingFrom}
           billNumber={vehicleOutObj.billNumber}
         />
-      </Layer>
+      </Article>
     )
   }
 
-
-
-  render() {
-    const {vehicles} = this.state;
+  renderAllVehiclesList() {
+    const {vehicles, showVehicleList} = this.state;
     if(!vehicles)
     return null;
     let i=0;
+
+    if(showVehicleList) {
     return (
-      <div>
-      { this.renderVehicleInPrintCard() }
-      { this.renderVehicleOutPrintCard() }
       <div className='table'>
       <Table scrollable={true} style={{marginTop : '60px'}}>
           <thead style={{position:'relative'}}>
            <tr>
-             <th>Vehicle Number</th>
+             <th>Vehicle No.</th>
              <th>Inward Sno</th>
              <th>In Date</th>
              <th>In Time</th>
@@ -182,8 +201,8 @@ export default class AllVehiclesPrint extends Component {
             Object.keys(vehicles).map((vehicle, index) => {
               i++;
               if(vehicle !== 'U2') {
-                const vehicleInwardItem = vehicles[vehicle]['lastInward'];
-                const vehicleOutwadItem = vehicles[vehicle]['lastOutward'];
+                const vehicleInwardItem = vehicles[vehicle] && vehicles[vehicle]['lastInward'];
+                const vehicleOutwadItem = vehicles[vehicle] && vehicles[vehicle]['lastOutward'];
                 return <TableRow key={index}>
                 <td>{vehicle}</td>
                 <td>{vehicleInwardItem.inwardSNo}</td>
@@ -198,9 +217,12 @@ export default class AllVehiclesPrint extends Component {
                            plain={true} />
                 </td>
                 <td>
-                   <Button icon={<PrintIcon />}
+                   {
+                     vehicleOutwadItem ?
+                     <Button icon={<PrintIcon />}
                          onClick={this.onVehicleOutPrint.bind(this, vehicle)}
-                         plain={true} />
+                         plain={true} /> : 'N/A'
+                   }
                 </td>
                 </TableRow>
               }
@@ -209,6 +231,20 @@ export default class AllVehiclesPrint extends Component {
           </tbody>
       </Table>
       </div>
+    )
+  } else {
+    return null;
+  }
+  }
+
+
+  render() {
+
+    return (
+      <div>
+      { this.renderVehicleInPrintCard() }
+      { this.renderVehicleOutPrintCard() }
+      { this.renderAllVehiclesList() }
       </div>
     )
   }

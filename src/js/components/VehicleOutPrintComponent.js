@@ -19,7 +19,7 @@ export default class VehicleOutPrintComponent extends Component {
             numberOfBags,
             goingTo,
             billNumber, printCopies, allVehiclesPrint } = this.props;
-
+            console.log(allVehiclesPrint);
       const date = new Date();
       const dateStr = moment(date).format('DD-MM-YYYY');
       const timeStr = moment(date).format('h:mm A');
@@ -34,11 +34,19 @@ export default class VehicleOutPrintComponent extends Component {
               <h4 style={{position: 'absolute', right:20}}><strong>{timestampStr}</strong></h4>
             </div>
             <div className='vehicleCardBody'>
-              <div className='box header'>
-                <h2>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h2>
-                <h2>Valuthimmapuram Road – Peddapuram – Unit2</h2>
-                <h3 style={{textDecoration : 'underline'}}>Vehicle Outward Gatepass</h3>
-              </div>
+                {
+                  !allVehiclesPrint ?
+                  <div className='box header'>
+                  <h2 style={{textAlign:'center'}}>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h2>
+                  <h2 style={{textAlign: 'center'}}>Valuthimmapuram Road – Peddapuram – Unit2</h2>
+                  <h3 style={{textDecoration : 'underline', textAlign:'center'}}>Vehicle Outward Gatepass</h3>
+                </div> :
+                <div className='box header'>
+                  <h4 style={{textAlign:'center'}}><strong>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</strong></h4>
+                  <h4 style={{textAlign:'center'}}><strong>Valuthimmapuram Road – Peddapuram – Unit2</strong></h4>
+                  <h4 style={{textDecoration : 'underline', marginLeft:20}}>Vehicle Outward Gatepass</h4>
+                </div>
+              }
               <div className='box sidebar'>
               <Table>
                 <tbody>
@@ -52,7 +60,7 @@ export default class VehicleOutPrintComponent extends Component {
                           </TableRow>
                         <TableRow>
                           <td>
-                            In Date: <b>{dateStr}</b>
+                            Out Date: <b>{dateStr}</b>
                           </td>
                           <td>
                             No of Bags: <b>{numberOfBags}</b>
@@ -60,7 +68,7 @@ export default class VehicleOutPrintComponent extends Component {
                           </TableRow>
                         <TableRow>
                           <td>
-                            In Time: <b>{timeStr}</b>
+                            Out Time: <b>{timeStr}</b>
                           </td>
                           <td>
                             To: <b>{goingTo}</b>

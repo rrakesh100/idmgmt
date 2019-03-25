@@ -206,7 +206,15 @@ class Vehicles extends Component {
 
     return (
       <Article primary={true} full={true} className='giveVehicle'>
-        
+      <Header
+        direction='row'
+        size='small'
+        colorIndex='light-2'
+        align='center'
+        responsive={true}
+        pad={{ horizontal: 'small' }}>
+        <h3 style={{marginTop:10,marginLeft:20}}><strong>Vehicle Tracking System</strong></h3>
+      </Header>
         <Section>
             <Tabs justify='start' style={{marginLeft: 20, marginTop: -20}}>
             <Tab title='HOME'>

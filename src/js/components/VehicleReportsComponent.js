@@ -6,6 +6,7 @@ export default class VehicleReportsComponent extends Component {
 
   renderVehicleReports() {
     const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr } = this.props;
+    console.log(response);
     if(!response)
     return null;
 
@@ -26,17 +27,24 @@ export default class VehicleReportsComponent extends Component {
     }
 
     let tablesArray=[];
-    let vObj;
-    Object.keys(response).map((vNo, index) => {
-      const vehicleObj = response[vNo];
-      Object.keys(vehicleObj).map((date, indx) => {
-        if(datesArr) {
+    let vehicleDateObj;
+    Object.keys(response).map((date, index) => {
+      if(datesArr) {
         let datesFilterArr = datesArr.filter(val => val == date);
+        console.log(datesFilterArr);
         let filteredDate = datesFilterArr[0];
-        vObj=vehicleObj[filteredDate];
+        console.log(filteredDate);
+        vehicleDateObj=response[filteredDate];
       } else {
-        vObj=vehicleObj[date];
+        vehicleDateObj=response[date];
       }
+      console.log(vehicleDateObj);
+      if(!vehicleDateObj)
+      return null;
+      Object.keys(vehicleDateObj).map((vNo, indx) => {
+        let allVehicleObj=vehicleDateObj[vNo];
+        Object.keys(allVehicleObj).map(sNo => {
+          let vObj=allVehicleObj[sNo];
         if(!vObj)
         return null;
 
@@ -135,6 +143,7 @@ export default class VehicleReportsComponent extends Component {
            </tbody>
          )
          }
+       })
        })
      })
       return (

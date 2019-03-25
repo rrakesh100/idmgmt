@@ -294,6 +294,14 @@ export default class VehicleIn extends Component {
         })
       }
 
+      if(fieldName == 'selectVehicleNumber') {
+        this.setState({
+          [fieldName]: o.value,
+          validationMsg: '',
+          vehicleNumber: '',
+        }, this.getVehicleForValidation.bind(this))
+      }
+
       if(fieldName == 'vehicleNumber'&& (e.target.value === '' || an.test(e.target.value))) {
           if(!nre.test(e.target.value)) {
             let vText = (e.target.value).toUpperCase();
@@ -305,26 +313,6 @@ export default class VehicleIn extends Component {
         }
       }
 
-      if(fieldName == 'selectVehicleNumber') {
-        let options=this.state.allVehicleOptions;
-        if(!options)
-          return ;
-        let filtered=[];
-        if(e.target.value == '') {
-          filtered=options;
-        } else {
-          options.map(opt => {
-            if(opt.toUpperCase().startsWith(e.target.value.toUpperCase())) {
-              filtered.push(opt);
-            }
-          })
-        }
-        this.setState({
-          [fieldName]: e.target.value.toUpperCase(),
-          vehicleOpt: filtered,
-          validationMsg: '',
-        })
-      }
 
       if(fieldName == 'numberOfBags' && (e.target.value === '' || re.test(e.target.value))) {
         this.setState({
@@ -624,10 +612,13 @@ export default class VehicleIn extends Component {
       const { vehicleValidationObj } = this.state;
       let existingVehicle=false;
       vehicleValidationObj && Object.keys(vehicleValidationObj).map(item => {
-        let vehicleVal = vehicleValidationObj[item];
-        if(vehicleVal.inSide) {
-          existingVehicle = true
-        }
+        let vehicleDateVal = vehicleValidationObj[item];
+          Object.keys(vehicleDateVal).map(inSno => {
+            let vInObj=vehicleDateVal[inSno];
+          if(vInObj.inSide) {
+            existingVehicle = true
+          }
+        })
       })
       if(existingVehicle) {
         this.setState({
@@ -662,7 +653,6 @@ export default class VehicleIn extends Component {
         remarks,
         screenshot } = this.state;
 
-        console.log(material);
         if(!ownOutVehicle) {
           this.setState({
             validationMsg: 'Own/Out Vehicle is missing'
@@ -881,8 +871,7 @@ export default class VehicleIn extends Component {
       { this.renderValidationMsg() }
       { this.renderValidationForVehicleSave() }
       { this.renderVehiclePrintCard() }
-        <h4 style={{marginLeft: 20, textDecoration: 'underline', fontWeight: 'bold'}}>Present Inward Details</h4>
-          <Split style={{marginTop: -20}}>
+          <Split style={{marginTop: -10}}>
             <Box direction='column' style={{marginLeft:'20px', width:'300px'}} >
 
                   { vehicleSaved ?
@@ -923,18 +912,23 @@ export default class VehicleIn extends Component {
                     {
                       !ourVehicle ?
                       <TextInput
-                          placeHolder='Vehicle No'
+                          placeHolder='Vehicle Number'
                           value={this.state.vehicleNumber}
                           onDOMChange={this.onFieldChange.bind(this, 'vehicleNumber')}
                       /> :
-                      <Search placeHolder='Vehicle No'
-                        inline={true}
-                        iconAlign='end'
-                        suggestions={vehicleOpt}
-                        value={this.state.selectVehicleNumber}
-                        onSelect={this.onVehicleSelect.bind(this)}
-                        onDOMChange={this.onFieldChange.bind(this, 'selectVehicleNumber')}
-                        />
+                      <div>
+                        <Input transparent
+                      list='vehicleNumber'
+                      placeholder='Vehicle Number'
+                      onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')} />
+                     <datalist id='vehicleNumber'>
+                      {
+                        vehicleOpt.map((val, index) => {
+                          return <option value={val} key={index}/>
+                        })
+                      }
+                    </datalist>
+                    </div>
                     }
                   </FormField>
                   <FormField strong={true} style={{marginTop : '10px'}}>

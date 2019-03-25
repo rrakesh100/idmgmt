@@ -93,11 +93,15 @@ export default class VehicleOut extends Component {
         let vehicleOb = inVehicles[vehicle];
         Object.keys(vehicleOb).forEach(item => {
           let vObj = vehicleOb[item];
-          if(vObj.inSide && vObj.ownOutVehicle == 'Own Vehicle') {
-            ownVehiclesArr.push(vehicle);
-          } else if(vObj.inSide && vObj.ownOutVehicle == 'Outside Vehicle') {
-            outVehiclesArr.push(vehicle)
-          }
+          Object.keys(vObj).map(inSno => {
+            let vInObj=vObj[inSno];
+            console.log(vInObj);
+            if(vInObj.inSide && vInObj.ownOutVehicle == 'Own Vehicle') {
+              ownVehiclesArr.push(vehicle);
+            } else if(vInObj.inSide && vInObj.ownOutVehicle == 'Outside Vehicle') {
+              outVehiclesArr.push(vehicle)
+            }
+          })
         })
       })
       this.setState({ownVehiclesArr, outVehiclesArr});
@@ -795,6 +799,8 @@ export default class VehicleOut extends Component {
   }
 
   renderVehiclePrintCard() {
+    const {vehicleNumber, selectVehicleNumber}=this.state;
+
     return (
       <VehicleOutPrintComponent
         ref={this.setPrintRef.bind(this)}

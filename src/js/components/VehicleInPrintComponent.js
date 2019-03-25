@@ -15,7 +15,7 @@ export default class VehicleInPrintComponent extends Component {
             driverName,
             driverNumber,
             remarks, material, numberOfBags, comingFrom, billNumber, allVehiclesPrint } = this.props;
-
+            console.log(allVehiclesPrint);
       const date = new Date();
       const dateStr = moment(date).format('DD-MM-YYYY');
       const timeStr = moment(date).format('h:mm A');
@@ -28,11 +28,19 @@ export default class VehicleInPrintComponent extends Component {
               <h4 style={{position: 'absolute', right:20}}><strong>{timestampStr}</strong></h4>
             </div>
             <div className='vehicleCardBody'>
-              <div className='box header'>
-                <h2>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h2>
-                <h2>Valuthimmapuram Road – Peddapuram – Unit2</h2>
-                <h3 style={{textDecoration : 'underline'}}>Vehicle Inward Gatepass</h3>
-              </div>
+                {
+                  !allVehiclesPrint ?
+                  <div className='box header'>
+                  <h2>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</h2>
+                  <h2>Valuthimmapuram Road – Peddapuram – Unit2</h2>
+                  <h3 style={{textDecoration : 'underline'}}>Vehicle Inward Gatepass</h3>
+                </div> :
+                <div>
+                  <h4 style={{textAlign:'center'}}><strong>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</strong></h4>
+                  <h4 style={{textAlign:'center'}}><strong>Valuthimmapuram Road – Peddapuram – Unit2</strong></h4>
+                  <h3 style={{textDecoration : 'underline', marginLeft:20}}>Vehicle Inward Gatepass</h3>
+                </div>
+              }
               <div className='box sidebar'>
               <Table>
                 <tbody>

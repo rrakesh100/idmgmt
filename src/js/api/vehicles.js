@@ -31,7 +31,8 @@ export function savingInwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicles/${prefix}/in/${data.inwardSNo}`] = data;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/inCount`] = data.lastCount+1;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastInward`] = newData;
-  updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/savedBy`] = localStorage.email;
+  updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastOutward`] = null;
+  /*
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/in`] = timeStr;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/inwardSNo`] = data.inwardSNo;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/ownOutVehicle`] = data.ownOutVehicle;
@@ -58,22 +59,41 @@ export function savingInwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/comingFrom`] = data.comingFrom;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
   updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
+  */
 
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inwardSNo`] = data.inwardSNo;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/ownOutVehicle`] = data.ownOutVehicle;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/vehicleNumber`] = data.vehicleNumber;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/driverName`] = data.driverName;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/driverNumber`] = data.driverNumber;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/emptyLoad`] = data.emptyLoad;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/partyName`] = data.partyName;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/material`] = data.material;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/numberOfBags`] = data.numberOfBags;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/comingFrom`] = data.comingFrom;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inDate`] = dateStr;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inTime`] = timeStr;
-  updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${dateStr}/inSide`] = true;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/inwardSNo`] = data.inwardSNo;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/ownOutVehicle`] = data.ownOutVehicle;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/vehicleNumber`] = data.vehicleNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/driverName`] = data.driverName;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/driverNumber`] = data.driverNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/emptyLoad`] = data.emptyLoad;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/partyName`] = data.partyName;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/material`] = data.material;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/numberOfBags`] = data.numberOfBags;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/comingFrom`] = data.comingFrom;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/billNumber`] = data.billNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/remarks`] = data.remarks;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/inDate`] = dateStr;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/inTime`] = timeStr;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/savedBy`] = localStorage.email;
+  updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.inwardSNo}/inSide`] = true;
+
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/inwardSNo`] = data.inwardSNo;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/ownOutVehicle`] = data.ownOutVehicle;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/vehicleNumber`] = data.vehicleNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/driverName`] = data.driverName;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/driverNumber`] = data.driverNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/emptyLoad`] = data.emptyLoad;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/partyName`] = data.partyName;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/material`] = data.material;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/numberOfBags`] = data.numberOfBags;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/comingFrom`] = data.comingFrom;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/billNumber`] = data.billNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/remarks`] = data.remarks;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/inDate`] = dateStr;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/inTime`] = timeStr;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/savedBy`] = localStorage.email;
+  updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${dateStr}/${data.vehicleNumber}/${data.inwardSNo}/inSide`] = true;
   return dbRef.update(updates);
 }
 
@@ -91,36 +111,59 @@ export function savingOutwardVehicle(data) {
   newData.outTime=timeStr;
 
   if(data.inwardDate) {
-    updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/inSide`] = false;
-    updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/outDate`] = dateStr;
-    updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/outTime`] = timeStr;
-    updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/outwardSNo`] = data.outwardSNo;
-    updates[localStorage.unit + '/' +`vehicleReports/in/${data.vehicleNumber}/${data.inwardDate}/goingTo`] = data.goingTo;
+    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}/inSide`] = false;
+    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}/outDate`] = dateStr;
+    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}/outTime`] = timeStr;
+    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}/outwardSNo`] = data.outwardSNo;
+    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}/goingTo`] = data.goingTo;
+
+    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/inSide`] = false;
+    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/outDate`] = dateStr;
+    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/outTime`] = timeStr;
+    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/outwardSNo`] = data.outwardSNo;
+    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/goingTo`] = data.goingTo;
   }
 
   updates[localStorage.unit + '/' +`vehicles/${prefix}/out/${data.outwardSNo}`] = newData;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/outCount`] = data.lastCount+1;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastOutward`] = newData;
-  updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/out`] = timeStr;
-  updates[localStorage.unit + '/' +`vehicleReports/vehicles/${data.vehicleNumber}/${dateStr}/out`] = timeStr;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outwardSNo`] = data.outwardSNo;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/ownOutVehicle`] = data.ownOutVehicle;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/vehicleNumber`] = data.vehicleNumber;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/driverName`] = data.driverName;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/driverNumber`] = data.driverNumber;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/emptyLoad`] = data.emptyLoad;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/partyName`] = data.partyName;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/material`] = data.material;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/numberOfBags`] = data.numberOfBags;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/goingTo`] = data.goingTo;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/billNumber`] = data.billNumber;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/remarks`] = data.remarks;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outDate`] = dateStr;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/outTime`] = timeStr;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/inDate`] = data.inwardDate;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/inTime`] = data.inTime;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/comingFrom`] = data.comingFrom;
-  updates[localStorage.unit + '/' +`vehicleReports/out/${data.vehicleNumber}/${dateStr}/inwardSNo`] = data.inwardSNo;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/outwardSNo`] = data.outwardSNo;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/ownOutVehicle`] = data.ownOutVehicle;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/vehicleNumber`] = data.vehicleNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/driverName`] = data.driverName;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/driverNumber`] = data.driverNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/emptyLoad`] = data.emptyLoad;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/partyName`] = data.partyName;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/material`] = data.material;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/numberOfBags`] = data.numberOfBags;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/goingTo`] = data.goingTo;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/billNumber`] = data.billNumber;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/remarks`] = data.remarks;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/outDate`] = dateStr;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/outTime`] = timeStr;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/inDate`] = data.inwardDate;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/inTime`] = data.inTime;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/comingFrom`] = data.comingFrom;
+  updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}/inwardSNo`] = data.inwardSNo;
+
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/outwardSNo`] = data.outwardSNo;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/ownOutVehicle`] = data.ownOutVehicle;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/vehicleNumber`] = data.vehicleNumber;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/driverName`] = data.driverName;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/driverNumber`] = data.driverNumber;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/emptyLoad`] = data.emptyLoad;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/partyName`] = data.partyName;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/material`] = data.material;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/numberOfBags`] = data.numberOfBags;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/goingTo`] = data.goingTo;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/billNumber`] = data.billNumber;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/remarks`] = data.remarks;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/outDate`] = dateStr;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/outTime`] = timeStr;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/inDate`] = data.inwardDate;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/inTime`] = data.inTime;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/comingFrom`] = data.comingFrom;
+  updates[localStorage.unit + '/'+`vehicleReports/out/dateWise/${dateStr}/${data.vehicleNumber}/${data.outwardSNo}/inwardSNo`] = data.inwardSNo;
 
   return dbRef.update(updates);
 }
@@ -133,7 +176,7 @@ export function fetchVehicleReportsData(report, startDate, endDate) {
   } else {
     reportType = 'in';
   }
-  const dbRef = firebase.database().ref(localStorage.unit + '/' + `vehicleReports/${reportType}`);
+  const dbRef = firebase.database().ref(localStorage.unit + '/' + `vehicleReports/${reportType}/dateWise`);
   return dbRef.once('value');
 }
 
@@ -156,12 +199,12 @@ export function getOutwardVehicle(vehicleNumber) {
 }
 
 export function getVehicleForValidation(vehicleNumber) {
-  const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicleReports/in/${vehicleNumber}`);
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${vehicleNumber}`);
   return dbRef.once('value');
 }
 
 export function getInsideVehicles(vehicleNumber) {
-  const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicleReports/in`);
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicleReports/in/vehicleWise`);
   return dbRef.once('value');
 }
 
