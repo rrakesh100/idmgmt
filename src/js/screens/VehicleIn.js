@@ -752,11 +752,18 @@ export default class VehicleIn extends Component {
     }
 
     renderVehiclePrintCard() {
+      const {lastCount } = this.state;
+      let prefix = 'U2';
+      if(window.localStorage.unit === 'UNIT3') {
+        prefix = 'U3';
+      }
+      let savedCount = Number(lastCount) - 1;
+      let savedInwardSNo = `${prefix}-in-${savedCount}`;
       return (
         <VehicleInPrintComponent
           ref={this.setPrintRef.bind(this)}
           screenshot={this.state.screenshot}
-          inwardSNo={this.state.inwardSNo}
+          inwardSNo={savedInwardSNo}
           ownOutVehicle={this.state.ownOutVehicle}
           vehicleNumber={this.state.vehicleNumber || this.state.selectVehicleNumber}
           driverName={this.state.driverName}

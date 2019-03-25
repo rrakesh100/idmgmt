@@ -31,14 +31,11 @@ export default class VehicleReportsComponent extends Component {
     Object.keys(response).map((date, index) => {
       if(datesArr) {
         let datesFilterArr = datesArr.filter(val => val == date);
-        console.log(datesFilterArr);
         let filteredDate = datesFilterArr[0];
-        console.log(filteredDate);
         vehicleDateObj=response[filteredDate];
       } else {
         vehicleDateObj=response[date];
       }
-      console.log(vehicleDateObj);
       if(!vehicleDateObj)
       return null;
       Object.keys(vehicleDateObj).map((vNo, indx) => {

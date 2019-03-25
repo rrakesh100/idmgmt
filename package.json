@@ -36,6 +36,8 @@
     "react-dom": "^16.5.1",
     "react-easy-print": "^0.6.0-beta.3",
     "react-excel-workbook": "^0.0.4",
+    "react-file-reader": "^1.1.4",
+    "react-file-reader-input": "^2.0.0",
     "react-grid-gallery": "^0.5.3",
     "react-grid-system": "^4.1.2",
     "react-image-mapper": "0.0.7",

@@ -35,7 +35,7 @@ class AttendanceOut extends Component {
     super(props);
     this.state = {
       selectedEmployeeId : '',
-      selectedEmployeeData : {},
+      selectedEmployeeData : null,
       showLiveCameraFeed : true,
       msg : '',
       employeeSearchString : '',
@@ -157,7 +157,7 @@ class AttendanceOut extends Component {
   onBarCodeSearch(e) {
     this.setState({
       selectedEmployeeId:  e.target.value,
-      selectedEmployeeData: {}
+      selectedEmployeeData: null
     });
     const {scheduled} = this.state;
     let options = this.state.employeeSuggestions;
@@ -269,6 +269,7 @@ class AttendanceOut extends Component {
 
 
     const { pickScreenshotFromOutsideCamera, screenshot, showLiveCameraFeed } = this.state;
+    console.log(pickScreenshotFromOutsideCamera);
     if(pickScreenshotFromOutsideCamera){
       this.setState({
         showLiveCameraFeed: false
@@ -385,7 +386,7 @@ class AttendanceOut extends Component {
 
   renderSaveButton() {
     const { selectedEmployeeData } = this.state;
-    if(Object.keys(selectedEmployeeData).length > 0) {
+    if(selectedEmployeeData && Object.keys(selectedEmployeeData).length > 0) {
       let inSide;
       if(localStorage.unit == '') {
         inSide = selectedEmployeeData.inSide || false;
@@ -494,7 +495,7 @@ renderSearchedEmployee() {
   const { selectedEmployeeData, hideOutsideCamera, pickScreenshotFromOutsideCamera } = this.state;
   let inSide;
   const screenShotFromOutsideCamera = this.state.screenshot;
-  if(Object.keys(selectedEmployeeData).length > 0) {
+  if(selectedEmployeeData && Object.keys(selectedEmployeeData).length > 0) {
     const { screenshot, name, employeeId } = selectedEmployeeData;
     if(localStorage.unit == '') {
       inSide = selectedEmployeeData.inSide || false;
@@ -667,7 +668,7 @@ onOkButtonClick() {
   this.setState({
     msg:'',
     employeeSearchString:'',
-    selectedEmployeeData:{}
+    selectedEmployeeData:null
   });
   this.state.barcodeInput.focus()
 }

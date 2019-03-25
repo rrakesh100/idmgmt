@@ -10,6 +10,8 @@ import VehicleOutPrintComponent from '../components/VehicleOutPrintComponent';
 import ReactToPrint from "react-to-print";
 import Layer from 'grommet/components/Layer';
 import Article from 'grommet/components/Article';
+import ReactFileReader from 'react-file-reader';
+import FileReaderInput from 'react-file-reader-input';
 
 
 export default class AllVehiclesPrint extends Component {
@@ -235,8 +237,29 @@ export default class AllVehiclesPrint extends Component {
   } else {
     return null;
   }
+}
+
+  handleFiles(files) {
+   console.log(files)
   }
 
+  renderFileReader() {
+    return (
+      <ReactFileReader fileTypes={[".txt"]} handleFiles={this.handleFiles}>
+        <button className='btn'>Upload</button>
+      </ReactFileReader>
+    )
+  }
+
+  handleChange(e, results) {
+    console.log(e);
+    console.log(results);
+    results.forEach(result => {
+      const [ev, file] = result;
+      console.log(ev);
+      console.log(file);
+    });
+  }
 
   render() {
 
