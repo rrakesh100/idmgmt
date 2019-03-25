@@ -896,8 +896,7 @@ export default class VehicleOut extends Component {
       { this.renderValidationMsg() }
       { this.renderValidationForVehicleSave() }
       { this.renderVehiclePrintCard() }
-        <h4 style={{marginLeft: 20, textDecoration: 'underline', fontWeight: 'bold'}}>Present Outward Details</h4>
-          <Split style={{marginTop: -20}}>
+          <Split style={{marginTop: -10}}>
             <Box direction='column' style={{marginLeft:'20px', width:'300px'}} >
             { vehicleSaved ?
               <Form className='newVisitorFields'>
