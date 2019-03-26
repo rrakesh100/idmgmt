@@ -134,6 +134,16 @@ export default class VehicleIn extends Component {
       let prefix = 'U2';
       if(window.localStorage.unit === 'UNIT3') {
         prefix = 'U3';
+      } else if(window.localStorage.unit === 'UNIT1') {
+        prefix = 'U1';
+      } else if (window.localStorage.unit === 'UNIT5') {
+        prefix = 'U5';
+      } else if (window.localStorage.unit === 'AYYAPPA') {
+        prefix = 'AG';
+      } else if (window.localStorage.unit === 'SURAMPALEM') {
+        prefix = 'SP';
+      } else if (window.localStorage.unit === 'SVPC') {
+        prefix = 'SV';
       }
       const lastCount = data && data[prefix]['count']['inCount'] ? data[prefix]['count']['inCount'] :  1;
       let inwardSNo = `${prefix}-in-${lastCount}`;

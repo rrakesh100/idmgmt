@@ -21,9 +21,22 @@ export function savingInwardVehicle(data) {
   const dateStr = moment(date).format('DD-MM-YYYY');
   const timeStr = moment(date).format('h:mm A');
   const dbRef = firebase.database().ref();
-  const updates = {}; let prefix = 'U2';
+  const updates = {};
+  let prefix = 'U2';
   if(localStorage.unit === 'UNIT3') {
     prefix = 'U3';
+  } else if(localStorage.unit === 'UNIT1') {
+    prefix = 'U1';
+  } else if (localStorage.unit === 'UNIT3') {
+    prefix = 'U3';
+  } else if (localStorage.unit === 'UNIT5') {
+    prefix = 'U5';
+  } else if (localStorage.unit === 'AYYAPPA') {
+    prefix = 'AG';
+  } else if (localStorage.unit === 'SURAMPALEM') {
+    prefix = 'SP';
+  } else if (localStorage.unit === 'SVPC') {
+    prefix = 'SV';
   }
   const newData = Object.assign({}, data);
   newData.inwardDate= dateStr;
@@ -169,7 +182,6 @@ export function savingOutwardVehicle(data) {
 }
 
 export function fetchVehicleReportsData(report, startDate, endDate) {
-
   let reportType;
   if(report == 'Outward') {
     reportType = 'out';

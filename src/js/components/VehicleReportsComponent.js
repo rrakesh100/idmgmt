@@ -6,7 +6,6 @@ export default class VehicleReportsComponent extends Component {
 
   renderVehicleReports() {
     const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr } = this.props;
-    console.log(response);
     if(!response)
     return null;
 
@@ -104,11 +103,9 @@ export default class VehicleReportsComponent extends Component {
           if(vInDate) {
             slicedInDate=vInDate.slice(0,6) + vInDate.slice(8,10);
           }
-          console.log(slicedInDate);
           if(vOutDate) {
             slicedOutDate=vOutDate.slice(0,6) + vOutDate.slice(8,10);
           }
-          console.log(slicedOutDate);
 
           if(isValid) {
             i++;

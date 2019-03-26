@@ -12,7 +12,7 @@ export default class AbstractLayer extends Component {
   renderTrigger() {
     return (
       <div className="prntAnchor" style={{display: 'flex', justifyContent: 'flex-end', marginTop:15}}>
-      <a>Print</a>
+        <a>Print</a>
       </div>
     )
   }

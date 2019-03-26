@@ -95,7 +95,6 @@ export default class VehicleOut extends Component {
           let vObj = vehicleOb[item];
           Object.keys(vObj).map(inSno => {
             let vInObj=vObj[inSno];
-            console.log(vInObj);
             if(vInObj.inSide && vInObj.ownOutVehicle == 'Own Vehicle') {
               ownVehiclesArr.push(vehicle);
             } else if(vInObj.inSide && vInObj.ownOutVehicle == 'Outside Vehicle') {
@@ -155,7 +154,7 @@ export default class VehicleOut extends Component {
         vehicleData,
         outwardSNo,
         lastCount
-      })
+      },this.getInsideVehicles())
     }).catch((e) => console.log(e))
   }
 
