@@ -146,7 +146,6 @@ export default class AllVehiclesPrint extends Component {
 
   renderVehicleOutPrintCard() {
     const {vehicleOutObj} = this.state;
-
     if(!vehicleOutObj)
     return;
     return (
@@ -164,7 +163,7 @@ export default class AllVehiclesPrint extends Component {
           ref={this.setOutPrintRef.bind(this)}
           allVehiclesPrint={true}
           screenshot={vehicleOutObj.screenshot}
-          inwardSNo={vehicleOutObj.inwardSNo}
+          outwardSNo={vehicleOutObj.outwardSNo}
           ownOutVehicle={vehicleOutObj.ownOutVehicle}
           vehicleNumber={vehicleOutObj.vehicleNumber}
           driverName={vehicleOutObj.driverName}
