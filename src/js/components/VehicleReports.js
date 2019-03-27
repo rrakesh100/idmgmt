@@ -7,7 +7,7 @@ import moment from 'moment';
 import TimePicker from 'rc-time-picker';
 import Notification from 'grommet/components/Notification';
 import * as firebase from 'firebase';
-import { fetchVehicleReportsData, getOutsideVehicles } from '../api/vehicles';
+import { fetchVehicleReportsData, getOutsideVehicles, getVehicleAbstractData } from '../api/vehicles';
 import VehicleReportsComponent from './VehicleReportsComponent';
 import AbstractVehicleReports from './AbstractVehicleReports';
 import AbstractOnHandVehicleReports from './AbstractOnHandVehicleReports';
@@ -118,7 +118,13 @@ export default class VehicleReports extends Component {
         let abstractOnhandResponse=snap.val();
         this.setState({abstractOnhandResponse})
       }).catch(err => console.error(err))
-    } else {
+    } else if (reportType=='Total Abstract') {
+      getVehicleAbstractData(startDate).then(snap => {
+        let abstractResponse=snap.val();
+        this.setState({abstractResponse})
+      })
+    }
+    else {
       fetchVehicleReportsData(reportType, startDate, endDate).then(res => {
         const response = res.val();
         this.setState({response})
@@ -158,6 +164,13 @@ export default class VehicleReports extends Component {
     if(reportType !== 'Total Abstract' && reportType !== 'Abstract OH Vehicles' && !emptyLoad) {
       this.setState({
         validationMsg: 'Empty/Load is Missing'
+      })
+      return
+    }
+
+    if(reportType == 'Total Abstract' && !startDate) {
+      this.setState({
+        validationMsg: 'Date is Missing'
       })
       return
     }
@@ -304,12 +317,11 @@ export default class VehicleReports extends Component {
   }
 
   abstractVehicleReports() {
-    const {reportType, response, datesArr}=this.state;
-    if(reportType == 'Total Abstract' && response) {
+    const {reportType, abstractResponse, datesArr, startDate}=this.state;
+    if(reportType == 'Total Abstract' && abstractResponse) {
       return (
         <AbstractVehicleReports
-            response={response}
-            datesArr={datesArr}
+            response={abstractResponse}
         />
       )
     }

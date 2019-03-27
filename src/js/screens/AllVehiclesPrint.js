@@ -110,6 +110,7 @@ export default class AllVehiclesPrint extends Component {
   renderVehicleInPrintCard() {
     const {vehicleInObj} = this.state;
     if(!vehicleInObj)
+
     return;
     return (
       <Article>
@@ -136,6 +137,8 @@ export default class AllVehiclesPrint extends Component {
           numberOfBags={vehicleInObj.numberOfBags}
           comingFrom={vehicleInObj.comingFrom}
           billNumber={vehicleInObj.billNumber}
+          inDate={vehicleInObj.inwardDate}
+          inTime={vehicleInObj.inTime}
         />
       </Article>
     )
@@ -143,6 +146,7 @@ export default class AllVehiclesPrint extends Component {
 
   renderVehicleOutPrintCard() {
     const {vehicleOutObj} = this.state;
+
     if(!vehicleOutObj)
     return;
     return (
@@ -170,6 +174,8 @@ export default class AllVehiclesPrint extends Component {
           numberOfBags={vehicleOutObj.numberOfBags}
           comingFrom={vehicleOutObj.comingFrom}
           billNumber={vehicleOutObj.billNumber}
+          outDate={vehicleOutObj.outwardDate}
+          outTime={vehicleOutObj.outTime}
         />
       </Article>
     )
@@ -251,15 +257,6 @@ export default class AllVehiclesPrint extends Component {
     )
   }
 
-  handleChange(e, results) {
-    console.log(e);
-    console.log(results);
-    results.forEach(result => {
-      const [ev, file] = result;
-      console.log(ev);
-      console.log(file);
-    });
-  }
 
   render() {
 

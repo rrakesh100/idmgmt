@@ -192,6 +192,14 @@ export function fetchVehicleReportsData(report, startDate, endDate) {
   return dbRef.once('value');
 }
 
+export function getVehicleAbstractData(startDate) {
+  let startDateParts = startDate.split("-");
+  let startDateObj = new Date(startDateParts[2], startDateParts[1]-1, startDateParts[0]);
+  let tokenizedDate = moment(startDateObj).format('DD-MM-YYYY');
+  const dbRef=firebase.database().ref(localStorage.unit + '/' + `vehicleReports/in/dateWise/${tokenizedDate}`);
+  return dbRef.once('value');
+}
+
 export function uploadVehicleImage(img, vehicleNumber, serialNo) {
   const storageRef = firebase.storage().ref();
   let epochTime = new Date().getTime();

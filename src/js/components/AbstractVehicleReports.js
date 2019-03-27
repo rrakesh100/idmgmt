@@ -7,9 +7,8 @@ class AbstractVehicleReports extends React.Component {
   }
 
   renderAbstractReport() {
-    const {response, datesArr}=this.props;
-
-    let rDate=datesArr&&datesArr[0];
+    const {response}=this.props
+    console.log(response);
     let returnObj={};
     let inwardOwnEmpty=0;
     let inwardOwnLoad=0;
@@ -20,13 +19,11 @@ class AbstractVehicleReports extends React.Component {
     let outwardOutEmpty=0;
     let outwardOutLoad=0;
 
-    Object.keys(response).map((date, index) => {
-      const vehicleDateObj = response[date];
-        Object.keys(vehicleDateObj).map((vNo, indx) => {
-          let allVehicleObj=vehicleDateObj[vNo];
-          Object.keys(allVehicleObj).map(sNo => {
-            let vObj=allVehicleObj[sNo];
-
+    Object.keys(response).map((vNo, index) => {
+      const sNoObj = response[vNo];
+      Object.keys(sNoObj).map(sNo => {
+        let vObj=sNoObj[sNo];
+        console.log(vObj);
               if(vObj.inSide && vObj.ownOutVehicle === 'Own Vehicle' && vObj.emptyLoad === 'Empty') {
                 inwardOwnEmpty += 1;
               }
@@ -51,8 +48,7 @@ class AbstractVehicleReports extends React.Component {
               if(!vObj.inSide && vObj.ownOutVehicle === 'Outside Vehicle' && vObj.emptyLoad === 'Load') {
                 outwardOutLoad += 1;
               }
-          })
-        })
+            })
     })
 
     returnObj['summary'] = {
@@ -87,10 +83,6 @@ class AbstractVehicleReports extends React.Component {
     let outwardOwnTotal=outwardOwnEmpty+outwardOwnLoad;
     let outwardOutTotal=outwardOutEmpty+outwardOutLoad;
     let outwardTotal=outwardOwnTotal+outwardOutTotal;
-    console.log(inwardOwnTotal);
-    console.log(inwardOutTotal);
-    console.log(inwardTotal);
-    console.log(outwardTotal);
 
     return (
       <div>
@@ -101,6 +93,7 @@ class AbstractVehicleReports extends React.Component {
              <th colSpan={1}></th>
              <th colSpan={3}>Own Vehicle</th>
              <th colSpan={3}>Out Vehicle</th>
+             <th></th>
            </tr>
            <tr>
              <th></th>
@@ -110,6 +103,7 @@ class AbstractVehicleReports extends React.Component {
              <th>Empty</th>
              <th>Load</th>
              <th>Total</th>
+             <th>Grand Total</th>
            </tr>
           </thead>
           <tbody>
@@ -121,6 +115,7 @@ class AbstractVehicleReports extends React.Component {
                 <th>{inwardOutEmpty}</th>
                 <th>{inwardOutLoad}</th>
                 <th>{inwardOutTotal}</th>
+                <th>{inwardTotal}</th>
               </tr>
               <tr>
                 <th>Outward</th>
@@ -130,6 +125,7 @@ class AbstractVehicleReports extends React.Component {
                 <th>{outwardOutEmpty}</th>
                 <th>{outwardOutLoad}</th>
                 <th>{outwardOutTotal}</th>
+                <th>{outwardTotal}</th>
               </tr>
           </tbody>
         </table>
