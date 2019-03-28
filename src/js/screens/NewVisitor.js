@@ -39,9 +39,14 @@ class NewVisitor extends Component {
     this.state = {
       showLiveCameraFeed: true,
       visitorId: Rand.generateBase30(8),
-      department : '--',
-      company : '--',
-      remarks :'--',
+      name: '',
+      whomToMeet: '',
+      purpose: '',
+      mobile:'',
+      comingFrom:'',
+      department:'',
+      company:'',
+      remarks:'',
       serialNo : props.serialNo
     };
   }
@@ -73,6 +78,10 @@ class NewVisitor extends Component {
         screenshot: ''
       });
     }
+  }
+
+  printVisitorCard() {
+    document.getElementById('printVisitor').click();
   }
 
 
@@ -107,7 +116,7 @@ class NewVisitor extends Component {
         }
       ]
     })
-      .then(()=> {
+      .then(
         this.setState({
           toastMsg: `User ${name} is saved `,
           name: '',
@@ -119,9 +128,7 @@ class NewVisitor extends Component {
           company:'',
           remarks:'',
           showLiveCameraFeed: true,
-        })
-      }
-
+        }, this.printVisitorCard.bind(this))
       )
       .catch((err) => {
         console.error('VISITOR SAVE ERR', err);
@@ -181,7 +188,6 @@ class NewVisitor extends Component {
     const timestamp = new Date();
     const timestampStr = Moment(timestamp).format('DD/MM/YYYY hh:mm:ss A');
 
-    document.getElementById('printVisitor').click();
     this.setState({
       timestamp,
       timestampStr,

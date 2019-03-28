@@ -189,7 +189,7 @@ export default class VehicleReportsComponent extends Component {
   render() {
     return (
       <div>
-      {this.renderVehicleReports()}
+        {this.renderVehicleReports()}
       </div>
     )
   }

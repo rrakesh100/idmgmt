@@ -272,8 +272,6 @@ export default class VehicleIn extends Component {
         })
       }
 
-
-
       if(fieldName == 'driverName' && (e.target.value === '' || tre.test(e.target.value))) {
         let dText = (e.target.value).toUpperCase();
         this.setState({

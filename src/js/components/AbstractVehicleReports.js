@@ -8,7 +8,6 @@ class AbstractVehicleReports extends React.Component {
 
   renderAbstractReport() {
     const {response}=this.props
-    console.log(response);
     let returnObj={};
     let inwardOwnEmpty=0;
     let inwardOwnLoad=0;
@@ -23,7 +22,6 @@ class AbstractVehicleReports extends React.Component {
       const sNoObj = response[vNo];
       Object.keys(sNoObj).map(sNo => {
         let vObj=sNoObj[sNo];
-        console.log(vObj);
               if(vObj.inSide && vObj.ownOutVehicle === 'Own Vehicle' && vObj.emptyLoad === 'Empty') {
                 inwardOwnEmpty += 1;
               }

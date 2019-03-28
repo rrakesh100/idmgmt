@@ -9,13 +9,28 @@ import Tab from 'grommet/components/Tab';
 import Button from 'grommet/components/Button';
 import Layer from 'grommet/components/Layer';
 import Select from 'grommet/components/Select';
-import { saveShift, saveTimeslot, saveVillage, saveVehicle, saveDriver, saveOwnPlace, saveMaterial } from '../api/configuration';
+import { saveShift, saveTimeslot, saveVillage, saveVehicle, saveDriver, saveOwnPlace, saveMaterial, saveParty, saveAgent } from '../api/configuration';
 import { Container, Row, Col } from 'react-grid-system';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
-import { getShifts, getTimeslots, getVillages, getVehicleNumbers, getDrivers, getOwnPlaces, getMaterials } from '../api/configuration';
+import { getShifts,
+  getTimeslots,
+  getVillages,
+  getVehicleNumbers,
+  getDrivers,
+  getOwnPlaces,
+  getMaterials,
+  getParties,
+  getAgents
+ } from '../api/configuration';
 
-
+const AddButton = ({onClick}) => {
+  return (
+    <Button label='ADD'
+    href='#' onClick={onClick}
+    primary={true} style={{float: 'right', marginRight: '20px'}}/>
+  )
+}
 
 export default class Configuration extends Component {
 
@@ -35,18 +50,21 @@ export default class Configuration extends Component {
       vehicle: '',
       driverName: '',
       ownPlace: '',
-      material: ''
+      material: '',
+
     }
   }
 
   componentDidMount() {
-     this.getShiftDetails()
-     this.getTimeslotDetails()
-     this.getVillageDetails()
-     this.getVehicleDetails()
-     this.getDriverDetails()
-     this.getOwnPlaceDetails()
-     this.getMaterialDetails()
+     this.getShiftDetails();
+     this.getTimeslotDetails();
+     this.getVillageDetails();
+     this.getVehicleDetails();
+     this.getDriverDetails();
+     this.getOwnPlaceDetails();
+     this.getMaterialDetails();
+     this.getPartyDetails();
+     this.getAgentDetails();
   }
 
   getShiftDetails() {
@@ -105,8 +123,23 @@ export default class Configuration extends Component {
     })
   }
 
-  onFieldChange(fieldName, e) {
+  getPartyDetails() {
+    getParties().then((snap) => {
+      this.setState({
+        parties: snap.val()
+      })
+    })
+  }
 
+  getAgentDetails() {
+    getAgents().then((snap) => {
+      this.setState({
+        agents: snap.val()
+      })
+    })
+  }
+
+  onFieldChange(fieldName, e) {
     this.setState({
       [fieldName]: e.target.value
     })
@@ -154,60 +187,16 @@ export default class Configuration extends Component {
     })
   }
 
-  renderShiftTab() {
-    return (
-      <Button label='ADD'
-      href='#' onClick={this.onShiftAddBtnClick.bind(this)}
-      primary={true} style={{float: 'right', marginRight: '20px'}}/>
-    )
+  onPartyAddBtnClick() {
+    this.setState({
+      partyBtnClick: true
+    })
   }
 
-  renderTimeslot() {
-    return (
-      <Button label='ADD'
-      href='#' onClick={this.onTimeslotAddBtnClick.bind(this)}
-      primary={true} style={{float: 'right', marginRight: '20px'}}/>
-    )
-  }
-
-  renderVillage() {
-    return (
-      <Button label='ADD'
-      href='#' onClick={this.onVillageAddBtnClick.bind(this)}
-      primary={true} style={{float: 'right', marginRight: '20px'}}/>
-    )
-  }
-
-  renderVehicles() {
-    return (
-      <Button label='ADD'
-      href='#' onClick={this.onVehicleAddBtnClick.bind(this)}
-      primary={true} style={{float: 'right', marginRight: '20px'}}/>
-    )
-  }
-
-  renderDriverNames() {
-    return (
-      <Button label='ADD'
-      href='#' onClick={this.onDriverNameAddBtnClick.bind(this)}
-      primary={true} style={{float: 'right', marginRight: '20px'}}/>
-    )
-  }
-
-  renderOwnPlaces() {
-    return (
-      <Button label='ADD'
-      href='#' onClick={this.onOwnPlacesAddBtnClick.bind(this)}
-      primary={true} style={{float: 'right', marginRight: '20px'}}/>
-    )
-  }
-
-  renderMaterial() {
-    return (
-      <Button label='ADD'
-      href='#' onClick={this.onMaterialAddBtnClick.bind(this)}
-      primary={true} style={{float: 'right', marginRight: '20px'}}/>
-    )
+  onAgentAddBtnClick() {
+    this.setState({
+      agentBtnClick: true
+    })
   }
 
   onShiftCloseLayer() {
@@ -252,6 +241,18 @@ export default class Configuration extends Component {
     })
   }
 
+  onPartyCloseLayer() {
+    this.setState({
+      partyBtnClick: false
+    })
+  }
+
+  onAgentCloseLayer() {
+    this.setState({
+      agentBtnClick: false
+    })
+  }
+
   onSavingShift() {
     const {shift} = this.state;
 
@@ -292,9 +293,9 @@ export default class Configuration extends Component {
   }
 
   onSavingVehicle() {
-    const { vehicleNumber } = this.state;
+    const { unit, vehicleNumber, driver1Name, driver2Name, d1CellNum, d2CellNum } = this.state;
 
-    saveVehicle(vehicleNumber).then(() => {
+    saveVehicle(vehicleNumber,unit,driver1Name,d1CellNum,driver2Name,d2CellNum).then(() => {
       alert('Vehicle successfully saved')
       this.setState({
         msg: 'Vehicle successfully saved',
@@ -340,6 +341,39 @@ export default class Configuration extends Component {
         materialBtnClick: false,
         material: ''
       }, this.getMaterialDetails())
+    }).catch((e) => console.log(e))
+  }
+
+  onSavingParty() {
+    const { partyName, partyNum, partyTown, partyDistrict, partyState } = this.state;
+    saveParty(partyName, partyNum, partyTown,partyDistrict,partyState).then(() => {
+      alert('Party successfully saved')
+      this.setState({
+        msg: 'Party successfully saved',
+        partyBtnClick: false,
+        partyName: '',
+        partyNum:'',
+        partyTown:'',
+        partyDistrict:'',
+        partyState:'',
+      }, this.getPartyDetails())
+    }).catch((e) => console.log(e))
+  }
+
+  onSavingAgent() {
+    const { agentName, agentNum, agentTown, agentDistrict, agentState } = this.state;
+
+    saveAgent(agentName, agentNum, agentTown,agentDistrict,agentState).then(() => {
+      alert('Agent successfully saved')
+      this.setState({
+        msg: 'Agent successfully saved',
+        agentBtnClick: false,
+        agentName: '',
+        agentNum:'',
+        agentTown:'',
+        agentDistrict:'',
+        agentState:'',
+      }, this.getAgentDetails())
     }).catch((e) => console.log(e))
   }
 
@@ -436,12 +470,41 @@ export default class Configuration extends Component {
         flush={false}
         onClose={this.onVehicleCloseLayer.bind(this)}>
           <Form>
-          <p>Enter Vehicle Number</p>
+          <FormField  label='Unit'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Unit'
+              value={this.state.unit}
+              onDOMChange={this.onFieldChange.bind(this, 'unit')} />
+          </FormField>
           <FormField  label='Vehicle Number'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
           <TextInput
               placeHolder='Vehicle Number'
               value={this.state.vehicleNumber}
               onDOMChange={this.onFieldChange.bind(this, 'vehicleNumber')} />
+          </FormField>
+          <FormField  label='Driver1 Name'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Driver1'
+              value={this.state.driver1Name}
+              onDOMChange={this.onFieldChange.bind(this, 'driver1Name')} />
+          </FormField>
+          <FormField  label='Driver1 Cell No'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Cell No'
+              value={this.state.d1CellNum}
+              onDOMChange={this.onFieldChange.bind(this, 'd1CellNum')} />
+          </FormField>
+          <FormField  label='Driver2 Name'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Driver2'
+              value={this.state.driver2Name}
+              onDOMChange={this.onFieldChange.bind(this, 'driver2Name')} />
+          </FormField>
+          <FormField  label='Driver2 Cell No'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Cell No'
+              value={this.state.d2CellNum}
+              onDOMChange={this.onFieldChange.bind(this, 'd2CellNum')} />
           </FormField>
           </Form>
         <Row>
@@ -532,6 +595,108 @@ export default class Configuration extends Component {
         <Button label='Add'
         primary={true} style={{marginTop: '20px', marginLeft: '400px', marginBottom: '10px'}}
         href='#' onClick={this.onSavingMaterial.bind(this)}/>
+        </Row>
+        </Layer>
+      );
+    }
+  }
+
+  renderPartyLayer() {
+
+    if(!this.state.partyBtnClick)
+    return null;
+    else {
+      return (
+        <Layer closer={true}
+        flush={false}
+        onClose={this.onPartyCloseLayer.bind(this)}>
+          <Form>
+          <FormField  label='Party Name'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Party Name'
+              value={this.state.partyName}
+              onDOMChange={this.onFieldChange.bind(this, 'partyName')} />
+          </FormField>
+          <FormField  label='Cell No'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Cell No'
+              value={this.state.partyNum}
+              onDOMChange={this.onFieldChange.bind(this, 'partyNum')} />
+          </FormField>
+          <FormField  label='Town'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='partyTown'
+              value={this.state.partyTown}
+              onDOMChange={this.onFieldChange.bind(this, 'partyTown')} />
+          </FormField>
+          <FormField  label='District'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='partyDistrict'
+              value={this.state.partyDistrict}
+              onDOMChange={this.onFieldChange.bind(this, 'partyDistrict')} />
+          </FormField>
+          <FormField  label='State'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='partyState'
+              value={this.state.partyState}
+              onDOMChange={this.onFieldChange.bind(this, 'partyState')} />
+          </FormField>
+          </Form>
+        <Row>
+        <Button label='Add'
+        primary={true} style={{marginTop: '20px', marginLeft: '400px', marginBottom: '10px'}}
+        href='#' onClick={this.onSavingParty.bind(this)}/>
+        </Row>
+        </Layer>
+      );
+    }
+  }
+
+  renderAgentLayer() {
+
+    if(!this.state.agentBtnClick)
+    return null;
+    else {
+      return (
+        <Layer closer={true}
+        flush={false}
+        onClose={this.onAgentCloseLayer.bind(this)}>
+          <Form>
+          <FormField  label='Agent Name'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Agent Name'
+              value={this.state.agentName}
+              onDOMChange={this.onFieldChange.bind(this, 'agentName')} />
+          </FormField>
+          <FormField  label='Cell No'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Cell No'
+              value={this.state.agentNum}
+              onDOMChange={this.onFieldChange.bind(this, 'agentNum')} />
+          </FormField>
+          <FormField  label='Town'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Town'
+              value={this.state.agentTown}
+              onDOMChange={this.onFieldChange.bind(this, 'agentTown')} />
+          </FormField>
+          <FormField  label='District'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='District'
+              value={this.state.agentDistrict}
+              onDOMChange={this.onFieldChange.bind(this, 'agentDistrict')} />
+          </FormField>
+          <FormField  label='State'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='State'
+              value={this.state.agentState}
+              onDOMChange={this.onFieldChange.bind(this, 'agentState')} />
+          </FormField>
+          </Form>
+        <Row>
+        <Button label='Add'
+        primary={true} style={{marginTop: '20px', marginLeft: '400px', marginBottom: '10px'}}
+        href='#' onClick={this.onSavingAgent.bind(this)}/>
         </Row>
         </Layer>
       );
@@ -708,22 +873,80 @@ export default class Configuration extends Component {
 
   renderAllMaterials() {
     const { materials } = this.state;
-    if(materials) {
+      if(materials) {
+      return (
+        <Table style={{marginLeft: '40px', width: '80%'}}>
+        <thead style={{position:'relative'}}>
+         <tr>
+           <th>S No.</th>
+           <th>Material</th>
+         </tr>
+        </thead>
+        <tbody>
+         {
+           Object.keys(materials).map((key, index) => {
+             return (
+               <TableRow key={index}>
+                <td>{index+1}</td>
+                <td>{key}</td>
+                </TableRow>
+             )
+           })
+         }
+         </tbody>
+         </Table>
+      )
+    }
+  }
+
+  renderAllParties() {
+    const {parties}=this.state;
+    if(parties) {
     return (
       <Table style={{marginLeft: '40px', width: '80%'}}>
       <thead style={{position:'relative'}}>
        <tr>
          <th>S No.</th>
-         <th>Material</th>
+         <th>Party</th>
        </tr>
       </thead>
       <tbody>
        {
-         Object.keys(materials).map((key, index) => {
+         Object.keys(parties).map((key, index) => {
+           let partyObj=parties[key];
            return (
              <TableRow key={index}>
-              <td>{index+1}</td>
-              <td>{key}</td>
+                <td>{index+1}</td>
+                <td>{key}</td>
+              </TableRow>
+           )
+         })
+       }
+       </tbody>
+       </Table>
+    )
+  }
+  }
+
+  renderAllAgents() {
+    const {agents}=this.state;
+    if(agents) {
+    return (
+      <Table style={{marginLeft: '40px', width: '80%'}}>
+      <thead style={{position:'relative'}}>
+       <tr>
+         <th>S No.</th>
+         <th>Agent</th>
+       </tr>
+      </thead>
+      <tbody>
+       {
+         Object.keys(agents).map((key, index) => {
+           let agentObj=agents[key];
+           return (
+             <TableRow key={index}>
+                <td>{index+1}</td>
+                <td>{agentObj.agentName}</td>
               </TableRow>
            )
          })
@@ -754,39 +977,49 @@ export default class Configuration extends Component {
       </Header>
       <Tabs justify='start' style={{marginLeft:'40px'}}>
       <Tab title='SHIFT'>
-      { this.renderShiftTab() }
+      <AddButton onClick={this.onShiftAddBtnClick.bind(this)}/>
       { this.renderShiftLayer() }
       { this.renderAllShifts() }
       </Tab>
       <Tab title='TIME SLOT'>
-      { this.renderTimeslot() }
+      <AddButton onClick={this.onTimeslotAddBtnClick.bind(this)}/>
       { this.renderTimeslotLayer() }
       { this.renderAllTimeslots() }
       </Tab>
       <Tab title='VILLAGE'>
-      { this.renderVillage() }
+      <AddButton onClick={this.onVillageAddBtnClick.bind(this)}/>
       { this.renderVillageLayer() }
       { this.renderAllVillages() }
       </Tab>
-      <Tab title='Vehicles'>
-      { this.renderVehicles() }
+      <Tab title='VEHICLES'>
+      <AddButton onClick={this.onVehicleAddBtnClick.bind(this)}/>
       { this.renderVehiclesLayer() }
       { this.renderAllVehicles() }
       </Tab>
-      <Tab title='Driver Names'>
-      { this.renderDriverNames() }
+      <Tab title='DRIVER NAMES'>
+      <AddButton onClick={this.onDriverNameAddBtnClick.bind(this)}/>
       { this.renderDriversLayer() }
       { this.renderAllDrivers() }
       </Tab>
-      <Tab title='Own Places'>
-      { this.renderOwnPlaces() }
+      <Tab title='OWN PLACES'>
+      <AddButton onClick={this.onOwnPlacesAddBtnClick.bind(this)}/>
       { this.renderOwnPlacesLayer() }
       { this.renderAllOwnPlaces() }
       </Tab>
-      <Tab title='Material'>
-      { this.renderMaterial() }
+      <Tab title='MATERIAL'>
+      <AddButton onClick={this.onMaterialAddBtnClick.bind(this)}/>
       { this.renderMaterialsLayer() }
       { this.renderAllMaterials() }
+      </Tab>
+      <Tab title='PARTY'>
+      <AddButton onClick={this.onPartyAddBtnClick.bind(this)}/>
+      { this.renderPartyLayer() }
+      { this.renderAllParties() }
+      </Tab>
+      <Tab title='AGENT'>
+      <AddButton onClick={this.onAgentAddBtnClick.bind(this)}/>
+      { this.renderAgentLayer() }
+      { this.renderAllAgents() }
       </Tab>
       </Tabs>
       </div>

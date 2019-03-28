@@ -45,6 +45,22 @@ export function savingInwardVehicle(data) {
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/inCount`] = data.lastCount+1;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastInward`] = newData;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastOutward`] = null;
+
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/inwardSNo`] = data.inwardSNo;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/ownOutVehicle`] = data.ownOutVehicle;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/vehicleNumber`] = data.vehicleNumber;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/driverName`] = data.driverName;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/driverNumber`] = data.driverNumber;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/emptyLoad`] = data.emptyLoad;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/partyName`] = data.partyName;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/material`] = data.material;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/numberOfBags`] = data.numberOfBags;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/comingFrom`] = data.comingFrom;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/billNumber`] = data.billNumber;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/remarks`] = data.remarks;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/inDate`] = dateStr;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/inTime`] = timeStr;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/inSide`] = true;
   /*
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/in`] = timeStr;
   updates[localStorage.unit + '/' +`vehicleReports/dates/${dateStr}/${data.vehicleNumber}/inwardSNo`] = data.inwardSNo;
@@ -136,6 +152,10 @@ export function savingOutwardVehicle(data) {
     updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/outwardSNo`] = data.outwardSNo;
     updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/goingTo`] = data.goingTo;
   }
+
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/outDate`] = dateStr;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/outTime`] = timeStr;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/inSide`] = false;
 
   updates[localStorage.unit + '/' +`vehicles/${prefix}/out/${data.outwardSNo}`] = newData;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/outCount`] = data.lastCount+1;
@@ -318,11 +338,21 @@ export function saveVehicleOutPrintCopiesData(vehicleKey, printData) {
 
 
 export function fetchVehicleInPrintCopiesData(vehicleKey) {
-  const dbRef = firebase.database().ref(`vehicleInPrintCopies/${vehicleKey}`);
+  const dbRef = firebase.database().ref(localStorage.unit + '/' + `vehicleInPrintCopies/${vehicleKey}`);
   return dbRef.once('value');
 }
 
 export function fetchVehicleOutPrintCopiesData(vehicleKey) {
-  const dbRef = firebase.database().ref(`vehicleOutPrintCopies/${vehicleKey}`);
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicleOutPrintCopies/${vehicleKey}`);
+  return dbRef.once('value');
+}
+
+export function getVehicleBarcodes() {
+  const dbRef = firebase.database().ref(localStorage.unit + '/' + 'vehicleBarcodes');
+  return dbRef.once('value');
+}
+
+export function fetchVehicleBarcodeData(barcodeNo) {
+  const dbRef = firebase.database().ref(localStorage.unit + '/' + `vehicleBarcodes/${barcodeNo}`);
   return dbRef.once('value');
 }

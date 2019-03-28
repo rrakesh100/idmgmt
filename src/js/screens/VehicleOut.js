@@ -27,7 +27,7 @@ import { savingOutwardVehicle,
          getInwardVehicle,
          uploadVehicleImage,
          saveVehicleOutPrintCopiesData,
-         fetchVehicleOutPrintCopiesData, getVehicleData, getInsideVehicles } from '../api/vehicles';
+         fetchVehicleOutPrintCopiesData, getVehicleData, getInsideVehicles, getVehicleBarcodes, fetchVehicleBarcodeData } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Image from 'grommet/components/Image';
@@ -73,6 +73,9 @@ export default class VehicleOut extends Component {
       vehiclesArr:[],
       ownVehiclesArr:[],
       outVehiclesArr:[],
+      barcodesArr:[],
+      barcodeObj:null,
+      barcodeFetched:false,
     };
   }
 
@@ -82,6 +85,19 @@ export default class VehicleOut extends Component {
     this.getVehicleDetails();
     this.getOwnPlaceDetails();
     this.getInsideVehicles();
+    this.getAllVehicleBarcodes();
+  }
+
+  getAllVehicleBarcodes() {
+    getVehicleBarcodes().then(snap => {
+      let vehicleBarcodes=snap.val();
+      let barcodesArr=[];
+      Object.keys(vehicleBarcodes).map(vSno => {
+        let vSnoObj=vehicleBarcodes[vSno];
+        barcodesArr.push(vSnoObj.inwardSNo)
+      })
+      this.setState({barcodesArr})
+    }).catch(err => console.log(err))
   }
 
   getInsideVehicles() {
@@ -163,15 +179,22 @@ export default class VehicleOut extends Component {
         let vNo=vehicleNumber;
         if(selectVehicleNumber)
          vNo = selectVehicleNumber;
-         console.log(vNo);
       getInwardVehicle(vNo).then((snap) => {
         const inwardObj = snap.val();
-        console.log(inwardObj);
         this.setState({inwardObj})
       }).catch((e) => console.log(e));
   }
 
+  fetchVehicleDataByBarcode() {
+    const {barcodeNo}=this.state;
+    fetchVehicleBarcodeData(barcodeNo).then(snap => {
+      const barcodeObj=snap.val();
+      this.setState({barcodeObj, barcodeFetched: true})
+    }).catch(err => console.log(err))
+  }
+
   onFieldChange(fieldName, e, o) {
+
     let dr = /^[0-9\b]/;
     let re = /^[1-9][0-9]{0,4}$/;
     let ne = /^[0-9]{11}$/;
@@ -180,7 +203,6 @@ export default class VehicleOut extends Component {
     let nre = /^[a-zA-Z0-9]{11}$/;
     let tre = /^[A-Za-z. ]+$/;
     let pre = /^[A-Za-z. ]{0,100}$/;
-    console.log(fieldName);
     if(fieldName == 'driverNumber' && (e.target.value === '' || dr.test(e.target.value))) {
         if(!ne.test(e.target.value)) {
           this.setState({
@@ -202,6 +224,13 @@ export default class VehicleOut extends Component {
         [fieldName]: o.value,
         validationMsg: ''
       })
+    }
+
+    if(fieldName == 'barcodeNo') {
+      this.setState({
+        [fieldName]: o.value,
+        validationMsg: ''
+      },this.fetchVehicleDataByBarcode.bind(this) )
     }
 
     if(fieldName=='selectVehicleNumber') {
@@ -456,7 +485,6 @@ export default class VehicleOut extends Component {
   vehicleValidation() {
     const { inwardObj } = this.state;
     let inwardDate = inwardObj ? inwardObj.inwardDate : null;
-    console.log(inwardObj);
     if(!inwardDate) {
       this.setState({
         vehicleExists: true
@@ -488,7 +516,8 @@ export default class VehicleOut extends Component {
       goingTo,
       billNumber,
       remarks,
-      screenshot, inwardObj } = this.state;
+      screenshot, inwardObj, barcodeObj } = this.state;
+      console.log(barcodeObj);
       let inwardDate = inwardObj ? inwardObj.inwardDate : null;
       let inTime = inwardObj ? inwardObj.inTime : null;
       let comingFrom = inwardObj ? inwardObj.comingFrom : null;
@@ -563,7 +592,14 @@ export default class VehicleOut extends Component {
       goingTo,
       billNumber,
       remarks,
-      screenshot } = this.state;
+      screenshot, barcodeObj } = this.state;
+
+      console.log(vehicleNumber);
+      console.log(selectVehicleNumber);
+      console.log(ownOutVehicle);
+      console.log(driverName);
+      console.log(driverNumber);
+      console.log(barcodeObj);
       if(!ownOutVehicle) {
         this.setState({
           validationMsg: 'Own/Out Vehicle is missing'
@@ -853,7 +889,8 @@ export default class VehicleOut extends Component {
             numberOfBags,
             goingTo,
             billNumber,
-            remarks, showProgressBar, toastMsg, lastCount, ownVehiclesArr, outVehiclesArr } = this.state;
+            remarks, showProgressBar, toastMsg, lastCount, ownVehiclesArr, outVehiclesArr, barcodeObj, barcodeFetched } = this.state;
+
             let prefix = 'U2';
             if(window.localStorage.unit === 'UNIT3') {
               prefix = 'U3';
@@ -923,9 +960,28 @@ export default class VehicleOut extends Component {
               </FormField>
               </Form> :
                 <Form className='newVisitorFields'>
-                  <FormField  label='Outward Sno'  strong={true} style={{marginTop : '8px'}}  >
-                  <Label style={{marginLeft:'20px'}}><strong>{outwardSNo}</strong></Label>
-                  </FormField>
+                <FormField  label='Outward Sno'  strong={true} style={{marginTop : '8px'}}  >
+                <Label style={{marginLeft:'20px'}}><strong>{outwardSNo}</strong></Label>
+                </FormField>
+                <FormField strong={true} style={{marginTop : '8px'}}>
+                <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Inward SNo</Label>
+                  <Input transparent
+                  list='barcode'
+                  placeholder='Inward Sno'
+                  onChange={this.onFieldChange.bind(this, 'barcodeNo')} />
+                  <datalist id='barcode'>
+                    {
+                      this.state.barcodesArr.map((val, index) => {
+                        return <option value={val} key={index}/>
+                      })
+                    }
+                  </datalist>
+                </FormField>
+
+                  {barcodeFetched ?
+                    <FormField label='Own/Out Vehicle' strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{fontSize: 16, marginLeft: 20}}><strong>{barcodeObj && barcodeObj.ownOutVehicle}</strong></Label>
+                    </FormField> :
                   <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Own/Out Vehicle</Label>
                       <Select
@@ -934,47 +990,63 @@ export default class VehicleOut extends Component {
                       value={this.state.ownOutVehicle}
                       onChange={this.onFieldChange.bind(this, 'ownOutVehicle')}
                       />
-                  </FormField>
-                  <FormField strong={true} style={{marginTop : '8px'}}>
-                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle Number</Label>
-                        {ourVehicle ?
-                          <div>
-                          <Input transparent
-                        list='vehicleNumber'
-                        placeholder='Vehicle Number'
-                        onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')} />
-                      <datalist id='vehicleNumber'>
-                        {
-                          this.state.ownVehiclesArr.map((val, index) => {
-                            return <option value={val} key={index}/>
-                          })
-                        }
-                      </datalist>
-                      </div> :
-                      <div>
-                      <Input transparent
-                    list='vehicleNumber'
-                    placeholder='Vehicle Number'
-                    onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')} />
-                  <datalist id='vehicleNumber'>
-                    {
-                      this.state.outVehiclesArr.map((val, index) => {
-                        return <option value={val} key={index}/>
-                      })
-                    }
-                  </datalist>
-                  </div>
-                    }
-                  </FormField>
-                  <FormField strong={true} style={{marginTop : '8px'}}>
-                  <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Driver Name</Label>
+                  </FormField>}
+                  {barcodeFetched ?
+                    <FormField label='Vehicle No' strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{fontSize: 16, marginLeft: 20}}><strong>{barcodeObj && barcodeObj.vehicleNumber}</strong></Label>
+                    </FormField> :
+                    <FormField strong={true} style={{marginTop : '8px'}}>
+                    <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Vehicle Number</Label>
+                          {ourVehicle ?
+                            <div>
+                            <Input transparent
+                          list='vehicleNumber'
+                          placeholder='Vehicle Number'
+                          onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')} />
+                        <datalist id='vehicleNumber'>
+                          {
+                            this.state.ownVehiclesArr.map((val, index) => {
+                              return <option value={val} key={index}/>
+                            })
+                          }
+                        </datalist>
+                        </div> :
+                        <div>
+                        <Input transparent
+                          list='vehicleNumber'
+                          placeholder='Vehicle Number'
+                          onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')} />
+                        <datalist id='vehicleNumber'>
+                          {
+                            this.state.outVehiclesArr.map((val, index) => {
+                              return <option value={val} key={index}/>
+                            })
+                          }
+                        </datalist>
+                    </div>
+                      }
+                    </FormField>
+                  }
+                  {
+                    barcodeFetched ?
+                    <FormField label='Driver Name' strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{fontSize: 16, marginLeft: 20}}><strong>{barcodeObj && barcodeObj.driverName}</strong></Label>
+                    </FormField> :
+                    <FormField strong={true} style={{marginTop : '8px'}}>
+                    <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Driver Name</Label>
 
-                      <TextInput
-                          placeHolder='Driver Name'
-                          value={this.state.driverName}
-                          onDOMChange={this.onFieldChange.bind(this, 'driverName')}
-                      />
-                  </FormField>
+                        <TextInput
+                            placeHolder='Driver Name'
+                            value={this.state.driverName}
+                            onDOMChange={this.onFieldChange.bind(this, 'driverName')}
+                        />
+                    </FormField>
+                  }
+                  {
+                    barcodeFetched ?
+                    <FormField label='Driver Cell No' strong={true} style={{marginTop : '10px'}}>
+                      <Label style={{fontSize: 16, marginLeft: 20}}><strong>{barcodeObj && barcodeObj.driverNumber || '--'}</strong></Label>
+                    </FormField> :
                   <FormField label='Driver Cell No' strong={true} style={{marginTop : '8px'}}>
                       <TextInput
                           placeHolder='Driver Cell No'
@@ -982,6 +1054,7 @@ export default class VehicleOut extends Component {
                           onDOMChange={this.onFieldChange.bind(this, 'driverNumber')}
                       />
                   </FormField>
+                }
                   <FormField strong={true} style={{marginTop : '8px'}}>
                   <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Empty/Load</Label>
                       <Select

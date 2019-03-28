@@ -29,6 +29,7 @@ import VehicleIn from './VehicleIn';
 import VehicleOut from './VehicleOut';
 import AllVehiclesPrint from './AllVehiclesPrint';
 import VehicleReports from '../components/VehicleReports';
+import MaterialwiseReports from '../components/MaterialwiseReports';
 
 class Vehicles extends Component {
 
@@ -201,9 +202,6 @@ class Vehicles extends Component {
 
   render() {
 
-    const { error, tasks } = this.props;
-    const { intl } = this.context;
-
     return (
       <Article primary={true} full={true} className='giveVehicle'>
       <Header
@@ -218,16 +216,19 @@ class Vehicles extends Component {
         <Section>
             <Tabs justify='start' style={{marginLeft: 20, marginTop: -20}}>
             <Tab title='HOME'>
-            <AllVehiclesPrint />
+              <AllVehiclesPrint />
             </Tab>
             <Tab title='VEHICLE IN'>
-            <VehicleIn />
+              <VehicleIn />
             </Tab>
             <Tab title='VEHICLE OUT'>
-            <VehicleOut />
+              <VehicleOut />
             </Tab>
             <Tab title='REPORTS'>
-            <VehicleReports />
+              <VehicleReports />
+            </Tab>
+            <Tab title='MATERIALWISE'>
+              <MaterialwiseReports />
             </Tab>
             </Tabs>
         </Section>
