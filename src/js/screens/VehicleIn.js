@@ -89,10 +89,8 @@ export default class VehicleIn extends Component {
   getPartyDetails() {
     getParties().then(res => {
       let partyObj=res.val();
-      console.log(partyObj);
       let partyOptions=[];
       Object.keys(partyObj).map(party => {
-        console.log(party);
         partyOptions.push(party)
       })
       this.setState({partyOptions})
@@ -1029,7 +1027,6 @@ export default class VehicleIn extends Component {
                     <datalist id='parties'>
                       {
                         this.state.partyOptions.map((val, index) => {
-                          console.log(val);
                           return <option value={val} key={index}/>
                         })
                       }

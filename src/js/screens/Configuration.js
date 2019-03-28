@@ -344,8 +344,9 @@ export default class Configuration extends Component {
     }).catch((e) => console.log(e))
   }
 
-  onSavingParty() {
+  onPartySaving() {
     const { partyName, partyNum, partyTown, partyDistrict, partyState } = this.state;
+
     saveParty(partyName, partyNum, partyTown,partyDistrict,partyState).then(() => {
       alert('Party successfully saved')
       this.setState({
@@ -358,6 +359,50 @@ export default class Configuration extends Component {
         partyState:'',
       }, this.getPartyDetails())
     }).catch((e) => console.log(e))
+  }
+
+  onSavingParty() {
+    const { partyName, partyNum, partyTown, partyDistrict, partyState } = this.state;
+
+    if(!partyName) {
+      this.setState({
+        validationMsg: 'Party Name is Missing'
+      })
+    }
+
+    if(!partyNum) {
+      this.setState({
+        validationMsg: 'Mobile Number is Missing'
+      })
+    }
+
+    if(partyNum && (partyNum.toString()).length<10) {
+      this.setState({
+        validationMsg: 'Mobile Number Must contain atleast 10 digits'
+      })
+    }
+
+    if(!partyTown) {
+      this.setState({
+        validationMsg: 'Town is Missing'
+      })
+    }
+
+    if(!partyDistrict) {
+      this.setState({
+        validationMsg: 'District is Missing'
+      })
+    }
+
+    if(!partyState) {
+      this.setState({
+        validationMsg: 'State is Missing'
+      })
+    }
+
+    this.setState({
+      validationMsg:''
+    }, this.onPartySaving.bind(this))
   }
 
   onSavingAgent() {

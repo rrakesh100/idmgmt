@@ -93,6 +93,9 @@ export default class VehicleOut extends Component {
     this.getInsideVehicles();
     this.getAllVehicleBarcodes();
     this.getPartyDetails();
+    if(this.state.barcodeInput) {
+      this.state.barcodeInput.focus()
+    }
   }
 
   getPartyDetails() {
@@ -556,6 +559,7 @@ export default class VehicleOut extends Component {
       let inwardSNo = inwardObj ? inwardObj.inwardSNo : null;
 
       let vNo=this.state.vehicleNumber || this.state.selectVehicleNumber;
+      console.log(vno);
       let ownOutVehicle=this.state.ownOutVehicle;
       let driverName=this.state.driverName;
       let driverNumber=this.state.driverNumber;

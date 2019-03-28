@@ -217,7 +217,7 @@ export default class VehicleReports extends Component {
       <FormField label='Report Type' style={{marginTop:20}}>
         <Select
           placeHolder='Report Type'
-          options={['Total Abstract', 'Abstract OH Vehicles', 'Detailed OH Vehicles', 'Inward', 'In-Outward-Pending', 'In-Outward-Completed', 'Outward']}
+          options={['Total Abstract', 'Inward', 'In-Outward-Pending', 'Outward']}
           value={this.state.reportType}
           onChange={this.onReportTypeFieldChange.bind(this, 'reportType')}
         />
