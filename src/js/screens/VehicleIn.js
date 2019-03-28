@@ -20,7 +20,7 @@ import Accordion from 'grommet/components/Accordion';
 import AccordionPanel from 'grommet/components/AccordionPanel';
 import Next from 'grommet/components/icons/base/CaretNext';
 import Down from 'grommet/components/icons/base/CaretDown';
-import { getVehicleNumbers, getMaterials, getOwnPlaces } from '../api/configuration';
+import { getVehicleNumbers, getMaterials, getOwnPlaces, getParties } from '../api/configuration';
 import Save from 'grommet/components/icons/base/Upload';
 import Car from 'grommet/components/icons/base/Car';
 import PrintIcon from 'grommet/components/icons/base/Print';
@@ -70,6 +70,7 @@ export default class VehicleIn extends Component {
       vehicleOpt: [],
       materialOpt: [],
       ownPlaceOpt: [],
+      partyOptions: [],
       percentage: 20,
       showProgressBar: false,
       vehicleExists: false,
@@ -82,6 +83,20 @@ export default class VehicleIn extends Component {
     this.getMaterialDetails();
     this.getVehicleDetails();
     this.getOwnPlaceDetails();
+    this.getPartyDetails();
+  }
+
+  getPartyDetails() {
+    getParties().then(res => {
+      let partyObj=res.val();
+      console.log(partyObj);
+      let partyOptions=[];
+      Object.keys(partyObj).map(party => {
+        console.log(party);
+        partyOptions.push(party)
+      })
+      this.setState({partyOptions})
+    }).catch(err => console.log(err))
   }
 
   getInwardVehicleDetails() {
@@ -280,11 +295,10 @@ export default class VehicleIn extends Component {
         })
       }
 
-      if(fieldName == 'partyName' && (e.target.value === '' || pre.test(e.target.value))) {
-        let pText = (e.target.value).toUpperCase();
+      if(fieldName == 'partyName') {
         this.setState({
-          [fieldName]: pText,
-          validationMsg: ''
+          [fieldName]: o.value,
+          validationMsg:''
         })
       }
 
@@ -1007,11 +1021,19 @@ export default class VehicleIn extends Component {
                             marginLeft: 20,
                             color: 'black'
                           }}>Party Name</Label>
-                      <TextInput
-                          placeHolder='Party Name'
-                          value={this.state.partyName}
-                          onDOMChange={this.onFieldChange.bind(this, 'partyName')}
-                      />
+
+                      <Input transparent
+                      list='parties'
+                      placeholder='Party Name'
+                      onChange={this.onFieldChange.bind(this, 'partyName')} />
+                    <datalist id='parties'>
+                      {
+                        this.state.partyOptions.map((val, index) => {
+                          console.log(val);
+                          return <option value={val} key={index}/>
+                        })
+                      }
+                    </datalist>
                   </FormField>
 
                   <FormField strong={true} style={{marginTop : '10px'}}>

@@ -20,7 +20,7 @@ import Accordion from 'grommet/components/Accordion';
 import AccordionPanel from 'grommet/components/AccordionPanel';
 import Next from 'grommet/components/icons/base/CaretNext';
 import Down from 'grommet/components/icons/base/CaretDown';
-import { getVehicleNumbers, getMaterials, getOwnPlaces } from '../api/configuration';
+import { getVehicleNumbers, getMaterials, getOwnPlaces, getParties } from '../api/configuration';
 import Save from 'grommet/components/icons/base/Upload';
 import { savingOutwardVehicle,
          getAllVehicles,
@@ -79,6 +79,7 @@ export default class VehicleOut extends Component {
       ownVehiclesArr:[],
       outVehiclesArr:[],
       barcodesArr:[],
+      partyOptions:[],
       barcodeObj:null,
       barcodeFetched:false,
     };
@@ -91,7 +92,20 @@ export default class VehicleOut extends Component {
     this.getOwnPlaceDetails();
     this.getInsideVehicles();
     this.getAllVehicleBarcodes();
+    this.getPartyDetails();
   }
+
+  getPartyDetails() {
+    getParties().then(res => {
+      let partyObj=res.val();
+      let partyOptions=[];
+      Object.keys(partyObj).map(party => {
+        partyOptions.push(party)
+      })
+      this.setState({partyOptions})
+    }).catch(err => console.log(err))
+  }
+
 
   getAllVehicleBarcodes() {
     getVehicleBarcodes().then(snap => {
@@ -273,10 +287,9 @@ export default class VehicleOut extends Component {
       })
     }
 
-    if(fieldName == 'partyName' && (e.target.value === '' || pre.test(e.target.value))) {
-      let pText = (e.target.value).toUpperCase();
+    if(fieldName == 'partyName') {
       this.setState({
-        [fieldName]: pText,
+        [fieldName]: o.value,
         validationMsg: ''
       })
     }
@@ -529,11 +542,6 @@ export default class VehicleOut extends Component {
     const {
       lastCount,
       outwardSNo,
-      ownOutVehicle,
-      vehicleNumber,
-      selectVehicleNumber,
-      driverName,
-      driverNumber,
       emptyLoad,
       partyName,
       material,
@@ -546,17 +554,23 @@ export default class VehicleOut extends Component {
       let inTime = inwardObj ? inwardObj.inTime : null;
       let comingFrom = inwardObj ? inwardObj.comingFrom : null;
       let inwardSNo = inwardObj ? inwardObj.inwardSNo : null;
-      let vNo=vehicleNumber;
-      if(selectVehicleNumber)
-       vNo = selectVehicleNumber;
-       if(barcodeObj.vehicleNumber)
-       vNo= barcodeObj.vehicleNumber;
+
+      let vNo=this.state.vehicleNumber || this.state.selectVehicleNumber;
+      let ownOutVehicle=this.state.ownOutVehicle;
+      let driverName=this.state.driverName;
+      let driverNumber=this.state.driverNumber;
+      if(barcodeObj) {
+        vNo=barcodeObj.vehicleNumber;
+        ownOutVehicle=barcodeObj.ownOutVehicle;
+        driverName=barcodeObj.driverName;
+        driverNumber=barcodeObj.driverNumber;
+      }
+
       savingOutwardVehicle({
         lastCount,
         outwardSNo,
         ownOutVehicle,
         vehicleNumber : vNo,
-        selectVehicleNumber,
         driverName,
         driverNumber,
         emptyLoad,
@@ -599,7 +613,7 @@ export default class VehicleOut extends Component {
       screenshot:'',
       showLiveCameraFeed: true,
       vehicleSaved: false,
-      barcodeObj:{},
+      barcodeObj:null,
     })
   }
 
@@ -1089,11 +1103,17 @@ export default class VehicleOut extends Component {
                             marginLeft: 20,
                             color: 'black'
                           }}>Party Name</Label>
-                      <TextInput
-                          placeHolder='Party Name'
-                          value={this.state.partyName}
-                          onDOMChange={this.onFieldChange.bind(this, 'partyName')}
-                      />
+                          <Input transparent
+                          list='parties'
+                          placeholder='Party Name'
+                          onChange={this.onFieldChange.bind(this, 'partyName')} />
+                        <datalist id='parties'>
+                          {
+                            this.state.partyOptions.map((val, index) => {
+                              return <option value={val} key={index}/>
+                            })
+                          }
+                        </datalist>
                   </FormField>
 
                   <FormField strong={true} style={{marginTop : '8px'}}>
