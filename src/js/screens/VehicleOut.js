@@ -27,7 +27,12 @@ import { savingOutwardVehicle,
          getInwardVehicle,
          uploadVehicleImage,
          saveVehicleOutPrintCopiesData,
-         fetchVehicleOutPrintCopiesData, getVehicleData, getInsideVehicles, getVehicleBarcodes, fetchVehicleBarcodeData } from '../api/vehicles';
+         fetchVehicleOutPrintCopiesData,
+          getVehicleData,
+          getInsideVehicles,
+          getVehicleForValidation,
+          getVehicleBarcodes,
+          fetchVehicleBarcodeData } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Image from 'grommet/components/Image';
@@ -94,7 +99,9 @@ export default class VehicleOut extends Component {
       let barcodesArr=[];
       Object.keys(vehicleBarcodes).map(vSno => {
         let vSnoObj=vehicleBarcodes[vSno];
-        barcodesArr.push(vSnoObj.inwardSNo)
+          if(vSnoObj.inSide) {
+            barcodesArr.push(vSnoObj.inwardSNo)
+        }
       })
       this.setState({barcodesArr})
     }).catch(err => console.log(err))
@@ -106,9 +113,9 @@ export default class VehicleOut extends Component {
       let ownVehiclesArr=[];
       let outVehiclesArr=[];
       Object.keys(inVehicles).forEach(vehicle => {
-        let vehicleOb = inVehicles[vehicle];
+        let vehicleOb=inVehicles[vehicle];
         Object.keys(vehicleOb).forEach(item => {
-          let vObj = vehicleOb[item];
+          let vObj=vehicleOb[item];
           Object.keys(vObj).map(inSno => {
             let vInObj=vObj[inSno];
             if(vInObj.inSide && vInObj.ownOutVehicle == 'Own Vehicle') {
@@ -170,18 +177,36 @@ export default class VehicleOut extends Component {
         vehicleData,
         outwardSNo,
         lastCount
-      },this.getInsideVehicles())
+      },() => {
+        this.getInsideVehicles();
+        this.getAllVehicleBarcodes();
+      })
     }).catch((e) => console.log(e))
   }
 
   getInwardVehicleDetails() {
-    const { vehicleNumber, selectVehicleNumber } = this.state;
+    const { vehicleNumber, selectVehicleNumber, barcodeObj } = this.state;
         let vNo=vehicleNumber;
         if(selectVehicleNumber)
-         vNo = selectVehicleNumber;
+         vNo=selectVehicleNumber;
+        if(barcodeObj&&barcodeObj.vehicleNumber)
+          vNo=barcodeObj.vehicleNumber;
       getInwardVehicle(vNo).then((snap) => {
         const inwardObj = snap.val();
         this.setState({inwardObj})
+      }).catch((e) => console.log(e));
+  }
+
+  getVehicleForValidation() {
+    const { vehicleNumber, selectVehicleNumber, barcodeObj } = this.state;
+        let vNo=vehicleNumber;
+        if(selectVehicleNumber)
+         vNo = selectVehicleNumber;
+        if(barcodeObj&&barcodeObj.vehicleNumber)
+          vNo=barcodeObj.vehicleNumber;
+      getVehicleForValidation(vNo).then((snap) => {
+        const vehicleValidationObj = snap.val();
+        this.setState({vehicleValidationObj})
       }).catch((e) => console.log(e));
   }
 
@@ -189,7 +214,7 @@ export default class VehicleOut extends Component {
     const {barcodeNo}=this.state;
     fetchVehicleBarcodeData(barcodeNo).then(snap => {
       const barcodeObj=snap.val();
-      this.setState({barcodeObj, barcodeFetched: true})
+      this.setState({barcodeObj, barcodeFetched: true}, this.getInwardVehicleDetails.bind(this))
     }).catch(err => console.log(err))
   }
 
@@ -517,7 +542,6 @@ export default class VehicleOut extends Component {
       billNumber,
       remarks,
       screenshot, inwardObj, barcodeObj } = this.state;
-      console.log(barcodeObj);
       let inwardDate = inwardObj ? inwardObj.inwardDate : null;
       let inTime = inwardObj ? inwardObj.inTime : null;
       let comingFrom = inwardObj ? inwardObj.comingFrom : null;
@@ -525,6 +549,8 @@ export default class VehicleOut extends Component {
       let vNo=vehicleNumber;
       if(selectVehicleNumber)
        vNo = selectVehicleNumber;
+       if(barcodeObj.vehicleNumber)
+       vNo= barcodeObj.vehicleNumber;
       savingOutwardVehicle({
         lastCount,
         outwardSNo,
@@ -572,7 +598,8 @@ export default class VehicleOut extends Component {
       remarks: '',
       screenshot:'',
       showLiveCameraFeed: true,
-      vehicleSaved: false
+      vehicleSaved: false,
+      barcodeObj:{},
     })
   }
 
@@ -594,39 +621,6 @@ export default class VehicleOut extends Component {
       remarks,
       screenshot, barcodeObj } = this.state;
 
-      console.log(vehicleNumber);
-      console.log(selectVehicleNumber);
-      console.log(ownOutVehicle);
-      console.log(driverName);
-      console.log(driverNumber);
-      console.log(barcodeObj);
-      if(!ownOutVehicle) {
-        this.setState({
-          validationMsg: 'Own/Out Vehicle is missing'
-        })
-        return
-      }
-
-      if(!vehicleNumber && !selectVehicleNumber) {
-        this.setState({
-          validationMsg: 'Vehicle Number is missing'
-        })
-        return
-      }
-
-      if(!driverName) {
-        this.setState({
-          validationMsg: 'Driver Name is missing'
-        })
-        return
-      }
-
-      if(driverNumber && (driverNumber.toString()).length<10) {
-          this.setState({
-            validationMsg: 'Mobile Number must contain atleast 10 digits'
-          })
-          return
-      }
 
       if(!emptyLoad) {
         this.setState({
@@ -723,21 +717,6 @@ export default class VehicleOut extends Component {
     }
     return null;
   }
-
-  getVehicleData() {
-    const { vehicleNumber, selectVehicleNumber } = this.state;
-    let vNo = vehicleNumber || selectVehicleNumber;
-    getVehicleData(vNo).then((snap) => {
-      const vehicle = snap.val();
-      const vehicleExists = vehicle ? vehicle['vehicleOut'] : null;
-      if(vehicleExists) {
-        this.setState({vehicleExists})
-      } else {
-        this.setState({vehicleExists}, this.onSavingOutwardVehicle())
-      }
-    })
-  }
-
 
   onYesButtonClick() {
     this.setState({
@@ -891,6 +870,17 @@ export default class VehicleOut extends Component {
             billNumber,
             remarks, showProgressBar, toastMsg, lastCount, ownVehiclesArr, outVehiclesArr, barcodeObj, barcodeFetched } = this.state;
 
+            let barcodeVNo=vehicleNumber || selectVehicleNumber;
+            let barcodeOwnOutVehicle=ownOutVehicle;
+            let barcodeDriverName=driverName;
+            let barcodeDriverNumber=driverNumber;
+            if(barcodeObj) {
+              barcodeVNo=barcodeObj.vehicleNumber;
+              barcodeOwnOutVehicle=barcodeObj.ownOutVehicle;
+              barcodeDriverName=barcodeObj.driverName;
+              barcodeDriverNumber=barcodeObj.driverNumber;
+            }
+
             let prefix = 'U2';
             if(window.localStorage.unit === 'UNIT3') {
               prefix = 'U3';
@@ -946,15 +936,15 @@ export default class VehicleOut extends Component {
                 <Label style={{marginLeft:'20px'}}><strong>{savedOutwardSNo}</strong></Label>
                 </FormField>
               <FormField label='Own/Out Vehicle' strong={true} style={{marginTop : '10px'}}>
-                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{ownOutVehicle}</strong></Label>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{barcodeOwnOutVehicle}</strong></Label>
               </FormField>
               <FormField label='Vehicle No' strong={true} style={{marginTop : '10px'}}>
-                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{vehicleNumber || selectVehicleNumber}</strong></Label>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{barcodeVNo}</strong></Label>
               </FormField>
               <FormField label='Driver Name' strong={true} style={{marginTop : '10px'}}>
-                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{driverName}</strong></Label>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{barcodeDriverName}</strong></Label>
               </FormField><FormField label='Driver Cell No' strong={true} style={{marginTop : '10px'}}>
-                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{driverNumber}</strong></Label>
+                <Label style={{fontSize: 16, marginLeft: 20}}><strong>{barcodeDriverNumber}</strong></Label>
               </FormField><FormField label='Empty/Load' strong={true} style={{marginTop : '10px'}}>
                 <Label style={{fontSize: 16, marginLeft: 20}}><strong>{emptyLoad}</strong></Label>
               </FormField>
@@ -966,6 +956,7 @@ export default class VehicleOut extends Component {
                 <FormField strong={true} style={{marginTop : '8px'}}>
                 <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Inward SNo</Label>
                   <Input transparent
+                  ref={(input) => { this.state.barcodeInput = input }}
                   list='barcode'
                   placeholder='Inward Sno'
                   onChange={this.onFieldChange.bind(this, 'barcodeNo')} />
