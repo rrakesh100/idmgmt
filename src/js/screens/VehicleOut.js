@@ -208,27 +208,16 @@ export default class VehicleOut extends Component {
          vNo=selectVehicleNumber;
         if(barcodeObj&&barcodeObj.vehicleNumber)
           vNo=barcodeObj.vehicleNumber;
+          console.log(vNo);
       getInwardVehicle(vNo).then((snap) => {
         const inwardObj = snap.val();
         this.setState({inwardObj})
       }).catch((e) => console.log(e));
   }
 
-  getVehicleForValidation() {
-    const { vehicleNumber, selectVehicleNumber, barcodeObj } = this.state;
-        let vNo=vehicleNumber;
-        if(selectVehicleNumber)
-         vNo = selectVehicleNumber;
-        if(barcodeObj&&barcodeObj.vehicleNumber)
-          vNo=barcodeObj.vehicleNumber;
-      getVehicleForValidation(vNo).then((snap) => {
-        const vehicleValidationObj = snap.val();
-        this.setState({vehicleValidationObj})
-      }).catch((e) => console.log(e));
-  }
-
   fetchVehicleDataByBarcode() {
     const {barcodeNo}=this.state;
+    console.log(barcodeNo);
     fetchVehicleBarcodeData(barcodeNo).then(snap => {
       const barcodeObj=snap.val();
       this.setState({barcodeObj, barcodeFetched: true}, this.getInwardVehicleDetails.bind(this))
@@ -559,7 +548,6 @@ export default class VehicleOut extends Component {
       let inwardSNo = inwardObj ? inwardObj.inwardSNo : null;
 
       let vNo=this.state.vehicleNumber || this.state.selectVehicleNumber;
-
       let ownOutVehicle=this.state.ownOutVehicle;
       let driverName=this.state.driverName;
       let driverNumber=this.state.driverNumber;
@@ -569,6 +557,10 @@ export default class VehicleOut extends Component {
         driverName=barcodeObj.driverName;
         driverNumber=barcodeObj.driverNumber;
       }
+      console.log(vNo);
+      console.log(ownOutVehicle);
+      console.log(driverName);
+      console.log(driverNumber);
 
       savingOutwardVehicle({
         lastCount,
@@ -831,11 +823,23 @@ export default class VehicleOut extends Component {
   }
 
   renderVehiclePrintCard() {
-    const {vehicleNumber, selectVehicleNumber, lastCount}=this.state;
+    const {lastCount, barcodeObj}=this.state;
+
+    let vNo=this.state.vehicleNumber || this.state.selectVehicleNumber;
+    let ownOutVehicle=this.state.ownOutVehicle;
+    let driverName=this.state.driverName;
+    let driverNumber=this.state.driverNumber;
+    if(barcodeObj) {
+      vNo=barcodeObj.vehicleNumber;
+      ownOutVehicle=barcodeObj.ownOutVehicle;
+      driverName=barcodeObj.driverName;
+      driverNumber=barcodeObj.driverNumber;
+    }
     let prefix = 'U2';
     if(window.localStorage.unit === 'UNIT3') {
       prefix = 'U3';
     }
+
     let savedCount = Number(lastCount) - 1;
     let savedOutwardSNo = `${prefix}-out-${savedCount}`;
 
@@ -844,10 +848,10 @@ export default class VehicleOut extends Component {
         ref={this.setPrintRef.bind(this)}
         screenshot={this.state.screenshot}
         outwardSNo={savedOutwardSNo}
-        ownOutVehicle={this.state.ownOutVehicle}
-        vehicleNumber={this.state.vehicleNumber || this.state.selectVehicleNumber}
-        driverName={this.state.driverName}
-        driverNumber={this.state.driverNumber}
+        ownOutVehicle={ownOutVehicle}
+        vehicleNumber={vNo}
+        driverName={driverName}
+        driverNumber={driverNumber}
         remarks={this.state.remarks}
         material={this.state.material}
         numberOfBags={this.state.numberOfBags}

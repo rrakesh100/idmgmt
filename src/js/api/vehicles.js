@@ -353,6 +353,7 @@ export function getVehicleBarcodes() {
 }
 
 export function fetchVehicleBarcodeData(barcodeNo) {
+  console.log(barcodeNo);
   const dbRef = firebase.database().ref(localStorage.unit + '/' + `vehicleBarcodes/${barcodeNo}`);
   return dbRef.once('value');
 }
