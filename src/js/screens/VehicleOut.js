@@ -559,7 +559,7 @@ export default class VehicleOut extends Component {
       let inwardSNo = inwardObj ? inwardObj.inwardSNo : null;
 
       let vNo=this.state.vehicleNumber || this.state.selectVehicleNumber;
-      console.log(vno);
+
       let ownOutVehicle=this.state.ownOutVehicle;
       let driverName=this.state.driverName;
       let driverNumber=this.state.driverNumber;
