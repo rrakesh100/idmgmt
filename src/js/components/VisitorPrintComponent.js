@@ -8,7 +8,7 @@ export default class VisitorPrintComponent extends Component {
 
   render() {
     const { name, visitorId, whomToMeet, purpose, comingFrom, mobile, remarks, timestampStr, department,company, screenshot, serialNo } = this.props;
-    console.log(timestampStr);
+    console.log(this.props);
       return (
           <div className='visitorCard'>
             <div className='card-body'>

@@ -119,14 +119,6 @@ class NewVisitor extends Component {
       .then(
         this.setState({
           toastMsg: `User ${name} is saved `,
-          name: '',
-          whomToMeet: '',
-          purpose: '',
-          mobile:'',
-          comingFrom:'',
-          department:'',
-          company:'',
-          remarks:'',
           showLiveCameraFeed: true,
         }, this.printVisitorCard.bind(this))
       )
@@ -278,6 +270,17 @@ class NewVisitor extends Component {
 
 
   render() {
+    const { name = '', whomToMeet = '', purpose='', comingFrom='',mobile='', remarks='', timestampStr, department,company='', screenshot, serialNo='', visitorId } = this.state;
+    console.log(name);
+    console.log(whomToMeet);
+    console.log(purpose);
+    console.log(comingFrom);
+    console.log(mobile);
+    console.log(remarks);
+    console.log(department);
+    console.log(company);
+    console.log(serialNo);
+    console.log(visitorId);
     return (
       <div>
         { this.renderValidationMsg() }
