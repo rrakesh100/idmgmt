@@ -11,6 +11,7 @@ import Layer from 'grommet/components/Layer';
 import Select from 'grommet/components/Select';
 import { saveShift, saveTimeslot, saveVillage, saveVehicle, saveDriver, saveOwnPlace, saveMaterial, saveParty, saveAgent } from '../api/configuration';
 import { Container, Row, Col } from 'react-grid-system';
+import Status from 'grommet/components/icons/Status';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import { getShifts,
@@ -51,7 +52,7 @@ export default class Configuration extends Component {
       driverName: '',
       ownPlace: '',
       material: '',
-
+      validationMsg: ''
     }
   }
 
@@ -140,9 +141,9 @@ export default class Configuration extends Component {
   }
 
   onFieldChange(fieldName, e) {
-    this.setState({
-      [fieldName]: e.target.value
-    })
+      this.setState({
+        [fieldName]: e.target.value
+      })
   }
 
   onShiftAddBtnClick() {
@@ -243,13 +244,23 @@ export default class Configuration extends Component {
 
   onPartyCloseLayer() {
     this.setState({
-      partyBtnClick: false
+      partyBtnClick: false,
+      partyName:'',
+      partyNum:'',
+      partyTown:'',
+      partyDistrict:'',
+      partyState:''
     })
   }
 
   onAgentCloseLayer() {
     this.setState({
-      agentBtnClick: false
+      agentBtnClick: false,
+      agentName:'',
+      agentNum:'',
+      agentTown:'',
+      agentDistrict:'',
+      agentState:''
     })
   }
 
@@ -368,36 +379,42 @@ export default class Configuration extends Component {
       this.setState({
         validationMsg: 'Party Name is Missing'
       })
+      return
     }
 
     if(!partyNum) {
       this.setState({
         validationMsg: 'Mobile Number is Missing'
       })
+      return
     }
 
     if(partyNum && (partyNum.toString()).length<10) {
       this.setState({
         validationMsg: 'Mobile Number Must contain atleast 10 digits'
       })
+      return
     }
 
     if(!partyTown) {
       this.setState({
         validationMsg: 'Town is Missing'
       })
+      return
     }
 
     if(!partyDistrict) {
       this.setState({
         validationMsg: 'District is Missing'
       })
+      return
     }
 
     if(!partyState) {
       this.setState({
         validationMsg: 'State is Missing'
       })
+      return
     }
 
     this.setState({
@@ -405,7 +422,7 @@ export default class Configuration extends Component {
     }, this.onPartySaving.bind(this))
   }
 
-  onSavingAgent() {
+  onAgentSaving() {
     const { agentName, agentNum, agentTown, agentDistrict, agentState } = this.state;
 
     saveAgent(agentName, agentNum, agentTown,agentDistrict,agentState).then(() => {
@@ -420,6 +437,55 @@ export default class Configuration extends Component {
         agentState:'',
       }, this.getAgentDetails())
     }).catch((e) => console.log(e))
+  }
+
+  onSavingAgent() {
+    const { agentName, agentNum, agentTown, agentDistrict, agentState } = this.state;
+    if(!agentName) {
+      this.setState({
+        validationMsg: 'Agent Name is Missing'
+      })
+      return
+    }
+
+    if(!agentNum) {
+      this.setState({
+        validationMsg: 'Mobile Number is Missing'
+      })
+      return
+    }
+
+    if(agentNum && (agentNum.toString()).length<10) {
+      this.setState({
+        validationMsg: 'Mobile Number Must contain atleast 10 digits'
+      })
+      return
+    }
+
+    if(!agentTown) {
+      this.setState({
+        validationMsg: 'Town is Missing'
+      })
+      return
+    }
+
+    if(!agentDistrict) {
+      this.setState({
+        validationMsg: 'District is Missing'
+      })
+      return
+    }
+
+    if(!agentState) {
+      this.setState({
+        validationMsg: 'State is Missing'
+      })
+      return
+    }
+
+    this.setState({
+      validationMsg:''
+    }, this.onAgentSaving.bind(this))
   }
 
   renderShiftLayer() {
@@ -1002,10 +1068,43 @@ export default class Configuration extends Component {
   }
   }
 
+  onCloseLayer() {
+    this.setState({validationMsg: ''})
+  }
+
+  onOkButtonClick() {
+    this.setState({validationMsg: ''})
+  }
+
+  renderValidationMsg() {
+    const { validationMsg } = this.state;
+    if (validationMsg) {
+      return (
+        <Layer onClose={this.onCloseLayer.bind(this)}>
+          <h3 style={{marginTop:20}}>
+          <Status value='critical'
+          size='medium'
+          style={{marginRight:'10px'}} />
+          <strong>{validationMsg}</strong>
+          </h3>
+           <hr />
+           <h5>Please Select Again</h5>
+           <Row>
+           <Button
+             label='OK'
+             onClick={this.onOkButtonClick.bind(this)}
+             href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
+             primary={true} />
+           </Row>
+        </Layer>
+      );
+    }
+    return null;
+  }
+
 
   render() {
     const { shifts, timeslots, villages } = this.state;
-
     return (
       <div className='configuration'>
       <Header
@@ -1020,6 +1119,7 @@ export default class Configuration extends Component {
           CONFIGURATION
         </Heading>
       </Header>
+      {this.renderValidationMsg()}
       <Tabs justify='start' style={{marginLeft:'40px'}}>
       <Tab title='SHIFT'>
       <AddButton onClick={this.onShiftAddBtnClick.bind(this)}/>
