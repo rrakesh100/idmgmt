@@ -188,7 +188,7 @@ export default class VehicleOut extends Component {
         prefix = 'U3';
       }
       const lastCount = vehicleData && vehicleData[prefix]['count']['outCount'] ? vehicleData[prefix]['count']['outCount'] : 1;
-      let outwardSNo = `${prefix}-out-${lastCount}`;
+      let outwardSNo = `${prefix}-OUT-${lastCount}`;
 
       this.setState({
         vehicleData,
@@ -841,7 +841,7 @@ export default class VehicleOut extends Component {
     }
 
     let savedCount = Number(lastCount) - 1;
-    let savedOutwardSNo = `${prefix}-out-${savedCount}`;
+    let savedOutwardSNo = `${prefix}-OUT-${savedCount}`;
 
     return (
       <VehicleOutPrintComponent
@@ -908,7 +908,7 @@ export default class VehicleOut extends Component {
               prefix = 'U3';
             }
             let savedCount = Number(lastCount) - 1;
-            let savedOutwardSNo = `${prefix}-out-${savedCount}`;
+            let savedOutwardSNo = `${prefix}-OUT-${savedCount}`;
 
             if(showProgressBar) {
               return (

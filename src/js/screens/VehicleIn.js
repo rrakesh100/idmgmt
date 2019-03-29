@@ -159,7 +159,7 @@ export default class VehicleIn extends Component {
         prefix = 'SV';
       }
       const lastCount = data && data[prefix]['count']['inCount'] ? data[prefix]['count']['inCount'] :  1;
-      let inwardSNo = `${prefix}-in-${lastCount}`;
+      let inwardSNo = `${prefix}-IN-${lastCount}`;
       this.setState({ inwardSNo, lastCount })
     }).catch((e) => console.log(e))
   }
@@ -778,7 +778,7 @@ export default class VehicleIn extends Component {
         prefix = 'U3';
       }
       let savedCount = Number(lastCount) - 1;
-      let savedInwardSNo = `${prefix}-in-${savedCount}`;
+      let savedInwardSNo = `${prefix}-IN-${savedCount}`;
       return (
         <VehicleInPrintComponent
           ref={this.setPrintRef.bind(this)}
@@ -856,7 +856,7 @@ export default class VehicleIn extends Component {
               prefix = 'U3';
             }
             let savedCount = Number(lastCount) - 1;
-            let savedInwardSNo = `${prefix}-in-${savedCount}`;
+            let savedInwardSNo = `${prefix}-IN-${savedCount}`;
 
       if(showProgressBar) {
         return (
