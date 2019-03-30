@@ -208,6 +208,14 @@ export default class VehicleReports extends Component {
     this.componentRef = ref;
   }
 
+  renderAbstractContent() {
+    return this.abstractComponentRef;
+  }
+
+  setAbstractRef(ref) {
+    this.abstractComponentRef = ref;
+  }
+
   renderInputFields() {
     const {reportType}=this.state;
     return (
@@ -284,7 +292,7 @@ export default class VehicleReports extends Component {
       href='#'/>
       <ReactToPrint
           trigger={this.renderTrigger.bind(this)}
-          content={this.renderContent.bind(this)}
+          content={reportType === 'Total Abstract' ? this.renderAbstractContent.bind(this) : this.renderContent.bind(this)}
         />
       <Button  label='Close Report'
       onClick={this.onClosingReport.bind(this)}
@@ -321,7 +329,9 @@ export default class VehicleReports extends Component {
     if(reportType == 'Total Abstract' && abstractResponse) {
       return (
         <AbstractVehicleReports
+            ref={this.setAbstractRef.bind(this)}
             response={abstractResponse}
+            selectedDate={startDate}
         />
       )
     }

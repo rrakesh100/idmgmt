@@ -7,7 +7,7 @@ class AbstractVehicleReports extends React.Component {
   }
 
   renderAbstractReport() {
-    const {response}=this.props
+    const {response, selectedDate}=this.props;
     let returnObj={};
     let inwardOwnEmpty=0;
     let inwardOwnLoad=0;
@@ -63,6 +63,7 @@ class AbstractVehicleReports extends React.Component {
   }
 
   render() {
+    const {selectedDate}=this.props;
     const abstractReportObj=this.renderAbstractReport();
     let objSummary=abstractReportObj['summary'];
 
@@ -84,7 +85,7 @@ class AbstractVehicleReports extends React.Component {
 
     return (
       <div>
-        <h2 style={{textAlign: 'center'}}><strong>Abstract vehicle report</strong></h2>
+        <h2 style={{textAlign: 'center'}}><strong>Abstract vehicle report {selectedDate}</strong></h2>
         <table className="vehicleReportsTable" style={{ marginLeft : 20, marginTop:10}}>
           <thead className="vehiclesTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
            <tr>
@@ -107,9 +108,9 @@ class AbstractVehicleReports extends React.Component {
           <tbody>
               <tr>
                 <th>Inward</th>
-                <th>{inwardOwnEmpty}</th>
-                <th>{inwardOwnLoad}</th>
-                <th>{inwardOwnTotal}</th>
+                <th style={{backgroundColor: '#9E9E9E'}}>{inwardOwnEmpty}</th>
+                <th style={{backgroundColor: '#9E9E9E'}}>{inwardOwnLoad}</th>
+                <th style={{backgroundColor: '#9E9E9E'}}>{inwardOwnTotal}</th>
                 <th>{inwardOutEmpty}</th>
                 <th>{inwardOutLoad}</th>
                 <th>{inwardOutTotal}</th>
@@ -117,9 +118,9 @@ class AbstractVehicleReports extends React.Component {
               </tr>
               <tr>
                 <th>Outward</th>
-                <th>{outwardOwnEmpty}</th>
-                <th>{outwardOwnLoad}</th>
-                <th>{outwardOwnTotal}</th>
+                <th style={{backgroundColor: '#9E9E9E'}}>{outwardOwnEmpty}</th>
+                <th style={{backgroundColor: '#9E9E9E'}}>{outwardOwnLoad}</th>
+                <th style={{backgroundColor: '#9E9E9E'}}>{outwardOwnTotal}</th>
                 <th>{outwardOutEmpty}</th>
                 <th>{outwardOutLoad}</th>
                 <th>{outwardOutTotal}</th>

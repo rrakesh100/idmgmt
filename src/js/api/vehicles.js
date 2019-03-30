@@ -212,6 +212,11 @@ export function fetchVehicleReportsData(report, startDate, endDate) {
   return dbRef.once('value');
 }
 
+export function fetchAllVehicles() {
+  const dbRef =firebase.database().ref(localStorage.unit + '/' + `vehicleReports/in/dateWise`);
+  return dbRef.once('value');
+}
+
 export function getVehicleAbstractData(startDate) {
   let startDateParts = startDate.split("-");
   let startDateObj = new Date(startDateParts[2], startDateParts[1]-1, startDateParts[0]);
