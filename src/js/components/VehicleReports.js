@@ -25,6 +25,8 @@ export default class VehicleReports extends Component {
       reportType: null,
       ownOutVehicle: null,
       emptyLoad: null,
+      timeSlot: null,
+      timeSlotSelected: false,
       validationMsg:'',
       response: null,
       abstractOnhandResponse: null
@@ -102,6 +104,22 @@ export default class VehicleReports extends Component {
       [fieldName]: e.option,
       response: null
     })
+  }
+
+  onTimeSlotChange(fieldName, e) {
+    if(e.option == '-EMPTY-') {
+      this.setState({
+        [fieldName]: e.option,
+        response: null,
+        timeSlotSelected: false
+      })
+    } else {
+      this.setState({
+        [fieldName]: e.option,
+        response: null,
+        timeSlotSelected: true
+      })
+    }
   }
 
   onReportTypeFieldChange(fieldName, e) {
@@ -225,7 +243,7 @@ export default class VehicleReports extends Component {
       <FormField label='Report Type' style={{marginTop:20}}>
         <Select
           placeHolder='Report Type'
-          options={['Total Abstract', 'Inward', 'In-Outward-Pending', 'Outward']}
+          options={['Total Abstract', 'Inward', 'Inside the Unit', 'Outward']}
           value={this.state.reportType}
           onChange={this.onReportTypeFieldChange.bind(this, 'reportType')}
         />
@@ -282,6 +300,16 @@ export default class VehicleReports extends Component {
           />
         </FormField>
       </div>
+      <div style={{width: 300}}>
+        <FormField label='Time Slot' style={{marginTop:15}}>
+        <Select
+          placeHolder='Timeslot'
+          options={['-EMPTY-', '9 AM to 9 AM']}
+          value={this.state.timeSlot}
+          onChange={this.onTimeSlotChange.bind(this, 'timeSlot')}
+        />
+        </FormField>
+      </div>
       </div>
 
       <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}}>
@@ -305,8 +333,8 @@ export default class VehicleReports extends Component {
   }
 
   vehicleReports() {
-    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr } = this.state;
-    if((reportType=='Inward' || reportType=='In-Outward-Pending' || reportType=='In-Outward-Completed' || reportType=='Outward') && response) {
+    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr, timeSlot, timeSlotSelected } = this.state;
+    if((reportType=='Inward' || reportType=='Inside the Unit' || reportType=='In-Outward-Completed' || reportType=='Outward') && response) {
     return (
       <div>
         <VehicleReportsComponent
@@ -318,6 +346,8 @@ export default class VehicleReports extends Component {
             emptyLoad={emptyLoad}
             startDate={startDate}
             endDate={endDate}
+            timeSlotSelected={timeSlotSelected}
+            timeSlot={timeSlot}
         />
       </div>
     )

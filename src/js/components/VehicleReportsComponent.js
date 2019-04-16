@@ -5,13 +5,14 @@ import moment from 'moment';
 export default class VehicleReportsComponent extends Component {
 
   renderVehicleReports() {
-    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr } = this.props;
+    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr, timeSlot, timeSlotSelected } = this.props;
     if(!response)
     return null;
 
     let tHead1, tHead2, tHead3, tHead4;
     let tRow1, tRow2, tRow3, tRow4;
     let i=0;
+    let format = 'DD-MM-YYYY h:mm A';
 
     if(reportType == 'Outward') {
       tHead1='Outward Sno';
@@ -78,12 +79,28 @@ export default class VehicleReportsComponent extends Component {
             isValid=false;
           }
 
-          if(reportType == 'In-Outward-Pending' && !vObj.inSide) {
+          if(reportType == 'Inside the Unit' && !vObj.inSide) {
             isValid=false;
           }
 
           if(reportType == 'In-Outward-Completed' && vObj.inSide) {
             isValid=false;
+          }
+
+          if(timeSlotSelected) {
+            let vTime;
+            if(reportType === 'Outward') {
+              vTime=vObj.outTime;
+            } else {
+              vTime=vObj.inTime;
+            }
+            let time = moment(datesArr.filter(val => val == date)[0] + ' ' + vTime,format),
+              beforeTime = moment(startDate + ' ' + '8:59 AM', format),
+              afterTime = moment(endDate + ' ' + '9:01 AM', format);
+
+            if (!time.isBetween(beforeTime, afterTime)) {
+              isValid=false;
+            }
           }
 
           if(reportType == 'Outward') {
@@ -187,6 +204,8 @@ export default class VehicleReportsComponent extends Component {
   }
 
   render() {
+    const { startDate, endDate } = this.props;
+
     return (
       <div>
         {this.renderVehicleReports()}

@@ -212,9 +212,9 @@ export default class AllVehiclesPrint extends Component {
                 const vehicleOutwadItem = vehicles[vehicle] && vehicles[vehicle]['lastOutward'];
                 return <TableRow key={index}>
                 <td>{vehicle}</td>
-                <td>{vehicleInwardItem.inwardSNo}</td>
-                <td>{vehicleInwardItem.inwardDate}</td>
-                <td>{vehicleInwardItem.inTime}</td>
+                <td>{vehicleInwardItem && vehicleInwardItem.inwardSNo}</td>
+                <td>{vehicleInwardItem && vehicleInwardItem.inwardDate}</td>
+                <td>{vehicleInwardItem && vehicleInwardItem.inTime}</td>
                 <td>{vehicleOutwadItem ? vehicleOutwadItem.outwardSNo : '--'}</td>
                 <td>{vehicleOutwadItem ? vehicleOutwadItem.outwardDate : '--'}</td>
                 <td>{vehicleOutwadItem ? vehicleOutwadItem.outTime : '--'}</td>

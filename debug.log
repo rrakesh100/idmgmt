@@ -5,3 +5,19 @@
 [1205/223833.415:ERROR:http_transport_win.cc(273)] WinHttpSendRequest: The server name or address could not be resolved (0x2ee7)
 [1224/103128.850:ERROR:settings.cc(319)] Settings magic is not 1129342067
 [0116/104441.629:ERROR:settings.cc(319)] Settings magic is not 1129342067
+[0413/173500.813:ERROR:process_reader_win.cc(182)] ResumeThread: The parameter is incorrect. (0x57)
+[0413/173502.071:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.072:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.072:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.072:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.072:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.072:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.072:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.072:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.073:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.073:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.073:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.073:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0413/173502.073:ERROR:process_reader_win.cc(123)] NtOpenThread: An invalid Client ID was specified. (0xc000000b)
+[0413/173503.869:ERROR:exception_snapshot_win.cc(88)] thread ID 135808 not found in process
+[0413/173504.292:ERROR:scoped_process_suspend.cc(40)] NtResumeProcess: An attempt was made to access an exiting process. (0xc000010a)
