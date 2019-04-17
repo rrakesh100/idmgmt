@@ -131,6 +131,7 @@ export default class VehicleReports extends Component {
 
   onFetchingVehicleData() {
     const { reportType, startDate, endDate } = this.state;
+
     if(reportType=='Abstract OH Vehicles') {
       getOutsideVehicles().then(snap => {
         let abstractOnhandResponse=snap.val();
@@ -141,8 +142,7 @@ export default class VehicleReports extends Component {
         let abstractResponse=snap.val();
         this.setState({abstractResponse})
       })
-    }
-    else {
+    } else {
       fetchVehicleReportsData(reportType, startDate, endDate).then(res => {
         const response = res.val();
         this.setState({response})

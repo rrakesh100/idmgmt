@@ -208,7 +208,6 @@ export default class VehicleOut extends Component {
          vNo=selectVehicleNumber;
         if(barcodeObj&&barcodeObj.vehicleNumber)
           vNo=barcodeObj.vehicleNumber;
-          console.log(vNo);
       getInwardVehicle(vNo).then((snap) => {
         const inwardObj = snap.val();
         this.setState({inwardObj})
@@ -217,7 +216,6 @@ export default class VehicleOut extends Component {
 
   fetchVehicleDataByBarcode() {
     const {barcodeNo}=this.state;
-    console.log(barcodeNo);
     fetchVehicleBarcodeData(barcodeNo).then(snap => {
       const barcodeObj=snap.val();
       this.setState({barcodeObj, barcodeFetched: true}, this.getInwardVehicleDetails.bind(this))
@@ -557,10 +555,6 @@ export default class VehicleOut extends Component {
         driverName=barcodeObj.driverName;
         driverNumber=barcodeObj.driverNumber;
       }
-      console.log(vNo);
-      console.log(ownOutVehicle);
-      console.log(driverName);
-      console.log(driverNumber);
 
       savingOutwardVehicle({
         lastCount,

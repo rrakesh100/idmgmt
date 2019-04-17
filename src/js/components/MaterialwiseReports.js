@@ -8,9 +8,13 @@ import { getMaterials } from '../api/configuration';
 import Notification from 'grommet/components/Notification';
 import * as firebase from 'firebase';
 import ReactToPrint from "react-to-print";
+import Layer from 'grommet/components/Layer';
+import Status from 'grommet/components/icons/Status';
+import { Container, Row, Col } from 'react-grid-system';
 import Label from 'grommet/components/Label';
 import { Input } from 'semantic-ui-react';
 import moment from 'moment';
+import MaterialwiseReportsComponent from './MaterialwiseReportsComponent';
 
 
 class MaterialwiseReports extends React.Component {
@@ -20,6 +24,7 @@ class MaterialwiseReports extends React.Component {
       startDate:'',
       endDate:'',
       materialOpt:[],
+      showReports: false
     };
   }
 
@@ -42,7 +47,6 @@ class MaterialwiseReports extends React.Component {
   getVehicles() {
     fetchAllVehicles().then(snap => {
       let vehicleData=snap.val();
-      console.log(vehicleData);
       this.setState({vehicleData})
     }).catch(err => console.log(err))
   }
@@ -51,6 +55,12 @@ class MaterialwiseReports extends React.Component {
       if(fieldName==='location') {
         this.setState({
           [fieldName]: e.option
+        })
+      }
+
+      if(fieldName==='materialType') {
+        this.setState({
+          [fieldName]: o.value
         })
       }
   }
@@ -101,8 +111,89 @@ class MaterialwiseReports extends React.Component {
     return this.componentRef;
   }
 
-  onValidatingInputs() {
+  onCloseLayer() {
+    this.setState({
+      validationMsg: '',
+    })
+  }
 
+  onOkButtonClick() {
+    this.setState({
+      validationMsg: '',
+    })
+  }
+
+  renderValidationMsg() {
+    const { validationMsg } = this.state;
+    if (validationMsg) {
+      return (
+        <Layer onClose={this.onCloseLayer.bind(this)}>
+          <h3 style={{marginTop:20}}>
+          <Status value='critical'
+          size='medium'
+          style={{marginRight:'10px'}} />
+          <strong>{validationMsg}</strong>
+          </h3>
+           <hr />
+           <h5>Please Select Again</h5>
+           <Row>
+           <Button
+             label='OK'
+             onClick={this.onOkButtonClick.bind(this)}
+             href='#' style={{marginLeft: '300px', marginBottom:'10px'}}
+             primary={true} />
+           </Row>
+        </Layer>
+      );
+    }
+    return null;
+  }
+
+  onShowingMaterialwiseReports() {
+    this.setState({
+      showReports: true
+    })
+  }
+
+  materialwiseReports() {
+    const { showReports, vehicleData, materialType, location, startDate, endDate } = this.state;
+    console.log(vehicleData);
+    console.log(startDate);
+    console.log(endDate);
+    return (
+      <div>
+          <MaterialwiseReportsComponent
+            showReports={showReports}
+            response={vehicleData}
+            materialType={materialType}
+            location={location}
+            startDate={startDate}
+            endDate={endDate}
+          />
+      </div>
+    )
+  }
+
+  onValidatingInputs() {
+    const { materialType, location, startDate, endDate } = this.state;
+
+    if(!materialType) {
+      this.setState({
+        validationMsg: 'Material Type is missing'
+      })
+      return
+    }
+
+    if(!location) {
+      this.setState({
+        validationMsg: 'Location is missing'
+      })
+      return
+    }
+
+    this.setState({
+      validationMsg:''
+    }, this.onShowingMaterialwiseReports.bind(this))
   }
 
   onClosingReport() {
@@ -185,10 +276,17 @@ class MaterialwiseReports extends React.Component {
     )
   }
 
+  renderMaterialwiseReports() {
+    let reportsTable=this.materialwiseReports();
+    return reportsTable;
+  }
+
   render() {
     return (
       <div>
+        {this.renderValidationMsg()}
         {this.renderInputFields()}
+        {this.renderMaterialwiseReports()}
       </div>
     )
   }

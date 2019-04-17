@@ -1,30 +1,14 @@
-import React, {Component} from 'react';
+import React from 'react';
 import moment from 'moment';
 
 
-export default class VehicleReportsComponent extends Component {
+export default class MaterialwiseReportsComponent extends React.Component {
 
-  renderVehicleReports() {
-    const { response, reportType, ownOutVehicle, emptyLoad, startDate, endDate, datesArr, timeSlot, timeSlotSelected } = this.props;
-    if(!response)
+  renderMaterialwiseReports() {
+    const { showReports, response, materialType, location, startDate, endDate } = this.props;
+
+    if(!showReports || !response)
     return null;
-
-    let tHead1, tHead2, tHead3, tHead4;
-    let tRow1, tRow2, tRow3, tRow4;
-    let i=0;
-    let format = 'DD-MM-YYYY h:mm A';
-
-    if(reportType == 'Outward') {
-      tHead1='Outward Sno';
-      tHead2='Inward Sno';
-      tHead3='Coming From';
-      tHead4='Going To';
-    } else {
-      tHead1='Inward Sno';
-      tHead2='Outward Sno';
-      tHead3='Going To';
-      tHead4='Coming From';
-    }
 
     let tablesArray=[];
     let vehiclesArray=[];
@@ -73,48 +57,6 @@ export default class VehicleReportsComponent extends Component {
            totalTime = hours + ' hr ' + minutes + ' min ';
         }
 
-        if(ownOutVehicle !== 'All Vehicles' && ownOutVehicle !== vObj.ownOutVehicle) {
-          isValid=false;
-        }
-          if(emptyLoad !== 'All' && emptyLoad !== vObj.emptyLoad) {
-            isValid=false;
-          }
-
-          if(reportType == 'Inside the Unit' && !vObj.inSide) {
-            isValid=false;
-          }
-
-          if(reportType == 'In-Outward-Completed' && vObj.inSide) {
-            isValid=false;
-          }
-
-          if(timeSlotSelected) {
-            let vTime;
-            if(reportType === 'Outward') {
-              vTime=vObj.outTime;
-            } else {
-              vTime=vObj.inTime;
-            }
-            let time = moment(datesArr.filter(val => val == date)[0] + ' ' + vTime,format),
-              beforeTime = moment(startDate + ' ' + '8:59 AM', format),
-              afterTime = moment(endDate + ' ' + '9:01 AM', format);
-
-            if (!time.isBetween(beforeTime, afterTime)) {
-              isValid=false;
-            }
-          }
-
-          if(reportType == 'Outward') {
-            tRow1=vObj.outwardSNo;
-            tRow2=vObj.inwardSNo;
-            tRow3=vObj.comingFrom;
-            tRow4=vObj.goingTo;
-          } else {
-            tRow1=vObj.inwardSNo;
-            tRow2=vObj.outwardSNo;
-            tRow3=vObj.goingTo;
-            tRow4=vObj.comingFrom;
-          }
           let vInDate=vObj.inDate;
           let vOutDate=vObj.outDate;
           let slicedInDate,slicedOutDate;
@@ -131,13 +73,13 @@ export default class VehicleReportsComponent extends Component {
             <tbody key={index} style={vObj.ownOutVehicle == 'Own Vehicle' ? {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
               <tr>
                <td rowSpan={2}>{i}</td>
-               <td rowSpan={2}>{tRow1}</td>
+               <td rowSpan={2}>{vObj.inwardSNo}</td>
                <td rowSpan={2}>{vObj.ownOutVehicle}</td>
                <td rowSpan={2}>{vObj.vehicleNumber}</td>
                <td>{vObj.driverName}</td>
                <td>{slicedInDate}</td>
                <td>{slicedOutDate || '--'}</td>
-               <td>{tRow2 || '--'}</td>
+               <td>{vObj.outwardSNo || '--'}</td>
                <td rowSpan={2}>{totalTime}</td>
                <td>{vObj.material}</td>
                <td>{vObj.partyName}</td>
@@ -147,9 +89,9 @@ export default class VehicleReportsComponent extends Component {
                <td>{vObj.driverNumber}</td>
                <td>{vObj.inTime}</td>
                <td>{vObj.outTime || '--'}</td>
-               <td>{tRow3}</td>
+               <td>{vObj.goingTo}</td>
                <td>{vObj.numberOfBags}</td>
-               <td>{tRow4}</td>
+               <td>{vObj.comingFrom}</td>
                <td>{vObj.remarks}</td>
              </tr>
            </tbody>
@@ -163,9 +105,9 @@ export default class VehicleReportsComponent extends Component {
         <div className="vehicleReports">
           <div style={{marginTop:20}}>
             {
-              reportType && startDate && endDate ?
-              <h3 style={{textAlign: 'center'}}><strong>{reportType} Vehicle Details Report- Indate From {startDate} To {endDate}</strong></h3> :
-              <h3 style={{textAlign: 'center'}}><strong>{reportType} Vehicle Details Reports</strong></h3>
+              startDate && endDate ?
+              <h3 style={{textAlign: 'center'}}><strong>Materialwise Report- Indate From {startDate} To {endDate}</strong></h3> :
+              <h3 style={{textAlign: 'center'}}><strong>Materialwise Reports</strong></h3>
             }
           </div>
            <table className="vehicleReportsTable" style={{ marginLeft : 4, marginTop:10}}>
@@ -177,13 +119,13 @@ export default class VehicleReportsComponent extends Component {
               </tr>
               <tr>
                 <th rowSpan={2}>S No.</th>
-                <th rowSpan={2}>{tHead1}</th>
+                <th rowSpan={2}>Inward Sno</th>
                 <th rowSpan={2}>Out/Own Vehicle</th>
                 <th rowSpan={2}>Vehicle No</th>
                 <th>Driver Name</th>
                 <th>In Date</th>
                 <th>Out Date</th>
-                <th>{tHead2}</th>
+                <th>Outward Sno</th>
                 <th rowSpan={2}>Duration</th>
                 <th>Material</th>
                 <th>Party</th>
@@ -193,9 +135,9 @@ export default class VehicleReportsComponent extends Component {
                 <th>Cell No</th>
                 <th>In Time</th>
                 <th>Out Time</th>
-                <th>{tHead3}</th>
+                <th>Going To</th>
                 <th>Bags</th>
-                <th>{tHead4}</th>
+                <th>Coming From</th>
                 <th>Remarks</th>
               </tr>
              </thead>
@@ -206,11 +148,9 @@ export default class VehicleReportsComponent extends Component {
   }
 
   render() {
-    const { startDate, endDate } = this.props;
-
     return (
       <div>
-        {this.renderVehicleReports()}
+        {this.renderMaterialwiseReports()}
       </div>
     )
   }
