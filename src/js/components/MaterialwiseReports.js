@@ -21,6 +21,8 @@ class MaterialwiseReports extends React.Component {
   constructor(props) {
     super(props);
     this.state={
+      ownOutVehicle: null,
+      emptyLoad: null,
       startDate:'',
       endDate:'',
       materialOpt:[],
@@ -52,15 +54,17 @@ class MaterialwiseReports extends React.Component {
   }
 
   onFieldChange(fieldName, e, o) {
-      if(fieldName==='location') {
+      if(fieldName==='location' || fieldName==='ownOutVehicle' || fieldName==='emptyLoad') {
         this.setState({
-          [fieldName]: e.option
+          [fieldName]: e.option,
+          response: null
         })
       }
 
       if(fieldName==='materialType') {
         this.setState({
-          [fieldName]: o.value
+          [fieldName]: o.value,
+          response: null
         })
       }
   }
@@ -95,7 +99,27 @@ class MaterialwiseReports extends React.Component {
       alert('End Date should be greater than Start Date');
       return;
     }
-      this.setState({endDate, response: null});
+      this.setState({
+        endDate,
+        response: null
+      }, this.vehicleDatesLoop.bind(this));
+  }
+
+  vehicleDatesLoop() {
+    const { startDate, endDate } = this.state;
+
+    let datesArr=[];
+    let startDateParts = startDate.split("-");
+    let endDateParts = endDate.split("-");
+    let startDateObj = new Date(startDateParts[2], startDateParts[1]-1, startDateParts[0]);
+    let endDateObj = new Date(endDateParts[2], endDateParts[1]-1, endDateParts[0]);
+
+    while (startDateObj <= endDateObj) {
+    datesArr.push(moment(startDateObj).format('DD-MM-YYYY'));
+    startDateObj.setDate(startDateObj.getDate() + 1);
+    }
+
+    this.setState({datesArr});
   }
 
   renderTrigger() {
@@ -156,26 +180,26 @@ class MaterialwiseReports extends React.Component {
   }
 
   materialwiseReports() {
-    const { showReports, vehicleData, materialType, location, startDate, endDate } = this.state;
-    console.log(vehicleData);
-    console.log(startDate);
-    console.log(endDate);
+    const { showReports, vehicleData, materialType, ownOutVehicle, emptyLoad, location, startDate, endDate, datesArr } = this.state;
     return (
       <div>
           <MaterialwiseReportsComponent
             showReports={showReports}
             response={vehicleData}
+            ownOutVehicle={ownOutVehicle}
+            emptyLoad={emptyLoad}
             materialType={materialType}
             location={location}
             startDate={startDate}
             endDate={endDate}
+            datesArr={datesArr}
           />
       </div>
     )
   }
 
   onValidatingInputs() {
-    const { materialType, location, startDate, endDate } = this.state;
+    const { materialType, ownOutVehicle, emptyLoad, location, startDate, endDate } = this.state;
 
     if(!materialType) {
       this.setState({
@@ -184,9 +208,16 @@ class MaterialwiseReports extends React.Component {
       return
     }
 
-    if(!location) {
+    if(!ownOutVehicle) {
       this.setState({
-        validationMsg: 'Location is missing'
+        validationMsg: 'Own/Out Vehicle is missing'
+      })
+      return
+    }
+
+    if(!emptyLoad) {
+      this.setState({
+        validationMsg: 'Empty/Load is missing'
       })
       return
     }
@@ -221,6 +252,28 @@ class MaterialwiseReports extends React.Component {
       </FormField>
       </div>
       <div style={{width: 300}}>
+      <FormField label='Own/Out Vehicle' style={{marginTop:15}}>
+        <Select
+          placeHolder='Own/Out'
+          options={['All Vehicles', 'Own Vehicle', 'Outside Vehicle']}
+          value={this.state.ownOutVehicle}
+          onChange={this.onFieldChange.bind(this, 'ownOutVehicle')}
+        />
+      </FormField>
+      </div>
+      <div style={{width: 300}}>
+      <FormField label='Empty/Load' style={{marginTop:15}}>
+        <Select
+          placeHolder='Empty/Load'
+          options={['All', 'Empty', 'Load']}
+          value={this.state.emptyLoad}
+          onChange={this.onFieldChange.bind(this, 'emptyLoad')}
+        />
+      </FormField>
+      </div>
+      </div>
+      <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}}>
+      <div style={{width: 300}}>
       <FormField label='Location' style={{marginTop:15}}>
             <Select
               placeHolder='Location'
@@ -230,9 +283,6 @@ class MaterialwiseReports extends React.Component {
             />
       </FormField>
       </div>
-
-      </div>
-      <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}}>
       <div style={{width: 300}}>
         <FormField label='From Date' style={{marginTop:20}}>
           <DateTime id='id'

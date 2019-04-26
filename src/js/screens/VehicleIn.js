@@ -147,7 +147,7 @@ export default class VehicleIn extends Component {
       let prefix = 'U2';
       if(window.localStorage.unit === 'UNIT3') {
         prefix = 'U3';
-      } 
+      }
       const lastCount = data && data[prefix] && data[prefix]['count']['inCount'] ? data[prefix]['count']['inCount'] :  1;
       let inwardSNo = `${prefix}-IN-${lastCount}`;
       this.setState({ inwardSNo, lastCount })
@@ -783,6 +783,7 @@ export default class VehicleIn extends Component {
           numberOfBags={this.state.numberOfBags}
           comingFrom={this.state.comingFrom}
           billNumber={this.state.billNumber}
+          partyName={this.state.partyName}
         />
       )
     }
@@ -934,7 +935,7 @@ export default class VehicleIn extends Component {
                           onDOMChange={this.onFieldChange.bind(this, 'vehicleNumber')}
                       /> :
                       <div>
-                        <Input transparent
+                      <Input transparent
                       list='vehicleNumber'
                       placeholder='Vehicle Number'
                       onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')} />

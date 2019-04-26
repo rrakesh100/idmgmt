@@ -116,6 +116,7 @@ export default class VehicleReportsComponent extends Component {
             tRow4=vObj.comingFrom;
           }
           let vInDate=vObj.inDate;
+
           let vOutDate=vObj.outDate;
           let slicedInDate,slicedOutDate;
           if(vInDate) {
@@ -123,6 +124,9 @@ export default class VehicleReportsComponent extends Component {
           }
           if(vOutDate) {
             slicedOutDate=vOutDate.slice(0,6) + vOutDate.slice(8,10);
+          }
+          if(slicedInDate === '20-04-19') {
+            console.log('true');
           }
 
           if(isValid) {

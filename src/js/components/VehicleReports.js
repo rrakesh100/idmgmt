@@ -93,9 +93,6 @@ export default class VehicleReports extends Component {
     startDateObj.setDate(startDateObj.getDate() + 1);
     }
 
-    let returnObj = {};
-    let unitVal = window.localStorage.unit;
-
     this.setState({datesArr});
   }
 

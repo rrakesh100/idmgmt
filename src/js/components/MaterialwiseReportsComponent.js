@@ -5,8 +5,8 @@ import moment from 'moment';
 export default class MaterialwiseReportsComponent extends React.Component {
 
   renderMaterialwiseReports() {
-    const { showReports, response, materialType, location, startDate, endDate } = this.props;
-
+    const { showReports, response, ownOutVehicle, emptyLoad, materialType, location, startDate, endDate, datesArr } = this.props;
+    console.log(materialType);
     if(!showReports || !response)
     return null;
 
@@ -29,7 +29,6 @@ export default class MaterialwiseReportsComponent extends React.Component {
           let vObj=allVehicleObj[sNo];
         if(!vObj)
         return null;
-
         let isValid=true;
         let inTime=vObj.inTime;
         let outTime=vObj.outTime;
@@ -57,6 +56,13 @@ export default class MaterialwiseReportsComponent extends React.Component {
            totalTime = hours + ' hr ' + minutes + ' min ';
         }
 
+        if(ownOutVehicle !== 'All Vehicles' && ownOutVehicle !== vObj.ownOutVehicle) {
+          isValid=false;
+        }
+          if(emptyLoad !== 'All' && emptyLoad !== vObj.emptyLoad) {
+            isValid=false;
+          }
+
           let vInDate=vObj.inDate;
           let vOutDate=vObj.outDate;
           let slicedInDate,slicedOutDate;
@@ -70,7 +76,7 @@ export default class MaterialwiseReportsComponent extends React.Component {
           if(isValid) {
             i++;
           tablesArray.push(
-            <tbody key={index} style={vObj.ownOutVehicle == 'Own Vehicle' ? {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
+            <tbody key={`${vObj.inwardSNo}-${vObj.vehicleNumber}`}  style={vObj.ownOutVehicle == 'Own Vehicle' ? {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
               <tr>
                <td rowSpan={2}>{i}</td>
                <td rowSpan={2}>{vObj.inwardSNo}</td>

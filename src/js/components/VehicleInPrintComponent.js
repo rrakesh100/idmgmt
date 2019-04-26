@@ -14,7 +14,7 @@ export default class VehicleInPrintComponent extends Component {
             vehicleNumber,
             driverName,
             driverNumber,
-            remarks, material, numberOfBags, comingFrom, billNumber, allVehiclesPrint, inDate, inTime } = this.props;
+            remarks, material, numberOfBags, comingFrom, billNumber, allVehiclesPrint, inDate, inTime, partyName } = this.props;
       const date = new Date();
       let dateStr, timeStr;
       if(allVehiclesPrint) {
@@ -77,6 +77,9 @@ export default class VehicleInPrintComponent extends Component {
                         <TableRow>
                           <td>
                             Vehicle No: <b>{vehicleNumber}</b>
+                          </td>
+                          <td>
+                            Party Name: <b>{partyName}</b>
                           </td>
                       </TableRow>
                       <TableRow>
