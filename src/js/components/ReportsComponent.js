@@ -2,10 +2,10 @@ import React from 'react';
 import moment from 'moment';
 
 
-export default class MaterialwiseReportsComponent extends React.Component {
+export default class reportsComponent extends React.Component {
 
-  renderMaterialwiseReports() {
-    const { showReports, response, reportType, ownOutVehicle, emptyLoad, materialType, location, startDate, endDate, datesArr } = this.props;
+  renderReports() {
+    const { showReports, response, reportType, vehicleNumber, ownOutVehicle, emptyLoad, materialType, location, startDate, endDate, datesArr } = this.props;
     if(!showReports || !response)
     return null;
 
@@ -76,14 +76,14 @@ export default class MaterialwiseReportsComponent extends React.Component {
         }
 
         if(materialType !== vObj.material) {
-          isValid=false
+          isValid=false;
         }
 
           if(vObj.emptyLoad === 'Empty') {
             isValid=false;
           }
 
-          if(reportType == 'Outward') {
+          if(reportType === 'Outward') {
             tRow1=vObj.outwardSNo;
             tRow2=vObj.inwardSNo;
             tRow3=vObj.comingFrom;
@@ -194,7 +194,7 @@ export default class MaterialwiseReportsComponent extends React.Component {
   render() {
     return (
       <div>
-        {this.renderMaterialwiseReports()}
+        {this.renderReports()}
       </div>
     )
   }

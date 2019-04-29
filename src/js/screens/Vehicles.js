@@ -30,6 +30,7 @@ import VehicleOut from './VehicleOut';
 import AllVehiclesPrint from './AllVehiclesPrint';
 import VehicleReports from '../components/VehicleReports';
 import MaterialwiseReports from '../components/MaterialwiseReports';
+import VehiclewiseReports from '../components/VehiclewiseReports';
 
 class Vehicles extends Component {
 
@@ -229,6 +230,9 @@ class Vehicles extends Component {
             </Tab>
             <Tab title='MATERIALWISE'>
               <MaterialwiseReports />
+            </Tab>
+            <Tab title='VEHICLEWISE'>
+              <VehiclewiseReports />
             </Tab>
             </Tabs>
         </Section>

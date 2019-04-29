@@ -576,7 +576,8 @@ export default class VehicleIn extends Component {
         showProgressBar: false,
         toastMsg: `Vehicle ${vNo} is saved`,
         vehicleSaved: true,
-      }, this.getVehicleDetails()
+        savedSerialNo: inwardSNo,
+      }, this.getVehicleDetails.bind(this)
     )).catch((err) => {
         this.setState({
           showLiveCameraFeed: true
@@ -841,7 +842,8 @@ export default class VehicleIn extends Component {
             numberOfBags,
             comingFrom,
             billNumber,
-            remarks, showProgressBar, toastMsg, lastCount } = this.state;
+            remarks, showProgressBar, toastMsg, lastCount, savedSerialNo } = this.state;
+            console.log(savedSerialNo);
             let prefix = 'U2';
             if(window.localStorage.unit === 'UNIT3') {
               prefix = 'U3';
@@ -895,7 +897,7 @@ export default class VehicleIn extends Component {
                   { vehicleSaved ?
                     <Form className='newVisitorFields'>
                       <FormField  label='Inward Sno'  strong={true} style={{marginTop : '10px'}}>
-                      <Label style={{marginLeft:'20px'}}><strong>{savedInwardSNo}</strong></Label>
+                      <Label style={{marginLeft:'20px'}}><strong>{savedSerialNo}</strong></Label>
                       </FormField>
                     <FormField label='Own/Out Vehicle' strong={true} style={{marginTop : '10px'}}>
                       <Label style={{fontSize: 16, marginLeft: 20}}><strong>{ownOutVehicle}</strong></Label>

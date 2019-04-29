@@ -4,7 +4,7 @@ import Select from 'grommet/components/Select';
 import DateTime from 'grommet/components/DateTime';
 import Button from 'grommet/components/Button';
 import { fetchAllVehicles, fetchVehicleReportsData } from '../api/vehicles';
-import { getMaterials } from '../api/configuration';
+import { getVehicleNumbers } from '../api/configuration';
 import Notification from 'grommet/components/Notification';
 import * as firebase from 'firebase';
 import ReactToPrint from "react-to-print";
@@ -17,33 +17,31 @@ import moment from 'moment';
 import ReportsComponent from './ReportsComponent';
 
 
-class MaterialwiseReports extends React.Component {
+class VehiclewiseReports extends React.Component {
   constructor(props) {
     super(props);
     this.state={
-      reportType: null,
       ownOutVehicle: null,
       emptyLoad: null,
-      location: null,
       startDate:'',
       endDate:'',
-      materialOpt:[],
+      vehicleOpt:[],
       showReports: false
     };
   }
 
   componentDidMount() {
-    this.getMaterialDetails();
+    this.getVehicleNumberDetails();
   }
 
-  getMaterialDetails() {
-    getMaterials().then((snap) => {
+  getVehicleNumberDetails() {
+    getVehicleNumbers().then((snap) => {
       const options = snap.val();
-      let materialOpt = [];
+      let vehicleOpt = [];
       Object.keys(options).forEach((opt) => {
-        materialOpt.push(opt)
+        vehicleOpt.push(opt)
       })
-      this.setState({materialOpt})
+      this.setState({vehicleOpt})
     }).catch((e) => console.log(e))
   }
 
@@ -55,7 +53,7 @@ class MaterialwiseReports extends React.Component {
         })
       }
 
-      if(fieldName==='materialType') {
+      if(fieldName==='vehicleNumber') {
         this.setState({
           [fieldName]: o.value,
           vehicleData: null
@@ -170,28 +168,28 @@ class MaterialwiseReports extends React.Component {
   onFetchingVehicleData() {
       fetchVehicleReportsData(this.state.reportType).then(res => {
         let vehicleData=res.val();
-        this.setState({vehicleData}, this.onShowingMaterialwiseReports.bind(this))
+        this.setState({vehicleData}, this.onShowingReports.bind(this))
       })
       .catch((err) => console.error(err))
   }
 
-  onShowingMaterialwiseReports() {
+  onShowingReports() {
     this.setState({
       showReports: true
     })
   }
 
-  materialwiseReports() {
-    const { showReports, vehicleData, materialType, reportType, ownOutVehicle, emptyLoad, location, startDate, endDate, datesArr } = this.state;
+  vehiclewiseReports() {
+    const { showReports, vehicleData, vehicleNumber, reportType, ownOutVehicle, emptyLoad, location, startDate, endDate, datesArr } = this.state;
     return (
       <div>
           <ReportsComponent
             showReports={showReports}
-            materialwiseReport={true}
+            vehicleWiseReport={true}
             response={vehicleData}
             ownOutVehicle={ownOutVehicle}
             emptyLoad={emptyLoad}
-            materialType={materialType}
+            vehicleNumber={vehicleNumber}
             reportType={reportType}
             location={location}
             startDate={startDate}
@@ -203,11 +201,11 @@ class MaterialwiseReports extends React.Component {
   }
 
   onValidatingInputs() {
-    const { materialType, ownOutVehicle, emptyLoad, location, startDate, endDate } = this.state;
+    const { vehicleNumber, ownOutVehicle, emptyLoad, location, startDate, endDate } = this.state;
 
-    if(!materialType) {
+    if(!vehicleNumber) {
       this.setState({
-        validationMsg: 'Material Type is missing'
+        validationMsg: 'Vehicle Number is missing'
       })
       return
     }
@@ -232,14 +230,7 @@ class MaterialwiseReports extends React.Component {
   }
 
   onClosingReport() {
-    this.setState({
-      vehicleData: null,
-      reportType: null,
-      ownOutVehicle: null,
-      location: null,
-      startDate: '',
-      endDate: '',
-    })
+
   }
 
   renderInputFields() {
@@ -247,19 +238,18 @@ class MaterialwiseReports extends React.Component {
       <div style={{marginLeft:'20px', backgroundColor: '#F5F5F5', height: 300, display : 'flex', flexDirection : 'row'}}>
       <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}} >
       <div>
-      <FormField label='Material Type' style={{marginTop:15, backgroundColor:'white'}}>
-
-        <Input transparent
-        list='materials'
-        placeholder='Material Type'
-        onChange={this.onFieldChange.bind(this, 'materialType')} />
-      <datalist id='materials'>
-        {
-          this.state.materialOpt.map((val, index) => {
-            return <option value={val} key={index}/>
-          })
-        }
-      </datalist>
+      <FormField label='Vehicle No' style={{marginTop:15, backgroundColor:'white'}}>
+      <Input transparent
+      list='vehiclesList'
+      placeholder='Vehicle Number'
+      onChange={this.onFieldChange.bind(this, 'vehicleNumber')} />
+        <datalist id='vehiclesList'>
+          {
+            this.state.vehicleOpt.map((val, index) => {
+              return <option value={val} key={index}/>
+            })
+          }
+        </datalist>
       </FormField>
       </div>
       <div style={{width: 300}}>
@@ -285,13 +275,13 @@ class MaterialwiseReports extends React.Component {
       </div>
       <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}}>
       <div style={{width: 300}}>
-      <FormField label='Location' style={{marginTop:15}}>
-            <Select
-              placeHolder='Location'
-              options={['All Locations', 'UNIT-2', 'UNIT-3']}
-              value={this.state.location}
-              onChange={this.onFieldChange.bind(this, 'location')}
-            />
+      <FormField label='Empty/Load' style={{marginTop:15}}>
+        <Select
+          placeHolder='Empty/Load'
+          options={['All', 'Empty', 'Load']}
+          value={this.state.emptyLoad}
+          onChange={this.onFieldChange.bind(this, 'emptyLoad')}
+        />
       </FormField>
       </div>
       <div style={{width: 300}}>
@@ -318,6 +308,16 @@ class MaterialwiseReports extends React.Component {
       </div>
 
       <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}}>
+      <div style={{width: 300}}>
+      <FormField label='Location' style={{marginTop:15}}>
+            <Select
+              placeHolder='Location'
+              options={['All Locations', 'UNIT-2', 'UNIT-3']}
+              value={this.state.location}
+              onChange={this.onFieldChange.bind(this, 'location')}
+            />
+      </FormField>
+      </div>
       <Button  label='Show Report'
       onClick={this.onValidatingInputs.bind(this)}
       style={{ display : 'inline-block' , marginTop: 20, width:300}}
@@ -337,8 +337,8 @@ class MaterialwiseReports extends React.Component {
     )
   }
 
-  renderMaterialwiseReports() {
-    let reportsTable=this.materialwiseReports();
+  renderVehiclewiseReports() {
+    let reportsTable=this.vehiclewiseReports();
     return reportsTable;
   }
 
@@ -347,10 +347,10 @@ class MaterialwiseReports extends React.Component {
       <div>
         {this.renderValidationMsg()}
         {this.renderInputFields()}
-        {this.renderMaterialwiseReports()}
+        {this.renderVehiclewiseReports()}
       </div>
     )
   }
 }
 
-export default MaterialwiseReports;
+export default VehiclewiseReports;
