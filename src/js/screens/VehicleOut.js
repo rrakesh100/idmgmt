@@ -823,6 +823,7 @@ export default class VehicleOut extends Component {
     let ownOutVehicle=this.state.ownOutVehicle;
     let driverName=this.state.driverName;
     let driverNumber=this.state.driverNumber;
+    let partyName=this.state.partyName;
     if(barcodeObj) {
       vNo=barcodeObj.vehicleNumber;
       ownOutVehicle=barcodeObj.ownOutVehicle;
@@ -845,6 +846,7 @@ export default class VehicleOut extends Component {
         ownOutVehicle={ownOutVehicle}
         vehicleNumber={vNo}
         driverName={driverName}
+        partyName={partyName}
         driverNumber={driverNumber}
         remarks={this.state.remarks}
         material={this.state.material}

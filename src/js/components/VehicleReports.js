@@ -138,9 +138,9 @@ export default class VehicleReports extends Component {
       getVehicleAbstractData(startDate).then(snap => {
         let abstractResponse=snap.val();
         this.setState({abstractResponse})
-      })
+      }).catch(err => console.log(err))
     } else {
-      fetchVehicleReportsData(reportType, startDate, endDate).then(res => {
+      fetchVehicleReportsData(reportType).then(res => {
         const response = res.val();
         this.setState({response})
       })

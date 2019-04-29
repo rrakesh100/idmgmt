@@ -16,10 +16,11 @@ export default class VehicleOutPrintComponent extends Component {
             driverNumber,
             remarks,
             material,
+            partyName,
             numberOfBags,
             goingTo,
             billNumber, printCopies, allVehiclesPrint, outDate,outTime } = this.props;
-            
+
       const date = new Date();
       let dateStr,timeStr;
       if(allVehiclesPrint) {
@@ -84,6 +85,9 @@ export default class VehicleOutPrintComponent extends Component {
                         <TableRow>
                           <td>
                             Vehicle No: <b>{vehicleNumber}</b>
+                          </td>
+                          <td>
+                            Party Name: <b>{partyName}</b>
                           </td>
                       </TableRow>
                       <TableRow>

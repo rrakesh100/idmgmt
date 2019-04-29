@@ -5,11 +5,26 @@ import moment from 'moment';
 export default class MaterialwiseReportsComponent extends React.Component {
 
   renderMaterialwiseReports() {
-    const { showReports, response, ownOutVehicle, emptyLoad, materialType, location, startDate, endDate, datesArr } = this.props;
-    console.log(materialType);
+    const { showReports, response, reportType, ownOutVehicle, emptyLoad, materialType, location, startDate, endDate, datesArr } = this.props;
     if(!showReports || !response)
     return null;
 
+    let tHead1, tHead2, tHead3, tHead4;
+    let tRow1, tRow2, tRow3, tRow4;
+
+    if(reportType == 'Outward') {
+      tHead1='Outward Sno';
+      tHead2='Inward Sno';
+      tHead3='Coming From';
+      tHead4='Going To';
+    } else {
+      tHead1='Inward Sno';
+      tHead2='Outward Sno';
+      tHead3='Going To';
+      tHead4='Coming From';
+    }
+
+    let i=0;
     let tablesArray=[];
     let vehiclesArray=[];
     let vehicleDateObj;
@@ -59,8 +74,25 @@ export default class MaterialwiseReportsComponent extends React.Component {
         if(ownOutVehicle !== 'All Vehicles' && ownOutVehicle !== vObj.ownOutVehicle) {
           isValid=false;
         }
-          if(emptyLoad !== 'All' && emptyLoad !== vObj.emptyLoad) {
+
+        if(materialType !== vObj.material) {
+          isValid=false
+        }
+
+          if(vObj.emptyLoad === 'Empty') {
             isValid=false;
+          }
+
+          if(reportType == 'Outward') {
+            tRow1=vObj.outwardSNo;
+            tRow2=vObj.inwardSNo;
+            tRow3=vObj.comingFrom;
+            tRow4=vObj.goingTo;
+          } else {
+            tRow1=vObj.inwardSNo;
+            tRow2=vObj.outwardSNo;
+            tRow3=vObj.goingTo;
+            tRow4=vObj.comingFrom;
           }
 
           let vInDate=vObj.inDate;
@@ -79,13 +111,13 @@ export default class MaterialwiseReportsComponent extends React.Component {
             <tbody key={`${vObj.inwardSNo}-${vObj.vehicleNumber}`}  style={vObj.ownOutVehicle == 'Own Vehicle' ? {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
               <tr>
                <td rowSpan={2}>{i}</td>
-               <td rowSpan={2}>{vObj.inwardSNo}</td>
+               <td rowSpan={2}>{tRow1}</td>
                <td rowSpan={2}>{vObj.ownOutVehicle}</td>
                <td rowSpan={2}>{vObj.vehicleNumber}</td>
                <td>{vObj.driverName}</td>
                <td>{slicedInDate}</td>
                <td>{slicedOutDate || '--'}</td>
-               <td>{vObj.outwardSNo || '--'}</td>
+               <td>{tRow2 || '--'}</td>
                <td rowSpan={2}>{totalTime}</td>
                <td>{vObj.material}</td>
                <td>{vObj.partyName}</td>
@@ -95,9 +127,9 @@ export default class MaterialwiseReportsComponent extends React.Component {
                <td>{vObj.driverNumber}</td>
                <td>{vObj.inTime}</td>
                <td>{vObj.outTime || '--'}</td>
-               <td>{vObj.goingTo}</td>
+               <td>{tRow3}</td>
                <td>{vObj.numberOfBags}</td>
-               <td>{vObj.comingFrom}</td>
+               <td>{tRow4}</td>
                <td>{vObj.remarks}</td>
              </tr>
            </tbody>
@@ -109,6 +141,11 @@ export default class MaterialwiseReportsComponent extends React.Component {
      })
       return (
         <div className="vehicleReports">
+        {tablesArray.length == 0 ?
+          <div style={{marginTop:20}}>
+              <h2 style={{textAlign:'center'}}><strong>No Data Exists!</strong></h2>
+          </div> :
+          <div>
           <div style={{marginTop:20}}>
             {
               startDate && endDate ?
@@ -125,13 +162,13 @@ export default class MaterialwiseReportsComponent extends React.Component {
               </tr>
               <tr>
                 <th rowSpan={2}>S No.</th>
-                <th rowSpan={2}>Inward Sno</th>
+                <th rowSpan={2}>{tHead1}</th>
                 <th rowSpan={2}>Out/Own Vehicle</th>
                 <th rowSpan={2}>Vehicle No</th>
                 <th>Driver Name</th>
                 <th>In Date</th>
                 <th>Out Date</th>
-                <th>Outward Sno</th>
+                <th>{tHead2}</th>
                 <th rowSpan={2}>Duration</th>
                 <th>Material</th>
                 <th>Party</th>
@@ -141,14 +178,15 @@ export default class MaterialwiseReportsComponent extends React.Component {
                 <th>Cell No</th>
                 <th>In Time</th>
                 <th>Out Time</th>
-                <th>Going To</th>
+                <th>{tHead3}</th>
                 <th>Bags</th>
-                <th>Coming From</th>
+                <th>{tHead4}</th>
                 <th>Remarks</th>
               </tr>
              </thead>
               {tablesArray}
            </table>
+           </div>}
        </div>
     )
   }

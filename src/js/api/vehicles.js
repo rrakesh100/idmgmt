@@ -201,7 +201,7 @@ export function savingOutwardVehicle(data) {
   return dbRef.update(updates);
 }
 
-export function fetchVehicleReportsData(report, startDate, endDate) {
+export function fetchVehicleReportsData(report) {
   let reportType;
   if(report == 'Outward') {
     reportType = 'out';
