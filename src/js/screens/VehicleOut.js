@@ -577,7 +577,8 @@ export default class VehicleOut extends Component {
       }).then(this.setState({
         showProgressBar: false,
         toastMsg: `Vehicle ${vNo} is saved`,
-        vehicleSaved: true
+        vehicleSaved: true,
+        savedSerialNo: outwardSNo,
       }, this.getVehicleDetails())).catch((err) => {
         this.setState({
           showLiveCameraFeed: true
@@ -817,7 +818,7 @@ export default class VehicleOut extends Component {
   }
 
   renderVehiclePrintCard() {
-    const {lastCount, barcodeObj}=this.state;
+    const {lastCount, barcodeObj, savedSerialNo}=this.state;
 
     let vNo=this.state.vehicleNumber || this.state.selectVehicleNumber;
     let ownOutVehicle=this.state.ownOutVehicle;
@@ -830,19 +831,12 @@ export default class VehicleOut extends Component {
       driverName=barcodeObj.driverName;
       driverNumber=barcodeObj.driverNumber;
     }
-    let prefix = 'U2';
-    if(window.localStorage.unit === 'UNIT3') {
-      prefix = 'U3';
-    }
-
-    let savedCount = Number(lastCount) - 1;
-    let savedOutwardSNo = `${prefix}-OUT-${savedCount}`;
 
     return (
       <VehicleOutPrintComponent
         ref={this.setPrintRef.bind(this)}
         screenshot={this.state.screenshot}
-        outwardSNo={savedOutwardSNo}
+        outwardSNo={savedSerialNo}
         ownOutVehicle={ownOutVehicle}
         vehicleNumber={vNo}
         driverName={driverName}
@@ -886,7 +880,7 @@ export default class VehicleOut extends Component {
             numberOfBags,
             goingTo,
             billNumber,
-            remarks, showProgressBar, toastMsg, lastCount, ownVehiclesArr, outVehiclesArr, barcodeObj, barcodeFetched } = this.state;
+            remarks, showProgressBar, toastMsg, lastCount, ownVehiclesArr, outVehiclesArr, barcodeObj, barcodeFetched, savedSerialNo } = this.state;
 
             let barcodeVNo=vehicleNumber || selectVehicleNumber;
             let barcodeOwnOutVehicle=ownOutVehicle;
@@ -898,13 +892,6 @@ export default class VehicleOut extends Component {
               barcodeDriverName=barcodeObj.driverName;
               barcodeDriverNumber=barcodeObj.driverNumber;
             }
-
-            let prefix = 'U2';
-            if(window.localStorage.unit === 'UNIT3') {
-              prefix = 'U3';
-            }
-            let savedCount = Number(lastCount) - 1;
-            let savedOutwardSNo = `${prefix}-OUT-${savedCount}`;
 
             if(showProgressBar) {
               return (
@@ -951,7 +938,7 @@ export default class VehicleOut extends Component {
             { vehicleSaved ?
               <Form className='newVisitorFields'>
                 <FormField  label='Outward Sno'  strong={true} style={{marginTop : '10px'}}>
-                <Label style={{marginLeft:'20px'}}><strong>{savedOutwardSNo}</strong></Label>
+                <Label style={{marginLeft:'20px'}}><strong>{savedSerialNo}</strong></Label>
                 </FormField>
               <FormField label='Own/Out Vehicle' strong={true} style={{marginTop : '10px'}}>
                 <Label style={{fontSize: 16, marginLeft: 20}}><strong>{barcodeOwnOutVehicle}</strong></Label>

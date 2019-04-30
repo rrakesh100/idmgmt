@@ -237,7 +237,7 @@ export default class VehicleIn extends Component {
       );
     }
 
-    onVehicleSelect(data, isSuggestionSelected) {
+    onVehicleSelect(fieldName, data, isSuggestionSelected) {
       if(isSuggestionSelected) {
         this.setState({
           selectVehicleNumber: data.suggestion
@@ -247,6 +247,36 @@ export default class VehicleIn extends Component {
           selectVehicleNumber: data.target.value
         });
       }
+    }
+
+    onSearchEntry(e) {
+      let filtered = [];
+      let  options = this.state.vehicleOpt;
+      let exactMatch = false;
+      let an = /^[a-zA-Z0-9]+$/;
+      let nre = /^[a-zA-Z0-9]{11}$/;
+
+      if(!options)
+        return ;
+
+        if(e.target.value === '' || an.test(e.target.value)) {
+            if(!nre.test(e.target.value)) {
+              if(e.target.value == '')
+                filtered = options
+              else {
+                options.forEach((opt) => {
+                   if(opt && opt.toUpperCase().startsWith(e.target.value.toUpperCase())) {
+                    filtered.push(opt);
+                  }
+                })
+              }
+
+              this.setState({
+                selectVehicleNumber: e.target.value.toUpperCase(),
+                vehicleOpt: filtered
+              });
+          }
+        }
     }
 
     onFieldChange(fieldName, e, o) {
@@ -283,33 +313,22 @@ export default class VehicleIn extends Component {
         })
       }
 
-      if(fieldName == 'partyName') {
+      if(fieldName == 'partyName' || fieldName == 'comingFrom' || fieldName == 'material') {
         this.setState({
           [fieldName]: o.value,
           validationMsg:''
         })
       }
 
-      if(fieldName == 'comingFrom') {
-        this.setState({
-          [fieldName]: o.value,
-          validationMsg: ''
-        })
-      }
-
-      if(fieldName == 'material') {
-        this.setState({
-          [fieldName]: o.value,
-          validationMsg: ''
-        })
-      }
-
-      if(fieldName == 'selectVehicleNumber') {
-        this.setState({
-          [fieldName]: o.value,
-          validationMsg: '',
-          vehicleNumber: '',
-        }, this.getVehicleForValidation.bind(this))
+      if(fieldName == 'selectVehicleNumber' && (e.target.value === '' || an.test(e.target.value))) {
+          if(!nre.test(e.target.value)) {
+            let vText = (e.target.value).toUpperCase();
+          this.setState({
+            [fieldName]: vText,
+            validationMsg: '',
+            vehicleNumber: '',
+          }, this.getVehicleForValidation.bind(this))
+        }
       }
 
       if(fieldName == 'vehicleNumber'&& (e.target.value === '' || an.test(e.target.value))) {
@@ -763,18 +782,13 @@ export default class VehicleIn extends Component {
     }
 
     renderVehiclePrintCard() {
-      const {lastCount } = this.state;
-      let prefix = 'U2';
-      if(window.localStorage.unit === 'UNIT3') {
-        prefix = 'U3';
-      }
-      let savedCount = Number(lastCount) - 1;
-      let savedInwardSNo = `${prefix}-IN-${savedCount}`;
+      const {lastCount, savedSerialNo } = this.state;
+
       return (
         <VehicleInPrintComponent
           ref={this.setPrintRef.bind(this)}
           screenshot={this.state.screenshot}
-          inwardSNo={savedInwardSNo}
+          inwardSNo={savedSerialNo}
           ownOutVehicle={this.state.ownOutVehicle}
           vehicleNumber={this.state.vehicleNumber || this.state.selectVehicleNumber}
           driverName={this.state.driverName}
@@ -843,13 +857,6 @@ export default class VehicleIn extends Component {
             comingFrom,
             billNumber,
             remarks, showProgressBar, toastMsg, lastCount, savedSerialNo } = this.state;
-            console.log(savedSerialNo);
-            let prefix = 'U2';
-            if(window.localStorage.unit === 'UNIT3') {
-              prefix = 'U3';
-            }
-            let savedCount = Number(lastCount) - 1;
-            let savedInwardSNo = `${prefix}-IN-${savedCount}`;
 
       if(showProgressBar) {
         return (
@@ -937,17 +944,14 @@ export default class VehicleIn extends Component {
                           onDOMChange={this.onFieldChange.bind(this, 'vehicleNumber')}
                       /> :
                       <div>
-                      <Input transparent
-                      list='vehicleNumber'
-                      placeholder='Vehicle Number'
-                      onChange={this.onFieldChange.bind(this, 'selectVehicleNumber')} />
-                     <datalist id='vehicleNumber'>
-                      {
-                        vehicleOpt.map((val, index) => {
-                          return <option value={val} key={index}/>
-                        })
-                      }
-                    </datalist>
+                    <Search style={{width:'290px'}}
+                      inline={true}
+                      size='small'
+                      suggestions={vehicleOpt}
+                      value={this.state.selectVehicleNumber}
+                      onSelect={this.onVehicleSelect.bind(this, 'selectVehicleNumber')}
+                      onDOMChange={this.onSearchEntry.bind(this)}
+                      />
                     </div>
                     }
                   </FormField>
