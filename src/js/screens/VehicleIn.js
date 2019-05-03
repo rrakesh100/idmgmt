@@ -26,7 +26,7 @@ import Car from 'grommet/components/icons/base/Car';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle,getInwardVehicle,
   getVehicleData,
-getVehicleForValidation } from '../api/vehicles';
+getVehicleForValidation, getLastVehicleCount, getPrefix,rollbackData } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Notification from 'grommet/components/Notification';
@@ -81,7 +81,7 @@ export default class VehicleIn extends Component {
   componentDidMount() {
     this.getVehicleNumberDetails();
     this.getMaterialDetails();
-    this.getVehicleDetails();
+    this.getVehicleDetails(true);
     this.getOwnPlaceDetails();
     this.getPartyDetails();
   }
@@ -141,24 +141,42 @@ export default class VehicleIn extends Component {
     }).catch((e) => console.log(e))
   }
 
-  getVehicleDetails() {
-    getAllVehicles().then((snap) => {
-      const data = snap.val();
-      let prefix = 'U2';
-      if(window.localStorage.unit === 'UNIT3') {
-        prefix = 'U3';
+  rollbackVehicleData(barcodeNo) {
+    rollbackData(barcodeNo).then(() => console.log('successfully deleted')).catch(err => console.error(err))
+  }
+
+  getVehicleDetails(isMount, vNo) {
+    console.log(vNo);
+    const {lastCount}=this.state;
+
+    getLastVehicleCount().then((snap) => {
+      const dbCount = snap.val();
+      let prefix=getPrefix();
+
+      if(!isMount && dbCount - this.state.lastCount !== 1) {
+        alert('something went wrong while saving inward sno - ' + this.state.inwardSNo);
+          this.setState({
+            toastMsg: `Vehicle ${vNo} could not be saved, please try again`
+          }, this.rollbackVehicleData.bind(this, this.state.inwardSNo, vNo))
+      } else if (!isMount && dbCount - this.state.lastCount === 1) {
+        let inwardSNo = `${prefix}-IN-${dbCount}`;
+        this.setState({
+          toastMsg: `Vehicle ${vNo} saved`,
+          inwardSNo,
+          lastCount: dbCount
+        })
+      } else {
+        let inwardSNo = `${prefix}-IN-${dbCount}`;
+        this.setState({ inwardSNo, lastCount: dbCount })
       }
-      const lastCount = data && data[prefix] && data[prefix]['count']['inCount'] ? data[prefix]['count']['inCount'] :  1;
-      let inwardSNo = `${prefix}-IN-${lastCount}`;
-      this.setState({ inwardSNo, lastCount })
-    }).catch((e) => console.log(e))
+      }).catch((e) => console.log(e))
   }
 
   getOutwardVehicleDetails() {
     const { vehicleNumber, selectVehicleNumber } = this.state;
         let vNo=vehicleNumber;
         if(selectVehicleNumber)
-         vNo = selectVehicleNumber;
+         vNo=selectVehicleNumber;
       getOutwardVehicle(vNo).then((snap) => {
         const outwardObj = snap.val();
         this.setState({outwardObj})
@@ -250,6 +268,7 @@ export default class VehicleIn extends Component {
     }
 
     onSearchEntry(e) {
+
       let filtered = [];
       let  options = this.state.vehicleOpt;
       let exactMatch = false;
@@ -261,8 +280,10 @@ export default class VehicleIn extends Component {
 
         if(e.target.value === '' || an.test(e.target.value)) {
             if(!nre.test(e.target.value)) {
-              if(e.target.value == '')
-                filtered = options
+              if(e.target.value == '') {
+                filtered = options;
+              }
+
               else {
                 options.forEach((opt) => {
                    if(opt && opt.toUpperCase().startsWith(e.target.value.toUpperCase())) {
@@ -274,7 +295,7 @@ export default class VehicleIn extends Component {
               this.setState({
                 selectVehicleNumber: e.target.value.toUpperCase(),
                 vehicleOpt: filtered
-              });
+              },);
           }
         }
     }
@@ -591,13 +612,14 @@ export default class VehicleIn extends Component {
         comingFrom,
         billNumber,
         remarks,
-      }).then(this.setState({
+      }).then(() => {
+        console.log('success');
+        this.setState({
         showProgressBar: false,
-        toastMsg: `Vehicle ${vNo} is saved`,
         vehicleSaved: true,
         savedSerialNo: inwardSNo,
-      }, this.getVehicleDetails.bind(this)
-    )).catch((err) => {
+      }, this.getVehicleDetails.bind(this, false, vNo)
+    )}).catch((err) => {
         this.setState({
           showLiveCameraFeed: true
         })

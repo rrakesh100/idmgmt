@@ -219,13 +219,6 @@ class MaterialwiseReports extends React.Component {
       return
     }
 
-    if(!emptyLoad) {
-      this.setState({
-        validationMsg: 'Empty/Load is missing'
-      })
-      return
-    }
-
     this.setState({
       validationMsg:''
     }, this.onFetchingVehicleData.bind(this))

@@ -114,7 +114,7 @@ export default class VehicleOut extends Component {
     getVehicleBarcodes().then(snap => {
       let vehicleBarcodes=snap.val();
       let barcodesArr=[];
-      Object.keys(vehicleBarcodes).map(vSno => {
+      vehicleBarcodes && Object.keys(vehicleBarcodes).map(vSno => {
         let vSnoObj=vehicleBarcodes[vSno];
           if(vSnoObj.inSide) {
             barcodesArr.push(vSnoObj.inwardSNo)
@@ -129,7 +129,7 @@ export default class VehicleOut extends Component {
       const inVehicles = snap.val();
       let ownVehiclesArr=[];
       let outVehiclesArr=[];
-      Object.keys(inVehicles).forEach(vehicle => {
+      inVehicles && Object.keys(inVehicles).forEach(vehicle => {
         let vehicleOb=inVehicles[vehicle];
         Object.keys(vehicleOb).forEach(item => {
           let vObj=vehicleOb[item];

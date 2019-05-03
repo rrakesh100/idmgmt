@@ -26,13 +26,8 @@ export default class AllVehiclesPrint extends Component {
   }
 
   componentDidMount() {
-    getAllVehicles().then((snap) => {
-      this.setState({
-        vehicles: snap.val()
-      })
-    }).catch((err) => {
-      console.error('ALL VEHICLES FETCH FAILED', err)
-    })
+    const { vehicles } = this.props;
+    this.setState({vehicles})
   }
 
   onVehicleInPrint(vehicle) {

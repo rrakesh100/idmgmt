@@ -5,7 +5,9 @@ import moment from 'moment';
 export default class reportsComponent extends React.Component {
 
   renderReports() {
-    const { showReports, response, reportType, vehicleNumber, ownOutVehicle, emptyLoad, materialType, location, startDate, endDate, datesArr } = this.props;
+    const { showReports, response, reportType, vehicleNumber, ownOutVehicle, emptyLoad, materialType, location, startDate, endDate, datesArr, materialwiseReport, vehicleWiseReport } = this.props;
+    console.log(materialwiseReport);
+    console.log(vehicleWiseReport);
     if(!showReports || !response)
     return null;
 
@@ -75,13 +77,21 @@ export default class reportsComponent extends React.Component {
           isValid=false;
         }
 
-        if(materialType !== vObj.material) {
-          isValid=false;
-        }
-
-          if(vObj.emptyLoad === 'Empty') {
+        if(materialwiseReport) {
+          if(materialType !== vObj.material) {
             isValid=false;
           }
+
+            if(vObj.emptyLoad === 'Empty') {
+              isValid=false;
+            }
+        }
+
+        if(vehicleWiseReport) {
+          if(vehicleNumber !== vObj.vehicleNumber) {
+            isValid=false;
+          }
+        }
 
           if(reportType === 'Outward') {
             tRow1=vObj.outwardSNo;
@@ -146,13 +156,23 @@ export default class reportsComponent extends React.Component {
               <h2 style={{textAlign:'center'}}><strong>No Data Exists!</strong></h2>
           </div> :
           <div>
-          <div style={{marginTop:20}}>
-            {
-              startDate && endDate ?
-              <h3 style={{textAlign: 'center'}}><strong>Materialwise Report- Indate From {startDate} To {endDate}</strong></h3> :
-              <h3 style={{textAlign: 'center'}}><strong>Materialwise Reports</strong></h3>
-            }
-          </div>
+          {
+            materialwiseReport ?
+            <div style={{marginTop:20}}>
+              {
+                startDate && endDate ?
+                <h3 style={{textAlign: 'center'}}><strong>Materialwise Report- Indate From {startDate} To {endDate}</strong></h3> :
+                <h3 style={{textAlign: 'center'}}><strong>Materialwise Reports</strong></h3>
+              }
+            </div> :
+            <div style={{marginTop:20}}>
+              {
+                startDate && endDate ?
+                <h3 style={{textAlign: 'center'}}><strong>Vehiclewise Report- Indate From {startDate} To {endDate}</strong></h3> :
+                <h3 style={{textAlign: 'center'}}><strong>Vehiclewise Reports</strong></h3>
+              }
+            </div>
+          }
            <table className="vehicleReportsTable" style={{ marginLeft : 4, marginTop:10}}>
              <thead className="vehiclesTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
               <tr>

@@ -36,27 +36,16 @@ class Vehicles extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      vehicles: null,
+    };
   }
 
   componentDidMount() {
-    getVehicles()
-      .then((snap) => {
-        const data = snap.val();
-        if (!data) {
-          return;
-        }
-        this.setState({
-          vehicleSuggestions: [...Object.keys(data)]
-        });
-      })
-      .catch((err) => {
-        console.error('VEHICLE FETCH FAILED', err);
-      });
-      { this.showVehicles() }
+    this.getAllVehicles();
   }
 
-  showVehicles() {
+  getAllVehicles() {
     getAllVehicles().then((snap) => {
       this.setState({
         vehicles: snap.val()
@@ -67,142 +56,8 @@ class Vehicles extends Component {
   }
 
 
-  onVehicleSelect(data, isSuggestionSelected) {
-    if (isSuggestionSelected) {
-      this.setState({
-        selectedVehicleId: data.suggestion,
-        vehicleSearchString: data.suggestion
-      }, this.fetchSearchedVehicle.bind(this));
-    } else {
-      this.setState({
-        selectedVehicleId: data.target.value,
-        vehicleSearchString: data.suggestion
-      }, this.fetchSearchedVehicle.bind(this));
-    }
-  }
-
-  onSearchEntry(e) {
-    this.setState({
-      vehicleSearchString: e.target.value
-    });
-  }
-
-  fetchSearchedVehicle() {
-    const { selectedVehicleId } = this.state;
-    if (selectedVehicleId) {
-      getVehicle(selectedVehicleId)
-        .then((snap) => {
-          const selectedVehicleData = snap.val();
-          this.setState({
-            selectedVehicleData
-          });
-        })
-        .catch((err) => {
-          console.error('UNABLE TO FETCH SEARCHED VEHICLE', err);
-        });
-    }
-  }
-
-  renderVehicleSearch() {
-    return (
-      <Search placeHolder='Search Vehicle'
-        inline={true}
-        iconAlign='start'
-        size='small'
-        suggestions={this.state.vehicleSuggestions}
-        value={this.state.vehicleSearchString}
-        onSelect={this.onVehicleSelect.bind(this)}
-        onDOMChange={this.onSearchEntry.bind(this)} />
-    )
-  }
-
-  renderSearchedVehicle() {
-    const { selectedVehicleData, selectedVehicleId } = this.state;
-
-    if (selectedVehicleData) {
-      const { timestamp } = selectedVehicleData;
-      const m = Moment(timestamp);
-      const timestampStr = m.format('DD/MM/YYYY hh:mm:ss A');
-      const timeRelativeStr = m.fromNow();
-
-      return (
-        <List>
-          <ListItem justify='between'
-            separator='horizontal'>
-            <span>
-              <Button icon={<Vehicle />}
-                label={selectedVehicleId}
-                href={`/vehicle/${selectedVehicleId}`}
-                primary={true} />
-            </span>
-            <span>
-              {selectedVehicleData.name}
-            </span>
-            <span>
-              entered <span className='emphasis'>{timeRelativeStr}</span> at <strong>{timestampStr}</strong>
-            </span>
-          </ListItem>
-        </List>
-      );
-    }
-    return (
-      <List>
-        <ListItem justify='between'
-          separator='horizontal'>
-          <span>
-            { selectedVehicleId ? 'No such vehicle in the records!' : null }
-          </span>
-        </ListItem>
-      </List>
-    );
-  }
-
-  showVehiclesTable() {
-
-    const { vehicles } = this.state;
-
-    if(!vehicles)
-    return null;
-
-    return (
-      <div className='table'>
-      <Table scrollable={true} style={{marginTop : '30px'}}>
-          <thead style={{position:'relative'}}>
-           <tr>
-             <th>S No.</th>
-             <th>ID</th>
-             <th>Vehicle Number</th>
-             <th>Driver Name</th>
-             <th>Status</th>
-           </tr>
-          </thead>
-          <tbody>
-            {
-              Object.keys(vehicles).map((vehicle, index) => {
-                const vehicleObj = vehicles[vehicle];
-                const path=`vehicle/${vehicleObj.vehicleId}`;
-                return <TableRow key={index}>
-                <td>{index+1}</td>
-                <td>
-                <Button primary={true}
-                  label={vehicleObj.vehicleId}
-                  href={path} />
-                </td>
-                <td>{vehicleObj.vehicleNumber}</td>
-                <td>{vehicleObj.driverName}</td>
-                <td>{vehicleObj.status}</td>
-
-                </TableRow>
-              })
-            }
-          </tbody>
-      </Table>
-      </div>
-    )
-  }
-
   render() {
-
+    const {vehicles} = this.state;
     return (
       <Article primary={true} full={true} className='giveVehicle'>
       <Header
@@ -217,7 +72,7 @@ class Vehicles extends Component {
         <Section>
             <Tabs justify='start' style={{marginLeft: 20, marginTop: -20}}>
             <Tab title='HOME'>
-              <AllVehiclesPrint />
+              <AllVehiclesPrint vehicles={vehicles}/>
             </Tab>
             <Tab title='VEHICLE IN'>
               <VehicleIn />
