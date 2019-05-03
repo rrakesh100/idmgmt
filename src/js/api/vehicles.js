@@ -92,7 +92,7 @@ export function savingOutwardVehicle(data) {
   const newData = Object.assign({}, data);
   newData.outwardDate= dateStr;
   newData.outTime=timeStr;
-
+  console.log(data);
   if(data.inwardDate) {
     const inwardObj = {
       inSide: false,
@@ -124,14 +124,15 @@ export function savingOutwardVehicle(data) {
     goingTo: data.goingTo,
     billNumber: data.billNumber,
     remarks: data.remarks,
-    outDate: data.outDate,
-    outTime: data.outTime,
-    inDate: data.inDate,
+    outDate: dateStr,
+    outTime: timeStr,
+    inDate: data.inwardDate,
     inTime: data.inTime,
     comingFrom: data.comingFrom,
     inwardSNo: data.inwardSNo
   }
-
+  console.log(outwardObj);
+  console.log(data.outwardSNo);
   updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}`]=vehicleBarcodesObj;
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/outCount`] = data.lastCount+1;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastOutward`] = newData;

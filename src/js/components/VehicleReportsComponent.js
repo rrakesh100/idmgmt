@@ -164,7 +164,7 @@ export default class VehicleReportsComponent extends Component {
        })
      })
       return (
-        <div className="vehicleReports">
+          <div className="vehicleReports">
           <div style={{marginTop:20}}>
             {
               reportType && startDate && endDate ?
