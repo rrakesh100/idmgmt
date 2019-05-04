@@ -26,7 +26,7 @@ class Login extends Component {
   constructor() {
     super();
     this.state={
-      fUnit:'UNIT2',
+      fUnit: 'UNIT2',
       sUnit: 'UNIT2'
     };
     this._onSubmit = this._onSubmit.bind(this);

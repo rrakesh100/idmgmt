@@ -6,8 +6,7 @@ export default class reportsComponent extends React.Component {
 
   renderReports() {
     const { showReports, response, reportType, vehicleNumber, ownOutVehicle, emptyLoad, materialType, location, startDate, endDate, datesArr, materialwiseReport, vehicleWiseReport } = this.props;
-    console.log(materialwiseReport);
-    console.log(vehicleWiseReport);
+  
     if(!showReports || !response)
     return null;
 

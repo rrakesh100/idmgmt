@@ -254,7 +254,7 @@ class AttendanceIn extends Component {
         }
       })
     }
-    
+
     this.setState({
       employeeSearchString: e.target.value,
       filteredSuggestions: filtered
@@ -692,9 +692,7 @@ renderSearchedEmployee() {
       </Box>
       </Col>
       <Col>
-      <div style={{marginLeft:'160px'}}>
-      <Image src={screenshot} style={{marginTop:'15px', height:'350px'}}/>
-      </div>
+      
       </Col>
       </Row>
       </Container>

@@ -24,6 +24,7 @@ import Vehicle from 'grommet/components/icons/base/DocumentConfig';
 import Header from 'grommet/components/Header';
 import Table from 'grommet/components/Table'
 import TableRow from 'grommet/components/TableRow'
+import { getVehicleNumbers, getMaterials, getOwnPlaces, getParties } from '../api/configuration';
 import { getVehicles, getVehicle, getAllVehicles } from '../api/vehicles';
 import VehicleIn from './VehicleIn';
 import VehicleOut from './VehicleOut';
@@ -44,6 +45,51 @@ class Vehicles extends Component {
   componentDidMount() {
     this.getAllVehicles();
   }
+
+  getPartyDetails() {
+    getParties().then(res => {
+      let partyObj=res.val();
+      let partyOptions=[];
+      Object.keys(partyObj).map(party => {
+        partyOptions.push(party)
+      })
+      this.setState({partyOptions})
+    }).catch(err => console.log(err))
+  }
+
+  getOwnPlaceDetails() {
+    getOwnPlaces().then((snap) => {
+      const options = snap.val();
+      let ownPlaceOpt = [];
+      Object.keys(options).forEach((opt) => {
+        ownPlaceOpt.push(opt)
+      })
+      this.setState({ownPlaceOpt})
+    }).catch((e) => console.log(e))
+  }
+
+  getVehicleNumberDetails() {
+    getVehicleNumbers().then((snap) => {
+      const options = snap.val();
+      let vehicleOpt = [];
+      Object.keys(options).forEach((opt) => {
+        vehicleOpt.push(opt)
+      })
+      this.setState({vehicleOpt})
+    }).catch((e) => console.log(e))
+  }
+
+  getMaterialDetails() {
+    getMaterials().then((snap) => {
+      const options = snap.val();
+      let materialOpt = [];
+      Object.keys(options).forEach((opt) => {
+        materialOpt.push(opt)
+      })
+      this.setState({materialOpt})
+    }).catch((e) => console.log(e))
+  }
+
 
   getAllVehicles() {
     getAllVehicles().then((snap) => {
@@ -80,15 +126,7 @@ class Vehicles extends Component {
             <Tab title='VEHICLE OUT'>
               <VehicleOut />
             </Tab>
-            <Tab title='REPORTS'>
-              <VehicleReports />
-            </Tab>
-            <Tab title='MATERIALWISE'>
-              <MaterialwiseReports />
-            </Tab>
-            <Tab title='VEHICLEWISE'>
-              <VehiclewiseReports />
-            </Tab>
+            
             </Tabs>
         </Section>
       </Article>
