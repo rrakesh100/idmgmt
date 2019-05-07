@@ -231,11 +231,15 @@ export function getAllVehicles() {
   return dbRef.once('value');
 }
 
-export function getLastVehicleCount() {
+export function getLastVehicleInCount() {
   const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicles/${getPrefix()}/count/inCount/`);
   return dbRef.once('value');
 }
 
+export function getLastVehicleOutCount() {
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicles/${getPrefix()}/count/outCount/`);
+  return dbRef.once('value');
+}
 
 export function updateVehicleStatus(data) {
   const { vehicleId, entryTimestamp, timestamp } = data;

@@ -42,9 +42,6 @@ class Vehicles extends Component {
     };
   }
 
-  componentDidMount() {
-    this.getAllVehicles();
-  }
 
   getPartyDetails() {
     getParties().then(res => {
@@ -118,7 +115,7 @@ class Vehicles extends Component {
         <Section>
             <Tabs justify='start' style={{marginLeft: 20, marginTop: -20}}>
             <Tab title='HOME'>
-              <AllVehiclesPrint vehicles={vehicles}/>
+              <AllVehiclesPrint />
             </Tab>
             <Tab title='VEHICLE IN'>
               <VehicleIn />
@@ -126,7 +123,15 @@ class Vehicles extends Component {
             <Tab title='VEHICLE OUT'>
               <VehicleOut />
             </Tab>
-            
+            <Tab title='REPORTS'>
+              <VehicleReports />
+            </Tab>
+            <Tab title='MATERIALWISE'>
+              <MaterialwiseReports />
+            </Tab>
+            <Tab title='VEHICLEWISE'>
+              <VehiclewiseReports />
+            </Tab>
             </Tabs>
         </Section>
       </Article>

@@ -256,9 +256,7 @@ export default class AllVehiclesPrint extends Component {
 
     return (
       <div>
-      { this.renderVehicleInPrintCard() }
-      { this.renderVehicleOutPrintCard() }
-      { this.renderAllVehiclesList() }
+      <h1>Under Repair</h1>
       </div>
     )
   }

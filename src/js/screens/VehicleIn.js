@@ -24,9 +24,9 @@ import { getVehicleNumbers, getMaterials, getOwnPlaces, getParties } from '../ap
 import Save from 'grommet/components/icons/base/Upload';
 import Car from 'grommet/components/icons/base/Car';
 import PrintIcon from 'grommet/components/icons/base/Print';
-import { savingInwardVehicle, getAllVehicles, uploadVehicleImage, getOutwardVehicle,getInwardVehicle,
+import { savingInwardVehicle, uploadVehicleImage, getOutwardVehicle,getInwardVehicle,
   getVehicleData,
-getVehicleForValidation, getLastVehicleCount, getPrefix,rollbackData } from '../api/vehicles';
+getVehicleForValidation, getLastVehicleInCount, getPrefix,rollbackData } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Notification from 'grommet/components/Notification';
@@ -146,10 +146,9 @@ export default class VehicleIn extends Component {
   }
 
   getVehicleDetails(isMount, vNo) {
-    console.log(vNo);
     const {lastCount}=this.state;
 
-    getLastVehicleCount().then((snap) => {
+    getLastVehicleInCount().then((snap) => {
       const dbCount = snap.val();
       let prefix=getPrefix();
 
