@@ -4,7 +4,6 @@ import Select from 'grommet/components/Select';
 import DateTime from 'grommet/components/DateTime';
 import Button from 'grommet/components/Button';
 import moment from 'moment';
-import TimePicker from 'rc-time-picker';
 import Notification from 'grommet/components/Notification';
 import * as firebase from 'firebase';
 import { fetchVehicleReportsData, getOutsideVehicles, getVehicleAbstractData } from '../api/vehicles';

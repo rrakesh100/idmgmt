@@ -15,7 +15,6 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Box from 'grommet/components/Box';
 import ReactExport from "react-data-export";
-import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
 import CheckBox from 'grommet/components/CheckBox';
 
@@ -190,32 +189,6 @@ class Reports extends Component {
     }]
     return (
       <div className='table'>
-      <div style={{float : 'right'}}>
-        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '50px', marginBottom : '40px'}}  primary="true" icon={<DownloadIcon />}  href="#" label="Download" />}>
-          <Workbook.Sheet data={reportData} name="Sheet 1">
-              <Workbook.Column label="Date" value="date"/>
-              <Workbook.Column label="Serial No" value="serialNo"/>
-              <Workbook.Column label="Visitor Name" value="name"/>
-              <Workbook.Column label="Whom To Meet" value="whomToMeet"/>
-              <Workbook.Column label="Purpose Of Visit" value="purpose"/>
-              <Workbook.Column label="Mobile#" value="mobile"/>
-              <Workbook.Column label="Coming From" value="comingFrom"/>
-              <Workbook.Column label="Department" value="department"/>
-              <Workbook.Column label="Company" value="company"/>
-              <Workbook.Column label="Remarks" value="remarks"/>
-              <Workbook.Column label="Met Required Person" value="metRequiredPerson"/>
-              <Workbook.Column label="In Time" value="inTime"/>
-              <Workbook.Column label="Out Time" value="outTime"/>
-              <Workbook.Column label="Total Time" value="totalTime"/>
-          </Workbook.Sheet>
-          <Workbook.Sheet  data={ob} name="Information">
-              <Workbook.Column label="Start Date" value="start"/>
-              <Workbook.Column label="End Date" value="end"/>
-          </Workbook.Sheet>
-
-        </Workbook>
-
-      </div>
       {tablesArray}
       </div>
     )

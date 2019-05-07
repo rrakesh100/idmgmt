@@ -10,8 +10,6 @@ import VehicleOutPrintComponent from '../components/VehicleOutPrintComponent';
 import ReactToPrint from "react-to-print";
 import Layer from 'grommet/components/Layer';
 import Article from 'grommet/components/Article';
-import ReactFileReader from 'react-file-reader';
-import FileReaderInput from 'react-file-reader-input';
 
 
 export default class AllVehiclesPrint extends Component {

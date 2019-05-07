@@ -36,7 +36,6 @@ import Footer from 'grommet/components/Footer';
 import ManPowerComponent from './ManPowerComponent';
 import Status from 'grommet/components/icons/Status';
 import { getVillages } from '../api/configuration';
-import Workbook from 'react-excel-workbook';
 import DownloadIcon from 'grommet/components/icons/base/Download';
 import ReactToPrint from "react-to-print";
 import ManPowerPrintComponent from '../components/ManPowerPrintComponent';
@@ -675,21 +674,6 @@ export default class ManPower extends Component {
 
     return (
       <div className='table'>
-      <div>
-        <Workbook  filename="report.xlsx" element={<Button style={{marginLeft : '910px', marginRight: '10px'}}  primary={true} icon={<DownloadIcon />}  href="#" label="Download" />}>
-          <Workbook.Sheet data={reportData} name="Sheet 1">
-              <Workbook.Column label="Serial No" value="serialNo"/>
-              <Workbook.Column label="Employee ID" value="employeeId"/>
-              <Workbook.Column label="Name" value="name"/>
-              <Workbook.Column label="Payment Type" value="paymentType"/>
-              <Workbook.Column label="Gender" value="gender"/>
-              <Workbook.Column label="Joined Date" value="joinedDate"/>
-              <Workbook.Column label="Shift" value="shift"/>
-              <Workbook.Column label="Remarks" value="remarks"/>
-              <Workbook.Column label="Village" value="village"/>
-          </Workbook.Sheet>
-        </Workbook>
-      </div>
       <Table scrollable={true} style={{marginTop : '60px'}}>
           <thead style={{position:'relative'}}>
            <tr>

@@ -8,7 +8,6 @@ import Button from 'grommet/components/Button';
 import Layer from 'grommet/components/Layer';
 import Paragraph from 'grommet/components/Paragraph';
 import Heading from 'grommet/components/Heading';
-import axios from 'axios';
 import $ from 'jquery';
 import Article from 'grommet/components/Article';
 import Header from 'grommet/components/Header';
