@@ -92,7 +92,7 @@ export default class VehicleOut extends Component {
     this.getVehicleDetails();
     this.getOwnPlaceDetails();
     this.getAllVehicleBarcodes();
-    this.getPartyDetails();
+  //  this.getPartyDetails();
     if(this.state.barcodeInput) {
       this.state.barcodeInput.focus()
     }

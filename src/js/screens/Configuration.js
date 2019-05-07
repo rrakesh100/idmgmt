@@ -64,7 +64,7 @@ export default class Configuration extends Component {
      this.getDriverDetails();
      this.getOwnPlaceDetails();
      this.getMaterialDetails();
-     this.getPartyDetails();
+  //   this.getPartyDetails();
      this.getAgentDetails();
   }
 

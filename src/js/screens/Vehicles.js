@@ -123,15 +123,6 @@ class Vehicles extends Component {
             <Tab title='VEHICLE OUT'>
               <VehicleOut />
             </Tab>
-            <Tab title='REPORTS'>
-              <VehicleReports />
-            </Tab>
-            <Tab title='MATERIALWISE'>
-              <MaterialwiseReports />
-            </Tab>
-            <Tab title='VEHICLEWISE'>
-              <VehiclewiseReports />
-            </Tab>
             </Tabs>
         </Section>
       </Article>

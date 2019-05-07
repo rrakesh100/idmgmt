@@ -83,7 +83,7 @@ export default class VehicleIn extends Component {
     this.getMaterialDetails();
     this.getVehicleDetails(true);
     this.getOwnPlaceDetails();
-    this.getPartyDetails();
+  //  this.getPartyDetails();
   }
 
   getPartyDetails() {
