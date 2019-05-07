@@ -55,7 +55,8 @@ export function logout(session) {
       localStorage.removeItem('name');
       localStorage.removeItem('token');
       localStorage.removeItem('unit');
-
+      localStorage.removeItem('employeeSuggestions');
+      localStorage.removeItem('filteredSuggestions');
 
       let arr=[];
 

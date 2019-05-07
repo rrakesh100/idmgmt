@@ -47,6 +47,14 @@ class AttendanceOut extends Component {
   }
 
   componentDidMount() {
+    let employeeSuggestions = JSON.parse(window.localStorage.employeeSuggestions);
+    let filteredSuggestions = JSON.parse(window.localStorage.filteredSuggestions);
+    if(employeeSuggestions && filteredSuggestions) {
+      this.setState({
+        employeeSuggestions,
+        filteredSuggestions
+      })
+    } else {
     getEmployees().then((snap) => {
       const data = snap.val();
       if (!data) {
@@ -71,6 +79,7 @@ class AttendanceOut extends Component {
     .catch((err) => {
       console.error('VISITOR FETCH FAILED', err);
     });
+  }
   }
 
 
@@ -605,7 +614,7 @@ renderSearchedEmployee() {
       </Box>
       </Col>
       <Col>
-      
+
       </Col>
       </Row>
       </Container>

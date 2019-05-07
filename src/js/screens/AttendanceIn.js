@@ -100,30 +100,40 @@ class AttendanceIn extends Component {
   }
 
   getEmployeeDetails() {
-    getEmployees().then((snap) => {
-      const data = snap.val();
-      if (!data) {
-        return;
-      }
-      let suggests = [];
-      let empId = [];
-      Object.keys(data).forEach((employee) => {
-        if(employee != 'count')
-        suggests.push({
-           label : data[employee].name,
-           employeeId : employee
-        })
-        empId.push(employee)
-      })
+    let employeeSuggestions = JSON.parse(window.localStorage.employeeSuggestions);
+    let filteredSuggestions = JSON.parse(window.localStorage.filteredSuggestions);
+    if(employeeSuggestions && filteredSuggestions) {
       this.setState({
-        employeeSuggestions: this.sort(suggests),
-        filteredSuggestions: this.sort(suggests),
-        empId
+        employeeSuggestions,
+        filteredSuggestions
       })
-    })
-    .catch((err) => {
-      console.error('VISITOR FETCH FAILED', err);
-    });
+    } else {
+      getEmployees().then((snap) => {
+        const data = snap.val();
+        if (!data) {
+          return;
+        }
+        let suggests = [];
+        Object.keys(data).forEach((employee) => {
+          if(employee != 'count')
+          suggests.push({
+             label : data[employee].name,
+             employeeId : employee
+          })
+        })
+        let empObj = this.sort(suggests);
+
+        window.localStorage.employeeSuggestions = JSON.stringify(empObj);
+        window.localStorage.filteredSuggestions = JSON.stringify(empObj);
+        this.setState({
+          employeeSuggestions: this.sort(suggests),
+          filteredSuggestions: this.sort(suggests),
+        })
+      })
+      .catch((err) => {
+        console.error('VISITOR FETCH FAILED', err);
+      });
+    }
   }
 
 
@@ -692,7 +702,7 @@ renderSearchedEmployee() {
       </Box>
       </Col>
       <Col>
-      
+
       </Col>
       </Row>
       </Container>
@@ -872,7 +882,6 @@ renderSearchedEmployee() {
           style={{marginBottom:'10px', marginTop:'10px', width:'300px', height: '300px'}}>
         { this.renderOutsideCamera() }
         { this.renderSelectedOptions() }
-
         </div>
       }
       {this.renderPrintCard()}
