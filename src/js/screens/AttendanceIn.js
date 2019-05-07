@@ -99,9 +99,10 @@ class AttendanceIn extends Component {
   }
 
   getEmployeeDetails() {
-    let employeeSuggestions = JSON.parse(window.localStorage.employeeSuggestions);
-    let filteredSuggestions = JSON.parse(window.localStorage.filteredSuggestions);
-    if(employeeSuggestions && filteredSuggestions) {
+    let employeeSuggestions = JSON.parse(window.localStorage.employeeSuggestions || '{}');
+    let filteredSuggestions = JSON.parse(window.localStorage.filteredSuggestions || '{}');
+    if(Object.keys(employeeSuggestions).length > 0  && Object.keys(filteredSuggestions).length > 0) {
+      console.log('reading from cache');
       this.setState({
         employeeSuggestions,
         filteredSuggestions
