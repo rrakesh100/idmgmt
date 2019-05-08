@@ -187,7 +187,7 @@ export default class VehicleOut extends Component {
       if(window.localStorage.unit === 'UNIT3') {
         prefix = 'U3';
       }
-      let outwardSNo = `${prefix}-OUT-${dbCount}`;
+      let outwardSNo = `${prefix}-OUT-${dbCount || 1}`;
 
       this.setState({
         outwardSNo,

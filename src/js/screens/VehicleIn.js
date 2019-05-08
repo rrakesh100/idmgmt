@@ -165,8 +165,9 @@ export default class VehicleIn extends Component {
           lastCount: dbCount
         })
       } else {
-        let inwardSNo = `${prefix}-IN-${dbCount}`;
-        this.setState({ inwardSNo, lastCount: dbCount })
+        let count = dbCount || 1;
+        let inwardSNo = `${prefix}-IN-${count}`;
+        this.setState({ inwardSNo, lastCount: count })
       }
       }).catch((e) => console.log(e))
   }

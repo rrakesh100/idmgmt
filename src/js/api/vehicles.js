@@ -92,17 +92,19 @@ export function savingOutwardVehicle(data) {
   const newData = Object.assign({}, data);
   newData.outwardDate= dateStr;
   newData.outTime=timeStr;
-  console.log(data);
-  if(data.inwardDate) {
-    const inwardObj = {
-      inSide: false,
-      outDate: dateStr,
-      outTime: timeStr,
-      outwardSNo: data.outwardSNo,
-      goingTo: data.goingTo
-    }
-    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}`]=inwardObj;
-    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}`]=inwardObj;
+
+    if(data.inwardDate) {
+    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}/inSide`]=false;
+    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}/outDate`]=dateStr;
+    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}/outTime`]=timeStr;
+    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}/outwardSNo`]=data.outwardSNo;
+    updates[localStorage.unit + '/' +`vehicleReports/in/vehicleWise/${data.vehicleNumber}/${data.inwardDate}/${data.inwardSNo}/goingTo`]=data.goingTo;
+
+    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/inSide`]=false;
+    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/outDate`]=dateStr;
+    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/outTime`]=timeStr;
+    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/outwardSNo`]=data.outwardSNo;
+    updates[localStorage.unit + '/' +`vehicleReports/in/dateWise/${data.inwardDate}/${data.vehicleNumber}/${data.inwardSNo}/goingTo`]=data.goingTo;
   }
 
   const vehicleBarcodesObj = {
@@ -131,9 +133,11 @@ export function savingOutwardVehicle(data) {
     comingFrom: data.comingFrom,
     inwardSNo: data.inwardSNo
   }
-  console.log(outwardObj);
-  console.log(data.outwardSNo);
-  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}`]=vehicleBarcodesObj;
+  
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/outDate`]=dateStr;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/outTime`]=timeStr;
+  updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/inSide`]=false;
+
   updates[localStorage.unit + '/' +`vehicles/${prefix}/count/outCount`] = data.lastCount+1;
   updates[localStorage.unit + '/' +`vehicles/${data.vehicleNumber}/lastOutward`] = newData;
   updates[localStorage.unit + '/' +`vehicleReports/out/vehicleWise/${data.vehicleNumber}/${dateStr}/${data.outwardSNo}`] = outwardObj;
