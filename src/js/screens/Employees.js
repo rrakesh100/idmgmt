@@ -205,7 +205,7 @@ class Employees extends Component {
             <Tab title='ATTENDANCE OUT'>
             <AttendanceOut />
             </Tab>
-            <Tab>
+            <Tab title='REPORTS'>
             <EmployeeReports />
             </Tab>
             </Tabs>
