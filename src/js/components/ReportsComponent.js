@@ -6,7 +6,7 @@ export default class reportsComponent extends React.Component {
 
   renderReports() {
     const { showReports, response, reportType, vehicleNumber, ownOutVehicle, emptyLoad, materialType, location, startDate, endDate, datesArr, materialwiseReport, vehicleWiseReport } = this.props;
-  
+
     if(!showReports || !response)
     return null;
 
@@ -175,9 +175,15 @@ export default class reportsComponent extends React.Component {
            <table className="vehicleReportsTable" style={{ marginLeft : 4, marginTop:10}}>
              <thead className="vehiclesTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
               <tr>
-                <th colSpan={4}>Out/Own Vehicles: {ownOutVehicle}</th>
-                <th colSpan={4}>Empty/Load: {emptyLoad}</th>
-                <th colSpan={4}>No of Vehicles: {[...new Set(vehiclesArray)].length}</th>
+                <th colSpan={4}>Out/Own: {ownOutVehicle}</th>
+                {vehicleWiseReport ?
+                  <th colSpan={4}>Empty/Load: {emptyLoad}</th> :
+                  null
+                }
+                { materialwiseReport ? <th colSpan={4}>No of Vehicles: {[...new Set(vehiclesArray)].length}</th> : null }
+                { materialwiseReport ?
+                  <th colSpan={4}>Material Type: {materialType}</th> :
+                  <th colSpan={4}>Vehicle No: {vehicleNumber}</th> }
               </tr>
               <tr>
                 <th rowSpan={2}>S No.</th>

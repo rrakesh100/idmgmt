@@ -133,7 +133,7 @@ export function savingOutwardVehicle(data) {
     comingFrom: data.comingFrom,
     inwardSNo: data.inwardSNo
   }
-  
+
   updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/outDate`]=dateStr;
   updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/outTime`]=timeStr;
   updates[localStorage.unit + '/' +`vehicleBarcodes/${data.inwardSNo}/inSide`]=false;
@@ -146,14 +146,22 @@ export function savingOutwardVehicle(data) {
   return dbRef.update(updates);
 }
 
-export function fetchVehicleReportsData(report) {
-  let reportType;
+export function fetchVehicleReportsData(report, unit) {
+  let reportType, unitName;
   if(report == 'Outward') {
     reportType = 'out';
   } else {
     reportType = 'in';
   }
-  const dbRef = firebase.database().ref(localStorage.unit + '/' + `vehicleReports/${reportType}/dateWise`);
+  if(unit) {
+    if(unit === 'UNIT2')
+    unitName='';
+    else
+    unitName=unit;
+  } else {
+    unitName=localStorage.unit;
+  }
+  const dbRef = firebase.database().ref(unitName + '/' + `vehicleReports/${reportType}/dateWise`);
   return dbRef.once('value');
 }
 

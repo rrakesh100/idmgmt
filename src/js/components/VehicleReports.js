@@ -126,8 +126,9 @@ export default class VehicleReports extends Component {
   }
 
   onFetchingVehicleData() {
-    const { reportType, startDate, endDate } = this.state;
+    const { reportType, startDate, endDate, location } = this.state;
 
+    console.log(location);
     if(reportType=='Abstract OH Vehicles') {
       getOutsideVehicles().then(snap => {
         let abstractOnhandResponse=snap.val();
@@ -139,7 +140,7 @@ export default class VehicleReports extends Component {
         this.setState({abstractResponse})
       }).catch(err => console.log(err))
     } else {
-      fetchVehicleReportsData(reportType).then(res => {
+      fetchVehicleReportsData(reportType, location).then(res => {
         const response = res.val();
         this.setState({response})
       })
@@ -309,6 +310,16 @@ export default class VehicleReports extends Component {
       </div>
 
       <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}}>
+      <div style={{width: 300}}>
+      <FormField label='Location' style={{marginTop:15}}>
+            <Select
+              placeHolder='Location'
+              options={['All Locations', 'UNIT1','UNIT2','UNIT3','BIKKAVOLU','CHOLLANGI','KESAVARAM','KOVVURU','PEDDAPURAPPADU','SURAMPALEM','SVPC','TAPESWARAM','UPPALANKA','VASAVI']}
+              value={this.state.location}
+              onChange={this.onFieldChange.bind(this, 'location')}
+            />
+      </FormField>
+      </div>
       <Button  label='Show Report'
       onClick={this.onValidatingInputs.bind(this)}
       style={{ display : 'inline-block' , marginTop: 20, width:300}}

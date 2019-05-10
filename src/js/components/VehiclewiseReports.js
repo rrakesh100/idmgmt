@@ -312,7 +312,7 @@ class VehiclewiseReports extends React.Component {
       <FormField label='Location' style={{marginTop:15}}>
             <Select
               placeHolder='Location'
-              options={['All Locations', 'UNIT-2', 'UNIT-3']}
+              options={['All Locations', 'UNIT2', 'UNIT3']}
               value={this.state.location}
               onChange={this.onFieldChange.bind(this, 'location')}
             />
