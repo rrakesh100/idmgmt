@@ -42,6 +42,9 @@ class Vehicles extends Component {
     };
   }
 
+  componentDidMount() {
+    this.getVehicleNumberDetails()
+  }
 
   getPartyDetails() {
     getParties().then(res => {
@@ -100,7 +103,6 @@ class Vehicles extends Component {
 
 
   render() {
-    const {vehicles} = this.state;
     return (
       <Article primary={true} full={true} className='giveVehicle'>
       <Header
@@ -115,13 +117,22 @@ class Vehicles extends Component {
         <Section>
             <Tabs justify='start' style={{marginLeft: 20, marginTop: -20}}>
             <Tab title='HOME'>
-              <AllVehiclesPrint />
+              <AllVehiclesPrint vehicleOptions={this.state.vehicleOpt}/>
             </Tab>
             <Tab title='VEHICLE IN'>
               <VehicleIn />
             </Tab>
             <Tab title='VEHICLE OUT'>
               <VehicleOut />
+            </Tab>
+            <Tab title='REPORTS'>
+              <VehicleReports />
+            </Tab>
+            <Tab title='MATERIALWISE'>
+              <MaterialwiseReports />
+            </Tab>
+            <Tab title='VEHICLEWISE'>
+              <VehiclewiseReports />
             </Tab>
             </Tabs>
         </Section>

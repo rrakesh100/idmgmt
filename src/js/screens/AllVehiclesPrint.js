@@ -4,12 +4,14 @@ import TableRow from 'grommet/components/TableRow'
 import Button from 'grommet/components/Button';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
-import { getAllVehicles } from '../api/vehicles';
+import { getAllVehicles, getVehicleForPrint } from '../api/vehicles';
 import VehicleInPrintComponent from '../components/VehicleInPrintComponent';
 import VehicleOutPrintComponent from '../components/VehicleOutPrintComponent';
 import ReactToPrint from "react-to-print";
 import Layer from 'grommet/components/Layer';
+import Search from 'grommet/components/Search';
 import Article from 'grommet/components/Article';
+import { Input } from 'semantic-ui-react';
 
 
 export default class AllVehiclesPrint extends Component {
@@ -19,18 +21,26 @@ export default class AllVehiclesPrint extends Component {
       vehicles: null,
       vehicleInObj: null,
       vehicleOutObj: null,
-      showVehicleList: true
+      showVehicleList: true,
+      showVehicles: false,
+      vehicleDataObj: null
     }
   }
 
-  componentDidMount() {
-    const { vehicles } = this.props;
-    this.setState({vehicles})
+  getAllVehicles() {
+    getAllVehicles().then((snap) => {
+      this.setState({
+        vehicles: snap.val()
+      })
+    }).catch((err) => {
+      console.error('ALL VEHICLES FETCH FAILED', err)
+    })
   }
 
   onVehicleInPrint(vehicle) {
     const {vehicles} = this.state;
     let vehicleInObj = vehicles[vehicle] && vehicles[vehicle]['lastInward'];
+    console.log(vehicleInObj);
     this.setState({vehicleInObj, showVehicleList:false})
   }
 
@@ -38,6 +48,14 @@ export default class AllVehiclesPrint extends Component {
     const {vehicles} = this.state;
     let vehicleOutObj = vehicles[vehicle] && vehicles[vehicle]['lastOutward'];
     this.setState({vehicleOutObj, showVehicleList: false})
+  }
+
+  onSearchedVehicleInPrint(vInObj) {
+    this.setState({vehicleInObj: vInObj, showVehicleList: false})
+  }
+
+  onSearchedVehicleOutPrint(vOutObj) {
+    this.setState({vehicleOutObj: vOutObj, showVehicleList: false})
   }
 
   renderInContent() {
@@ -174,12 +192,12 @@ export default class AllVehiclesPrint extends Component {
   }
 
   renderAllVehiclesList() {
-    const {vehicles, showVehicleList} = this.state;
+    const {vehicles, showVehicleList, showVehicles} = this.state;
     if(!vehicles)
     return null;
     let i=0;
 
-    if(showVehicleList) {
+    if(showVehicleList && showVehicles) {
     return (
       <div className='table'>
       <Table scrollable={true} style={{marginTop : '60px'}}>
@@ -249,12 +267,113 @@ export default class AllVehiclesPrint extends Component {
     )
   }
 
+  onShowingVehiclesList() {
+    this.setState({
+      showVehicles: true,
+      vehicleDataObj: null
+    }, this.getAllVehicles.bind(this))
+  }
+
+  onFieldChange(fieldName,e,o) {
+    getVehicleForPrint(o.value).then(res => {
+      const vehicleDataObj=res.val();
+      this.setState({vehicleDataObj, showVehicles: false})
+    }).catch(err => console.log(err))
+  }
+
+  renderSerchedVehicle() {
+    const {vehicleDataObj, showVehicleList}=this.state;
+    if(!vehicleDataObj)
+    return null;
+
+    const vehicleInwardItem = vehicleDataObj && vehicleDataObj['lastInward'];
+    const vehicleOutwadItem = vehicleDataObj && vehicleDataObj['lastOutward'];
+    console.log(vehicleOutwadItem);
+    if(showVehicleList) {
+    return (
+      <div className='table'>
+      <Table scrollable={true} style={{marginTop : '60px'}}>
+          <thead style={{position:'relative'}}>
+           <tr>
+             <th>Vehicle No.</th>
+             <th>Inward Sno</th>
+             <th>In Date</th>
+             <th>In Time</th>
+             <th>Outward Sno</th>
+             <th>Out Date</th>
+             <th>Out Time</th>
+             <th>Vehicle In</th>
+             <th>Vehicle Out</th>
+           </tr>
+          </thead>
+          <tbody>
+               <TableRow>
+               <td>{vehicleInwardItem && vehicleInwardItem.vehicleNumber}</td>
+               <td>{vehicleInwardItem && vehicleInwardItem.inwardSNo}</td>
+               <td>{vehicleInwardItem && vehicleInwardItem.inwardDate}</td>
+               <td>{vehicleInwardItem && vehicleInwardItem.inTime}</td>
+               <td>{vehicleOutwadItem ? vehicleOutwadItem.outwardSNo : '--'}</td>
+               <td>{vehicleOutwadItem ? vehicleOutwadItem.outwardDate : '--'}</td>
+               <td>{vehicleOutwadItem ? vehicleOutwadItem.outTime : '--'}</td>
+                <td>
+                     <Button icon={<PrintIcon />}
+                           onClick={this.onSearchedVehicleInPrint.bind(this, vehicleInwardItem)}
+                           plain={true} />
+                </td>
+                <td>
+                   {
+                     vehicleOutwadItem ?
+                     <Button icon={<PrintIcon />}
+                         onClick={this.onSearchedVehicleOutPrint.bind(this, vehicleOutwadItem)}
+                         plain={true} /> : 'N/A'
+                   }
+                </td>
+                </TableRow>
+          }
+          </tbody>
+      </Table>
+      </div>
+    )
+  } else {
+    return null;
+  }
+  }
+
+  renderSearchAndButton() {
+    const vehicleOptions = this.props.vehicleOptions || [];
+    return (
+      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+      <Input transparent
+      list='vehicles'
+      placeholder='Vehicle Number'
+      style={{marginLeft:20}}
+      onChange={this.onFieldChange.bind(this, 'searchedVNo')} />
+    <datalist id='vehicles'>
+      {
+        vehicleOptions.map((val, index) => {
+          return <option value={val} key={index}/>
+        })
+      }
+    </datalist>
+      <Button  label='Show All Vehicles'
+      onClick={this.onShowingVehiclesList.bind(this)}
+      style={{marginRight:40}}
+      primary={true}
+      href='#'/>
+      </div>
+    )
+  }
+
 
   render() {
 
     return (
       <div>
-      <h1>Under Repair</h1>
+      {this.renderSearchAndButton()}
+      {this.renderSerchedVehicle()}
+      {this.renderVehicleInPrintCard()}
+      {this.renderVehicleOutPrintCard()}
+      {this.renderAllVehiclesList()}
       </div>
     )
   }

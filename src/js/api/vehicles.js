@@ -22,16 +22,26 @@ export function getPrefix() {
     prefix = 'U3';
   } else if(localStorage.unit === 'UNIT1') {
     prefix = 'U1';
-  } else if (localStorage.unit === 'UNIT3') {
-    prefix = 'U3';
-  } else if (localStorage.unit === 'UNIT5') {
-    prefix = 'U5';
-  } else if (localStorage.unit === 'AYYAPPA') {
-    prefix = 'AG';
+  } else if (localStorage.unit === 'BIKKAVOLU') {
+    prefix = 'BV';
+  } else if (localStorage.unit === 'CHOLLANGI') {
+    prefix = 'CH';
+  } else if (localStorage.unit === 'KESAVARAM') {
+    prefix = 'KS';
+  } else if (localStorage.unit === 'KOVVURU') {
+    prefix = 'KV';
+  } else if (localStorage.unit === 'PEDDAPURAPPADU') {
+    prefix = 'PD';
   } else if (localStorage.unit === 'SURAMPALEM') {
-    prefix = 'SP';
+    prefix = 'SU';
   } else if (localStorage.unit === 'SVPC') {
-    prefix = 'SV';
+    prefix = 'SVP';
+  } else if (localStorage.unit === 'TAPESWARAM') {
+    prefix = 'TP';
+  } else if (localStorage.unit === 'UPPALANKA') {
+    prefix = 'UL';
+  } else if (localStorage.unit === 'VASAVI') {
+    prefix = 'VS';
   }
   return prefix;
 }
@@ -85,10 +95,7 @@ export function savingOutwardVehicle(data) {
   const dateStr = moment(date).format('DD-MM-YYYY');
   const timeStr = moment(date).format('h:mm A');
   const dbRef = firebase.database().ref();
-  const updates = {}; let prefix = 'U2';
-  if(localStorage.unit === 'UNIT3') {
-    prefix = 'U3';
-  }
+  const updates = {}; let prefix = getPrefix();
   const newData = Object.assign({}, data);
   newData.outwardDate= dateStr;
   newData.outTime=timeStr;
@@ -250,6 +257,11 @@ export function getLastVehicleInCount() {
 
 export function getLastVehicleOutCount() {
   const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicles/${getPrefix()}/count/outCount/`);
+  return dbRef.once('value');
+}
+
+export function getVehicleForPrint(vNo) {
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +`vehicles/${vNo}`);
   return dbRef.once('value');
 }
 

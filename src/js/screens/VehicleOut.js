@@ -33,7 +33,7 @@ import { savingOutwardVehicle,
           getVehicleForValidation,
           getVehicleBarcodes,
           fetchVehicleBarcodeData,
-          getLastVehicleOutCount } from '../api/vehicles';
+          getLastVehicleOutCount, getPrefix } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Image from 'grommet/components/Image';
@@ -182,16 +182,13 @@ export default class VehicleOut extends Component {
 
   getVehicleDetails() {
     getLastVehicleOutCount().then((snap) => {
-      const dbCount = snap.val();
-      let prefix = 'U2';
-      if(window.localStorage.unit === 'UNIT3') {
-        prefix = 'U3';
-      }
-      let outwardSNo = `${prefix}-OUT-${dbCount || 1}`;
-
+      let dbCount = snap.val();
+      let count=dbCount || 1;
+      let prefix = getPrefix();
+      let outwardSNo = `${prefix}-OUT-${count}`;
       this.setState({
         outwardSNo,
-        lastCount: dbCount
+        lastCount: count
       }, this.getAllVehicleBarcodes())
     }).catch((e) => console.log(e))
   }

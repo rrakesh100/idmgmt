@@ -184,13 +184,13 @@ class Login extends Component {
         <Sidebar justify='between' align='center' pad='none' size='large' full={true}>
           <span />
           <Select style={{width: 420}}
-          options={['UNIT1', 'UNIT2', 'UNIT3', 'UNIT4']}
+          options={['UNIT1','UNIT2','UNIT3','BIKKAVOLU','CHOLLANGI','KESAVARAM','KOVVURU','PEDDAPURAPPADU','SURAMPALEM','SVPC','TAPESWARAM','UPPALANKA','VASAVI']}
           placeHolder='UNIT'
           value={this.state.fUnit}
           onChange={this.onFieldChange.bind(this, 'fUnit')}
           />
           <Select style={{width: 420}}
-          options={['UNIT1', 'UNIT2', 'UNIT3', 'UNIT4']}
+          options={['UNIT1','UNIT2','UNIT3','BIKKAVOLU','CHOLLANGI','KESAVARAM','KOVVURU','PEDDAPURAPPADU','SURAMPALEM','SVPC','TAPESWARAM','UPPALANKA','VASAVI']}
           placeHolder='UNIT'
           value={this.state.sUnit}
           onChange={this.onFieldChange.bind(this, 'sUnit')}
