@@ -128,7 +128,6 @@ export default class VehicleReports extends Component {
   onFetchingVehicleData() {
     const { reportType, startDate, endDate, location } = this.state;
 
-    console.log(location);
     if(reportType=='Abstract OH Vehicles') {
       getOutsideVehicles().then(snap => {
         let abstractOnhandResponse=snap.val();

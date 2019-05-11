@@ -288,7 +288,6 @@ export default class AllVehiclesPrint extends Component {
 
     const vehicleInwardItem = vehicleDataObj && vehicleDataObj['lastInward'];
     const vehicleOutwadItem = vehicleDataObj && vehicleDataObj['lastOutward'];
-    console.log(vehicleOutwadItem);
     if(showVehicleList) {
     return (
       <div className='table'>

@@ -90,6 +90,10 @@ export default class reportsComponent extends React.Component {
           if(vehicleNumber !== vObj.vehicleNumber) {
             isValid=false;
           }
+
+          if(emptyLoad !== 'All' && emptyLoad !== vObj.emptyLoad) {
+            isValid=false;
+          }
         }
 
           if(reportType === 'Outward') {

@@ -166,7 +166,8 @@ class VehiclewiseReports extends React.Component {
   }
 
   onFetchingVehicleData() {
-      fetchVehicleReportsData(this.state.reportType).then(res => {
+    const {reportType, location}=this.state;
+      fetchVehicleReportsData(reportType, location).then(res => {
         let vehicleData=res.val();
         this.setState({vehicleData}, this.onShowingReports.bind(this))
       })
@@ -179,17 +180,23 @@ class VehiclewiseReports extends React.Component {
     })
   }
 
+  setRef(ref) {
+    this.componentRef = ref;
+  }
+
   vehiclewiseReports() {
     const { showReports, vehicleData, vehicleNumber, reportType, ownOutVehicle, emptyLoad, location, startDate, endDate, datesArr } = this.state;
+    let vNo = vehicleNumber && vehicleNumber.toUpperCase();
     return (
       <div>
           <ReportsComponent
+            ref={this.setRef.bind(this)}
             showReports={showReports}
             vehicleWiseReport={true}
             response={vehicleData}
             ownOutVehicle={ownOutVehicle}
             emptyLoad={emptyLoad}
-            vehicleNumber={vehicleNumber}
+            vehicleNumber={vNo}
             reportType={reportType}
             location={location}
             startDate={startDate}
@@ -312,7 +319,7 @@ class VehiclewiseReports extends React.Component {
       <FormField label='Location' style={{marginTop:15}}>
             <Select
               placeHolder='Location'
-              options={['All Locations', 'UNIT2', 'UNIT3']}
+              options={['All Locations', 'UNIT1','UNIT2','UNIT3','BIKKAVOLU','CHOLLANGI','KESAVARAM','KOVVURU','PEDDAPURAPPADU','SURAMPALEM','SVPC','TAPESWARAM','UPPALANKA','VASAVI']}
               value={this.state.location}
               onChange={this.onFieldChange.bind(this, 'location')}
             />

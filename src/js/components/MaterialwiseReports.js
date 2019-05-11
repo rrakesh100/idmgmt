@@ -168,7 +168,8 @@ class MaterialwiseReports extends React.Component {
   }
 
   onFetchingVehicleData() {
-      fetchVehicleReportsData(this.state.reportType).then(res => {
+    const {reportType, location}=this.state;
+      fetchVehicleReportsData(reportType, location).then(res => {
         let vehicleData=res.val();
         this.setState({vehicleData}, this.onShowingMaterialwiseReports.bind(this))
       })
@@ -181,11 +182,16 @@ class MaterialwiseReports extends React.Component {
     })
   }
 
+  setRef(ref) {
+    this.componentRef = ref;
+  }
+
   materialwiseReports() {
     const { showReports, vehicleData, materialType, reportType, ownOutVehicle, emptyLoad, location, startDate, endDate, datesArr } = this.state;
     return (
       <div>
           <ReportsComponent
+            ref={this.setRef.bind(this)}
             showReports={showReports}
             materialwiseReport={true}
             response={vehicleData}
@@ -281,7 +287,7 @@ class MaterialwiseReports extends React.Component {
       <FormField label='Location' style={{marginTop:15}}>
             <Select
               placeHolder='Location'
-              options={['All Locations', 'UNIT2', 'UNIT3']}
+              options={['All Locations', 'UNIT1','UNIT2','UNIT3','BIKKAVOLU','CHOLLANGI','KESAVARAM','KOVVURU','PEDDAPURAPPADU','SURAMPALEM','SVPC','TAPESWARAM','UPPALANKA','VASAVI']}
               value={this.state.location}
               onChange={this.onFieldChange.bind(this, 'location')}
             />
