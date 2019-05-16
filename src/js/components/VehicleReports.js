@@ -127,7 +127,14 @@ export default class VehicleReports extends Component {
 
   onFetchingVehicleData() {
     const { reportType, startDate, endDate, location } = this.state;
-
+    let report;
+    if(reportType == 'Outward') {
+      report = 'out';
+    } else {
+      report = 'in';
+    }
+    let unitsArray=['UNIT1','UNIT2','UNIT3','BIKKAVOLU','CHOLLANGI','KESAVARAM','KOVVURU','PEDDAPURAPPADU','SURAMPALEM','SVPC','TAPESWARAM','UPPALANKA','VASAVI'];
+    let allUnitsObj={};
     if(reportType=='Abstract OH Vehicles') {
       getOutsideVehicles().then(snap => {
         let abstractOnhandResponse=snap.val();
@@ -138,14 +145,32 @@ export default class VehicleReports extends Component {
         let abstractResponse=snap.val();
         this.setState({abstractResponse})
       }).catch(err => console.log(err))
-    } else {
+    } else if((reportType === 'Inward' || reportType === 'Inside the Unit' || reportType === 'Outward') && location !== 'All Locations') {
       fetchVehicleReportsData(reportType, location).then(res => {
         const response = res.val();
         this.setState({response})
       })
       .catch((err) => console.error(err))
-    }
+    } else {
+      let unitsVehicleReports;
+      const dbRef = firebase.database().ref();
+    Promise.all(
+      unitsArray.map(eachUnit => {
+        if(eachUnit === 'UNIT2') {
+          return dbRef.child('vehicleReports').child(report).child('dateWise').once('value').then(response => {
+           unitsVehicleReports = response.val();
+          console.log(unitsVehicleReports);
+        }).catch(err => console.log(err));
 
+        } else {
+          return dbRef.child(eachUnit).child('vehicleReports').child(report).child('dateWise').once('value').then(response => {
+           unitsVehicleReports = response.val();
+          console.log(unitsVehicleReports);
+        }).catch(err => console.log(err));
+      }
+      })
+    ).then(()=> console.log('success')).catch(err => console.log(err))
+    }
   }
 
   renderValidationMsg() {

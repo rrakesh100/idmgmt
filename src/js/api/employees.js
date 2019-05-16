@@ -7,6 +7,9 @@ export function saveEmployee(data) {
   let count = 1;
   const gender = data.gender;
   const countObj = data.countObj;
+  let maxMaleCount = countObj.maxMaleCount || 1;
+  let maxFemaleCount = countObj.maxFemaleCount || 1;
+  let maxJattuCount = countObj.maxJattuCount || 1;
   const date = new Date();
   const timeStr = moment(date).format('h:mm A');
 
@@ -19,12 +22,12 @@ export function saveEmployee(data) {
   updates[localStorage.unit + '/' +`employees/${data.employeeId}`] = newData;
   updates[localStorage.unit + '/' +`daywiseEmployees/${dateStr}/${data.employeeId}`] = newData;
   if(gender == 'Male' && data.paymentType !== 'Jattu-Daily payment') {
-  updates[localStorage.unit + '/' +`employees/count/maxMaleCount`] = countObj.maxMaleCount + 1;
+  updates[localStorage.unit + '/' +`employees/count/maxMaleCount`] = maxMaleCount + 1;
   }
   else if(gender == 'Female' && data.paymentType !== 'Jattu-Daily payment') {
-    updates[localStorage.unit + '/' +`employees/count/maxFemaleCount`] = countObj.maxFemaleCount + 1;
+    updates[localStorage.unit + '/' +`employees/count/maxFemaleCount`] = maxFemaleCount + 1;
   } else {
-    updates[localStorage.unit + '/' +`employees/count/maxJattuCount`] = countObj.maxJattuCount + 1;
+    updates[localStorage.unit + '/' +`employees/count/maxJattuCount`] = maxJattuCount + 1;
   }
 
   return dbRef.update(updates);
@@ -66,14 +69,14 @@ export function saveEmployee(data) {
   }
 
 export function getEmployee(employeeId) {
-  const employeePath = `employees/${employeeId}`;
+  const employeePath = localStorage.unit + '/' + `employees/${employeeId}`;
   const dbRef = firebase.database().ref(employeePath);
   return dbRef.once('value');
 }
 
 export function getEmployees() {
   const date = new Date();
-  const dbRef = firebase.database().ref('employees');
+  const dbRef = firebase.database().ref(localStorage.unit + '/' + `employees`);
   return dbRef.once('value');
 }
 

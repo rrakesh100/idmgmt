@@ -613,7 +613,14 @@ renderSearchedEmployee() {
       </Box>
       </Col>
       <Col>
-
+      <div>
+        <Image src={screenshot} style={{marginTop:'15px', height:'350px'}}/>
+      </div>
+      </Col>
+      <Col>
+      <div>
+      <Image src={selectedEmployeeData.inwardPhoto} style={{marginTop:'15px', height:'350px'}}/>
+      </div>
       </Col>
       </Row>
       </Container>

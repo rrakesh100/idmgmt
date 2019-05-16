@@ -154,12 +154,14 @@ export function savingOutwardVehicle(data) {
 }
 
 export function fetchVehicleReportsData(report, unit) {
+  let unitsArray = ['BIKKAVOLU','CHOLLANGI'];
   let reportType, unitName;
   if(report == 'Outward') {
     reportType = 'out';
   } else {
     reportType = 'in';
   }
+
   if(unit) {
     if(unit === 'UNIT2')
     unitName='';

@@ -50,7 +50,7 @@ class AttendanceIn extends Component {
       msg : '',
       employeeSearchString : '',
       selectedEmployeeId : '',
-      selectedEmployeeData : {},
+      selectedEmployeeData : null,
       showLiveCameraFeed: true,
       dateVal: '',
       shift: '',
@@ -547,7 +547,7 @@ renderSearchedEmployee() {
 
   let timeslot = window.localStorage.timeslot || this.state.timeslot;
 
-  if(Object.keys(selectedEmployeeData).length > 0) {
+  if(selectedEmployeeData && Object.keys(selectedEmployeeData).length > 0) {
     const { screenshot, name, employeeId, paymentType, inTime } = selectedEmployeeData;
     let inSide;
     if(localStorage.unit == '') {
@@ -701,7 +701,9 @@ renderSearchedEmployee() {
       </Box>
       </Col>
       <Col>
-
+      <div style={{marginLeft:'160px'}}>
+        <Image src={screenshot} style={{marginTop:'15px', height:'350px'}}/>
+      </div>
       </Col>
       </Row>
       </Container>
@@ -790,7 +792,7 @@ renderSearchedEmployee() {
 
   renderSaveButton() {
     const { selectedEmployeeData } = this.state;
-    if(Object.keys(selectedEmployeeData).length > 0) {
+    if(selectedEmployeeData && Object.keys(selectedEmployeeData).length > 0) {
       let inSide;
       if(localStorage.unit == '') {
         inSide = selectedEmployeeData.inSide || false;
@@ -823,6 +825,9 @@ renderSearchedEmployee() {
 
   renderPrintCard() {
     const { shift, dateVal, screenshot, selectedEmployeeData, inwardPhoto } = this.state;
+    if(!selectedEmployeeData)
+    return null;
+
     return (
       <div>
       <AttendancePrintComponent

@@ -265,7 +265,7 @@ class MaterialwiseReports extends React.Component {
       <FormField label='Report Type' style={{marginTop:20}}>
         <Select
           placeHolder='Report Type'
-          options={['Inward', 'Outward']}
+          options={['Inward', 'Inside the Unit', 'Outward']}
           value={this.state.reportType}
           onChange={this.onFieldChange.bind(this, 'reportType')}
         />

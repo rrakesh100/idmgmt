@@ -76,6 +76,10 @@ export default class reportsComponent extends React.Component {
           isValid=false;
         }
 
+        if(reportType == 'Inside the Unit' && !vObj.inSide) {
+          isValid=false;
+        }
+
         if(materialwiseReport) {
           if(materialType !== vObj.material) {
             isValid=false;

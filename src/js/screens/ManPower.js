@@ -113,17 +113,26 @@ export default class ManPower extends Component {
       [fieldName]: fieldValue
     },() => {
       const { employeeData, gender, paymentType } = this.state;
+      let initialCountObj = {
+        maxMaleCount:1,
+        maxFemaleCount:1,
+        maxJattuCount:1
+      };
+
       if(gender && paymentType) {
         let genderStr = gender.substring(0,1);
         let paymentTypeStr = paymentType.substring(0,1);
-        let countObj = employeeData.count;
+        let countObj = employeeData ? employeeData.count : initialCountObj;
+        let maxMaleCount = countObj.maxMaleCount || 1;
+        let maxFemaleCount = countObj.maxFemaleCount || 1;
+        let maxJattuCount = countObj.maxJattuCount || 1;
         let barCode = paymentTypeStr + genderStr;let employeeId = '000'
         if(gender ==='Male' && paymentType !== 'Jattu-Daily payment') {
-           employeeId = barCode + countObj.maxMaleCount;
+           employeeId = barCode + maxMaleCount;
         }else if(gender==='Female' && paymentType !== 'Jattu-Daily payment') {
-           employeeId = barCode + countObj.maxFemaleCount;
+           employeeId = barCode + maxFemaleCount;
         }else{
-           employeeId = barCode + countObj.maxJattuCount;
+           employeeId = barCode + maxJattuCount;
         }
         this.setState({
           employeeId
@@ -196,7 +205,13 @@ export default class ManPower extends Component {
             remarks,
             numberOfPersons,
             count } = this.state;
-    let countObj = employeeData.count;
+
+            let initialCountObj = {
+              maxMaleCount:1,
+              maxFemaleCount:1,
+              maxJattuCount:1
+            };
+    let countObj = employeeData ? employeeData.count : initialCountObj;
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadEmployeeImage(imgFile, employeeId).then((snapshot) => {
     let screenshot = snapshot.downloadURL;
