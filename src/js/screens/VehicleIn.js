@@ -259,11 +259,11 @@ export default class VehicleIn extends Component {
       if(isSuggestionSelected) {
         this.setState({
           selectVehicleNumber: data.suggestion
-        });
+        }, this.getVehicleForValidation.bind(this));
       } else {
         this.setState({
           selectVehicleNumber: data.target.value
-        });
+        }, this.getVehicleForValidation.bind(this));
       }
     }
 
@@ -295,7 +295,7 @@ export default class VehicleIn extends Component {
               this.setState({
                 selectVehicleNumber: e.target.value.toUpperCase(),
                 vehicleOpt: filtered
-              },);
+              },this.getVehicleForValidation.bind(this));
           }
         }
     }
