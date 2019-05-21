@@ -125,7 +125,7 @@ class Vehicles extends Component {
             <Tab title='VEHICLE OUT'>
               <VehicleOut />
             </Tab>
-            <Tab title='REPORTS'>
+            {/*<Tab title='REPORTS'>
               <VehicleReports />
             </Tab>
             <Tab title='MATERIALWISE'>
@@ -133,7 +133,7 @@ class Vehicles extends Component {
             </Tab>
             <Tab title='VEHICLEWISE'>
               <VehiclewiseReports />
-            </Tab>
+            </Tab>*/}
             </Tabs>
         </Section>
       </Article>
