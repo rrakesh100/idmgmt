@@ -13,7 +13,7 @@ const initialState = {
   items: [
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/visitors', label: 'VISITORS' },
-    { path: '/items', label: 'ITEMS' },
+    { path: '/items', label: 'STORE MATERIAL' },
     { path: '/vehicles', label: 'VEHICLES' },
     { path: '/employees', label: 'ATTENDANCE' },
     { path: '/manpower', label: 'MAN POWER' },

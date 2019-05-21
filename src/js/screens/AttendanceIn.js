@@ -359,14 +359,12 @@ class AttendanceIn extends Component {
     }
 
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
-    uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
-         let inwardPhoto = snapshot.downloadURL;
-      document.getElementById('printAnchor').click();
+    document.getElementById('printAnchor').click();
+    
     saveAttendanceInData({
       selectedEmployeeId,
       selectedEmployeeName,
       shift,
-      inwardPhoto,
       numberOfPersons,
       paymentType
       }).then(() => {
@@ -379,17 +377,15 @@ class AttendanceIn extends Component {
         showLiveCameraFeed: true,
         hideOutsideCamera : false,
         savingInProgress : false,
-        inwardPhoto
       },() => {
           setTimeout( () => { this.onOkButtonClick() }, 500);
       })
     }).catch((err) => {
       this.setState({
         savingInProgress : false
-      });
+      },()=> cosole.log(err));
             alert('Could not save the data')
     })
-    }).catch((e) => console.log(e))
   }
 
   setRef(webcam) {

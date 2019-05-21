@@ -30,7 +30,7 @@ export function saveAttendanceInData(data) {
   }
 
   updates[localStorage.unit + '/' + `employees/${data.selectedEmployeeId}/savedBy`] = localStorage.email ;
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
+  // updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/shift`] = data.shift;
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/paymentType`] = data.paymentType;
@@ -44,7 +44,7 @@ export function saveAttendanceInData(data) {
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/shift`] = data.shift;
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/paymentType`] = data.paymentType;
   updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/numberOfPersons`] = data.numberOfPersons;
-  updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
+  // updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/inwardPhoto`] = data.inwardPhoto;
 
   updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/savedBy`] = localStorage.email;
   updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/in`] = timeStr;
@@ -52,7 +52,7 @@ export function saveAttendanceInData(data) {
   updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/shift`] = data.shift;
   updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/paymentType`] = data.paymentType;
   updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/numberOfPersons`] = data.numberOfPersons;
-  updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/inwardPhoto`] = data.inwardPhoto;
+  // updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/inwardPhoto`] = data.inwardPhoto;
 
 
   return dbRef.update(updates);
@@ -72,7 +72,7 @@ export function saveAttendanceOutData(data) {
     return;
   }
 
-  updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
+  // updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/outDate`] = dateStr;
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/outTime`] = timeStr;
   updates[localStorage.unit + '/' +`employees/${data.selectedEmployeeId}/${localStorage.unit}/inSide`] = false;
@@ -82,9 +82,9 @@ export function saveAttendanceOutData(data) {
   updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${yesterDateStr}/tomorrowsOutTime`] = timeStr;
   } else {
     updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/out`] = timeStr;
-    updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
+    // updates[localStorage.unit + '/' +`attendance/dates/${dateStr}/${data.selectedEmployeeId}/outwardPhoto`] = data.outwardPhoto;
     updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/out`] = timeStr;
-    updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/outwardPhoto`] = data.outwardPhoto;
+    // updates[localStorage.unit + '/' +`attendance/employees/${data.selectedEmployeeId}/${dateStr}/outwardPhoto`] = data.outwardPhoto;
   }
   return dbRef.update(updates);
 }

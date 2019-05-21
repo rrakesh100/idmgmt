@@ -436,11 +436,10 @@ class AttendanceOut extends Component {
       return;
     }
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
-    uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
-         let outwardPhoto = snapshot.downloadURL;
+    /*uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
+         let outwardPhoto = snapshot.downloadURL;*/
     saveAttendanceOutData({
       selectedEmployeeId,
-      outwardPhoto,
       shift
       }).then(() => {
       this.setState({
@@ -459,7 +458,7 @@ class AttendanceOut extends Component {
       })
       alert('Could not save the data')
     })
-    }).catch((e) => console.log(e))
+    /*}).catch((e) => console.log(e))*/
   }
 
 renderSearchedEmployee() {
