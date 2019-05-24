@@ -309,9 +309,9 @@ export function saveVehicleOutPrintCopiesData(vehicleKey, printData) {
   const dbRef = firebase.database().ref();
   const updates = {};
   if(printData) {
-    updates[`vehicleOutPrintCopies/${vehicleKey}`] = printData + 1;
+    updates[localStorage.unit + '/' + `vehicleOutPrintCopies/${vehicleKey}`] = printData + 1;
   } else {
-    updates[`vehicleOutPrintCopies/${vehicleKey}`] = 1;
+    updates[localStorage.unit + '/' + `vehicleOutPrintCopies/${vehicleKey}`] = 1;
   }
 
   return dbRef.update(updates);
@@ -339,7 +339,6 @@ export function fetchVehicleBarcodeData(barcodeNo) {
 }
 
 export function rollbackData(barcodeNo, vNo) {
-  console.log(vNo);
   const dbRef = firebase.database().ref();
   const date = new Date();
   const dateStr = moment(date).format('DD-MM-YYYY');

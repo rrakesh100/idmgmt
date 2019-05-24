@@ -91,7 +91,7 @@ export default class VehicleOut extends Component {
     this.getMaterialDetails();
     this.getVehicleDetails();
     this.getOwnPlaceDetails();
-    this.getAllVehicleBarcodes();
+    // this.getAllVehicleBarcodes();
   //  this.getPartyDetails();
     if(this.state.barcodeInput) {
       this.state.barcodeInput.focus()
@@ -110,19 +110,19 @@ export default class VehicleOut extends Component {
   }
 
 
-  getAllVehicleBarcodes() {
-    getVehicleBarcodes().then(snap => {
-      let vehicleBarcodes=snap.val();
-      let barcodesArr=[];
-      vehicleBarcodes && Object.keys(vehicleBarcodes).map(vSno => {
-        let vSnoObj=vehicleBarcodes[vSno];
-          if(vSnoObj.inSide) {
-            barcodesArr.push(vSnoObj.inwardSNo)
-        }
-      })
-      this.setState({barcodesArr})
-    }).catch(err => console.log(err))
-  }
+  // getAllVehicleBarcodes() {
+  //   getVehicleBarcodes().then(snap => {
+  //     let vehicleBarcodes=snap.val();
+  //     let barcodesArr=[];
+  //     vehicleBarcodes && Object.keys(vehicleBarcodes).map(vSno => {
+  //       let vSnoObj=vehicleBarcodes[vSno];
+  //         if(vSnoObj.inSide) {
+  //           barcodesArr.push(vSnoObj.inwardSNo)
+  //       }
+  //     })
+  //     this.setState({barcodesArr})
+  //   }).catch(err => console.log(err))
+  // }
 
   getInsideVehicles() {
     getInsideVehicles().then(snap => {
@@ -189,7 +189,7 @@ export default class VehicleOut extends Component {
       this.setState({
         outwardSNo,
         lastCount: count
-      }, this.getAllVehicleBarcodes())
+      })
     }).catch((e) => console.log(e))
   }
 
@@ -251,7 +251,7 @@ export default class VehicleOut extends Component {
       this.setState({
         [fieldName]: o.value,
         validationMsg: ''
-      },this.fetchVehicleDataByBarcode.bind(this) )
+      })
     }
 
     if(fieldName=='selectVehicleNumber') {
@@ -844,6 +844,10 @@ export default class VehicleOut extends Component {
     )
   }
 
+  onGoBtnClick() {
+    this.fetchVehicleDataByBarcode()
+  }
+
   onToastOkButtonClick() {
     this.setState({
       toastMsg: ''
@@ -964,8 +968,15 @@ export default class VehicleOut extends Component {
                       })
                     }
                   </datalist>
-                </FormField>
-
+                  </FormField>
+                  <div style={{marginTop:10}}>
+                  <Button
+                    label='GO' style={{width: '5px'}}
+                    onClick={this.onGoBtnClick.bind(this)}
+                    disabled={true}
+                    href='#'
+                    primary={true} />
+                    </div>
                   {barcodeFetched ?
                     <FormField label='Own/Out Vehicle' strong={true} style={{marginTop : '10px'}}>
                       <Label style={{fontSize: 16, marginLeft: 20}}><strong>{barcodeObj && barcodeObj.ownOutVehicle}</strong></Label>
@@ -1054,7 +1065,7 @@ export default class VehicleOut extends Component {
                   </FormField>
                 </Form>}
             </Box>
-            <Box  direction='column' style={{marginLeft:'30px', width:'300px'}} >
+            <Box  direction='column' style={{marginLeft:'10px', width:'300px'}} >
             {vehicleSaved ?
               <Form className='newVisitorFields'>
                 <FormField  label='Party Name'  strong={true} style={{marginTop : '10px'}}>
@@ -1185,12 +1196,12 @@ export default class VehicleOut extends Component {
                     label='SAVE' style={ vehicleSaved ?
                       {
                         marginTop: 20,
-                        width: '300px',
+                        width: '200px',
                         display: 'none'
                       } :
                       {
                         marginTop: 20,
-                        width: '300px'
+                        width: '200px'
                       }}
                     onClick={this.onSaveClick.bind(this)}
                     disabled={true}
@@ -1203,7 +1214,7 @@ export default class VehicleOut extends Component {
                     onAfterPrint={this.handleAfterPrint.bind(this)}
                   />
                 <Button icon={<Car />}
-                  label='NEW' style={{marginTop: 20, width: '300px'}}
+                  label='NEW' style={{marginTop: 20, width: '200px'}}
                   onClick={this.onNewBtnClick.bind(this)}
                   disabled={true}
                   href='#'
