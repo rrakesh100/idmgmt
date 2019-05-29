@@ -26,7 +26,7 @@ import Car from 'grommet/components/icons/base/Car';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import { savingInwardVehicle, uploadVehicleImage, getOutwardVehicle,getInwardVehicle,
   getVehicleData,
-getVehicleForValidation, getLastVehicleInCount, getPrefix,rollbackData } from '../api/vehicles';
+getVehicleForValidation, getLastVehicleInCount, getPrefix,rollbackData, forceReset } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Notification from 'grommet/components/Notification';
@@ -857,6 +857,10 @@ export default class VehicleIn extends Component {
       })
     }
 
+  onResetClick() {
+    forceReset(this.state.vehicleNumber || this.state.selectVehicleNumber);
+  }
+
   render() {
     const date = new Date();
     const dateStr = moment(date).format('DD-MM-YYYY');
@@ -1145,7 +1149,7 @@ export default class VehicleIn extends Component {
                       } :
                       {
                         marginTop:20,
-                        width: '300px',
+                        width: '200px',
                       }}
                       onClick={this.onSaveClick.bind(this)}
                       disabled={true}
@@ -1157,11 +1161,17 @@ export default class VehicleIn extends Component {
                         onAfterPrint={this.handleAfterPrint.bind(this)}
                       />
                       <Button icon={<Car />}
-                        label='NEW' style={{marginTop: 20, width: '300px'}}
+                        label='NEW' style={{marginTop: 20, width: '200px'}}
                         onClick={this.onNewBtnClick.bind(this)}
                         disabled={true}
                         href='#'
                         primary={true} />
+                        <Button
+                          label='FORCE RESET' style={{marginTop: 20, width: '200px'}}
+                          onClick={this.onResetClick.bind(this)}
+                          disabled={true}
+                          href='#'
+                          primary={true} />
 
             </Box>
           </Split>

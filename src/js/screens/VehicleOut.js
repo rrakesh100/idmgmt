@@ -33,7 +33,7 @@ import { savingOutwardVehicle,
           getVehicleForValidation,
           getVehicleBarcodes,
           fetchVehicleBarcodeData,
-          getLastVehicleOutCount, getPrefix } from '../api/vehicles';
+          getLastVehicleOutCount, getPrefix, forceReset } from '../api/vehicles';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import Image from 'grommet/components/Image';
@@ -855,6 +855,8 @@ export default class VehicleOut extends Component {
   }
 
 
+
+
   render() {
     const date = new Date();
     const dateStr = moment(date).format('DD-MM-YYYY');
@@ -1219,6 +1221,7 @@ export default class VehicleOut extends Component {
                   disabled={true}
                   href='#'
                   primary={true} />
+                  
             </Box>
           </Split>
           <div>

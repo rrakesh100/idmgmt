@@ -317,6 +317,23 @@ export function saveVehicleOutPrintCopiesData(vehicleKey, printData) {
   return dbRef.update(updates);
 }
 
+export function forceReset(vNo) {
+  const dbRef = firebase.database().ref(localStorage.unit + '/' + `vehicleReports/in/vehicleWise/${vNo}`);
+  const dbReference=firebase.database().ref();
+  const updates={};
+  dbRef.once('value').then(snap => {
+    let dbObj=snap.val();
+    Object.keys(dbObj).map(date => {
+      let sNoObj=dbObj[date];
+      Object.keys(sNoObj).map(sNoKey => {
+        let sNoData=sNoObj[sNoKey];
+        updates[localStorage.unit + '/' + `vehicleReports/in/vehicleWise/${vNo}/${date}/${sNoKey}/inSide`]=false;
+        return dbReference.update(updates)
+      })
+    })
+  })
+}
+
 
 export function fetchVehicleInPrintCopiesData(vehicleKey) {
   const dbRef = firebase.database().ref(localStorage.unit + '/' + `vehicleInPrintCopies/${vehicleKey}`);
