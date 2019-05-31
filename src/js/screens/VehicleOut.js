@@ -185,7 +185,10 @@ export default class VehicleOut extends Component {
       let dbCount = snap.val();
       let count=dbCount || 1;
       let prefix = getPrefix();
-      let outwardSNo = `${prefix}-OUT-${count}`;
+      let date = new Date();
+      let suffix=date.getHours() + ':' +  date.getMinutes() + ':' + date.getSeconds() + ':' + date.getMilliseconds()
+
+      let outwardSNo = `${prefix}-OUT-${count}-${suffix}`;
       this.setState({
         outwardSNo,
         lastCount: count
