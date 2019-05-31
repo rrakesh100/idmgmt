@@ -151,14 +151,15 @@ export default class VehicleIn extends Component {
     getLastVehicleInCount().then((snap) => {
       const dbCount = snap.val();
       let prefix=getPrefix();
-
+      let date = new Date();
+      let suffix=date.getHours() + ':' +  date.getMinutes() + ':' + date.getSeconds() + ':' + date.getMilliseconds()
       if(!isMount && dbCount - this.state.lastCount !== 1) {
         alert('something went wrong while saving inward sno - ' + this.state.inwardSNo);
           this.setState({
             toastMsg: `Vehicle ${vNo} could not be saved, please try again`
           }, this.rollbackVehicleData.bind(this, this.state.inwardSNo, vNo))
       } else if (!isMount && dbCount - this.state.lastCount === 1) {
-        let inwardSNo = `${prefix}-IN-${dbCount}`;
+        let inwardSNo = `${prefix}-IN-${dbCount}-${suffix}`;
         this.setState({
           toastMsg: `Vehicle ${vNo} saved`,
           inwardSNo,
@@ -166,7 +167,7 @@ export default class VehicleIn extends Component {
         })
       } else {
         let count = dbCount || 1;
-        let inwardSNo = `${prefix}-IN-${count}`;
+        let inwardSNo = `${prefix}-IN-${count}-${suffix}`;
         this.setState({ inwardSNo, lastCount: count })
       }
       }).catch((e) => console.log(e))
@@ -1149,7 +1150,7 @@ export default class VehicleIn extends Component {
                       } :
                       {
                         marginTop:20,
-                        width: '200px',
+                        width: '300px',
                       }}
                       onClick={this.onSaveClick.bind(this)}
                       disabled={true}
@@ -1161,13 +1162,13 @@ export default class VehicleIn extends Component {
                         onAfterPrint={this.handleAfterPrint.bind(this)}
                       />
                       <Button icon={<Car />}
-                        label='NEW' style={{marginTop: 20, width: '200px'}}
+                        label='NEW' style={{marginTop: 20, width: '300px'}}
                         onClick={this.onNewBtnClick.bind(this)}
                         disabled={true}
                         href='#'
                         primary={true} />
                         <Button
-                          label='FORCE RESET' style={{marginTop: 20, width: '200px'}}
+                          label='FORCE RESET' style={{marginTop: 20, width: '300px'}}
                           onClick={this.onResetClick.bind(this)}
                           disabled={true}
                           href='#'

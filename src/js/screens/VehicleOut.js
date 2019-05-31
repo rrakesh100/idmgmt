@@ -1198,12 +1198,12 @@ export default class VehicleOut extends Component {
                     label='SAVE' style={ vehicleSaved ?
                       {
                         marginTop: 20,
-                        width: '200px',
+                        width: '300px',
                         display: 'none'
                       } :
                       {
                         marginTop: 20,
-                        width: '200px'
+                        width: '300px'
                       }}
                     onClick={this.onSaveClick.bind(this)}
                     disabled={true}
@@ -1216,12 +1216,12 @@ export default class VehicleOut extends Component {
                     onAfterPrint={this.handleAfterPrint.bind(this)}
                   />
                 <Button icon={<Car />}
-                  label='NEW' style={{marginTop: 20, width: '200px'}}
+                  label='NEW' style={{marginTop: 20, width: '300px'}}
                   onClick={this.onNewBtnClick.bind(this)}
                   disabled={true}
                   href='#'
                   primary={true} />
-                  
+
             </Box>
           </Split>
           <div>
