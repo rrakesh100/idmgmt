@@ -359,9 +359,12 @@ class AttendanceIn extends Component {
     }
 
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    uploadAttendanceEmployeeImage(imgFile, selectedEmployeeId).then((snapshot) => {
+         let outwardPhoto = snapshot.downloadURL;
     document.getElementById('printAnchor').click();
-    
+
     saveAttendanceInData({
+      outwardPhoto,
       selectedEmployeeId,
       selectedEmployeeName,
       shift,
@@ -386,6 +389,7 @@ class AttendanceIn extends Component {
       },()=> cosole.log(err));
             alert('Could not save the data')
     })
+    }).catch((e) => console.log(e))
   }
 
   setRef(webcam) {
@@ -735,7 +739,15 @@ renderSearchedEmployee() {
   }
 
   onSaveButtonClick() {
-    const shift = window.localStorage.shift || this.state.shift;
+    const date = new Date();
+    const hours = date.getHours();
+    let shiftVar;
+    if( hours > 14) {
+      shiftVar = 'Night Shift'
+    } else {
+      shiftVar = 'Day Shift'
+    }
+    let shift = shiftVar || this.state.shift;
     const timeslot = window.localStorage.timeslot || this.state.timeslot;
 
     const { screenshot, selectedEmployeeId } = this.state;

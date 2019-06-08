@@ -540,7 +540,6 @@ getEmployees() {
   }
 
   onStartDateSelected(startDate) {
-    console.log(startDate);
     this.setState({
       startDate,
       response : null,

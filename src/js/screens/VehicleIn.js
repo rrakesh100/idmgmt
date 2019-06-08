@@ -614,7 +614,6 @@ export default class VehicleIn extends Component {
         billNumber,
         remarks,
       }).then(() => {
-        console.log('success');
         this.setState({
         showProgressBar: false,
         vehicleSaved: true,
@@ -846,10 +845,6 @@ export default class VehicleIn extends Component {
 
     renderContent() {
       return this.componentRef;
-    }
-
-    handleAfterPrint() {
-      console.log('after print');
     }
 
     onToastOkButtonClick() {
@@ -1159,7 +1154,6 @@ export default class VehicleIn extends Component {
                     <ReactToPrint
                         trigger={this.renderTrigger.bind(this)}
                         content={this.renderContent.bind(this)}
-                        onAfterPrint={this.handleAfterPrint.bind(this)}
                       />
                       <Button icon={<Car />}
                         label='NEW' style={{marginTop: 20, width: '300px'}}

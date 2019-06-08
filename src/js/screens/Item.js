@@ -4,11 +4,7 @@ import Webcam from 'react-webcam';
 import Barcode from 'react-barcode';
 import Rand from 'random-key';
 import Moment from 'moment';
-
 import { Popup } from 'semantic-ui-react';
-
-
-
 import Heading from 'grommet/components/Heading';
 import Button from 'grommet/components/Button';
 import Article from 'grommet/components/Article';
@@ -18,8 +14,6 @@ import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
 import Toast from 'grommet/components/Toast';
 import Spinning from 'grommet/components/icons/Spinning';
-
-
 import Section from 'grommet/components/Section';
 import Anchor from 'grommet/components/Anchor';
 import Headline from 'grommet/components/Headline';
