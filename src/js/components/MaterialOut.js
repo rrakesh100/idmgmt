@@ -16,6 +16,7 @@ import Layer from 'grommet/components/Layer';
 import Status from 'grommet/components/icons/Status';
 import { Container, Row, Col } from 'react-grid-system';
 import { Input } from 'semantic-ui-react';
+import { saveMaterialOut, fetchMaterialData } from '../api/materials';
 
 
 class MaterialOut extends React.Component {
@@ -26,16 +27,36 @@ class MaterialOut extends React.Component {
       outwardSNo:Rand.generateBase30(8),
       showLiveCameraFeed: true,
       sNoArray:[],
+      materialFetched: false,
+      toastMsg: ''
     };
   }
 
-  onFieldChange(fieldName,e) {
-    if(fieldName === 'retNonret' || 'materialStatus') {
+  onFieldChange(fieldName,e,o) {
+    let dr = /^[0-9\b]/;
+    let re = /^[1-9][0-9]{0,4}$/;
+    let ne = /^[0-9]{11}$/;
+    let mn = /^\d{10}$/;
+    let an = /^[a-zA-Z0-9]+$/;
+    let nre = /^[a-zA-Z0-9]{11}$/;
+    let tre = /^[A-Za-z. ]+$/;
+    let pre = /^[A-Za-z. ]{0,100}$/;
+
+    if(fieldName === 'retNonret' || fieldName === 'materialStatus') {
       this.setState({
         [fieldName]: e.option,
         validationMsg: ''
       })
-    } else {
+    }
+
+    else if (fieldName === 'materialInSNo') {
+      this.setState({
+        [fieldName]: o.value,
+        validationMsg: ''
+      })
+    }
+
+    else {
       this.setState({
         [fieldName]: e.target.value,
         validationMsg:''
@@ -90,7 +111,86 @@ class MaterialOut extends React.Component {
   }
 
   onSavingMaterial() {
-    console.log('saved');
+    const {
+      outwardSNo,
+      retNonret,
+      vehicleNum,
+      personName,
+      mobileNumber,
+      materialStatus,
+      materialInObj
+    } = this.state;
+
+    let fromLocation;
+    let toLocation;
+    let gatepassNumber;
+    let weighbillNumber;
+    let material;
+    let materialNumber;
+    let quantity;
+    let purpose;
+    let inwardSNo;
+    let inDate;
+
+    if(materialStatus === 'Pending' && materialInObj) {
+       inwardSNo = materialInObj.inwardSNo;
+       inDate = materialInObj.inDate;
+       fromLocation = materialInObj.fromLocation;
+       toLocation = materialInObj.toLocation;
+       gatepassNumber =  materialInObj.gatepassNumber;
+       weighbillNumber = materialInObj.weighbillNumber;
+       material = materialInObj.material;
+       materialNumber = materialInObj.materialNumber;
+       quantity = materialInObj.quantity;
+       purpose = materialInObj.purpose;
+    } else {
+       fromLocation = this.state.fromLocation;
+       toLocation = this.state.toLocation;
+       gatepassNumber = this.state.gatepassNumber;
+       weighbillNumber = this.state.weighbillNumber;
+       material = this.state.material;
+       materialNumber = this.state.materialNumber;
+       quantity = this.state.quantity;
+       purpose = this.state.purpose;
+    }
+    saveMaterialOut({
+      outwardSNo,
+      inwardSNo,
+      inDate,
+      retNonret,
+      fromLocation,
+      toLocation,
+      gatepassNumber,
+      weighbillNumber,
+      material,
+      materialNumber,
+      quantity,
+      purpose,
+      vehicleNum,
+      personName,
+      mobileNumber
+    }).then(() => {
+      this.setState({
+        outwardSNo:Rand.generateBase30(8),
+        materialInObj: null,
+        materialStatus: '',
+        showLiveCameraFeed: true,
+        retNonret: '',
+        fromLocation: '',
+        toLocation: '',
+        gatepassNumber: '',
+        weighbillNumber: '',
+        material: '',
+        materialNumber: '',
+        quantity: '',
+        purpose: '',
+        vehicleNum: '',
+        personName: '',
+        mobileNumber: '',
+        toastMsg: `Material ${material} saved`,
+      })
+    }).catch(err => console.error(err))
+
   }
 
   onSaveClick() {
@@ -104,15 +204,16 @@ class MaterialOut extends React.Component {
       gatepassNumber,
       weighbillNumber,
       material,
-      materialSNo,
+      materialNumber,
       quantity,
       purpose,
       vehicleNum,
       personName,
-      mobileNumber
+      mobileNumber,
+      materialStatus
     } = this.state;
 
-    if(!retNonret) {
+    if(!retNonret && materialStatus === 'New') {
       this.setState({
         validationMsg: 'Ret/Non-Ret is missing'
       })
@@ -128,6 +229,9 @@ class MaterialOut extends React.Component {
   onNewBtnClick() {
     this.setState({
       showLiveCameraFeed: true,
+      materialInObj: null,
+      materialStatus:'',
+      materialInSNo: '',
       retNonret: '',
       fromLocation: '',
       toLocation: '',
@@ -136,7 +240,7 @@ class MaterialOut extends React.Component {
       gatepassNumber: '',
       weighbillNumber: '',
       material: '',
-      materialSNo: '',
+      materialNumber: '',
       quantity: '',
       purpose: '',
       vehicleNum: '',
@@ -185,6 +289,22 @@ class MaterialOut extends React.Component {
     return null;
   }
 
+  fetchMaterialByBarcode() {
+    const {materialInSNo}=this.state;
+    let sNo=materialInSNo.toUpperCase();
+    fetchMaterialData(sNo).then(snap => {
+      const materialInObj=snap.val();
+      this.setState({
+        materialInObj,
+        materialFetched: true
+      })
+    }).catch(err => console.log(err))
+  }
+
+  onGoBtnClick() {
+    this.fetchMaterialByBarcode();
+  }
+
 
   renderInputFields() {
     const {
@@ -197,13 +317,15 @@ class MaterialOut extends React.Component {
       gatepassNumber,
       weighbillNumber,
       material,
-      materialSNo,
+      materialNumber,
       quantity,
       purpose,
       vehicleNum,
       personName,
       mobileNumber,
-      materialStatus
+      materialStatus,
+      materialFetched,
+      materialInObj,
     } = this.state;
     return (
       <Section>
@@ -222,6 +344,7 @@ class MaterialOut extends React.Component {
           />
       </FormField>
         {materialStatus==='Pending' ?
+        <div>
         <FormField strong={true} style={{marginTop : '8px'}}>
         <Label style={{fontSize: 16, marginLeft: 20, color: 'red'}}>Material Inward SNo</Label>
           <Input transparent
@@ -232,11 +355,21 @@ class MaterialOut extends React.Component {
           <datalist id='sNo'>
             {
               this.state.sNoArray.map((val, index) => {
-                return <option value={val} key={index}/>
+                return <option value={val} key={index} />
               })
             }
           </datalist>
-          </FormField>:
+          </FormField>
+          <div style={{marginTop:10}}>
+          <Button
+            label='GO' style={{width: '5px'}}
+            onClick={this.onGoBtnClick.bind(this)}
+            disabled={true}
+            href='#'
+            primary={true} />
+            </div>
+            </div>
+          :
         <FormField strong={true} style={{marginTop : '10px'}}>
           <Label style={{fontSize: 16,marginLeft: 20,color: 'red'}}>Returnable/Non-Returnable</Label>
           <Select
@@ -246,6 +379,10 @@ class MaterialOut extends React.Component {
           />
       </FormField>
     }
+      {materialFetched ?
+        <FormField label='From Location' strong={true} style={{marginTop : '10px'}}>
+          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.fromLocation}</strong></Label>
+        </FormField>:
       <FormField strong={true} style={{marginTop : '10px'}}>
       <Label style={{fontSize: 16, marginLeft: 20}}>From Location</Label>
           <TextInput
@@ -253,7 +390,11 @@ class MaterialOut extends React.Component {
               value={fromLocation}
               onDOMChange={this.onFieldChange.bind(this, 'fromLocation')}
           />
-      </FormField>
+      </FormField>}
+      {materialFetched ?
+        <FormField label='To Location' strong={true} style={{marginTop : '10px'}}>
+          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.toLocation}</strong></Label>
+        </FormField>:
       <FormField strong={true} style={{marginTop : '10px'}}>
       <Label style={{fontSize: 16, marginLeft: 20}}>To Location</Label>
           <TextInput
@@ -261,8 +402,11 @@ class MaterialOut extends React.Component {
               value={toLocation}
               onDOMChange={this.onFieldChange.bind(this, 'toLocation')}
           />
-      </FormField>
-
+      </FormField>}
+      {materialFetched ?
+        <FormField label='Gatepass No' strong={true} style={{marginTop : '10px'}}>
+          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.gatepassNumber}</strong></Label>
+        </FormField>:
       <FormField strong={true} style={{marginTop : '10px'}}>
       <Label style={{fontSize: 16, marginLeft: 20}}>Gatepass No</Label>
           <TextInput
@@ -270,7 +414,11 @@ class MaterialOut extends React.Component {
               value={gatepassNumber}
               onDOMChange={this.onFieldChange.bind(this, 'gatepassNumber')}
           />
-      </FormField>
+      </FormField>}
+      {materialFetched ?
+        <FormField label='Weigh Bill No' strong={true} style={{marginTop : '10px'}}>
+          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.weighbillNumber}</strong></Label>
+        </FormField>:
       <FormField strong={true} style={{marginTop : '10px'}}>
       <Label style={{fontSize: 16, marginLeft: 20}}>Weigh Bill No</Label>
           <TextInput
@@ -278,13 +426,15 @@ class MaterialOut extends React.Component {
               value={weighbillNumber}
               onDOMChange={this.onFieldChange.bind(this, 'weighbillNumber')}
           />
-      </FormField>
-
-
-          </Form>
-          </Box>
-          <Box direction='column' style={{marginLeft:'20px', width:'300px'}}>
+      </FormField>}
+      </Form>
+      </Box>
+      <Box direction='column' style={{marginLeft:'20px', width:'300px'}}>
           <Form>
+          {materialFetched ?
+            <FormField label='Material Name' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.material}</strong></Label>
+            </FormField>:
           <FormField strong={true} style={{marginTop : '10px'}}>
           <Label style={{fontSize: 16, marginLeft: 20}}>Material Name</Label>
               <TextInput
@@ -292,15 +442,23 @@ class MaterialOut extends React.Component {
                   value={material}
                   onDOMChange={this.onFieldChange.bind(this, 'material')}
               />
-          </FormField>
+          </FormField>}
+          {materialFetched ?
+            <FormField label='Material SNo' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.materialNumber}</strong></Label>
+            </FormField>:
           <FormField strong={true} style={{marginTop : '10px'}}>
           <Label style={{fontSize: 16, marginLeft: 20}}>Material SNo</Label>
               <TextInput
                   placeHolder='Material SNo'
-                  value={materialSNo}
-                  onDOMChange={this.onFieldChange.bind(this, 'materialSNo')}
+                  value={materialNumber}
+                  onDOMChange={this.onFieldChange.bind(this, 'materialNumber')}
               />
-          </FormField>
+          </FormField>}
+          {materialFetched ?
+            <FormField label='Quantity' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.quantity}</strong></Label>
+            </FormField>:
           <FormField strong={true} style={{marginTop : '10px'}}>
           <Label style={{fontSize: 16, marginLeft: 20}}>Quantity</Label>
               <TextInput
@@ -308,7 +466,11 @@ class MaterialOut extends React.Component {
                   value={quantity}
                   onDOMChange={this.onFieldChange.bind(this, 'quantity')}
               />
-          </FormField>
+          </FormField>}
+          {materialFetched ?
+            <FormField label='Purpose' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.purpose}</strong></Label>
+            </FormField>:
           <FormField strong={true} style={{marginTop : '10px'}}>
           <Label style={{fontSize: 16, marginLeft: 20}}>Purpose</Label>
               <TextInput
@@ -316,7 +478,7 @@ class MaterialOut extends React.Component {
                   value={purpose}
                   onDOMChange={this.onFieldChange.bind(this, 'purpose')}
               />
-          </FormField>
+          </FormField>}
           <FormField strong={true} style={{marginTop : '10px'}}>
           <Label style={{fontSize: 16, marginLeft: 20}}>Vehicle No</Label>
               <TextInput
@@ -370,7 +532,35 @@ class MaterialOut extends React.Component {
     )
   }
 
+  onToastOkButtonClick() {
+    this.setState({
+      toastMsg: ''
+    })
+  }
+
   render() {
+    if(this.state.toastMsg) {
+      return (
+        <Layer>
+        <strong>
+        <h2 style={{marginTop: 20}}>
+        <Status value='ok'
+        size='medium'
+        style={{marginRight:'10px'}} />
+        {this.state.toastMsg}!
+        </h2>
+        </strong>
+         <hr />
+         <Row>
+         <Button
+           label='OK'
+           onClick={this.onToastOkButtonClick.bind(this)}
+           href='#' style={{marginLeft:200, marginBottom:'10px'}}
+           primary={true} />
+         </Row>
+        </Layer>
+      )
+    }
     return (
       <div>
         { this.renderValidationMsg() }

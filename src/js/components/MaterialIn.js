@@ -24,7 +24,8 @@ class MaterialIn extends React.Component {
     super(props);
     this.state = {
       inwardSNo:Rand.generateBase30(8),
-      showLiveCameraFeed: true
+      showLiveCameraFeed: true,
+      toastMsg:''
     };
   }
 
@@ -99,7 +100,7 @@ class MaterialIn extends React.Component {
       gatepassNumber,
       weighbillNumber,
       material,
-      materialSNo,
+      materialNumber,
       quantity,
       purpose,
       vehicleNum,
@@ -115,7 +116,7 @@ class MaterialIn extends React.Component {
       gatepassNumber,
       weighbillNumber,
       material,
-      materialSNo,
+      materialNumber,
       quantity,
       purpose,
       vehicleNum,
@@ -133,12 +134,13 @@ class MaterialIn extends React.Component {
         gatepassNumber: '',
         weighbillNumber: '',
         material: '',
-        materialSNo: '',
+        materialNumber: '',
         quantity: '',
         purpose: '',
         vehicleNum: '',
         personName: '',
-        mobileNumber: ''
+        mobileNumber: '',
+        toastMsg: `Material ${material} saved`,
       })
     }).catch(err => console.error(err))
 
@@ -178,7 +180,7 @@ class MaterialIn extends React.Component {
       gatepassNumber: '',
       weighbillNumber: '',
       material: '',
-      materialSNo: '',
+      materialNumber: '',
       quantity: '',
       purpose: '',
       vehicleNum: '',
@@ -239,7 +241,7 @@ class MaterialIn extends React.Component {
       gatepassNumber,
       weighbillNumber,
       material,
-      materialSNo,
+      materialNumber,
       quantity,
       purpose,
       vehicleNum,
@@ -313,8 +315,8 @@ class MaterialIn extends React.Component {
           <Label style={{fontSize: 16, marginLeft: 20}}>Material SNo</Label>
               <TextInput
                   placeHolder='Material SNo'
-                  value={materialSNo}
-                  onDOMChange={this.onFieldChange.bind(this, 'materialSNo')}
+                  value={materialNumber}
+                  onDOMChange={this.onFieldChange.bind(this, 'materialNumber')}
               />
           </FormField>
           <FormField strong={true} style={{marginTop : '10px'}}>
@@ -386,7 +388,36 @@ class MaterialIn extends React.Component {
     )
   }
 
+  onToastOkButtonClick() {
+    this.setState({
+      toastMsg: ''
+    })
+  }
+
   render() {
+    const {toastMsg}=this.state;
+    if(toastMsg) {
+      return (
+        <Layer>
+        <strong>
+        <h2 style={{marginTop: 20}}>
+        <Status value='ok'
+        size='medium'
+        style={{marginRight:'10px'}} />
+        {toastMsg}!
+        </h2>
+        </strong>
+         <hr />
+         <Row>
+         <Button
+           label='OK'
+           onClick={this.onToastOkButtonClick.bind(this)}
+           href='#' style={{marginLeft:200, marginBottom:'10px'}}
+           primary={true} />
+         </Row>
+        </Layer>
+      )
+    }
     return (
       <div>
         { this.renderValidationMsg() }

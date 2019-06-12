@@ -1235,7 +1235,7 @@ export default class VehicleOut extends Component {
                       <span style={{marginLeft: 30}}>Present Out Date : {dateStr}</span>
                     </Col>
                     <Col>
-                      <span>Presemnt Out Time : <Clock format={'hh:mm:ss A'} ticking={true} /></span>
+                      <span>Present Out Time : <Clock format={'hh:mm:ss A'} ticking={true} /></span>
                     </Col>
                 </Row>
             </Container>
