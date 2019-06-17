@@ -144,6 +144,8 @@ class MaterialOut extends React.Component {
        quantity = materialInObj.quantity;
        purpose = materialInObj.purpose;
     } else {
+       inwardSNo=null;
+       inDate=null;
        fromLocation = this.state.fromLocation;
        toLocation = this.state.toLocation;
        gatepassNumber = this.state.gatepassNumber;
@@ -168,7 +170,8 @@ class MaterialOut extends React.Component {
       purpose,
       vehicleNum,
       personName,
-      mobileNumber
+      mobileNumber,
+      materialStatus
     }).then(() => {
       this.setState({
         outwardSNo:Rand.generateBase30(8),

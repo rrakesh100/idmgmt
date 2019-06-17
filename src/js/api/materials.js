@@ -9,20 +9,24 @@ export function saveMaterialIn(data) {
   const dateStr = moment(date).format('DD-MM-YYYY');
   const timeStr = moment(date).format('h:mm A');
   const dbRef = firebase.database().ref();
-  let returnable;
-  if(data.retNonret === 'Returnable') {
-    returnable=true;
-  } else {
-    returnable=false;
-  }
 
-  const newData = Object.assign({}, data)
+  const newData = Object.assign({}, data);
+  if(data.materialStatus==='New') {
+    let returnable = data.retNonret === 'Returnable' ? true : false;
   newData.returnable=returnable;
   newData.inDate=dateStr;
   newData.inTime=timeStr;
 
   updates[localStorage.unit + '/'+`materialReports/in/${dateStr}/${data.inwardSNo}`] = newData;
   updates[localStorage.unit + '/'+`materialBarcodes/${data.inwardSNo}`] = newData;
+  }
+
+  if(data.materialStatus==='Pending' && data.outDate) {
+    updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/returnable`]=false;
+    updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/inDate`]=dateStr;
+    updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/inTime`]=timeStr;
+    updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/inwardSNo`]=data.inwardSNo;
+  }
 
   return dbRef.update(updates);
 }
@@ -35,7 +39,15 @@ export function saveMaterialOut(data) {
   const dbRef = firebase.database().ref();
 
   const newData=Object.assign({}, data);
-  delete newData['retNonret'];
+  if(data.materialStatus==='New') {
+    let returnable = data.retNonret === 'Returnable' ? true : false;
+
+    newData.returnable=returnable;
+    newData.outDate=dateStr;
+    newData.outTime=timeStr;
+    updates[localStorage.unit + '/'+`materialReports/out/${dateStr}/${data.outwardSNo}`] = newData;
+    updates[localStorage.unit + '/'+`materialBarcodes/${data.outwardSNo}`] = newData;
+  }
 
   if(data.inDate) {
     updates[localStorage.unit + '/'+ `materialReports/in/${data.inDate}/${data.inwardSNo}/returnable`]=false;
@@ -44,12 +56,15 @@ export function saveMaterialOut(data) {
     updates[localStorage.unit + '/'+ `materialReports/in/${data.inDate}/${data.inwardSNo}/outwardSNo`]=data.outwardSNo;
   }
 
-  updates[localStorage.unit + '/'+`materialReports/out/${dateStr}/${data.outwardSNo}`] = newData;
-
   return dbRef.update(updates);
 }
 
 export function fetchMaterialData(sNo) {
   const dbRef =firebase.database().ref(localStorage.unit + '/' + `materialBarcodes/${sNo}`);
+  return dbRef.once('value');
+}
+
+export function fetchMaterialReportsData(report, unit) {
+  const dbRef = firebase.database().ref(unit + '/' + `materialReports/${report}`);
   return dbRef.once('value');
 }

@@ -207,8 +207,6 @@ export default class VehicleReportsComponent extends Component {
   }
 
   render() {
-    const { startDate, endDate } = this.props;
-
     return (
       <div>
         {this.renderVehicleReports()}
