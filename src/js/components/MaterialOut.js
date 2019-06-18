@@ -16,7 +16,9 @@ import Layer from 'grommet/components/Layer';
 import Status from 'grommet/components/icons/Status';
 import { Container, Row, Col } from 'react-grid-system';
 import { Input } from 'semantic-ui-react';
-import { saveMaterialOut, fetchMaterialData } from '../api/materials';
+import { saveMaterialOut, fetchMaterialData, uploadStoreMaterialImage } from '../api/materials';
+import ReactToPrint from "react-to-print";
+import MaterialPrintComponent from './MaterialPrintComponent';
 
 
 class MaterialOut extends React.Component {
@@ -112,6 +114,7 @@ class MaterialOut extends React.Component {
 
   onSavingMaterial() {
     const {
+      screenshot,
       outwardSNo,
       retNonret,
       vehicleNum,
@@ -155,6 +158,13 @@ class MaterialOut extends React.Component {
        quantity = this.state.quantity;
        purpose = this.state.purpose;
     }
+
+    let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    uploadStoreMaterialImage(imgFile, outwardSNo).then((snapshot) => {
+         let inwardPhoto = snapshot.downloadURL;
+         if(materialStatus==='New') {
+           document.getElementById('printAnchor').click();
+        }
     saveMaterialOut({
       outwardSNo,
       inwardSNo,
@@ -192,8 +202,50 @@ class MaterialOut extends React.Component {
         mobileNumber: '',
         toastMsg: `Material ${material} saved`,
       })
-    }).catch(err => console.error(err))
+    })
+  }).catch(err => console.error(err))
 
+  }
+
+  renderReactToPrintComponent() {
+    return (
+     <ReactToPrint
+          trigger={() => <a id="printAnchor"
+                     href='#' style={{marginLeft: '80px',display:'none' }}>Print</a>
+                  }
+          content={this.renderContent.bind(this)}
+        />
+    );
+  }
+
+  renderContent() {
+    return this.componentRef;
+  }
+
+  setPrintRef(ref) {
+    this.componentRef = ref;
+  }
+
+  renderMaterialPrintCard() {
+    return (
+      <MaterialPrintComponent
+        ref={this.setPrintRef.bind(this)}
+        screenshot={this.state.screenshot}
+        outwardSNo={this.state.outwardSNo}
+        retNonret={this.state.retNonret}
+        fromLocation={this.state.fromLocation}
+        toLocation={this.state.toLocation}
+        gatepassNumber={this.state.gatepassNumber}
+        weighbillNumber={this.state.weighbillNumber}
+        material={this.state.material}
+        materialNumber={this.state.materialNumber}
+        quantity={this.state.quantity}
+        purpose={this.state.purpose}
+        vehicleNum={this.state.vehicleNum}
+        personName={this.state.personName}
+        mobileNumber={this.state.mobileNumber}
+      />
+    )
   }
 
   onSaveClick() {
@@ -568,6 +620,8 @@ class MaterialOut extends React.Component {
       <div>
         { this.renderValidationMsg() }
         { this.renderInputFields() }
+        { this.renderMaterialPrintCard() }
+        { this.renderReactToPrintComponent() }
       </div>
     )
   }

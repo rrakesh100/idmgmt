@@ -68,3 +68,11 @@ export function fetchMaterialReportsData(report, unit) {
   const dbRef = firebase.database().ref(unit + '/' + `materialReports/${report}`);
   return dbRef.once('value');
 }
+
+export function uploadStoreMaterialImage(file, sNo) {
+  const storageRef = firebase.storage().ref();
+  let epochTime = new Date().getTime();
+  const path = localStorage.unit + '/' +'Materials/'+sNo+'/'+epochTime+'.jpeg';
+  const imgRef = storageRef.child(path);
+  return  imgRef.putString(file, 'base64')
+}

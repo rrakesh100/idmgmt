@@ -16,7 +16,10 @@ import Layer from 'grommet/components/Layer';
 import Status from 'grommet/components/icons/Status';
 import { Container, Row, Col } from 'react-grid-system';
 import { Input } from 'semantic-ui-react';
-import { saveMaterialIn, fetchMaterialData } from '../api/materials';
+import { saveMaterialIn, fetchMaterialData, uploadStoreMaterialImage } from '../api/materials';
+import ReactToPrint from "react-to-print";
+import MaterialPrintComponent from './MaterialPrintComponent';
+import PrintIcon from 'grommet/components/icons/base/Print';
 
 
 class MaterialIn extends React.Component {
@@ -104,6 +107,7 @@ class MaterialIn extends React.Component {
 
   onSavingMaterial() {
     const {
+      screenshot,
       inwardSNo,
       retNonret,
       vehicleNum,
@@ -148,7 +152,14 @@ class MaterialIn extends React.Component {
        purpose = this.state.purpose;
     }
 
+    let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
+    uploadStoreMaterialImage(imgFile, inwardSNo).then((snapshot) => {
+         let inwardPhoto = snapshot.downloadURL;
+         if(materialStatus==='New') {
+           document.getElementById('printAnchor').click();
+         }
     saveMaterialIn({
+      inwardPhoto,
       inwardSNo,
       outwardSNo,
       outDate,
@@ -186,7 +197,8 @@ class MaterialIn extends React.Component {
         materialStatus: '',
         toastMsg: `Material ${material} saved`,
       })
-    }).catch(err => console.error(err))
+    })
+  }).catch(err => console.error(err))
 
   }
 
@@ -511,10 +523,65 @@ class MaterialIn extends React.Component {
     )
   }
 
+  setPrintRef(ref) {
+    this.componentRef = ref;
+  }
+
+  renderTrigger() {
+    return (
+      <Button icon={<PrintIcon />}
+        label='PRINT' style={
+        {
+          marginTop:20,
+          width: '300px',
+        }}
+        href='#'
+        primary={true} />
+    )
+  }
+
+  renderContent() {
+    return this.componentRef;
+  }
+
+  renderMaterialPrintCard() {
+    return (
+      <MaterialPrintComponent
+        ref={this.setPrintRef.bind(this)}
+        screenshot={this.state.screenshot}
+        inwardSNo={this.state.inwardSNo}
+        retNonret={this.state.retNonret}
+        fromLocation={this.state.fromLocation}
+        toLocation={this.state.toLocation}
+        gatepassNumber={this.state.gatepassNumber}
+        weighbillNumber={this.state.weighbillNumber}
+        material={this.state.material}
+        materialNumber={this.state.materialNumber}
+        quantity={this.state.quantity}
+        purpose={this.state.purpose}
+        vehicleNum={this.state.vehicleNum}
+        personName={this.state.personName}
+        mobileNumber={this.state.mobileNumber}
+        inComponent={true}
+      />
+    )
+  }
+
   onToastOkButtonClick() {
     this.setState({
       toastMsg: ''
     })
+  }
+
+  renderReactToPrintComponent() {
+    return (
+     <ReactToPrint
+          trigger={() => <a id="printAnchor"
+                     href='#' style={{marginLeft: '80px',display:'none' }}>Print</a>
+                  }
+          content={this.renderContent.bind(this)}
+        />
+    );
   }
 
   render() {
@@ -545,6 +612,8 @@ class MaterialIn extends React.Component {
       <div>
         { this.renderValidationMsg() }
         { this.renderInputFields() }
+        { this.renderMaterialPrintCard() }
+        { this.renderReactToPrintComponent() }
       </div>
     )
   }

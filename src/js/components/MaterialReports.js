@@ -181,7 +181,7 @@ class MaterialReports extends React.Component {
       <FormField label='Transaction Type' style={{marginTop:15}}>
             <Select
               placeHolder='Transaction Type'
-              options={['All', 'Returnable', 'Non-returnable']}
+              options={['All', 'Returnable', 'Non-Returnable']}
               value={this.state.transactionType}
               onChange={this.onFieldChange.bind(this, 'transactionType')}
             />
