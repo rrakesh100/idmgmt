@@ -135,6 +135,17 @@ class MaterialOut extends React.Component {
     let inwardSNo;
     let inDate;
 
+    if(materialInObj && materialInObj.retNonret === 'Non-Returnable') {
+      this.setState({
+        validationMsg: 'Non-Returnable Material cant be Marked Out',
+        materialInObj: null,
+        vehicleNum: '',
+        personName: '',
+        mobileNumber: ''
+      })
+      return;
+    }
+
     if(materialStatus === 'Pending' && materialInObj) {
        inwardSNo = materialInObj.inwardSNo;
        inDate = materialInObj.inDate;
@@ -149,7 +160,7 @@ class MaterialOut extends React.Component {
     } else {
        inwardSNo=null;
        inDate=null;
-       fromLocation = this.state.fromLocation;
+       fromLocation = window.localStorage.unit || 'UNIT2';
        toLocation = this.state.toLocation;
        gatepassNumber = this.state.gatepassNumber;
        weighbillNumber = this.state.weighbillNumber;
@@ -442,7 +453,7 @@ class MaterialOut extends React.Component {
       <Label style={{fontSize: 16, marginLeft: 20}}>From Location</Label>
           <TextInput
               placeHolder='From Location'
-              value={fromLocation}
+              value={window.localStorage.unit|| 'UNIT2'}
               onDOMChange={this.onFieldChange.bind(this, 'fromLocation')}
           />
       </FormField>}

@@ -5,6 +5,8 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import moment from 'moment';
 
+const localStorage=window.localStorage;
+
 export default class MaterialPrintComponent extends Component {
 
   render() {
@@ -36,7 +38,7 @@ export default class MaterialPrintComponent extends Component {
             <div className='vehicleCardBody'>
                 <div className='box header'>
                   <h4 style={{textAlign:'center'}}><strong>SRI LALITHA ENTERPRISES INDUSTRIES PVT LTD</strong></h4>
-                  <h4 style={{textAlign:'center'}}><strong>Valuthimmapuram Road – Peddapuram – Unit2</strong></h4>
+                  <h4 style={{textAlign:'center'}}><strong>Valuthimmapuram Road – Peddapuram – {localStorage.unit || 'UNIT-2'}</strong></h4>
                   {inComponent ?
                   <h3 style={{textDecoration : 'underline', marginLeft:20}}>Material Inward Gatepass</h3>:
                 <h3 style={{textDecoration : 'underline', marginLeft:20}}>Material Outward Gatepass</h3>}

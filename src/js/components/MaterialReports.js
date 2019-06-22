@@ -142,7 +142,8 @@ class MaterialReports extends React.Component {
       startDate:'',
       endDate:'',
       reportType: null,
-      transactionType:''
+      transactionType:'',
+      materialStatus:''
     })
   }
 
@@ -187,6 +188,17 @@ class MaterialReports extends React.Component {
             />
       </FormField>
       </div>
+      {this.state.transactionType==='Returnable'?
+      <div style={{width: 300}}>
+      <FormField label='Material Status' style={{marginTop:15}}>
+            <Select
+              placeHolder='Material Status'
+              options={['All', 'Returned', 'Pending']}
+              value={this.state.materialStatus}
+              onChange={this.onFieldChange.bind(this, 'materialStatus')}
+            />
+      </FormField>
+      </div>: null}
       </div>
       <div style={{display : 'flex', flexDirection : 'column', marginLeft: 30}}>
       <div style={{width: 300}}>
@@ -244,7 +256,7 @@ class MaterialReports extends React.Component {
   }
 
   renderMaterialReports() {
-    const {response,reportType,transactionType,startDate,endDate,datesArr}=this.state;
+    const {response,reportType,transactionType,startDate,endDate,datesArr,materialStatus}=this.state;
     if(!response)
     return;
 
@@ -257,6 +269,7 @@ class MaterialReports extends React.Component {
         startDate={startDate}
         endDate={endDate}
         datesArr={datesArr}
+        materialStatus={materialStatus}
       />
     )
   }

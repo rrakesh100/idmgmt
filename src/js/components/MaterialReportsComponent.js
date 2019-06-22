@@ -11,7 +11,7 @@ class MaterialReportsComponent extends React.Component {
   }
 
   renderMaterialReportsTable() {
-    const { response, reportType, transactionType, startDate, endDate, datesArr } = this.props;
+    const { response, reportType, transactionType, startDate, endDate, datesArr, materialStatus } = this.props;
     if(!response)
     return null;
 
@@ -95,6 +95,14 @@ class MaterialReportsComponent extends React.Component {
           }
 
           if(mObj.retNonret!=='Non-Returnable' && transactionType==='Non-Returnable') {
+            isValid=false;
+          }
+
+          if(materialStatus==='Returned' && mObj.returnable===true) {
+            isValid=false;
+          }
+
+          if(materialStatus==='Pending' && mObj.returnable===false) {
             isValid=false;
           }
 
