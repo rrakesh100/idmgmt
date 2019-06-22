@@ -222,12 +222,12 @@ class MaterialIn extends React.Component {
       return
     }
 
-    /*if(!this.state.screenshot) {
+    if(!this.state.screenshot) {
       this.setState({
         validationMsg: 'Screenshot is missing'
       })
       return
-    }*/
+    }
 
   this.setState({
     validationMsg:''
@@ -383,7 +383,7 @@ class MaterialIn extends React.Component {
       </FormField>}
       {materialFetched ?
         <FormField label='From Location' strong={true} style={{marginTop : '10px'}}>
-          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialOutObj && materialOutObj.fromLocation}</strong></Label>
+          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialOutObj && materialOutObj.toLocation}</strong></Label>
         </FormField>:
       <FormField strong={true} style={{marginTop : '10px'}}>
       <Label style={{fontSize: 16, marginLeft: 20}}>From Location</Label>
@@ -395,7 +395,7 @@ class MaterialIn extends React.Component {
       </FormField>}
       {materialFetched ?
         <FormField label='To Location' strong={true} style={{marginTop : '10px'}}>
-          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialOutObj && materialOutObj.toLocation}</strong></Label>
+          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialOutObj && materialOutObj.fromLocation}</strong></Label>
         </FormField>:
       <FormField strong={true} style={{marginTop : '10px'}}>
       <Label style={{fontSize: 16, marginLeft: 20}}>To Location</Label>

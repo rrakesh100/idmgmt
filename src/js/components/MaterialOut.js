@@ -149,8 +149,8 @@ class MaterialOut extends React.Component {
     if(materialStatus === 'Pending' && materialInObj) {
        inwardSNo = materialInObj.inwardSNo;
        inDate = materialInObj.inDate;
-       fromLocation = materialInObj.fromLocation;
-       toLocation = materialInObj.toLocation;
+       fromLocation = materialInObj.toLocation;
+       toLocation = materialInObj.fromLocation;
        gatepassNumber =  materialInObj.gatepassNumber;
        weighbillNumber = materialInObj.weighbillNumber;
        material = materialInObj.material;
@@ -282,6 +282,13 @@ class MaterialOut extends React.Component {
     if(!retNonret && materialStatus === 'New') {
       this.setState({
         validationMsg: 'Ret/Non-Ret is missing'
+      })
+      return
+    }
+
+    if(!this.state.screenshot) {
+      this.setState({
+        validationMsg: 'Screenshot is missing'
       })
       return
     }
@@ -447,19 +454,19 @@ class MaterialOut extends React.Component {
     }
       {materialFetched ?
         <FormField label='From Location' strong={true} style={{marginTop : '10px'}}>
-          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.fromLocation}</strong></Label>
+          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.toLocation}</strong></Label>
         </FormField>:
       <FormField strong={true} style={{marginTop : '10px'}}>
       <Label style={{fontSize: 16, marginLeft: 20}}>From Location</Label>
           <TextInput
               placeHolder='From Location'
-              value={window.localStorage.unit|| 'UNIT2'}
+              value={window.localStorage.unit || 'UNIT2'}
               onDOMChange={this.onFieldChange.bind(this, 'fromLocation')}
           />
       </FormField>}
       {materialFetched ?
         <FormField label='To Location' strong={true} style={{marginTop : '10px'}}>
-          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.toLocation}</strong></Label>
+          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.fromLocation}</strong></Label>
         </FormField>:
       <FormField strong={true} style={{marginTop : '10px'}}>
       <Label style={{fontSize: 16, marginLeft: 20}}>To Location</Label>
