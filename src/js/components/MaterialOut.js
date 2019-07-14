@@ -19,6 +19,7 @@ import { Input } from 'semantic-ui-react';
 import { saveMaterialOut, fetchMaterialData, uploadStoreMaterialImage } from '../api/materials';
 import ReactToPrint from "react-to-print";
 import MaterialPrintComponent from './MaterialPrintComponent';
+import PrintIcon from 'grommet/components/icons/base/Print';
 
 
 class MaterialOut extends React.Component {
@@ -30,7 +31,8 @@ class MaterialOut extends React.Component {
       showLiveCameraFeed: true,
       sNoArray:[],
       materialFetched: false,
-      toastMsg: ''
+      toastMsg: '',
+      materialSaved: false
     };
   }
 
@@ -173,9 +175,6 @@ class MaterialOut extends React.Component {
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadStoreMaterialImage(imgFile, outwardSNo).then((snapshot) => {
          let inwardPhoto = snapshot.downloadURL;
-         if(materialStatus==='New') {
-           document.getElementById('printAnchor').click();
-        }
     saveMaterialOut({
       outwardSNo,
       inwardSNo,
@@ -196,22 +195,23 @@ class MaterialOut extends React.Component {
     }).then(() => {
       this.setState({
         outwardSNo:Rand.generateBase30(8),
-        materialInObj: null,
-        materialStatus: '',
-        showLiveCameraFeed: true,
-        retNonret: '',
-        fromLocation: '',
-        toLocation: '',
-        authorisedPerson: '',
-        weighbillNumber: '',
-        material: '',
-        remarks: '',
-        quantity: '',
-        purpose: '',
-        vehicleNum: '',
-        personName: '',
-        mobileNumber: '',
+        // materialInObj: null,
+        // materialStatus: '',
+        // showLiveCameraFeed: true,
+        // retNonret: '',
+        // fromLocation: '',
+        // toLocation: '',
+        // authorisedPerson: '',
+        // weighbillNumber: '',
+        // material: '',
+        // remarks: '',
+        // quantity: '',
+        // purpose: '',
+        // vehicleNum: '',
+        // personName: '',
+        // mobileNumber: '',
         toastMsg: `Material ${material} saved`,
+        materialSaved: true
       })
     })
   }).catch(err => console.error(err))
@@ -229,6 +229,24 @@ class MaterialOut extends React.Component {
     );
   }
 
+  renderTrigger() {
+    return (
+      <Button icon={<PrintIcon />}
+        label='PRINT' style={!this.state.materialSaved ?
+        {
+          marginTop:20,
+          width: '300px',
+          display: 'none'
+        } :
+        {
+          marginTop:20,
+          width: '300px',
+        }}
+        href='#'
+        primary={true} />
+    )
+  }
+
   renderContent() {
     return this.componentRef;
   }
@@ -238,20 +256,21 @@ class MaterialOut extends React.Component {
   }
 
   renderMaterialPrintCard() {
+    const {materialInObj}=this.state;
     return (
       <MaterialPrintComponent
         ref={this.setPrintRef.bind(this)}
         screenshot={this.state.screenshot}
         outwardSNo={this.state.outwardSNo}
         retNonret={this.state.retNonret}
-        fromLocation={this.state.fromLocation}
-        toLocation={this.state.toLocation}
-        authorisedPerson={this.state.authorisedPerson}
-        weighbillNumber={this.state.weighbillNumber}
-        material={this.state.material}
-        remarks={this.state.remarks}
-        quantity={this.state.quantity}
-        purpose={this.state.purpose}
+        fromLocation={this.state.fromLocation || (materialInObj && materialInObj.fromLocation)}
+        toLocation={this.state.toLocation || (materialInObj && materialInObj.toLocation)}
+        authorisedPerson={this.state.authorisedPerson || (materialInObj && materialInObj.authorisedPerson)}
+        weighbillNumber={this.state.weighbillNumber || (materialInObj && materialInObj.weighbillNumber)}
+        material={this.state.material || (materialInObj && materialInObj.materil)}
+        remarks={this.state.remarks || (materialInObj && materialInObj.remarks)}
+        quantity={this.state.quantity || (materialInObj && materialInObj.quantity)}
+        purpose={this.state.purpose || (materialInObj && materialInObj.purpose)}
         vehicleNum={this.state.vehicleNum}
         personName={this.state.personName}
         mobileNumber={this.state.mobileNumber}
@@ -399,12 +418,36 @@ class MaterialOut extends React.Component {
       materialStatus,
       materialFetched,
       materialInObj,
+      materialSaved
     } = this.state;
     return (
       <Section>
        <Split>
         <Box direction='column' style={{marginLeft:'20px', width:'300px'}}>
-        <Form className='manPowerFields'>
+        {
+          materialSaved ?
+          <Form className='newVisitorFields'>
+            <FormField  label='OutwardSNo'  strong={true} style={{marginTop : '10px'}}>
+            <Label style={{marginLeft:'20px'}}><strong>{outwardSNo}</strong></Label>
+            </FormField>
+          <FormField label='Material Status' strong={true} style={{marginTop : '10px'}}>
+            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialStatus}</strong></Label>
+          </FormField>
+          <FormField label='Ret/Non-ret' strong={true} style={{marginTop : '10px'}}>
+            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{retNonret || (materialInObj && materialInObj.retNonret)}</strong></Label>
+          </FormField>
+          <FormField label='From Location' strong={true} style={{marginTop : '10px'}}>
+            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{fromLocation || (materialInObj && materialInObj.fromLocation)}</strong></Label>
+          </FormField><FormField label='To Location' strong={true} style={{marginTop : '10px'}}>
+            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{toLocation || (materialInObj && materialInObj.toLocation)}</strong></Label>
+          </FormField><FormField label='Authorised Person/DEPT' strong={true} style={{marginTop : '10px'}}>
+            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{authorisedPerson || (materialInObj && materialInObj.authorisedPerson)}</strong></Label>
+          </FormField>
+          <FormField label='Weigh Bill Number' strong={true} style={{marginTop : '10px'}}>
+            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{weighbillNumber || (materialInObj && materialInObj.weighbillNumber)}</strong></Label>
+          </FormField>
+          </Form> :
+          <Form className='manPowerFields'>
         <FormField  label='OutwardSNo'  strong={true} style={{marginTop : '10px'}}  >
           <Label style={{marginLeft:'20px'}}><strong>{outwardSNo}</strong></Label>
         </FormField>
@@ -500,10 +543,32 @@ class MaterialOut extends React.Component {
               onDOMChange={this.onFieldChange.bind(this, 'weighbillNumber')}
           />
       </FormField>}
-      </Form>
+      </Form>}
       </Box>
       <Box direction='column' style={{marginLeft:'20px', width:'300px'}}>
-          <Form>
+          {materialSaved ?
+            <Form className='newVisitorFields'>
+              <FormField  label='Material Name'  strong={true} style={{marginTop : '10px'}}>
+              <Label style={{marginLeft:'20px'}}><strong>{material || (materialInObj && materialInObj.material)}</strong></Label>
+              </FormField>
+            <FormField label='Remarks' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{remarks || (materialInObj && materialInObj.remarks)}</strong></Label>
+            </FormField>
+            <FormField label='Quantity' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{quantity || (materialInObj && materialInObj.quantity)}</strong></Label>
+            </FormField>
+            <FormField label='Purpose' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{purpose || (materialInObj && materialInObj.purpose)}</strong></Label>
+            </FormField><FormField label='Vehicle Number' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{vehicleNum}</strong></Label>
+            </FormField><FormField label='Person Name' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{personName}</strong></Label>
+            </FormField>
+            <FormField label='Mobile Number' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{mobileNumber}</strong></Label>
+            </FormField>
+            </Form> :
+            <Form>
           {materialFetched ?
             <FormField label='Material Name' strong={true} style={{marginTop : '10px'}}>
               <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.material}</strong></Label>
@@ -576,7 +641,7 @@ class MaterialOut extends React.Component {
                   onDOMChange={this.onFieldChange.bind(this, 'mobileNumber')}
               />
           </FormField>
-        </Form>
+        </Form>}
         </Box>
         <Box onClick={this.capture.bind(this)}
          direction='column'
@@ -584,7 +649,11 @@ class MaterialOut extends React.Component {
         align='center'>
         { this.renderCamera() }
         <Button icon={<Save />}
-          label='SAVE' style={
+          label='SAVE' style={materialSaved ? {
+            marginTop:20,
+            width: '300px',
+            display: 'none'
+          } :
           {
             marginTop:20,
             width: '300px',
@@ -593,6 +662,10 @@ class MaterialOut extends React.Component {
           disabled={true}
           href='#'
           primary={true} />
+          <ReactToPrint
+              trigger={this.renderTrigger.bind(this)}
+              content={this.renderContent.bind(this)}
+            />
           <Button
             label='NEW' style={{marginTop: 20, width: '300px'}}
             onClick={this.onNewBtnClick.bind(this)}
@@ -639,7 +712,6 @@ class MaterialOut extends React.Component {
         { this.renderValidationMsg() }
         { this.renderInputFields() }
         { this.renderMaterialPrintCard() }
-        { this.renderReactToPrintComponent() }
       </div>
     )
   }

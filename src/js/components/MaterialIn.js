@@ -349,9 +349,9 @@ class MaterialIn extends React.Component {
             <Label style={{fontSize: 16, marginLeft: 20}}><strong>{retNonret || (materialOutObj && materialOutObj.retNonret)}</strong></Label>
           </FormField>
           <FormField label='From Location' strong={true} style={{marginTop : '10px'}}>
-            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{fromLocation || (materialOutObj && materialOutObj.toLocation)}</strong></Label>
+            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{fromLocation || (materialOutObj && materialOutObj.fromLocation)}</strong></Label>
           </FormField><FormField label='To Location' strong={true} style={{marginTop : '10px'}}>
-            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{toLocation || (materialOutObj && materialOutObj.fromLocation)}</strong></Label>
+            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{toLocation || (materialOutObj && materialOutObj.toLocation)}</strong></Label>
           </FormField><FormField label='Authorised Person/DEPT' strong={true} style={{marginTop : '10px'}}>
             <Label style={{fontSize: 16, marginLeft: 20}}><strong>{authorisedPerson || (materialOutObj && materialOutObj.authorisedPerson)}</strong></Label>
           </FormField>
