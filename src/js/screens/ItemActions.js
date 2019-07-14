@@ -4,9 +4,6 @@ import Moment from 'moment';
 import Clock from 'react-live-clock';
 import Webcam from 'react-webcam';
 import PropTypes from 'prop-types';
-
-
-
 import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';

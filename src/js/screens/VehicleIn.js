@@ -927,7 +927,7 @@ export default class VehicleIn extends Component {
                     <Form className='newVisitorFields'>
                       <FormField  label='Inward Sno'  strong={true} style={{marginTop : '10px'}}>
                       <Label style={{marginLeft:'20px'}}><strong>{savedSerialNo}</strong></Label>
-                      </FormField>
+                    </FormField>
                     <FormField label='Own/Out Vehicle' strong={true} style={{marginTop : '10px'}}>
                       <Label style={{fontSize: 16, marginLeft: 20}}><strong>{ownOutVehicle}</strong></Label>
                     </FormField>

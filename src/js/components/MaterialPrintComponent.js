@@ -16,15 +16,16 @@ export default class MaterialPrintComponent extends Component {
             retNonret,
             fromLocation,
             toLocation,
-            gatepassNumber,
+            authorisedPerson,
             weighbillNumber,
             material,
-            materialNumber,
+            remarks,
             quantity,
             purpose,
             vehicleNum,
             mobileNumber,
             personName, inComponent } = this.props;
+            console.log(screenshot);
       const date = new Date();
       let dateStr = moment(date).format('DD-MM-YYYY');
       let timeStr = moment(date).format('h:mm A');
@@ -71,7 +72,7 @@ export default class MaterialPrintComponent extends Component {
                           Out Date: <b>{dateStr}</b>
                         </td> }
                           <td>
-                            Material SNo: <b>{materialNumber}</b>
+                            Remarks: <b>{remarks}</b>
                           </td>
                           </TableRow>
                         <TableRow>
@@ -104,7 +105,7 @@ export default class MaterialPrintComponent extends Component {
                       </TableRow>
                       <TableRow>
                         <td>
-                          Gatepass Number: <b>{gatepassNumber}</b>
+                          Authorised Person/DEPT: <b>{authorisedPerson}</b>
                         </td>
                         <td>
                           Person Name: <b>{personName}</b>

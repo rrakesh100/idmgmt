@@ -126,10 +126,10 @@ class MaterialOut extends React.Component {
 
     let fromLocation;
     let toLocation;
-    let gatepassNumber;
+    let authorisedPerson;
     let weighbillNumber;
     let material;
-    let materialNumber;
+    let remarks;
     let quantity;
     let purpose;
     let inwardSNo;
@@ -151,10 +151,10 @@ class MaterialOut extends React.Component {
        inDate = materialInObj.inDate;
        fromLocation = materialInObj.toLocation;
        toLocation = materialInObj.fromLocation;
-       gatepassNumber =  materialInObj.gatepassNumber;
+       authorisedPerson =  materialInObj.authorisedPerson;
        weighbillNumber = materialInObj.weighbillNumber;
        material = materialInObj.material;
-       materialNumber = materialInObj.materialNumber;
+       remarks = materialInObj.remarks;
        quantity = materialInObj.quantity;
        purpose = materialInObj.purpose;
     } else {
@@ -162,10 +162,10 @@ class MaterialOut extends React.Component {
        inDate=null;
        fromLocation = window.localStorage.unit || 'UNIT2';
        toLocation = this.state.toLocation;
-       gatepassNumber = this.state.gatepassNumber;
+       authorisedPerson = this.state.authorisedPerson;
        weighbillNumber = this.state.weighbillNumber;
        material = this.state.material;
-       materialNumber = this.state.materialNumber;
+       remarks = this.state.remarks;
        quantity = this.state.quantity;
        purpose = this.state.purpose;
     }
@@ -183,10 +183,10 @@ class MaterialOut extends React.Component {
       retNonret,
       fromLocation,
       toLocation,
-      gatepassNumber,
+      authorisedPerson,
       weighbillNumber,
       material,
-      materialNumber,
+      remarks,
       quantity,
       purpose,
       vehicleNum,
@@ -202,10 +202,10 @@ class MaterialOut extends React.Component {
         retNonret: '',
         fromLocation: '',
         toLocation: '',
-        gatepassNumber: '',
+        authorisedPerson: '',
         weighbillNumber: '',
         material: '',
-        materialNumber: '',
+        remarks: '',
         quantity: '',
         purpose: '',
         vehicleNum: '',
@@ -246,10 +246,10 @@ class MaterialOut extends React.Component {
         retNonret={this.state.retNonret}
         fromLocation={this.state.fromLocation}
         toLocation={this.state.toLocation}
-        gatepassNumber={this.state.gatepassNumber}
+        authorisedPerson={this.state.authorisedPerson}
         weighbillNumber={this.state.weighbillNumber}
         material={this.state.material}
-        materialNumber={this.state.materialNumber}
+        remarks={this.state.remarks}
         quantity={this.state.quantity}
         purpose={this.state.purpose}
         vehicleNum={this.state.vehicleNum}
@@ -267,10 +267,10 @@ class MaterialOut extends React.Component {
       toLocation,
       fromDepartment,
       toDepartment,
-      gatepassNumber,
+      authorisedPerson,
       weighbillNumber,
       material,
-      materialNumber,
+      remarks,
       quantity,
       purpose,
       vehicleNum,
@@ -310,10 +310,10 @@ class MaterialOut extends React.Component {
       toLocation: '',
       fromDepartment: '',
       toDepartment: '',
-      gatepassNumber: '',
+      authorisedPerson: '',
       weighbillNumber: '',
       material: '',
-      materialNumber: '',
+      remarks: '',
       quantity: '',
       purpose: '',
       vehicleNum: '',
@@ -387,10 +387,10 @@ class MaterialOut extends React.Component {
       toLocation,
       fromDepartment,
       toDepartment,
-      gatepassNumber,
+      authorisedPerson,
       weighbillNumber,
       material,
-      materialNumber,
+      remarks,
       quantity,
       purpose,
       vehicleNum,
@@ -477,15 +477,15 @@ class MaterialOut extends React.Component {
           />
       </FormField>}
       {materialFetched ?
-        <FormField label='Gatepass No' strong={true} style={{marginTop : '10px'}}>
-          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.gatepassNumber}</strong></Label>
+        <FormField label='Authorised Person/DEPT' strong={true} style={{marginTop : '10px'}}>
+          <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.authorisedPerson}</strong></Label>
         </FormField>:
       <FormField strong={true} style={{marginTop : '10px'}}>
-      <Label style={{fontSize: 16, marginLeft: 20}}>Gatepass No</Label>
+      <Label style={{fontSize: 16, marginLeft: 20}}>Authorised Person/DEPT</Label>
           <TextInput
-              placeHolder='Gatepass No'
-              value={gatepassNumber}
-              onDOMChange={this.onFieldChange.bind(this, 'gatepassNumber')}
+              placeHolder='Authorised Person/DEPT'
+              value={authorisedPerson}
+              onDOMChange={this.onFieldChange.bind(this, 'authorisedPerson')}
           />
       </FormField>}
       {materialFetched ?
@@ -517,15 +517,15 @@ class MaterialOut extends React.Component {
               />
           </FormField>}
           {materialFetched ?
-            <FormField label='Material SNo' strong={true} style={{marginTop : '10px'}}>
-              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.materialNumber}</strong></Label>
+            <FormField label='Remarks' strong={true} style={{marginTop : '10px'}}>
+              <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialInObj && materialInObj.remarks}</strong></Label>
             </FormField>:
           <FormField strong={true} style={{marginTop : '10px'}}>
-          <Label style={{fontSize: 16, marginLeft: 20}}>Material SNo</Label>
+          <Label style={{fontSize: 16, marginLeft: 20}}>Remarks</Label>
               <TextInput
-                  placeHolder='Material SNo'
-                  value={materialNumber}
-                  onDOMChange={this.onFieldChange.bind(this, 'materialNumber')}
+                  placeHolder='Remarks'
+                  value={remarks}
+                  onDOMChange={this.onFieldChange.bind(this, 'remarks')}
               />
           </FormField>}
           {materialFetched ?
