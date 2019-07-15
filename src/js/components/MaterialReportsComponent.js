@@ -122,6 +122,8 @@ class MaterialReportsComponent extends React.Component {
                <td>{slicedOutDate || '--'}</td>
                <td>{mObj.outTime}</td>
                <td rowSpan={2}>{totalTime}</td>
+               <td>{mObj.vehicleNum}</td>
+               <td>{mObj.personName}</td>
                <td>{tRow2 || '--'}</td>
              </tr>
            </tbody>
@@ -141,8 +143,8 @@ class MaterialReportsComponent extends React.Component {
            <table className="vehicleReportsTable" style={{ marginLeft : 4, marginTop:10}}>
              <thead className="vehiclesTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
               <tr>
-                <th colSpan={6}>Report Type: {reportType}</th>
-                <th colSpan={6}>Transaction Type: {transactionType}</th>
+                <th colSpan={7}>Report Type: {reportType}</th>
+                <th colSpan={7}>Transaction Type: {transactionType}</th>
               </tr>
               <tr>
                 <th>S No.</th>
@@ -156,6 +158,8 @@ class MaterialReportsComponent extends React.Component {
                 <th>Out Date</th>
                 <th>Out Time</th>
                 <th>Duration</th>
+                <th>Vehicle Number</th>
+                <th>Person Name</th>
                 <th>{tHead2}</th>
               </tr>
              </thead>
