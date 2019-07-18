@@ -69,10 +69,21 @@ export function fetchMaterialReportsData(report, unit) {
   return dbRef.once('value');
 }
 
+export function getAllMaterials() {
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +'materialsForPrint');
+  return dbRef.once('value');
+}
+
 export function uploadStoreMaterialImage(file, sNo) {
   const storageRef = firebase.storage().ref();
   let epochTime = new Date().getTime();
   const path = localStorage.unit + '/' +'Materials/'+sNo+'/'+epochTime+'.jpeg';
   const imgRef = storageRef.child(path);
   return  imgRef.putString(file, 'base64')
+}
+
+export function getMaterialsForPrint(mBarCode) {
+  console.log(mBarCode)
+  const dbRef = firebase.database().ref(localStorage.unit + '/' +`materialBarcodes/${mBarCode}`);
+  return dbRef.once('value');
 }

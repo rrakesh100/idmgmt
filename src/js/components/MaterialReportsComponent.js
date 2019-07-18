@@ -15,7 +15,7 @@ class MaterialReportsComponent extends React.Component {
     if(!response)
     return null;
 
-    let tHead1, tHead2, tHead3, tHead4;
+    let tHead1, tHead2, tHead3, tHead4, tHead5, tHead6;
     let tRow1, tRow2, tRow3, tRow4;
     let i=0;
     let format = 'DD-MM-YYYY h:mm A';
@@ -23,9 +23,17 @@ class MaterialReportsComponent extends React.Component {
     if(reportType == 'Outward') {
       tHead1='Outward Sno';
       tHead2='Inward Sno';
+      tHead3='Out Date';
+      tHead4='Out Time';
+      tHead5='In Date';
+      tHead6='In Time';
     } else {
       tHead1='Inward Sno';
       tHead2='Outward Sno';
+      tHead3='In Date';
+      tHead4='In Time';
+      tHead5='Out Date';
+      tHead6='Out Time';
     }
 
     let tablesArray=[];
@@ -56,8 +64,13 @@ class MaterialReportsComponent extends React.Component {
           totalNumberOfdays++;
           let startTime = moment(inTime, "HH:mm a");
           let endTime=moment(outTime, "HH:mm a");
-          let duration = moment.duration(endTime.diff(startTime));
-
+          console.log(reportType)
+          let duration
+          if(reportType === "Outward"){
+              duration = moment.duration(startTime.diff(endTime));
+          } else if(reportType === "Inward"){
+              duration = moment.duration(endTime.diff(startTime));
+          }
           let hours = 0, minutes =0;
           if(duration.asMilliseconds() < 0) {
            let dMillis = duration.asMilliseconds();
@@ -105,7 +118,7 @@ class MaterialReportsComponent extends React.Component {
           if(materialStatus==='Pending' && mObj.returnable===false) {
             isValid=false;
           }
-
+          console.log(mObj)
           if(isValid) {
             i++;
           tablesArray.push(
@@ -125,6 +138,7 @@ class MaterialReportsComponent extends React.Component {
                <td>{mObj.vehicleNum}</td>
                <td>{mObj.personName}</td>
                <td>{tRow2 || '--'}</td>
+               <td>image</td>
              </tr>
            </tbody>
          )
@@ -144,23 +158,24 @@ class MaterialReportsComponent extends React.Component {
              <thead className="vehiclesTableHead" style={{position: 'relative', backgroundColor: '#F5F5F5'}}>
               <tr>
                 <th colSpan={7}>Report Type: {reportType}</th>
-                <th colSpan={7}>Transaction Type: {transactionType}</th>
+                <th colSpan={8}>Transaction Type: {transactionType}</th>
               </tr>
               <tr>
                 <th>S No.</th>
                 <th>{tHead1}</th>
                 <th>Ret/Non-ret</th>
                 <th>From Location</th>
-                <th>In Date</th>
-                <th>In Time</th>
+                <th>{tHead3}</th>
+                <th>{tHead4}</th>
                 <th>Material</th>
                 <th>To Location</th>
-                <th>Out Date</th>
-                <th>Out Time</th>
+                <th>{tHead5}</th>
+                <th>{tHead6}</th>
                 <th>Duration</th>
                 <th>Vehicle Number</th>
                 <th>Person Name</th>
                 <th>{tHead2}</th>
+                <th>Image</th>
               </tr>
              </thead>
               {tablesArray}

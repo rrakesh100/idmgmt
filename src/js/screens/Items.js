@@ -9,6 +9,7 @@ import Header from 'grommet/components/Header';
 import MaterialIn from '../components/MaterialIn';
 import MaterialOut from '../components/MaterialOut';
 import MaterialReports from '../components/MaterialReports';
+import AllMaterialPrint from '../components/AllMaterialPrint';
 
 class Items extends Component {
 
@@ -27,6 +28,7 @@ class Items extends Component {
         <h3 style={{marginTop:10,marginLeft:20}}><strong>Store Material Tracking System</strong></h3>
         </Header>
         <Tabs justify='start' style={{marginLeft: 20, marginTop: -20}}>
+        
         <Tab title='MATERIAL IN'>
             <MaterialIn />
         </Tab>

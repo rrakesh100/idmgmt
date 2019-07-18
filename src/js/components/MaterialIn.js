@@ -80,6 +80,12 @@ class MaterialIn extends React.Component {
     }
   }
 
+  renderScreenShot() {
+    return (
+      <Image src={this.state.screenshot} height={300}/>
+    )
+  }
+
   renderImage() {
     if(this.state.showLiveCameraFeed) {
       return (
@@ -207,6 +213,7 @@ class MaterialIn extends React.Component {
         toastMsg: `Material ${material} saved`,
         materialSaved: true
       })
+      console.log(this.state.inwardSNo)
     })
   }).catch(err => console.error(err))
 
@@ -221,12 +228,12 @@ class MaterialIn extends React.Component {
       return
     }
 
-    if(!this.state.screenshot) {
-      this.setState({
-        validationMsg: 'Screenshot is missing'
-      })
-      return
-    }
+    // if(!this.state.screenshot) {
+    //   this.setState({
+    //     validationMsg: 'Screenshot is missing'
+    //   })
+    //   return
+    // }
 
   this.setState({
     validationMsg:''
@@ -238,7 +245,6 @@ class MaterialIn extends React.Component {
     this.setState({
       inwardSNo:Rand.generateBase30(8),
       materialOutObj: null,
-      showLiveCameraFeed: true,
       retNonret: '',
       fromLocation: '',
       toLocation: '',
@@ -261,14 +267,12 @@ class MaterialIn extends React.Component {
   onCloseLayer() {
     this.setState({
       validationMsg: '',
-      showLiveCameraFeed: true
     })
   }
 
   onOkButtonClick() {
     this.setState({
       validationMsg: '',
-      showLiveCameraFeed: true
     })
   }
 
@@ -656,7 +660,8 @@ class MaterialIn extends React.Component {
   }
 
   render() {
-    const {toastMsg}=this.state;
+    const {toastMsg, screenshot}=this.state;
+    console.log(screenshot);
     if(toastMsg) {
       return (
         <Layer>
