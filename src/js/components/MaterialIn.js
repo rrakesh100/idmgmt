@@ -213,7 +213,6 @@ class MaterialIn extends React.Component {
         toastMsg: `Material ${material} saved`,
         materialSaved: true
       })
-      console.log(this.state.inwardSNo)
     })
   }).catch(err => console.error(err))
 
@@ -661,7 +660,6 @@ class MaterialIn extends React.Component {
 
   render() {
     const {toastMsg, screenshot}=this.state;
-    console.log(screenshot);
     if(toastMsg) {
       return (
         <Layer>
