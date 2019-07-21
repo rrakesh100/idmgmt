@@ -28,7 +28,9 @@ class Items extends Component {
         <h3 style={{marginTop:10,marginLeft:20}}><strong>Store Material Tracking System</strong></h3>
         </Header>
         <Tabs justify='start' style={{marginLeft: 20, marginTop: -20}}>
-        
+        <Tab title='HOME'>
+            <AllMaterialPrint />
+        </Tab>
         <Tab title='MATERIAL IN'>
             <MaterialIn />
         </Tab>

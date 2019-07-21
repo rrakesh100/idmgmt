@@ -40,7 +40,6 @@ export default class AllVehiclesPrint extends Component {
   onVehicleInPrint(vehicle) {
     const {vehicles} = this.state;
     let vehicleInObj = vehicles[vehicle] && vehicles[vehicle]['lastInward'];
-    console.log(vehicleInObj);
     this.setState({vehicleInObj, showVehicleList:false})
   }
 

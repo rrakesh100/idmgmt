@@ -24,14 +24,15 @@ export default class MaterialPrintComponent extends Component {
             purpose,
             vehicleNum,
             mobileNumber,
-            personName, inComponent } = this.props;
+            personName, inComponent, duplicatePrint, dateForPrint, timeForPrint } = this.props;
+
       const date = new Date();
       let dateStr = moment(date).format('DD-MM-YYYY');
       let timeStr = moment(date).format('h:mm A');
       const timestampStr = moment(date).format('DD/MM/YYYY hh:mm:ss A');
 
       return (
-          <div className='vehicleCard'>
+          <div className={duplicatePrint ? 'allVehicleCard' : 'vehicleCard'}>
             <div style={{display: 'flex', flexDirection: 'row', marginTop: 10}}>
               <h4 style={{position: 'absolute', right:20}}><strong>{timestampStr}</strong></h4>
             </div>
@@ -65,10 +66,10 @@ export default class MaterialPrintComponent extends Component {
                         <TableRow>
                           {inComponent ?
                             <td>
-                            In Date: <b>{dateStr}</b>
+                            In Date: <b>{duplicatePrint ? dateForPrint : dateStr}</b>
                           </td>:
                           <td>
-                          Out Date: <b>{dateStr}</b>
+                          Out Date: <b>{duplicatePrint ? dateForPrint : dateStr}</b>
                         </td> }
                           <td>
                             Remarks: <b>{remarks}</b>
@@ -77,10 +78,10 @@ export default class MaterialPrintComponent extends Component {
                         <TableRow>
                         {inComponent ?
                           <td>
-                            In Time: <b>{timeStr}</b>
+                            In Time: <b>{duplicatePrint ? timeForPrint : timeStr}</b>
                           </td>:
                           <td>
-                          Out Time: <b>{timeStr}</b>
+                          Out Time: <b>{duplicatePrint ? timeForPrint : timeStr}</b>
                         </td> }
                           <td>
                             quantity: <b>{quantity}</b>

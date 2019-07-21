@@ -4,9 +4,8 @@ import TableRow from 'grommet/components/TableRow'
 import Button from 'grommet/components/Button';
 import PrintIcon from 'grommet/components/icons/base/Print';
 import LinkPrevious from 'grommet/components/icons/base/LinkPrevious';
-import { getAllMaterials, getMaterialsForPrint } from '../api/materials';
-import VehicleInPrintComponent from '../components/VehicleInPrintComponent';
-import VehicleOutPrintComponent from '../components/VehicleOutPrintComponent';
+import { getMaterialsForPrint } from '../api/materials';
+import MaterialPrintComponent from './MaterialPrintComponent';
 import ReactToPrint from "react-to-print";
 import Layer from 'grommet/components/Layer';
 import Search from 'grommet/components/Search';
@@ -19,55 +18,22 @@ export default class AllMaterialPrint extends Component {
     super(props);
     this.state={
       materials: null,
-      vehicleInObj: null,
-      vehicleOutObj: null,
-      showVehicleList: true,
-      showVehicles: false,
-      vehicleDataObj: null
+      materialObj: null,
+      showMaterialList: true,
+      showMaterials: false,
+      materialDataObj: null
     }
   }
 
-  // getAllVehicles() {
-  //   getAllVehicles().then((snap) => {
-  //     this.setState({
-  //       vehicles: snap.val()
-  //     })
-  //   }).catch((err) => {
-  //     console.error('ALL VEHICLES FETCH FAILED', err)
-  //   })
-  // }
-
-  onVehicleInPrint(vehicle) {
-    const {vehicles} = this.state;
-    let vehicleInObj = vehicles[vehicle] && vehicles[vehicle]['lastInward'];
-    console.log(vehicleInObj);
-    this.setState({vehicleInObj, showVehicleList:false})
+  onSearchedMaterialPrint(mObj) {
+    this.setState({materialObj: mObj, showMaterialList: false})
   }
 
-  onVehicleOutPrint(vehicle) {
-    const {vehicles} = this.state;
-    let vehicleOutObj = vehicles[vehicle] && vehicles[vehicle]['lastOutward'];
-    this.setState({vehicleOutObj, showVehicleList: false})
+  renderContent() {
+    return this.mRef;
   }
 
-  onSearchedVehicleInPrint(vInObj) {
-    this.setState({vehicleInObj: vInObj, showVehicleList: false})
-  }
-
-  onSearchedVehicleOutPrint(vOutObj) {
-    this.setState({vehicleOutObj: vOutObj, showVehicleList: false})
-  }
-
-  renderInContent() {
-    return this.vInRef;
-  }
-
-  renderOutContent() {
-    return this.vOutRef;
-  }
-
-
-  renderInTrigger(vehicle) {
+  renderTrigger(material) {
     return (
       <div className="prntAnchor" style={{marginRight:30}}>
         <a>Print</a>
@@ -75,259 +41,135 @@ export default class AllMaterialPrint extends Component {
     )
   }
 
-  renderOutTrigger(vehicle) {
-    return (
-      <div className="prntAnchor" style={{marginRight:30}}>
-        <a>Print</a>
-      </div>
-    )
+  setPrintRef(ref) {
+    this.mRef = ref;
   }
 
-  setInPrintRef(ref) {
-    this.vInRef = ref;
-  }
-
-  setOutPrintRef(ref) {
-    this.vOutRef = ref;
-  }
-
-  onVehicleInCloseLayer() {
+  onGoingBack() {
     this.setState({
-      vehicleInObj: null
-    })
-  }
-
-  onVehicleOutCloseLayer() {
-    this.setState({
-      vehicleOutObj: null
-    })
-  }
-
-  onInGoingBack() {
-    this.setState({
-      vehicleInObj: null,
-      showVehicleList: true
-    })
-  }
-
-  onOutGoingBack() {
-    this.setState({
-      vehicleOutObj: null,
-      showVehicleList: true
+      materialObj: null,
+      showMaterialList: true
     })
   }
 
 
-  renderVehicleInPrintCard() {
-    const {vehicleInObj} = this.state;
-    if(!vehicleInObj)
+  renderMaterialPrintCard() {
+    const {materialObj, searchedInMNo, searchedOutMNo} = this.state;
 
+    let validator,screenshot,dateForPrint,timeForPrint;
+
+
+    if(!materialObj)
     return;
+
+    if(searchedInMNo) {
+      validator=true;
+      screenshot=materialObj.inwardPhoto;
+      dateForPrint=materialObj.inDate;
+      timeForPrint=materialObj.inTime;
+    } else {
+      validator=false;
+      screenshot=materialObj.outwardPhoto;
+      dateForPrint=materialObj.outDate;
+      timeForPrint=materialObj.outTime;
+    }
+
     return (
       <Article>
         <div style={{display:'flex', flexDirection:'row',alignItems:'center', justifyContent: 'space-between'}}>
         <Button icon={<LinkPrevious color='#481BA2'/>}
-              onClick={this.onInGoingBack.bind(this)}
+              onClick={this.onGoingBack.bind(this)}
                />
          <ReactToPrint
-             trigger={this.renderInTrigger.bind(this)}
-             content={this.renderInContent.bind(this)}
+             trigger={this.renderTrigger.bind(this)}
+             content={this.renderContent.bind(this)}
            />
         </div>
-        <VehicleInPrintComponent
-          ref={this.setInPrintRef.bind(this)}
-          allVehiclesPrint={true}
-          screenshot={vehicleInObj.screenshot}
-          inwardSNo={vehicleInObj.inwardSNo}
-          ownOutVehicle={vehicleInObj.ownOutVehicle}
-          vehicleNumber={vehicleInObj.vehicleNumber}
-          driverName={vehicleInObj.driverName}
-          driverNumber={vehicleInObj.driverNumber}
-          remarks={vehicleInObj.remarks}
-          material={vehicleInObj.material}
-          numberOfBags={vehicleInObj.numberOfBags}
-          comingFrom={vehicleInObj.comingFrom}
-          billNumber={vehicleInObj.billNumber}
-          inDate={vehicleInObj.inwardDate}
-          inTime={vehicleInObj.inTime}
+        <MaterialPrintComponent
+          ref={this.setPrintRef.bind(this)}
+          duplicatePrint={true}
+          inComponent={validator}
+          screenshot={screenshot}
+          inwardSNo={materialObj.inwardSNo}
+          outwardSNo={materialObj.outwardSNo}
+          dateForPrint={dateForPrint}
+          timeForPrint={timeForPrint}
+          retNonret={materialObj.retNonret}
+          fromLocation={materialObj.fromLocation}
+          toLocation={materialObj.toLocation}
+          authorisedPerson={materialObj.authorisedPerson}
+          weighbillNumber={materialObj.weighbillNumber}
+          material={materialObj.material}
+          remarks={materialObj.remarks}
+          quantity={materialObj.quantity}
+          purpose={materialObj.purpose}
+          vehicleNum={materialObj.vehicleNum}
+          personName={materialObj.personName}
+          mobileNumber={materialObj.mobileNumber}
         />
       </Article>
     )
-  }
-
-  renderVehicleOutPrintCard() {
-    const {vehicleOutObj} = this.state;
-    if(!vehicleOutObj)
-    return;
-    return (
-      <Article>
-      <div style={{display:'flex', flexDirection:'row',alignItems:'center', justifyContent: 'space-between'}}>
-      <Button icon={<LinkPrevious color='#481BA2'/>}
-            onClick={this.onOutGoingBack.bind(this)}
-             />
-         <ReactToPrint
-             trigger={this.renderOutTrigger.bind(this)}
-             content={this.renderOutContent.bind(this)}
-           />
-        </div>
-        <VehicleOutPrintComponent
-          ref={this.setOutPrintRef.bind(this)}
-          allVehiclesPrint={true}
-          screenshot={vehicleOutObj.screenshot}
-          outwardSNo={vehicleOutObj.outwardSNo}
-          ownOutVehicle={vehicleOutObj.ownOutVehicle}
-          vehicleNumber={vehicleOutObj.vehicleNumber}
-          driverName={vehicleOutObj.driverName}
-          driverNumber={vehicleOutObj.driverNumber}
-          remarks={vehicleOutObj.remarks}
-          material={vehicleOutObj.material}
-          numberOfBags={vehicleOutObj.numberOfBags}
-          comingFrom={vehicleOutObj.comingFrom}
-          billNumber={vehicleOutObj.billNumber}
-          outDate={vehicleOutObj.outwardDate}
-          outTime={vehicleOutObj.outTime}
-        />
-      </Article>
-    )
-  }
-
-  renderAllVehiclesList() {
-    const {vehicles, showVehicleList, showVehicles} = this.state;
-    if(!vehicles)
-    return null;
-    let i=0;
-
-    if(showVehicleList && showVehicles) {
-    return (
-      <div className='table'>
-      <Table scrollable={true} style={{marginTop : '60px'}}>
-          <thead style={{position:'relative'}}>
-           <tr>
-             <th>Inward Sno</th>
-             <th>In Date</th>
-             <th>In Time</th>
-             <th>Outward Sno</th>
-             <th>Out Date</th>
-             <th>Out Time</th>
-           </tr>
-          </thead>
-          <tbody>
-          {
-            Object.keys(vehicles).map((vehicle, index) => {
-              i++;
-              if(vehicle !== 'U2') {
-                const vehicleInwardItem = vehicles[vehicle] && vehicles[vehicle]['lastInward'];
-                const vehicleOutwadItem = vehicles[vehicle] && vehicles[vehicle]['lastOutward'];
-                return <TableRow key={index}>
-                <td>{vehicle}</td>
-                <td>{vehicleInwardItem && vehicleInwardItem.inwardSNo}</td>
-                <td>{vehicleInwardItem && vehicleInwardItem.inwardDate}</td>
-                <td>{vehicleInwardItem && vehicleInwardItem.inTime}</td>
-                <td>{vehicleOutwadItem ? vehicleOutwadItem.outwardSNo : '--'}</td>
-                <td>{vehicleOutwadItem ? vehicleOutwadItem.outwardDate : '--'}</td>
-                <td>{vehicleOutwadItem ? vehicleOutwadItem.outTime : '--'}</td>
-                <td>
-                     <Button icon={<PrintIcon />}
-                           onClick={this.onMaterialInPrint.bind(this, vehicle)}
-                           plain={true} />
-                </td>
-                <td>
-                   {
-                     vehicleOutwadItem ?
-                     <Button icon={<PrintIcon />}
-                         onClick={this.onMaterialOutPrint.bind(this, vehicle)}
-                         plain={true} /> : 'N/A'
-                   }
-                </td>
-                </TableRow>
-              }
-            })
-          }
-          </tbody>
-      </Table>
-      </div>
-    )
-  } else {
-    return null;
-  }
-}
-
-  handleFiles(files) {
-   console.log(files)
-  }
-
-  renderFileReader() {
-    return (
-      <ReactFileReader fileTypes={[".txt"]} handleFiles={this.handleFiles}>
-        <button className='btn'>Upload</button>
-      </ReactFileReader>
-    )
-  }
-
-  onShowingMaterialsList() {
-    this.setState({
-      showMaterials: true,
-      materialDataObj: null
-    }, this.getAllMaterials.bind(this))
   }
 
   onFieldChange(fieldName,e,o) {
-    console.log(o)
     getMaterialsForPrint(o.value).then(res => {
-      console.log(res.val())
-      const vehicleDataObj=res.val();
-      this.setState({vehicleDataObj, showVehicles: false})
+      const materialDataObj=res.val();
+      this.setState({
+        materialDataObj,
+        [fieldName]: o.value,
+        showMaterials: false
+      })
     }).catch(err => console.log(err))
   }
 
-  renderSerchedVehicle() {
-    const {vehicleDataObj, showVehicleList}=this.state;
-    if(!vehicleDataObj)
+  renderSerchedMaterial() {
+    const {materialDataObj, showMaterialList, searchedInMNo, searchedOutMNo}=this.state;
+    if(!materialDataObj)
     return null;
 
-    const vehicleInwardItem = vehicleDataObj && vehicleDataObj['lastInward'];
-    const vehicleOutwadItem = vehicleDataObj && vehicleDataObj['lastOutward'];
-    if(showVehicleList) {
+    let sNo,dateForPrint,timeForPrint,sNoHeader,dateHeader,timeHeader;
+
+    if(searchedInMNo) {
+      sNoHeader='Inward Sno';
+      dateHeader='In Date';
+      timeHeader='In Time';
+      sNo=materialDataObj.inwardSNo;
+      dateForPrint=materialDataObj.inDate;
+      timeForPrint=materialDataObj.inTime;
+    } else {
+      sNoHeader='Outward Sno';
+      dateHeader='Out Date';
+      timeHeader='Out Time';
+      sNo=materialDataObj.outwardSNo;
+      dateForPrint=materialDataObj.outDate;
+      timeForPrint=materialDataObj.outTime;
+    }
+
+    if(showMaterialList) {
     return (
       <div className='table'>
       <Table scrollable={true} style={{marginTop : '60px'}}>
           <thead style={{position:'relative'}}>
            <tr>
-             <th>Vehicle No.</th>
-             <th>Inward Sno</th>
-             <th>In Date</th>
-             <th>In Time</th>
-             <th>Outward Sno</th>
-             <th>Out Date</th>
-             <th>Out Time</th>
-             <th>Vehicle In</th>
-             <th>Vehicle Out</th>
+             <th>{sNoHeader}</th>
+             <th>Material Name</th>
+             <th>{dateHeader}</th>
+             <th>{timeHeader}</th>
+             <th>Print</th>
            </tr>
           </thead>
           <tbody>
                <TableRow>
-               <td>{vehicleInwardItem && vehicleInwardItem.vehicleNumber}</td>
-               <td>{vehicleInwardItem && vehicleInwardItem.inwardSNo}</td>
-               <td>{vehicleInwardItem && vehicleInwardItem.inwardDate}</td>
-               <td>{vehicleInwardItem && vehicleInwardItem.inTime}</td>
-               <td>{vehicleOutwadItem ? vehicleOutwadItem.outwardSNo : '--'}</td>
-               <td>{vehicleOutwadItem ? vehicleOutwadItem.outwardDate : '--'}</td>
-               <td>{vehicleOutwadItem ? vehicleOutwadItem.outTime : '--'}</td>
+               <td>{materialDataObj && sNo}</td>
+               <td>{materialDataObj && materialDataObj.material}</td>
+               <td>{materialDataObj && dateForPrint}</td>
+               <td>{materialDataObj && timeForPrint}</td>
                 <td>
                      <Button icon={<PrintIcon />}
-                           onClick={this.onSearchedVehicleInPrint.bind(this, vehicleInwardItem)}
+                           onClick={this.onSearchedMaterialPrint.bind(this, materialDataObj)}
                            plain={true} />
                 </td>
-                <td>
-                   {
-                     vehicleOutwadItem ?
-                     <Button icon={<PrintIcon />}
-                         onClick={this.onSearchedVehicleOutPrint.bind(this, vehicleOutwadItem)}
-                         plain={true} /> : 'N/A'
-                   }
-                </td>
                 </TableRow>
-          }
           </tbody>
       </Table>
       </div>
@@ -340,24 +182,35 @@ export default class AllMaterialPrint extends Component {
   renderSearchAndButton() {
     const materialOptions = this.props.materialOptions || [];
     return (
-      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-      <Input transparent
-      list='materials'
-      placeholder='Material Sno'
-      style={{marginLeft:20}}
-      onChange={this.onFieldChange.bind(this, 'searchedMNo')} />
-    <datalist id='vehicles'>
-      {
-        materialOptions.map((val, index) => {
-          return <option value={val} key={index}/>
-        })
-      }
-    </datalist>
-      <Button  label='Show All Materials'
-      onClick={this.onShowingMaterialsList.bind(this)}
-      style={{marginRight:40}}
-      primary={true}
-      href='#'/>
+      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around'}}>
+        <div style={{display:'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <h5>Material In SNO</h5>
+          <Input transparent
+          list='materials'
+          placeholder='Material In Sno'
+          onChange={this.onFieldChange.bind(this, 'searchedInMNo')} />
+        <datalist id='materials'>
+          {
+            materialOptions.map((val, index) => {
+              return <option value={val} key={index}/>
+            })
+          }
+        </datalist>
+        </div>
+        <div style={{display:'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <h5>Material Out SNO</h5>
+        <Input transparent
+        list='materials'
+        placeholder='Material Out Sno'
+        onChange={this.onFieldChange.bind(this, 'searchedOutMNo')} />
+      <datalist id='materials'>
+        {
+          materialOptions.map((val, index) => {
+            return <option value={val} key={index}/>
+          })
+        }
+      </datalist>
+      </div>
       </div>
     )
   }
@@ -368,10 +221,8 @@ export default class AllMaterialPrint extends Component {
     return (
       <div>
       {this.renderSearchAndButton()}
-      {this.renderSerchedVehicle()}
-      {this.renderVehicleInPrintCard()}
-      {this.renderVehicleOutPrintCard()}
-      {this.renderAllVehiclesList()}
+      {this.renderSerchedMaterial() }
+      {this.renderMaterialPrintCard()}
       </div>
     )
   }

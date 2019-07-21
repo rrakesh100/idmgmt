@@ -174,8 +174,9 @@ class MaterialOut extends React.Component {
 
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadStoreMaterialImage(imgFile, outwardSNo).then((snapshot) => {
-         let inwardPhoto = snapshot.downloadURL;
+         let outwardPhoto = snapshot.downloadURL;
     saveMaterialOut({
+      outwardPhoto,
       outwardSNo,
       inwardSNo,
       inDate,
