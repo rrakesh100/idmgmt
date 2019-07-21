@@ -79,12 +79,12 @@ class MaterialOut extends React.Component {
       this.setState({
         screenshot,
         showLiveCameraFeed: false
-      });
+      }, this.onSaveClick.bind(this));
     } else {
       this.setState({
         showLiveCameraFeed: true,
         screenshot: ''
-      });
+      }, this.onSaveClick.bind(this));
     }
   }
 
@@ -305,6 +305,76 @@ class MaterialOut extends React.Component {
       return
     }
 
+    if(!this.state.toLocation&& materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'To Location is missing'
+      })
+      return
+    }
+
+    if(!this.state.authorisedPerson&& materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Authorised Person is missing'
+      })
+      return
+    }
+
+    if(!this.state.weighbillNumber&& materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Weighbill Number is missing'
+      })
+      return
+    }
+
+    if(!this.state.material&& materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Material Name is missing'
+      })
+      return
+    }
+
+    if(!this.state.remarks&& materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Remarks is missing'
+      })
+      return
+    }
+
+    if(!this.state.quantity&& materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Quantity is missing'
+      })
+      return
+    }
+
+    if(!this.state.purpose&& materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Purpose is missing'
+      })
+      return
+    }
+
+    if(!this.state.vehicleNum&& materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Vehicle Number is missing'
+      })
+      return
+    }
+
+    if(!this.state.personName&& materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Person Name is missing'
+      })
+      return
+    }
+
+    if(!this.state.mobileNumber&& materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Mobile Number is missing'
+      })
+      return
+    }
+
     if(!this.state.screenshot) {
       this.setState({
         validationMsg: 'Screenshot is missing'
@@ -325,7 +395,6 @@ class MaterialOut extends React.Component {
       materialStatus:'',
       materialInSNo: '',
       retNonret: '',
-      fromLocation: '',
       toLocation: '',
       fromDepartment: '',
       toDepartment: '',
@@ -337,7 +406,8 @@ class MaterialOut extends React.Component {
       purpose: '',
       vehicleNum: '',
       personName: '',
-      mobileNumber: ''
+      mobileNumber: '',
+      materialSaved: false
     })
   }
 
@@ -437,7 +507,7 @@ class MaterialOut extends React.Component {
             <Label style={{fontSize: 16, marginLeft: 20}}><strong>{retNonret || (materialInObj && materialInObj.retNonret)}</strong></Label>
           </FormField>
           <FormField label='From Location' strong={true} style={{marginTop : '10px'}}>
-            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{fromLocation || (materialInObj && materialInObj.fromLocation)}</strong></Label>
+            <Label style={{fontSize: 16, marginLeft: 20}}><strong>{window.localStorage.unit || 'UNIT2'}</strong></Label>
           </FormField><FormField label='To Location' strong={true} style={{marginTop : '10px'}}>
             <Label style={{fontSize: 16, marginLeft: 20}}><strong>{toLocation || (materialInObj && materialInObj.toLocation)}</strong></Label>
           </FormField><FormField label='Authorised Person/DEPT' strong={true} style={{marginTop : '10px'}}>
@@ -643,7 +713,7 @@ class MaterialOut extends React.Component {
           </FormField>
         </Form>}
         </Box>
-        <Box onClick={this.capture.bind(this)}
+        <Box
          direction='column'
         style={{marginLeft : '10px', width:'300px'}}
         align='center'>
@@ -658,7 +728,7 @@ class MaterialOut extends React.Component {
             marginTop:20,
             width: '300px',
           }}
-          onClick={this.onSaveClick.bind(this)}
+          onClick={this.capture.bind(this)}
           disabled={true}
           href='#'
           primary={true} />

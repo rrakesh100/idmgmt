@@ -71,12 +71,12 @@ class MaterialIn extends React.Component {
       this.setState({
         screenshot,
         showLiveCameraFeed: false
-      });
+      },this.onSaveClick.bind(this));
     } else {
       this.setState({
         showLiveCameraFeed: true,
         screenshot: ''
-      });
+      },this.onSaveClick.bind(this));
     }
   }
 
@@ -227,12 +227,83 @@ class MaterialIn extends React.Component {
       return
     }
 
-    // if(!this.state.screenshot) {
-    //   this.setState({
-    //     validationMsg: 'Screenshot is missing'
-    //   })
-    //   return
-    // }
+    if(!this.state.fromLocation && this.state.materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'From Location is missing'
+      })
+      return
+    }
+
+    if(!this.state.authorisedPerson && this.state.materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Authorised Person is missing'
+      })
+      return
+    }
+
+    if(!this.state.weighbillNumber && this.state.materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Weighbill Number is missing'
+      })
+      return
+    }
+
+    if(!this.state.material && this.state.materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Material Name is missing'
+      })
+      return
+    }
+
+    if(!this.state.remarks && this.state.materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Remarks is missing'
+      })
+      return
+    }
+
+    if(!this.state.quantity && this.state.materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Quantity is missing'
+      })
+      return
+    }
+
+    if(!this.state.purpose && this.state.materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Purpose is missing'
+      })
+      return
+    }
+
+    if(!this.state.vehicleNum && this.state.materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Vehicle Number is missing'
+      })
+      return
+    }
+
+    if(!this.state.personName && this.state.materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Person Name is missing'
+      })
+      return
+    }
+
+    if(!this.state.mobileNumber && this.state.materialStatus === 'New') {
+      this.setState({
+        validationMsg: 'Mobile Number is missing'
+      })
+      return
+    }
+
+
+    if(!this.state.screenshot) {
+      this.setState({
+        validationMsg: 'Screenshot is missing'
+      })
+      return
+    }
 
   this.setState({
     validationMsg:''
@@ -246,7 +317,6 @@ class MaterialIn extends React.Component {
       materialOutObj: null,
       retNonret: '',
       fromLocation: '',
-      toLocation: '',
       fromDepartment: '',
       toDepartment: '',
       authorisedPerson: '',
@@ -556,7 +626,7 @@ class MaterialIn extends React.Component {
           </FormField>
         </Form>}
         </Box>
-        <Box onClick={this.capture.bind(this)}
+        <Box
          direction='column'
         style={{marginLeft : '10px', width:'300px'}}
         align='center'>
@@ -571,7 +641,7 @@ class MaterialIn extends React.Component {
             marginTop:20,
             width: '300px',
           }}
-          onClick={this.onSaveClick.bind(this)}
+          onClick={this.capture.bind(this)}
           disabled={true}
           href='#'
           primary={true} />

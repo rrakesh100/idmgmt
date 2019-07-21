@@ -16,7 +16,7 @@ class MaterialReportsComponent extends React.Component {
     return null;
 
     let tHead1, tHead2, tHead3, tHead4, tHead5, tHead6;
-    let tRow1, tRow2, tRow3, tRow4;
+    let tRow1, tRow2, tRow3, tRow4, tRow5, tRow6;
     let i=0;
     let format = 'DD-MM-YYYY h:mm A';
 
@@ -64,8 +64,7 @@ class MaterialReportsComponent extends React.Component {
           totalNumberOfdays++;
           let startTime = moment(inTime, "HH:mm a");
           let endTime=moment(outTime, "HH:mm a");
-          console.log(reportType)
-          let duration
+          let duration;
           if(reportType === "Outward"){
               duration = moment.duration(startTime.diff(endTime));
           } else if(reportType === "Inward"){
@@ -118,27 +117,38 @@ class MaterialReportsComponent extends React.Component {
           if(materialStatus==='Pending' && mObj.returnable===false) {
             isValid=false;
           }
-          console.log(mObj)
+
+          if(reportType == 'Outward') {
+            tRow3=slicedOutDate;
+            tRow4=mObj.outTime;
+            tRow5=slicedInDate;
+            tRow6=mObj.inTime;
+          } else {
+            tRow3=slicedInDate;
+            tRow4=mObj.inTime;
+            tRow5=slicedOutDate;
+            tRow6=mObj.outTime;
+          }
+
           if(isValid) {
             i++;
           tablesArray.push(
-            <tbody key={index} style={mObj.ownOutVehicle == 'Own Vehicle' ? {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
+            <tbody key={tRow1} style={mObj.ownOutVehicle == 'Own Vehicle' ? {backgroundColor: '#9E9E9E'}: {backgroundColor: 'white'}}>
               <tr>
                <td rowSpan={2}>{i}</td>
                <td rowSpan={2}>{tRow1}</td>
                <td rowSpan={2}>{mObj.retNonret}</td>
                <td rowSpan={2}>{mObj.fromLocation}</td>
-               <td>{slicedInDate}</td>
-               <td>{mObj.inTime}</td>
+               <td>{tRow3}</td>
+               <td>{tRow4}</td>
                <td>{mObj.material}</td>
                <td>{mObj.toLocation}</td>
-               <td>{slicedOutDate || '--'}</td>
-               <td>{mObj.outTime}</td>
+               <td>{tRow5 || '--'}</td>
+               <td>{tRow6 || '--'}</td>
                <td rowSpan={2}>{totalTime}</td>
                <td>{mObj.vehicleNum}</td>
                <td>{mObj.personName}</td>
                <td>{tRow2 || '--'}</td>
-               <td>image</td>
              </tr>
            </tbody>
          )
@@ -175,7 +185,6 @@ class MaterialReportsComponent extends React.Component {
                 <th>Vehicle Number</th>
                 <th>Person Name</th>
                 <th>{tHead2}</th>
-                <th>Image</th>
               </tr>
              </thead>
               {tablesArray}
