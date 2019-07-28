@@ -196,6 +196,7 @@ class MaterialOut extends React.Component {
     }).then(() => {
       this.setState({
         outwardSNo:Rand.generateBase30(8),
+        savedSerialNo: outwardSNo,
         // materialInObj: null,
         // materialStatus: '',
         // showLiveCameraFeed: true,
@@ -299,77 +300,77 @@ class MaterialOut extends React.Component {
       materialStatus
     } = this.state;
 
-    if(!retNonret && materialStatus === 'New') {
+    if(!retNonret && materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Ret/Non-Ret is missing'
       })
       return
     }
 
-    if(!this.state.toLocation&& materialStatus === 'New') {
+    if(!this.state.toLocation&& materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'To Location is missing'
       })
       return
     }
 
-    if(!this.state.authorisedPerson&& materialStatus === 'New') {
+    if(!this.state.authorisedPerson&& materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Authorised Person is missing'
       })
       return
     }
 
-    if(!this.state.weighbillNumber&& materialStatus === 'New') {
+    if(!this.state.weighbillNumber&& materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Weighbill Number is missing'
       })
       return
     }
 
-    if(!this.state.material&& materialStatus === 'New') {
+    if(!this.state.material&& materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Material Name is missing'
       })
       return
     }
 
-    if(!this.state.remarks&& materialStatus === 'New') {
+    if(!this.state.remarks&& materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Remarks is missing'
       })
       return
     }
 
-    if(!this.state.quantity&& materialStatus === 'New') {
+    if(!this.state.quantity&& materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Quantity is missing'
       })
       return
     }
 
-    if(!this.state.purpose&& materialStatus === 'New') {
+    if(!this.state.purpose&& materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Purpose is missing'
       })
       return
     }
 
-    if(!this.state.vehicleNum&& materialStatus === 'New') {
+    if(!this.state.vehicleNum&& materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Vehicle Number is missing'
       })
       return
     }
 
-    if(!this.state.personName&& materialStatus === 'New') {
+    if(!this.state.personName&& materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Person Name is missing'
       })
       return
     }
 
-    if(!this.state.mobileNumber&& materialStatus === 'New') {
+    if(!this.state.mobileNumber&& materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Mobile Number is missing'
       })
@@ -392,6 +393,7 @@ class MaterialOut extends React.Component {
   onNewBtnClick() {
     this.setState({
       showLiveCameraFeed: true,
+      savedSerialNo: '',
       materialInObj: null,
       materialStatus:'',
       materialInSNo: '',
@@ -489,7 +491,7 @@ class MaterialOut extends React.Component {
       materialStatus,
       materialFetched,
       materialInObj,
-      materialSaved
+      materialSaved,
     } = this.state;
     return (
       <Section>

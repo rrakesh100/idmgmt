@@ -195,6 +195,7 @@ class MaterialIn extends React.Component {
     }).then(() => {
       this.setState({
         inwardSNo:Rand.generateBase30(8),
+        savedSerialNo: inwardSNo,
         // retNonret: '',
         // fromLocation: '',
         // toLocation: '',
@@ -220,77 +221,77 @@ class MaterialIn extends React.Component {
 
   onSaveClick() {
 
-    if(!this.state.retNonret && this.state.materialStatus === 'New') {
+    if(!this.state.retNonret && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Ret/Non-Ret is missing'
       })
       return
     }
 
-    if(!this.state.fromLocation && this.state.materialStatus === 'New') {
+    if(!this.state.fromLocation && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'From Location is missing'
       })
       return
     }
 
-    if(!this.state.authorisedPerson && this.state.materialStatus === 'New') {
+    if(!this.state.authorisedPerson && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Authorised Person is missing'
       })
       return
     }
 
-    if(!this.state.weighbillNumber && this.state.materialStatus === 'New') {
+    if(!this.state.weighbillNumber && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Weighbill Number is missing'
       })
       return
     }
 
-    if(!this.state.material && this.state.materialStatus === 'New') {
+    if(!this.state.material && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Material Name is missing'
       })
       return
     }
 
-    if(!this.state.remarks && this.state.materialStatus === 'New') {
+    if(!this.state.remarks && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Remarks is missing'
       })
       return
     }
 
-    if(!this.state.quantity && this.state.materialStatus === 'New') {
+    if(!this.state.quantity && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Quantity is missing'
       })
       return
     }
 
-    if(!this.state.purpose && this.state.materialStatus === 'New') {
+    if(!this.state.purpose && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Purpose is missing'
       })
       return
     }
 
-    if(!this.state.vehicleNum && this.state.materialStatus === 'New') {
+    if(!this.state.vehicleNum && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Vehicle Number is missing'
       })
       return
     }
 
-    if(!this.state.personName && this.state.materialStatus === 'New') {
+    if(!this.state.personName && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Person Name is missing'
       })
       return
     }
 
-    if(!this.state.mobileNumber && this.state.materialStatus === 'New') {
+    if(!this.state.mobileNumber && this.state.materialStatus !== 'Pending') {
       this.setState({
         validationMsg: 'Mobile Number is missing'
       })
@@ -314,6 +315,7 @@ class MaterialIn extends React.Component {
   onNewBtnClick() {
     this.setState({
       inwardSNo:Rand.generateBase30(8),
+      savedSerialNo: '',
       materialOutObj: null,
       retNonret: '',
       fromLocation: '',
@@ -413,7 +415,7 @@ class MaterialIn extends React.Component {
         {materialSaved ?
           <Form className='newVisitorFields'>
             <FormField  label='InwardSNo'  strong={true} style={{marginTop : '10px'}}>
-            <Label style={{marginLeft:'20px'}}><strong>{inwardSNo}</strong></Label>
+            <Label style={{marginLeft:'20px'}}><strong>{this.state.savedSerialNo}</strong></Label>
             </FormField>
           <FormField label='Material Status' strong={true} style={{marginTop : '10px'}}>
             <Label style={{fontSize: 16, marginLeft: 20}}><strong>{materialStatus}</strong></Label>
