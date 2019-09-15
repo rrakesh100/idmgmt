@@ -114,6 +114,7 @@ export default class AllMaterialPrint extends Component {
   onFieldChange(fieldName,e,o) {
     getMaterialsForPrint(o.value).then(res => {
       const materialDataObj=res.val();
+      console.log(materialDataObj);
       this.setState({
         materialDataObj,
         [fieldName]: o.value,
@@ -181,6 +182,7 @@ export default class AllMaterialPrint extends Component {
 
   renderSearchAndButton() {
     const materialOptions = this.props.materialOptions || [];
+    console.log(this.props);
     return (
       <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around'}}>
         <div style={{display:'flex', flexDirection: 'column', alignItems: 'center'}}>

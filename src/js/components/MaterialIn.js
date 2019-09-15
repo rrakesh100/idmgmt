@@ -123,7 +123,7 @@ class MaterialIn extends React.Component {
       materialStatus,
       materialOutObj
     } = this.state;
-
+    console.log(screenshot);
     let fromLocation;
     let toLocation;
     let authorisedPerson;
@@ -732,6 +732,8 @@ class MaterialIn extends React.Component {
 
   render() {
     const {toastMsg, screenshot}=this.state;
+    console.log(screenshot);
+
     if(toastMsg) {
       return (
         <Layer>

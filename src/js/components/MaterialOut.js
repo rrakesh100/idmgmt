@@ -125,6 +125,7 @@ class MaterialOut extends React.Component {
       materialStatus,
       materialInObj
     } = this.state;
+    console.log(screenshot);
 
     let fromLocation;
     let toLocation;
@@ -197,21 +198,6 @@ class MaterialOut extends React.Component {
       this.setState({
         outwardSNo:Rand.generateBase30(8),
         savedSerialNo: outwardSNo,
-        // materialInObj: null,
-        // materialStatus: '',
-        // showLiveCameraFeed: true,
-        // retNonret: '',
-        // fromLocation: '',
-        // toLocation: '',
-        // authorisedPerson: '',
-        // weighbillNumber: '',
-        // material: '',
-        // remarks: '',
-        // quantity: '',
-        // purpose: '',
-        // vehicleNum: '',
-        // personName: '',
-        // mobileNumber: '',
         toastMsg: `Material ${material} saved`,
         materialSaved: true
       })

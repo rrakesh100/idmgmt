@@ -82,8 +82,8 @@ export function uploadStoreMaterialImage(file, sNo) {
   return  imgRef.putString(file, 'base64')
 }
 
-export function getMaterialsForPrint(mBarCode) {
-  console.log(mBarCode)
+export function getMaterialsForPrint(barcode) {
+  let mBarCode = barcode.toUpperCase();
   const dbRef = firebase.database().ref(localStorage.unit + '/' +`materialBarcodes/${mBarCode}`);
   return dbRef.once('value');
 }
