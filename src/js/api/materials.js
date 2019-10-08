@@ -21,12 +21,18 @@ export function saveMaterialIn(data) {
   updates[localStorage.unit + '/'+`materialBarcodes/${data.inwardSNo}`] = newData;
   }
 
-  if(data.materialStatus==='Pending' && data.outDate) {
+  if(data.materialStatus==='Pending' && data.outDate && !data.inDate) {
+    console.log('it should nt come here')
     updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/returnable`]=false;
     updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/inDate`]=dateStr;
     updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/inTime`]=timeStr;
     updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/inwardSNo`]=data.inwardSNo;
+    updates[localStorage.unit + '/' + `materialBarcodes/${data.outwardSNo}/returnable`]=false;
+    updates[localStorage.unit + '/' + `materialBarcodes/${data.outwardSNo}/inDate`]=dateStr;
+    updates[localStorage.unit + '/' + `materialBarcodes/${data.outwardSNo}/inTime`]=timeStr;
+    updates[localStorage.unit + '/' + `materialBarcodes/${data.outwardSNo}/inwardSNo`]=data.inwardSNo;
   }
+  console.log(updates)
 
   return dbRef.update(updates);
 }
@@ -48,14 +54,18 @@ export function saveMaterialOut(data) {
     updates[localStorage.unit + '/'+`materialReports/out/${dateStr}/${data.outwardSNo}`] = newData;
     updates[localStorage.unit + '/'+`materialBarcodes/${data.outwardSNo}`] = newData;
   }
-
-  if(data.inDate) {
+  console.log(data);
+  if(data.inDate && !data.outDate) {
     updates[localStorage.unit + '/'+ `materialReports/in/${data.inDate}/${data.inwardSNo}/returnable`]=false;
     updates[localStorage.unit + '/'+ `materialReports/in/${data.inDate}/${data.inwardSNo}/outDate`]=dateStr;
     updates[localStorage.unit + '/'+ `materialReports/in/${data.inDate}/${data.inwardSNo}/outTime`]=timeStr;
     updates[localStorage.unit + '/'+ `materialReports/in/${data.inDate}/${data.inwardSNo}/outwardSNo`]=data.outwardSNo;
+    updates[localStorage.unit + '/' + `materialBarcodes/${data.inwardSNo}/returnable`]=false;
+    updates[localStorage.unit + '/' + `materialBarcodes/${data.inwardSNo}/outDate`]=dateStr;
+    updates[localStorage.unit + '/' + `materialBarcodes/${data.inwardSNo}/outTime`]=timeStr;
+    updates[localStorage.unit + '/' + `materialBarcodes/${data.inwardSNo}/outwardSNo`]=data.outwardSNo;
   }
-
+  console.log(updates);
   return dbRef.update(updates);
 }
 

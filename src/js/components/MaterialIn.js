@@ -123,7 +123,6 @@ class MaterialIn extends React.Component {
       materialStatus,
       materialOutObj
     } = this.state;
-    console.log(screenshot);
     let fromLocation;
     let toLocation;
     let authorisedPerson;
@@ -134,6 +133,7 @@ class MaterialIn extends React.Component {
     let purpose;
     let outwardSNo;
     let outDate;
+    let inDate;
 
     if(materialOutObj && materialOutObj.retNonret === 'Non-Returnable') {
       this.setState({
@@ -147,8 +147,10 @@ class MaterialIn extends React.Component {
     }
 
     if(materialStatus === 'Pending' && materialOutObj) {
+       console.log(materialOutObj);
        outwardSNo = materialOutObj.outwardSNo;
        outDate = materialOutObj.outDate;
+       inDate = materialOutObj.inDate;
        fromLocation = materialOutObj.fromLocation;
        toLocation = materialOutObj.toLocation;
        authorisedPerson =  materialOutObj.authorisedPerson;
@@ -170,6 +172,7 @@ class MaterialIn extends React.Component {
        purpose = this.state.purpose;
     }
 
+    if(!inDate) {
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
     uploadStoreMaterialImage(imgFile, inwardSNo).then((snapshot) => {
          let inwardPhoto = snapshot.downloadURL;
@@ -216,7 +219,13 @@ class MaterialIn extends React.Component {
       })
     })
   }).catch(err => console.error(err))
-
+} else {
+  this.setState({
+    toastMsg: `Material ${material} already saved`,
+    materialOutObj:null,
+    showLiveCameraFeed: true
+  })
+}
   }
 
   onSaveClick() {
@@ -315,6 +324,7 @@ class MaterialIn extends React.Component {
   onNewBtnClick() {
     this.setState({
       inwardSNo:Rand.generateBase30(8),
+      showLiveCameraFeed: true,
       savedSerialNo: '',
       materialOutObj: null,
       retNonret: '',
@@ -732,7 +742,6 @@ class MaterialIn extends React.Component {
 
   render() {
     const {toastMsg, screenshot}=this.state;
-    console.log(screenshot);
 
     if(toastMsg) {
       return (

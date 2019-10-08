@@ -125,7 +125,6 @@ class MaterialOut extends React.Component {
       materialStatus,
       materialInObj
     } = this.state;
-    console.log(screenshot);
 
     let fromLocation;
     let toLocation;
@@ -137,6 +136,7 @@ class MaterialOut extends React.Component {
     let purpose;
     let inwardSNo;
     let inDate;
+    let outDate;
 
     if(materialInObj && materialInObj.retNonret === 'Non-Returnable') {
       this.setState({
@@ -150,8 +150,10 @@ class MaterialOut extends React.Component {
     }
 
     if(materialStatus === 'Pending' && materialInObj) {
+      console.log(materialInObj);
        inwardSNo = materialInObj.inwardSNo;
        inDate = materialInObj.inDate;
+       outDate = materialInObj.outDate
        fromLocation = materialInObj.toLocation;
        toLocation = materialInObj.fromLocation;
        authorisedPerson =  materialInObj.authorisedPerson;
@@ -172,38 +174,45 @@ class MaterialOut extends React.Component {
        quantity = this.state.quantity;
        purpose = this.state.purpose;
     }
-
+    console.log(outDate);
     let imgFile = screenshot.replace(/^data:image\/\w+;base64,/, "");
-    uploadStoreMaterialImage(imgFile, outwardSNo).then((snapshot) => {
-         let outwardPhoto = snapshot.downloadURL;
-    saveMaterialOut({
-      outwardPhoto,
-      outwardSNo,
-      inwardSNo,
-      inDate,
-      retNonret,
-      fromLocation,
-      toLocation,
-      authorisedPerson,
-      weighbillNumber,
-      material,
-      remarks,
-      quantity,
-      purpose,
-      vehicleNum,
-      personName,
-      mobileNumber,
-      materialStatus
-    }).then(() => {
+    if(!outDate) {
+        uploadStoreMaterialImage(imgFile, outwardSNo).then((snapshot) => {
+             let outwardPhoto = snapshot.downloadURL;
+        saveMaterialOut({
+          outwardPhoto,
+          outwardSNo,
+          inwardSNo,
+          inDate,
+          retNonret,
+          fromLocation,
+          toLocation,
+          authorisedPerson,
+          weighbillNumber,
+          material,
+          remarks,
+          quantity,
+          purpose,
+          vehicleNum,
+          personName,
+          mobileNumber,
+          materialStatus
+        }).then(() => {
+          this.setState({
+            outwardSNo:Rand.generateBase30(8),
+            savedSerialNo: outwardSNo,
+            toastMsg: `Material ${material} saved`,
+            materialSaved: true
+          })
+        })
+      }).catch(err => console.error(err))
+    } else {
       this.setState({
-        outwardSNo:Rand.generateBase30(8),
-        savedSerialNo: outwardSNo,
-        toastMsg: `Material ${material} saved`,
-        materialSaved: true
+        toastMsg: `Material ${material} already saved`,
+        materialInObj: null,
+        showLiveCameraFeed: true
       })
-    })
-  }).catch(err => console.error(err))
-
+    }
   }
 
   renderReactToPrintComponent() {

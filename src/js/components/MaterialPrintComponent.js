@@ -26,8 +26,6 @@ export default class MaterialPrintComponent extends Component {
             mobileNumber,
             personName, inComponent, duplicatePrint, dateForPrint, timeForPrint } = this.props;
 
-            console.log(screenshot);
-
       const date = new Date();
       let dateStr = moment(date).format('DD-MM-YYYY');
       let timeStr = moment(date).format('h:mm A');
