@@ -13,16 +13,16 @@ export function saveMaterialIn(data) {
   const newData = Object.assign({}, data);
   if(data.materialStatus==='New') {
     let returnable = data.retNonret === 'Returnable' ? true : false;
-  newData.returnable=returnable;
-  newData.inDate=dateStr;
-  newData.inTime=timeStr;
-
+    newData.returnable=returnable;
+    newData.inDate=dateStr;
+    newData.inTime=timeStr;
+    newData.initialTransactionType = 'inward';
   updates[localStorage.unit + '/'+`materialReports/in/${dateStr}/${data.inwardSNo}`] = newData;
   updates[localStorage.unit + '/'+`materialBarcodes/${data.inwardSNo}`] = newData;
   }
 
+console.log(data);
   if(data.materialStatus==='Pending' && data.outDate && !data.inDate) {
-    console.log('it should nt come here')
     updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/returnable`]=false;
     updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/inDate`]=dateStr;
     updates[localStorage.unit + '/'+ `materialReports/out/${data.outDate}/${data.outwardSNo}/inTime`]=timeStr;
@@ -51,6 +51,8 @@ export function saveMaterialOut(data) {
     newData.returnable=returnable;
     newData.outDate=dateStr;
     newData.outTime=timeStr;
+    newData.initialTransactionType = 'outward';
+
     updates[localStorage.unit + '/'+`materialReports/out/${dateStr}/${data.outwardSNo}`] = newData;
     updates[localStorage.unit + '/'+`materialBarcodes/${data.outwardSNo}`] = newData;
   }

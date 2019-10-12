@@ -388,10 +388,16 @@ class MaterialIn extends React.Component {
     let sNo=materialOutSNo.toUpperCase();
     fetchMaterialData(sNo).then(snap => {
       const materialOutObj=snap.val();
-      this.setState({
-        materialOutObj,
-        materialFetched: true
-      })
+      if(materialOutObj.initialTransactionType == 'outward') {
+        this.setState({
+          materialOutObj,
+          materialFetched: true
+        })
+      } else {
+        this.setState({
+          toastMsg: 'Given SNO does not exist'
+        })
+      }
     }).catch(err => console.log(err))
   }
 

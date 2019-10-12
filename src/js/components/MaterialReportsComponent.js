@@ -39,6 +39,7 @@ class MaterialReportsComponent extends React.Component {
     let tablesArray=[];
     let materialsArray=[];
     let materialObj;
+    console.log(response)
     Object.keys(response).map((date, index) => {
       if(datesArr) {
         let datesFilterArr = datesArr.filter(val => val == date);
@@ -53,7 +54,6 @@ class MaterialReportsComponent extends React.Component {
         let mObj=materialObj[sNo];
         if(!mObj)
         return null;
-
         let isValid=true;
         let inTime=mObj.inTime;
         let outTime=mObj.outTime;
@@ -64,13 +64,24 @@ class MaterialReportsComponent extends React.Component {
           totalNumberOfdays++;
           let startTime = moment(inTime, "HH:mm a");
           let endTime=moment(outTime, "HH:mm a");
-          let duration;
+          let duration, hours = 0, minutes =0, differenceInTime, differenceInHours, differenceInDays;
+          let inDateParts = mObj.inDate.split('-');
+          let outDateParts = mObj.outDate.split('-');
+          let inDateObj = new Date(inDateParts[2], inDateParts[1]-1, inDateParts[0]);
+          let outDateObj = new Date(outDateParts[2], outDateParts[1]-1, outDateParts[0]);
           if(reportType === "Outward"){
               duration = moment.duration(startTime.diff(endTime));
+              differenceInTime = inDateObj.getTime() - outDateObj.getTime();
+              differenceInHours = differenceInTime / (1000 * 3600);
+              differenceInDays = differenceInTime / (1000 * 3600 * 24);
           } else if(reportType === "Inward"){
               duration = moment.duration(endTime.diff(startTime));
+              differenceInTime = outDateObj.getTime() - inDateObj.getTime();
+              differenceInHours = differenceInTime / (1000 * 3600);
+              differenceInDays = differenceInTime / (1000 * 3600 * 24);
           }
-          let hours = 0, minutes =0;
+          console.log(differenceInHours);
+          console.log(differenceInDays);
           if(duration.asMilliseconds() < 0) {
            let dMillis = duration.asMilliseconds();
            let bufferedMillis = dMillis + (24 * 60 * 60 * 1000);
@@ -79,10 +90,11 @@ class MaterialReportsComponent extends React.Component {
            let remainingSeconds = bufferedSeconds % 3600;
             minutes = remainingSeconds / 60;
            }else {
+
             hours = parseInt(duration.asHours());
             minutes = parseInt(duration.asMinutes())%60;
            }
-           totalTime = hours + ' hr ' + minutes + ' min ';
+           totalTime = differenceInHours + ' hr ' + minutes + ' min ';
         }
 
           if(reportType == 'Outward') {
