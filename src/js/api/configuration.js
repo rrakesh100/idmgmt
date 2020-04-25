@@ -85,6 +85,13 @@ export function saveAgent(agentName,agentNum,agentTown,agentDistrict,agentState)
   return dbRef.update(updates)
 }
 
+export function saveWheatEntries(varietyName) {
+  const dbRef = firebase.database().ref();
+  const updates = {};
+  updates[`wheatEntries/${varietyName}`] = varietyName;
+  return dbRef.update(updates)
+}
+
 export function getShifts() {
   const dbRef = firebase.database().ref('shifts');
   return dbRef.once('value');
@@ -127,5 +134,10 @@ export function getParties() {
 
 export function getAgents() {
   const dbRef = firebase.database().ref('agents');
+  return dbRef.once('value');
+}
+
+export function getWheatEntries() {
+  const dbRef = firebase.database().ref('wheatEntries');
   return dbRef.once('value');
 }

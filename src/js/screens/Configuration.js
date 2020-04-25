@@ -9,7 +9,7 @@ import Tab from 'grommet/components/Tab';
 import Button from 'grommet/components/Button';
 import Layer from 'grommet/components/Layer';
 import Select from 'grommet/components/Select';
-import { saveShift, saveTimeslot, saveVillage, saveVehicle, saveDriver, saveOwnPlace, saveMaterial, saveParty, saveAgent } from '../api/configuration';
+import { saveShift, saveTimeslot, saveVillage, saveVehicle, saveDriver, saveOwnPlace, saveMaterial, saveParty, saveAgent, saveWheatEntries } from '../api/configuration';
 import { Container, Row, Col } from 'react-grid-system';
 import Status from 'grommet/components/icons/Status';
 import Table from 'grommet/components/Table';
@@ -22,7 +22,8 @@ import { getShifts,
   getOwnPlaces,
   getMaterials,
   getParties,
-  getAgents
+  getAgents,
+  getWheatEntries
  } from '../api/configuration';
 
 const AddButton = ({onClick}) => {
@@ -45,6 +46,7 @@ export default class Configuration extends Component {
       driverBtnClick: false,
       ownPlaceBtnClick: false,
       materBtnClick: false,
+      wheatEntriesBtnClick: false,
       timeslot: '',
       shift: '',
       village: '',
@@ -66,6 +68,7 @@ export default class Configuration extends Component {
      this.getMaterialDetails();
   //   this.getPartyDetails();
      this.getAgentDetails();
+     this.getWheatEntriesDetails();
   }
 
   getShiftDetails() {
@@ -140,6 +143,14 @@ export default class Configuration extends Component {
     })
   }
 
+  getWheatEntriesDetails() {
+    getWheatEntries().then((snap) => {
+      this.setState({
+        wheatEntries: snap.val()
+      })
+    })
+  }
+
   onFieldChange(fieldName, e) {
       this.setState({
         [fieldName]: e.target.value
@@ -200,6 +211,12 @@ export default class Configuration extends Component {
     })
   }
 
+  onWheatEntriesAddBtnClick() {
+    this.setState({
+      wheatEntriesBtnClick: true
+    })
+  }
+
   onShiftCloseLayer() {
     this.setState({
       shiftBtnClick: false
@@ -256,6 +273,17 @@ export default class Configuration extends Component {
   onAgentCloseLayer() {
     this.setState({
       agentBtnClick: false,
+      agentName:'',
+      agentNum:'',
+      agentTown:'',
+      agentDistrict:'',
+      agentState:''
+    })
+  }
+
+  onWheatEntriesCloseLayer() {
+    this.setState({
+      wheatEntriesBtnClick: false,
       agentName:'',
       agentNum:'',
       agentTown:'',
@@ -486,6 +514,32 @@ export default class Configuration extends Component {
     this.setState({
       validationMsg:''
     }, this.onAgentSaving.bind(this))
+  }
+
+  onSavingWheatEntries() {
+    const { varietyName } = this.state;
+    if(!varietyName) {
+      this.setState({
+        validationMsg: 'Agent Name is Missing'
+      })
+      return
+    }
+
+    this.setState({
+      validationMsg:''
+    }, this.onWheatEntriesSaving.bind(this))
+  }
+
+  onWheatEntriesSaving() {
+    const { varietyName } = this.state;
+    saveWheatEntries(varietyName).then(() => {
+      alert("Wheat Entries successfully saved");
+      this.setState({
+        msg: 'Wheat Entries successfully saved',
+        wheatEntriesBtnClick: false,
+        varietyName : ""
+      }, this.getWheatEntriesDetails())
+    })
   }
 
   renderShiftLayer() {
@@ -1068,6 +1122,62 @@ export default class Configuration extends Component {
   }
   }
 
+  renderWheatEntriesLayer() {
+
+    if(!this.state.wheatEntriesBtnClick)
+    return null;
+    else {
+      return (
+        <Layer closer={true}
+        flush={false}
+        onClose={this.onWheatEntriesCloseLayer.bind(this)}>
+          <Form>
+          <FormField  label='Variety Name'  strong={true} style={{marginTop : '15px', width:'320px'}}  >
+          <TextInput
+              placeHolder='Variety Name'
+              value={this.state.varietyName}
+              onDOMChange={this.onFieldChange.bind(this, 'varietyName')} />
+          </FormField>
+          </Form>
+        <Row>
+        <Button label='Add'
+        primary={true} style={{marginTop: '20px', marginLeft: '400px', marginBottom: '10px'}}
+        href='#' onClick={this.onSavingWheatEntries.bind(this)}/>
+        </Row>
+        </Layer>
+      );
+    }
+  }
+
+  renderAllWheatEntries() {
+    const {wheatEntries}=this.state;
+    if(wheatEntries) {
+    return (
+      <Table style={{marginLeft: '40px', width: '80%'}}>
+      <thead style={{position:'relative'}}>
+       <tr>
+         <th>S No.</th>
+         <th>VarietyName</th>
+       </tr>
+      </thead>
+      <tbody>
+       {
+         Object.keys(wheatEntries).map((key, index) => {
+           let wheatEntryObj=wheatEntries[key];
+           return (
+             <TableRow key={index}>
+                <td>{index+1}</td>
+                <td>{wheatEntryObj}</td>
+              </TableRow>
+           )
+         })
+       }
+       </tbody>
+       </Table>
+    )
+  }
+  }
+
   onCloseLayer() {
     this.setState({validationMsg: ''})
   }
@@ -1165,6 +1275,11 @@ export default class Configuration extends Component {
       <AddButton onClick={this.onAgentAddBtnClick.bind(this)}/>
       { this.renderAgentLayer() }
       { this.renderAllAgents() }
+      </Tab>
+      <Tab title='WHEAT ENTRIES'>
+      <AddButton onClick={this.onWheatEntriesAddBtnClick.bind(this)}/>
+      { this.renderWheatEntriesLayer() }
+      { this.renderAllWheatEntries() }
       </Tab>
       </Tabs>
       </div>
