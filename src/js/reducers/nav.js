@@ -18,7 +18,8 @@ const initialState = {
     { path: '/employees', label: 'ATTENDANCE' },
     { path: '/manpower', label: 'MAN POWER' },
     { path: '/configuration', label: 'CONFIGURATION' },
-    { path: '/workmanager', label: 'WORK MANAGER' }
+    { path: '/workmanager', label: 'WORK MANAGER' },
+    { path: '/wheatentries', label: 'WHEAT ENTRIES' }
     ]
 };
 

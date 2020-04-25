@@ -39,6 +39,7 @@ import EmployeeReports from '../screens/EmployeeReports';
 import ManPower from '../screens/ManPower';
 import Configuration from '../screens/Configuration';
 import WorkManager from '../screens/WorkManager';
+import WheatEntries from "./../screens/WheatEntries";
 
 
 class Main extends Component {
@@ -100,6 +101,7 @@ class Main extends Component {
                   <Route path='/out/vehicle' component={VehicleOut} />
                   <Route path='/configuration' component={Configuration} />
                   <Route path='/workmanager' component={WorkManager} />
+                  <Route path='/wheatentries' component={WheatEntries} />
                   <Route path='/*' component={NotFound} />
                 </Switch>
               </Split>
